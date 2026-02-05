@@ -2,80 +2,37 @@ package net.kumo.kumo.domain.dto.projection;
 
 public interface JobSummaryView {
 
-    // 1. 식별자
     Long getId();
+    String getImgUrls(); // 이미지 원본
 
-    // ==========================================
-    // 🇰🇷 한국어 데이터 (기존)
-    // ==========================================
-    String getTitle();          // title
-    String getCompanyName();    // company_name
-    String getAddress();        // address
-    String getContactPhone();   // contact_phone
-    String getWage();           // wage (급여 정보도 추가 추천)
+    // --- 🇰🇷 한국어 원본 데이터 ---
+    String getTitle();
+    String getCompanyName();
+    String getAddress(); // 공통 주소
+    String getContactPhone();
+    String getWage();
+    String getWriteTime();
 
-    // ==========================================
-    // 🇯🇵 일본어 데이터 (추가됨)
-    // BaseEntity의 필드명과 정확히 일치해야 함
-    // ==========================================
-    String getTitleJp();        // title_jp
-    String getCompanyNameJp();  // company_name_jp
-    String getWageJp();         // wage_jp
-    // 주소의 경우 Entity 구조상 addressJp라는 단일 필드는 없고
-    // prefectureJp, cityJp 등으로 나뉘어 있어, 필요하다면 아래처럼 추가 가능합니다.
-    // 단, NoGeocoded 테이블에는 해당 컬럼이 없으므로 @Formula 처리가 안되어 있다면 에러가 날 수 있습니다.
-    // 우선은 안전하게 Title, Company, Wage만 추가합니다.
+    // --- 🇯🇵 일본어 원본 데이터 ---
+    // 리포지토리가 이 값들을 DB에서 퍼와야 하므로 반드시 있어야 합니다!
+    String getTitleJp();
+    String getCompanyNameJp();
+    String getWageJp();
+    // String getAddressJp(); // 필요하다면 추가 (엔티티에 필드가 있어야 함)
 
-    // 3. 이미지
-    String getImgUrls();
-
-    // 4. 좌표
+    // --- 좌표 ---
     Double getLat();
     Double getLng();
 
-    // ==========================================
-    // 🛠️ 유틸리티 메소드 (Default Method)
-    // ==========================================
-
-    /**
-     * 썸네일 URL 가져오기
-     */
+    // 썸네일 자르는 것 정도는 유틸리티 성격이라 여기에 둬도 괜찮
     default String getThumbnailUrl() {
         String urls = getImgUrls();
         if (urls == null || urls.isBlank()) {
-            return null; // 프론트에서 기본 이미지 처리
+            return null;
         }
         return urls.split(",")[0].trim();
     }
 
-    /**
-     * [스마트 Getter] 언어 코드에 따라 알맞은 제목 반환
-     * @param lang "jp"면 일본어, 그 외엔 한국어
-     */
-    default String getLocalizedTitle(String lang) {
-        if ("jp".equalsIgnoreCase(lang) && getTitleJp() != null && !getTitleJp().isBlank()) {
-            return getTitleJp();
-        }
-        return getTitle();
-    }
-
-    /**
-     * [스마트 Getter] 언어 코드에 따라 알맞은 회사명 반환
-     */
-    default String getLocalizedCompanyName(String lang) {
-        if ("jp".equalsIgnoreCase(lang) && getCompanyNameJp() != null && !getCompanyNameJp().isBlank()) {
-            return getCompanyNameJp();
-        }
-        return getCompanyName();
-    }
-
-    /**
-     * [스마트 Getter] 언어 코드에 따라 알맞은 급여 반환
-     */
-    default String getLocalizedWage(String lang) {
-        if ("jp".equalsIgnoreCase(lang) && getWageJp() != null && !getWageJp().isBlank()) {
-            return getWageJp();
-        }
-        return getWage();
-    }
+    // ★ 삭제: default String getLocalizedTitle(...)
+    // 이유:JobResponse DTO 생성자에서 처리하기 때문입니다.
 }

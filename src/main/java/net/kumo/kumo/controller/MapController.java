@@ -2,6 +2,7 @@ package net.kumo.kumo.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.kumo.kumo.domain.dto.JobSummaryDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -49,15 +50,16 @@ public class MapController {
         return "mapView/job_list";
     }
 
-    // [API] 데이터 반환 (기존 유지)
     @GetMapping("/api/jobs")
     @ResponseBody
-    public List<JobSummaryView> getJobListApi(
+    public List<JobSummaryDTO> getJobListApi(
             @RequestParam Double minLat,
             @RequestParam Double maxLat,
             @RequestParam Double minLng,
-            @RequestParam Double maxLng
+            @RequestParam Double maxLng,
+            @RequestParam(defaultValue = "kr") String lang
     ) {
-        return mapService.getJobListInMap(minLat, maxLat, minLng, maxLng);
+        // 서비스가 이미 정제된(JobResponse) 데이터를 줍니다.
+        return mapService.getJobListInMap(minLat, maxLat, minLng, maxLng, lang);
     }
 }
