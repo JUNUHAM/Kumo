@@ -1,0 +1,196 @@
+* calendar.css */
+
+/* 캘린더 메인 레이아웃 보정 */
+.calendar-main-layout {
+  display: flex;
+  justify-content: flex-start; /* 왼쪽부터 배치 */
+  height: calc(100vh - 160px);
+}
+
+/* 좌측 캘린더 영역: 우측 고정 사이드바 공간(340px)만큼 비워줌 */
+.calendar-left-content {
+  flex: 1;
+  margin-right: 340px; /* [핵심] 우측 사이드바 자리 확보 */
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+#calendar {
+  background: white;
+  padding: 25px;
+  border-radius: 25px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+  flex: 1; /* 남은 높이 가득 채우기 */
+}
+
+/* 우측 스케줄 영역: 메인 rightSidebar와 완벽 일치 */
+.calendar-side-area {
+  width: 340px; /* [핵심] 너비 340px로 고정 */
+  min-width: 340px;
+  position: fixed; /* [핵심] 화면 우측 고정 */
+  right: 0;
+  top: 80px; /* 헤더 높이만큼 띄움 */
+  height: calc(100vh - 80px);
+  background-color: #f8faff;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  border-left: 1px solid #f0f3f8;
+  z-index: 100;
+}
+
+/* 내부 패널 스타일 (전체 높이 사용) */
+.schedule-full-panel {
+  flex: 1;
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.03);
+  border: 1px solid #f0f3f8;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.panel-header {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #f8faff;
+  padding-bottom: 10px;
+}
+
+.event-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+/* 스케줄 카드 스타일 */
+.sidebar-card {
+  background: #fcfdfe;
+  border-left: 5px solid #7abaff;
+  border-radius: 15px;
+  padding: 18px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s;
+}
+.sidebar-card:hover {
+  transform: scale(1.02);
+}
+
+.empty-state {
+  color: #cbd5e0;
+  text-align: center;
+  margin-top: 50px;
+}
+
+/* 하단 버튼 영역 고정 */
+.side-action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+.btn-sky-blue {
+  background-color: #7abaff !important;
+  color: white !important;
+  border: none;
+  border-radius: 18px !important;
+  padding: 18px !important;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+.btn-light-blue {
+  background-color: #92ccff !important;
+  color: white !important;
+  border: none;
+  border-radius: 18px !important;
+  padding: 18px !important;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+.badge-count {
+  position: absolute;
+  top: 18px;
+  right: 25px;
+  background: #ff6b6b;
+  color: white;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* FullCalendar 버튼 커스텀 */
+.fc-button-primary {
+  background-color: #7abaff !important;
+  border: none !important;
+  border-radius: 12px !important;
+}
+/* 1. 전체 글꼴을 부드러운 샌세리프로 통일 */
+#calendar {
+  font-family:
+    "Pretendard",
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    Roboto,
+    sans-serif !important;
+}
+
+/* 2. 날짜 숫자(1일, 2일...) 스타일 변경 */
+.fc-daygrid-day-number {
+  font-weight: 600 !important; /* 글자 두께를 더 두껍게 */
+  color: #4a5568 !important; /* 너무 검지 않은 세련된 다크 그레이 */
+  font-size: 0.95rem !important;
+  padding: 8px 12px !important;
+  text-decoration: none !important;
+}
+
+/* 3. 요일(일~토) 스타일 변경 */
+.fc-col-header-cell-cushion {
+  font-weight: 700 !important;
+  color: #2d3748 !important;
+  font-size: 1rem !important;
+  padding: 12px 0 !important;
+  text-decoration: none !important;
+}
+
+/* 4. 일정 막대(Event) 안의 글자 예쁘게 */
+.fc-event-title {
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  padding-left: 2px !important;
+  letter-spacing: -0.02em !important; /* 자간을 살짝 좁혀 가독성 향상 */
+}
+
+/* 5. 오늘 날짜 강조 디자인 */
+.fc-day-today .fc-daygrid-day-number {
+  color: #7abaff !important; /* 우리 포인트 컬러인 하늘색으로 강조 */
+  font-weight: 800 !important;
+}
+
+/* 6. 일요일/토요일 색상 미세 조정 (선택 사항) */
+.fc-day-sun .fc-col-header-cell-cushion,
+.fc-day-sun .fc-daygrid-day-number {
+  color: #ff6b6b !important; /* 일요일은 연한 빨강 */
+}
+.fc-day-sat .fc-col-header-cell-cushion,
+.fc-day-sat .fc-daygrid-day-number {
+  color: #4facfe !important; /* 토요일은 연한 파랑 */
+}

@@ -1,0 +1,108 @@
+/* settings.css */
+
+.settings-container {
+  max-width: 800px; /* 너무 퍼지지 않게 너비 제한 */
+  margin: 0 auto;
+}
+
+.settings-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #2c3e50;
+  margin-bottom: 40px;
+}
+
+.settings-form-wrapper {
+  padding-left: 50px; /* 시안처럼 왼쪽 여백 확보 */
+}
+
+/* 프로필 이미지 스타일 */
+.profile-image-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.profile-img-lg {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #f0f3f8;
+}
+
+.btn-profile-upload {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 8px 15px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #7abaff;
+  transition: all 0.2s;
+}
+.btn-profile-upload:hover {
+  background: #f8faff;
+}
+
+/* 정보 행 스타일 */
+.info-row {
+  display: flex;
+  padding: 20px 0;
+  align-items: flex-start;
+}
+
+.info-label {
+  width: 150px; /* 라벨 너비 고정 */
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #33475b;
+}
+
+.info-value {
+  font-size: 0.95rem;
+  color: #4a5568;
+  font-weight: 500;
+}
+
+/* 토글 스위치 커스텀 */
+.custom-switch .form-check-input {
+  width: 3rem;
+  height: 1.5rem;
+  cursor: pointer;
+}
+.custom-switch .form-check-input:checked {
+  background-color: #7abaff;
+  border-color: #7abaff;
+}
+
+/* 하단 버튼 영역 */
+.settings-footer-actions {
+  margin-top: 60px;
+  display: flex;
+  gap: 40px;
+}
+
+.btn-quit {
+  background: none;
+  border: none;
+  color: #ff6b6b;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.btn-submit {
+  background: none;
+  border: none;
+  color: #2c3e50;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.btn-quit:hover,
+.btn-submit:hover {
+  text-decoration: underline;
+}
