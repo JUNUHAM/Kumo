@@ -1,0 +1,82 @@
+/* 1. 전체 화면 세팅 (지도 배경) */
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* 스크롤 방지 */
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+.map-container {
+    width: 100vw;
+    height: 100vh;
+    background-color: #e5e5e5; /* 지도 대신 회색 배경 (테스트용) */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    color: #888;
+}
+
+/* =========================================
+   2. 바텀 시트 (핵심 디자인)
+   ========================================= */
+.bottom-sheet {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 80vh; /* 화면 높이의 80%까지 올라옴 */
+    background-color: white;
+    border-radius: 20px 20px 0 0; /* 윗부분 둥글게 */
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.1); /* 그림자 */
+
+    /* 애니메이션 설정 */
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+
+    /* 초기 상태: 내용물 높이만큼 숨기기 (손잡이만 보이게) */
+    /* calc(100% - 60px) -> 전체 높이에서 손잡이 크기(60px)만큼 뺀 만큼 내려가 있어라 */
+    transform: translateY(calc(100% - 60px));
+    z-index: 1000;
+}
+
+/* 바텀 시트가 활성화(.active) 됐을 때 */
+.bottom-sheet.active {
+    transform: translateY(0); /* 원래 위치로 올라옴 */
+}
+
+/* 3. 튀어나온 손잡이 (Handle) 디자인 */
+.sheet-handle {
+    height: 60px; /* 손잡이 높이 */
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    background-color: white; /* 본문과 색 통일 */
+    border-radius: 20px 20px 0 0;
+}
+
+/* 손잡이 안의 작은 회색 바 (아이폰 스타일) */
+.handle-bar {
+    width: 50px;
+    height: 5px;
+    background-color: #ddd;
+    border-radius: 5px;
+}
+
+/* 4. 내용물 영역 (구직 리스트) */
+.sheet-content {
+    height: calc(100% - 60px); /* 손잡이 뺀 나머지 */
+    overflow-y: auto; /* 내용 많으면 스크롤 */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* (예시) 구직 공고 카드 스타일 */
+.job-card {
+    border-bottom: 1px solid #eee;
+    padding: 15px 0;
+}
+.job-title { font-weight: bold; font-size: 18px; margin-bottom: 5px; }
+.job-wage { color: #ff6b6b; font-weight: bold; }
+.job-info { color: #666; font-size: 14px; }

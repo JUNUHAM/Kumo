@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+	<meta charset="UTF-8">
+	<title>KUMO - 지도 검색</title>
+	<link rel="stylesheet" th:href="@{/css/mainView/main.css}">
+	<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+	<script th:src="@{/js/mainView/main.js}"></script>
+</head>
+<body>
+
+<div class="map-container">
+	🗺️ 여기에 Google Maps가 들어갑니다
+</div>
+
+<div class="bottom-sheet" id="bottomSheet">
+	
+	<div class="sheet-handle">
+		<div class="handle-bar"></div>
+	</div>
+	
+	<div class="sheet-content">
+		<h2>구직 정보 리스트 📋</h2>
+		
+		<div class="job-card">
+			<div class="job-title">🍰 키르훼봉 긴자점</div>
+			<div class="job-wage">시급 1,200엔</div>
+			<div class="job-info">도쿄도 주오구 긴자 · 홀 서빙</div>
+		</div>
+		
+		<div class="job-card">
+			<div class="job-title">🍜 이치란 라멘 신주쿠</div>
+			<div class="job-wage">시급 1,350엔</div>
+			<div class="job-info">도쿄도 신주쿠구 · 주방 보조</div>
+		</div>
+		
+		<div class="job-card">
+			<div class="job-title">☕ 스타벅스 시부야 츠타야점</div>
+			<div class="job-wage">시급 1,150엔</div>
+			<div class="job-info">도쿄도 시부야구 · 바리스타</div>
+		</div>
+		
+		<div style="height: 500px; background: #f9f9f9; margin-top: 20px; text-align: center; line-height: 500px; color: #ccc;">
+			더 많은 공고...
+		</div>
+	</div>
+</div>
+
+<script th:src="@{'https://maps.googleapis.com/maps/api/js?key=' + ${googleMapsKey} + '&callback=initMap&loading=async'}"
+        async defer></script>
+</body>
+</html>
