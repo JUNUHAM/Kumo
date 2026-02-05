@@ -48,24 +48,6 @@
   flex-shrink: 0 !important;
 }
 
-.btn-sky-blue {
-  background-color: #7abaff !important;
-  color: white !important;
-  height: 55px !important;
-  border: none !important;
-  border-radius: 15px !important;
-  font-weight: 800 !important;
-}
-
-.btn-light-blue {
-  background-color: #92ccff !important;
-  color: white !important;
-  height: 55px !important;
-  border: none !important;
-  border-radius: 15px !important;
-  font-weight: 800 !important;
-}
-
 /* 채팅 배지 */
 .badge-count {
   background: #ff6b6b !important;

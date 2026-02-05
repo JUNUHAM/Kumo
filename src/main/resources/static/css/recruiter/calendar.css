@@ -101,26 +101,6 @@
   margin-top: auto;
 }
 
-.btn-sky-blue {
-  background-color: #7abaff !important;
-  color: white !important;
-  border: none;
-  border-radius: 18px !important;
-  padding: 18px !important;
-  font-weight: 800;
-  font-size: 1.1rem;
-}
-
-.btn-light-blue {
-  background-color: #92ccff !important;
-  color: white !important;
-  border: none;
-  border-radius: 18px !important;
-  padding: 18px !important;
-  font-weight: 800;
-  font-size: 1.1rem;
-}
-
 .badge-count {
   position: absolute;
   top: 18px;

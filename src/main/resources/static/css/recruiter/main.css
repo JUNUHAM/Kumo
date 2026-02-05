@@ -111,3 +111,87 @@ body {
 .copyright strong {
   color: #8fa1b3;
 }
+
+/* 쓱 올라오는 애니메이션 정의 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0); /* 20px 밑에서 시작 */
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0); /* 제자리로 */
+  }
+}
+
+/* 웰컴 섹션에 애니메이션 적용 */
+.welcome-section {
+  animation: fadeInUp 0.5s ease-out forwards; /* 0.8초 동안 부드럽게 실행 */
+}
+
+/* (보너스) 만약 밑에 있는 카드들도 순차적으로 올라오게 하고 싶다면? */
+.stat-row {
+  animation: fadeInUp 0.8s ease-out 0.2s forwards; /* 0.2초 뒤늦게 시작 */
+  opacity: 0; /* 시작 전엔 안보이게 */
+}
+
+.graph-container {
+  animation: fadeInUp 0.8s ease-out 0.4s forwards; /* 0.4초 뒤늦게 시작 */
+  opacity: 0;
+}
+
+/* 공통 버튼 규격 */
+.btn-common-action {
+  height: 55px !important; /* 높이를 고정하면 크기 차이가 안 납니다 */
+  border-radius: 18px !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  border: none !important;
+}
+
+.btn-sky-blue {
+  background-color: #7abaff !important;
+  color: white !important;
+}
+.btn-light-blue {
+  background-color: #92ccff !important;
+  color: white !important;
+}
+
+/* main.css */
+
+/* [필독] 기존에 각 요소에 직접 넣었던 animation 속성들은 다 지워주세요! */
+
+/* main.css */
+
+/* 1. 기본 상태: 평상시에는 애니메이션 없이 바로 보임 */
+.welcome-section,
+.stat-row,
+.graph-container,
+.dashboard-right-sidebar {
+  opacity: 1;
+  transform: none;
+  /* 중요: 여기에 개별 animation 속성이 남아있으면 안 됩니다! */
+}
+
+/* 2. 애니메이션 모드: body에 .start-animation이 붙었을 때만 숨겼다가 올림 */
+.start-animation .welcome-section {
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+.start-animation .stat-row {
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out 0.2s forwards;
+}
+.start-animation .graph-container {
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out 0.4s forwards;
+}
+.start-animation .dashboard-right-sidebar {
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out 0.6s forwards;
+}

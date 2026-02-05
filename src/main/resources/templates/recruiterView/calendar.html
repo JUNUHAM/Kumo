@@ -49,17 +49,21 @@
               </div>
 
               <div class="side-action-buttons">
-                <button class="btn btn-sky-blue w-100 shadow-sm">
-                  공고 등록
+                <button
+                  class="btn btn-common-action btn-sky-blue w-100 shadow-sm"
+                >
+                  스케줄 등록
                 </button>
                 <button
-                  class="btn btn-light-blue w-100 position-relative shadow-sm"
+                  class="btn btn-common-action btn-light-blue w-100 position-relative shadow-sm"
                 >
-                  <i class="bi bi-chat-dots-fill me-2"></i>채팅
-                  <span class="badge-count">3</span>
+                  수정
                 </button>
               </div>
             </aside>
+            <footer
+              th:replace="~{recruiterView/fragments/footer :: footerFragment}"
+            ></footer>
           </div>
         </main>
       </div>
