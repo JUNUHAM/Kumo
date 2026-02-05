@@ -16,6 +16,8 @@ public class JobSummaryDTO {
     private String contactPhone;
     private String thumbnailUrl;
     private String writeTime;
+    private Double lat;
+    private Double lng;
 
     // 생성자: 원본 데이터(view)와 언어(lang)를 받아서 알아서 정리함
     public JobSummaryDTO(JobSummaryView view, String lang) {
@@ -24,6 +26,8 @@ public class JobSummaryDTO {
         this.contactPhone = view.getContactPhone();
         this.address = view.getAddress();
         this.writeTime = view.getWriteTime(); // 필요하다면 포맷팅도 여기서 가능
+        this.lat = view.getLat();
+        this.lng = view.getLng();
 
         // ★ 핵심 로직: 언어에 따라 하나만 선택해서 저장
         boolean isJp = "jp".equalsIgnoreCase(lang);

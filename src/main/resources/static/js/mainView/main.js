@@ -1,5 +1,6 @@
 // 지도 생성
 let map;
+let jobMarkers = [];
 
 // Jquery를 사용하면 오히려 번거롭기 때문에 Vanilla JS를 사용하여 map 구축
 function initMap() {
@@ -10,8 +11,14 @@ function initMap() {
 
     map = new google.maps.Map(mapElement, {
         center: tokyo,
-        zoom: 14,
+        zoom: 10,
+        disableDefaultUI: true,
+        style: [
+            {"stylers" : [{"saturation":-20}]},
+        ]
     });
+
+    drawMasking();
 
     map.addListener("idle", () => {
         const bounds = map.getBounds();
@@ -32,6 +39,58 @@ $(function() {
 
 // 전역 등록
 window.initMap = initMap;
+
+function drawMasking() {
+    // 1. 전세계를 덮는 거대한 회색 사각형 좌표 (외각선)
+    const worldCoords = [
+        { lat: 85, lng: -180 }, { lat: 85, lng: 0 }, { lat: 85, lng: 180 },
+        { lat: -85, lng: 180 }, { lat: -85, lng: 0 }, { lat: -85, lng: -180 },
+        { lat: 85, lng: -180 }
+    ];
+
+    // 2. HTML에서 로드한 GeoJSON 파일 변수가 있는지 확인하고 경로 추출
+    // (파일이 없어도 에러 안 나게 빈 배열 처리)
+    const tokyoPaths = typeof tokyoGeoJson !== 'undefined' ? getPathsFromGeoJson(tokyoGeoJson) : [];
+    const osakaCityPaths = typeof osakaCityGeoJson !== 'undefined' ? getPathsFromGeoJson(osakaCityGeoJson) : [];
+    const kansaiPaths = typeof osakaGeoJson !== 'undefined' ? getPathsFromGeoJson(osakaGeoJson, 1) : [];
+
+    // 3. 폴리곤 그리기
+    // paths의 첫 번째 배열은 '색칠할 영역(전세계)', 그 뒤의 배열들은 '구멍 뚫을 영역(도쿄,오사카)'이 됩니다.
+    new google.maps.Polygon({
+        paths: [worldCoords, ...tokyoPaths, ...osakaCityPaths, ...kansaiPaths],
+        strokeColor: "#FF0000", // 경계선 색 (필요 없으면 투명하게)
+        strokeOpacity: 0,
+        strokeWeight: 0,
+        fillColor: "#000000",   // 배경 색 (검정)
+        fillOpacity: 0.6,       // 투명도 (0.6 정도가 적당)
+        map: map,
+        clickable: false        // 배경 클릭 안 되게
+    });
+}
+
+// GeoJSON 데이터를 구글 맵 Path로 변환하는 헬퍼 함수
+function getPathsFromGeoJson(json, specificIndex = -1) {
+    const paths = [];
+    if (!json) return paths;
+
+    // FeatureCollection인지 단일 Feature인지 확인
+    const features = (json.type === "FeatureCollection") ? json.features : [json];
+
+    features.forEach(f => {
+        if (!f.geometry) return;
+
+        if (f.geometry.type === "MultiPolygon") {
+            f.geometry.coordinates.forEach((polygon, index) => {
+                if (specificIndex >= 0 && index !== specificIndex) return;
+                // 구글 맵은 [Lng, Lat] 순서인 GeoJSON을 [Lat, Lng] 객체로 변환해야 함
+                paths.push(polygon[0].map(c => ({ lat: c[1], lng: c[0] })));
+            });
+        } else if (f.geometry.type === "Polygon") {
+            paths.push(f.geometry.coordinates[0].map(c => ({ lat: c[1], lng: c[0] })));
+        }
+    });
+    return paths;
+}
 
 // [추가] 공고 리스트 불러오기 함수
 function loadJobs(bounds) {
@@ -63,7 +122,12 @@ function loadJobs(bounds) {
     // 2. API 호출
     fetch(`/map/api/jobs?${params.toString()}`)
         .then(res => res.json())
-        .then(data => renderList(data, currentLang))
+        .then(data => {
+            // 🌟 [2] 데이터가 도착하면 기존 마커 지우고 -> 리스트 그리기 -> 새 마커 찍기
+            clearMarkers();      // 1. 지도 청소
+            renderList(data, currentLang); // 2. 바텀시트 리스트 갱신
+            renderMarkers(data); // 3. 지도에 마커 꽂기 (NEW!)
+        })
         .catch(err => {
             console.error(err);
             listBody.innerHTML = `<tr><td colspan="7" class="msg-box">데이터 로딩 실패</td></tr>`;
@@ -115,6 +179,43 @@ function renderList(jobs, lang) {
         `;
     });
     tbody.innerHTML = html;
+}
+
+// 🌟 [3] 마커 렌더링 함수 (새로 추가됨)
+function renderMarkers(jobs) {
+    if (!jobs || jobs.length === 0) return;
+
+    jobs.forEach(job => {
+        // DTO에 있는 lat, lng 확인 (null 체크)
+        if (job.lat && job.lng) {
+
+            const marker = new google.maps.Marker({
+                position: { lat: job.lat, lng: job.lng },
+                map: map,
+                title: job.title, // 마우스 올리면 나오는 툴팁
+                animation: google.maps.Animation.DROP // 툭 떨어지는 애니메이션
+            });
+
+            // 마커 클릭 이벤트 (선택사항)
+            // 클릭하면 해당 공고 상세페이지를 새 창으로 띄움
+            marker.addListener("click", () => {
+                window.open(`/jobs/${job.id}`);
+            });
+
+            // 배열에 저장 (나중에 지우기 위해)
+            jobMarkers.push(marker);
+        }
+    });
+}
+
+// 🌟 [4] 마커 삭제 함수 (새로 추가됨)
+function clearMarkers() {
+    // 지도에서 제거
+    jobMarkers.forEach(marker => {
+        marker.setMap(null);
+    });
+    // 배열 비우기
+    jobMarkers = [];
 }
 
 // [추가] 헤더 언어 변경
