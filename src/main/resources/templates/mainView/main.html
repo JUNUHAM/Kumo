@@ -6,10 +6,12 @@
 	<meta charset="UTF-8">
 	<title>KUMO - 지도 검색</title>
 	<link rel="stylesheet" th:href="@{/css/mainView/main.css}">
+	<link rel="stylesheet" th:href="@{/css/header.css}">
 	<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
 	<script th:src="@{/js/mainView/main.js}"></script>
 </head>
 <body>
+<header th:replace="~{header.html}"></header>
 
 <div class="map-container">
 	🗺️ 여기에 Google Maps가 들어갑니다
@@ -22,28 +24,25 @@
 	</div>
 	
 	<div class="sheet-content">
-		<h2>구직 정보 리스트 📋</h2>
+		<h2 style="padding: 0 10px; font-size: 18px;">구직 정보 리스트 📋</h2>
 		
-		<div class="job-card">
-			<div class="job-title">🍰 키르훼봉 긴자점</div>
-			<div class="job-wage">시급 1,200엔</div>
-			<div class="job-info">도쿄도 주오구 긴자 · 홀 서빙</div>
-		</div>
-		
-		<div class="job-card">
-			<div class="job-title">🍜 이치란 라멘 신주쿠</div>
-			<div class="job-wage">시급 1,350엔</div>
-			<div class="job-info">도쿄도 신주쿠구 · 주방 보조</div>
-		</div>
-		
-		<div class="job-card">
-			<div class="job-title">☕ 스타벅스 시부야 츠타야점</div>
-			<div class="job-wage">시급 1,150엔</div>
-			<div class="job-info">도쿄도 시부야구 · 바리스타</div>
-		</div>
-		
-		<div style="height: 500px; background: #f9f9f9; margin-top: 20px; text-align: center; line-height: 500px; color: #ccc;">
-			더 많은 공고...
+		<div class="table-wrapper">
+			<table class="job-table">
+				<thead>
+				<tr id="tableHeader">
+					<th>제목</th>
+					<th>상호명</th>
+					<th>근무지</th>
+					<th>급여</th>
+					<th>연락처</th>
+					<th>담당자</th>
+					<th>관리</th>
+				</tr>
+				</thead>
+				<tbody id="listBody">
+				<tr><td colspan="7" class="msg-box">지도를 움직이면 공고를 불러옵니다...</td></tr>
+				</tbody>
+			</table>
 		</div>
 	</div>
 </div>

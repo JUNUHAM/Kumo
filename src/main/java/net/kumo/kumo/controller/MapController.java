@@ -24,7 +24,7 @@ public class MapController {
 	// Key
 	@Value("${GOOGLE_MAPS_KEY}")
 	private String googleMapKey;
-
+	
     private final MapService mapService;
 
 

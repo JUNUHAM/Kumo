@@ -1,22 +1,78 @@
 package net.kumo.kumo.domain.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.Formula;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Immutable;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tokyo_no_geocoded")
 @Getter
 @Setter
-public class TokyoNoGeocodedEntity extends BaseEntity {
-
-    // 가상의 컬럼을 만듭니다.
-    // DB에서 SELECT 할 때 "NULL AS lat" 처럼 동작하여 에러를 막고 null을 반환
-    @Formula("NULL")
-    private Double lat;
-
-    @Formula("NULL")
-    private Double lng;
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Immutable
+public class TokyoNoGeocodedEntity {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	
+	@Column(name = "row_no")
+	private Long rowNo;
+	
+	private String datanum;
+	private String title;
+	private String href;
+	
+	@Column(name = "write_time")
+	private String writeTime;
+	
+	@Column(name = "img_urls", columnDefinition = "TEXT")
+	private String imgUrls;
+	
+	@Column(columnDefinition = "TEXT")
+	private String body;
+	
+	@Column(name = "company_name")
+	private String companyName;
+	
+	private String address;
+	
+	@Column(name = "contact_phone")
+	private String contactPhone;
+	
+	private String position;
+	
+	@Column(name = "job_description", columnDefinition = "TEXT")
+	private String jobDescription;
+	
+	private String wage;
+	
+	@Column(columnDefinition = "TEXT")
+	private String notes;
+	
+	@Column(name = "title_jp")
+	private String titleJp;
+	
+	@Column(name = "company_name_jp")
+	private String companyNameJp;
+	
+	@Column(name = "position_jp")
+	private String positionJp;
+	
+	@Column(name = "job_description_jp", columnDefinition = "TEXT")
+	private String jobDescriptionJp;
+	
+	@Column(name = "wage_jp")
+	private String wageJp;
+	
+	@Column(name = "notes_jp", columnDefinition = "TEXT")
+	private String notesJp;
+	
+	@CreationTimestamp
+	@Column(name = "created_at", updatable = false)
+	private LocalDateTime createdAt;
 }
