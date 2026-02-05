@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko"> <head>
+    <meta charset="UTF-8">
+    <title>Job List</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- 공통 스타일 --- */
+        body { margin: 0; padding: 0; background-color: #fff; font-family: 'Noto Sans KR', 'Noto Sans JP', sans-serif; }
+
+        /* 테이블 디자인 */
+        .job-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        .job-table th {
+            position: sticky; top: 0; background-color: #f8f9fa; z-index: 10;
+            padding: 12px 10px; text-align: left; font-size: 13px; color: #666; border-bottom: 1px solid #ddd;
+        }
+        .job-table td { padding: 14px 10px; border-bottom: 1px solid #eee; vertical-align: middle; font-size: 14px; }
+        .job-table tr:hover { background-color: #fbfbfb; }
+
+        /* 텍스트 스타일 */
+        .title-text { font-size: 15px; font-weight: 700; color: #333; margin-bottom: 4px; display: block; }
+        .company-text { color: #1976d2; font-weight: 700; text-decoration: none; font-size: 13px; }
+        .wage-text { color: #2196f3; font-weight: 700; font-size: 13px; }
+        .addr-text { color: #333; font-size: 13px; }
+
+        /* 뱃지 */
+        .badge { display: inline-block; padding: 2px 6px; font-size: 10px; border-radius: 4px; margin-right: 3px; font-weight: 500; }
+        .bg-blue { background: #e3f2fd; color: #1565c0; }
+        .bg-yellow { background: #fff9c4; color: #f9a825; }
+
+        /* 프로필 이미지 */
+        .profile-wrap { display: flex; align-items: center; gap: 8px; }
+        .profile-img { width: 32px; height: 32px; border-radius: 50%; background: #eee; object-fit: cover; }
+        .profile-info div:first-child { font-size: 12px; font-weight: 500; }
+        .profile-info div:last-child { font-size: 11px; color: #999; }
+
+        /* 버튼 */
+        .btn-wrap { display: flex; gap: 5px; }
+        .btn { border: 1px solid #ddd; background: #fff; padding: 5px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; }
+        .btn-view { background: #42a5f5; color: white; border: none; }
+        .btn-view:hover { background: #1e88e5; }
+
+        /* 로딩/메시지 */
+        .msg-box { text-align: center; padding: 40px; color: #888; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div style="overflow-x: auto;">
+    <table class="job-table">
+        <thead>
+        <tr id="tableHeader">
+            <th>제목</th>
+            <th>상호명</th>
+            <th>근무지</th>
+            <th>급여</th>
+            <th>연락처</th>
+            <th>담당자</th>
+            <th>관리</th>
+        </tr>
+        </thead>
+        <tbody id="listBody">
+        <tr><td colspan="7" class="msg-box">데이터를 불러오는 중...</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. URL 파라미터 읽기
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // 지도 좌표 파라미터
+        const apiParams = new URLSearchParams();
+        apiParams.append('minLat', urlParams.get('minLat'));
+        apiParams.append('maxLat', urlParams.get('maxLat'));
+        apiParams.append('minLng', urlParams.get('minLng'));
+        apiParams.append('maxLng', urlParams.get('maxLng'));
+
+        // 언어 설정 (기본값: kr)
+        const currentLang = urlParams.get('lang') === 'jp' ? 'jp' : 'kr';
+
+        // 2. 헤더 언어 변경 (필요시)
+        if (currentLang === 'jp') {
+            const headers = document.querySelectorAll('#tableHeader th');
+            const jpHeaders = ['タイトル', '会社名', '勤務地', '給与', '連絡先', '担当者', '管理'];
+            headers.forEach((th, idx) => th.innerText = jpHeaders[idx]);
+        }
+
+        // 3. API 호출
+        fetch(`/map/api/jobs?${apiParams.toString()}`)
+            .then(res => res.json())
+            .then(data => renderList(data, currentLang))
+            .catch(err => {
+                console.error(err);
+                document.getElementById('listBody').innerHTML =
+                    `<tr><td colspan="7" class="msg-box">
+                        ${currentLang === 'jp' ? 'データを読み込めませんでした。' : '데이터를 불러오지 못했습니다.'}
+                    </td></tr>`;
+            });
+    });
+
+    // 4. 리스트 렌더링 함수
+    function renderList(jobs, lang) {
+        const tbody = document.getElementById('listBody');
+
+        if (!jobs || jobs.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="msg-box">
+                ${lang === 'jp' ? '現在、この地域には求人がありません。' : '현재 이 지역에 공고가 없습니다.'}
+            </td></tr>`;
+            return;
+        }
+
+        let html = '';
+        jobs.forEach(job => {
+            // --- 언어별 데이터 선택 로직 ---
+            // job.titleJp가 있으면 쓰고, 없으면 job.title(한국어) 사용 (Fallback)
+            const title = (lang === 'jp' && job.titleJp) ? job.titleJp : job.title;
+            const company = (lang === 'jp' && job.companyNameJp) ? job.companyNameJp : job.companyName;
+            const wage = (lang === 'jp' && job.wageJp) ? job.wageJp : (job.wage || '협의/協議');
+
+            // 주소는 별도 JP 필드가 없으면 공통 address 사용
+            // (보통 일본 데이터면 address 컬럼 자체가 일본어일 확률 높음)
+            const address = job.address || '-';
+
+            // 이미지 & 기타
+            const thumb = job.thumbnailUrl || 'https://via.placeholder.com/40';
+            const dateStr = job.writeTime || (lang === 'jp' ? 'ついさっき' : '방금 전');
+            const contact = job.contactPhone || '-';
+
+            html += `
+            <tr>
+                <td>
+                    <span class="title-text">${title}</span>
+                    <span class="badge bg-blue">${lang === 'jp' ? '募集中' : '구인중'}</span>
+                    <span class="badge bg-yellow">${lang === 'jp' ? '急募' : '급구'}</span>
+                </td>
+                <td><a href="#" class="company-text">${company}</a></td>
+                <td><span class="addr-text">${address.split(' ')[0]}</span></td>
+                <td><span class="wage-text">${wage}</span></td>
+                <td style="color:#666; font-size:12px;">${contact}</td>
+                <td>
+                    <div class="profile-wrap">
+                        <img src="${thumb}" class="profile-img">
+                        <div class="profile-info">
+                            <div>Admin</div>
+                            <div>${dateStr}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="btn-wrap">
+                        <button class="btn">${lang === 'jp' ? '保存' : '찜'}</button>
+                        <button class="btn btn-view" onclick="window.open('/jobs/${job.id}')">
+                            ${lang === 'jp' ? '詳細' : '상세'}
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            `;
+        });
+        tbody.innerHTML = html;
+    }
+</script>
+
+</body>
+</html>
