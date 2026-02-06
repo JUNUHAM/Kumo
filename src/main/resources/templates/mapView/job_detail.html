@@ -79,6 +79,49 @@
     </div>
 </div>
 
+<div class="fixed-bottom-bar" th:if="${isOwner}">
+    <div class="btn-group-owner">
+        <button class="btn-action btn-edit" onclick="alert('수정 페이지로 이동')">
+            공고 수정
+        </button>
+        <button class="btn-action btn-delete" onclick="alert('삭제 API 호출')">
+            삭제
+        </button>
+    </div>
+</div>
+
+<div class="fixed-bottom-bar" th:unless="${isOwner}">
+    <div class="btn-group-seeker">
+
+        <button class="btn-action btn-apply" onclick="alert('구인 신청 완료!')">
+            구인 신청
+        </button>
+
+        <div class="icon-actions">
+            <button class="btn-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.5">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                </svg>
+            </button>
+
+            <button class="btn-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.5">
+                    <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+            </button>
+
+            <button class="btn-icon" onclick="history.back()">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.5">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
 <footer th:replace="~{NonLoginFooter.html}"></footer>
 </body>
 </html>
