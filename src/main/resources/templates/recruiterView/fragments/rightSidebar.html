@@ -18,11 +18,21 @@
       </div>
 
       <div class="side-action-buttons">
-        <button class="btn btn-common-action btn-sky-blue w-100">
-          공고 등록
-        </button>
+        <a
+          th:href="@{/Recruiter/JobPosting}"
+          class="links text-decoration-none"
+        >
+          <button
+            class="btn btn-common-action btn-sky-blue w-100"
+            type="button"
+          >
+            공고 등록
+          </button>
+        </a>
+
         <button
           class="btn btn-common-action btn-light-blue w-100 position-relative"
+          type="button"
         >
           <i class="bi bi-chat-dots-fill me-2"></i>채팅
           <span class="badge-count">3</span>

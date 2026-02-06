@@ -75,6 +75,17 @@ public class RecruiterController {
         return "recruiterView/settings";
     }
 
+    /**
+     * 공고 등록 컨트롤러
+     * 
+     * @param model
+     * @return
+     */
+    @GetMapping("JobPosting")
+    public String JobPosting(Model model) {
+        return "recruiterView/jobPosting";
+    }
+
     // // info 테스트
     @GetMapping("Info")
     public String Info(Model model) {

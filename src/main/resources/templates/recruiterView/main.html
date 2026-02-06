@@ -11,7 +11,6 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
     />
-
     <link rel="stylesheet" th:href="@{/css/recruiter/header.css}" />
     <link rel="stylesheet" th:href="@{/css/recruiter/sidebar.css}" />
     <link rel="stylesheet" th:href="@{/css/recruiter/main.css}" />
@@ -42,40 +41,149 @@
             <div class="stat-row">
               <div class="stat-card">
                 <span class="text-muted small">전체 지원자</span>
-                <h4 class="fw-bold mt-2 mb-0">1,240</h4>
+                <h4
+                  class="fw-bold mt-2 mb-0"
+                  th:text="${#numbers.formatInteger(totalApplicants ?: 0, 0, 'COMMA')}"
+                >
+                  1,240
+                </h4>
               </div>
               <div class="stat-card">
                 <span class="text-muted small">미확인 지원자</span>
-                <h4 class="fw-bold mt-2 mb-0 text-primary">82</h4>
+                <h4
+                  class="fw-bold mt-2 mb-0 text-primary"
+                  th:text="${#numbers.formatInteger(unreadApplicants ?: 0, 0, 'COMMA')}"
+                >
+                  82
+                </h4>
               </div>
               <div class="stat-card">
                 <span class="text-muted small">모집 중 공고</span>
-                <h4 class="fw-bold mt-2 mb-0">12</h4>
+                <h4
+                  class="fw-bold mt-2 mb-0"
+                  th:text="${#numbers.formatInteger(openJobCount ?: 0, 0, 'COMMA')}"
+                >
+                  12
+                </h4>
               </div>
               <div class="stat-card">
                 <span class="text-muted small">오늘 방문수</span>
-                <h4 class="fw-bold mt-2 mb-0 text-success">342</h4>
+                <h4
+                  class="fw-bold mt-2 mb-0 text-success"
+                  th:text="${#numbers.formatInteger(todayVisits ?: 0, 0, 'COMMA')}"
+                >
+                  342
+                </h4>
               </div>
             </div>
 
-            <div
-              class="graph-container d-flex align-items: center; justify-content: center;"
-            >
-              <div class="text-center">
-                <i
-                  class="bi bi-graph-up-arrow fs-1 text-light mb-3 d-block"
-                ></i>
-                <p class="text-muted mb-0">지원자 수 변화 그래프 영역</p>
-              </div>
+            <div class="mid-row mt-4">
+              <section class="panel panel-scout">
+                <div class="panel-header">
+                  <h5 class="panel-title mb-0">스카우트</h5>
+                </div>
+                <div class="panel-body">
+                  <div
+                    class="empty-state"
+                    th:if="${scoutList == null or #lists.isEmpty(scoutList)}"
+                  >
+                    스카우트할 인재가 없습니다.
+                  </div>
+                  <div class="scout-item" th:each="s : ${scoutList}">
+                    <div class="scout-left">
+                      <input
+                        type="checkbox"
+                        name="scoutIds"
+                        th:value="${s.id}"
+                      />
+                      <img
+                        class="scout-avatar"
+                        th:src="${s.profileImage ?: '/images/default-avatar.png'}"
+                        alt="avatar"
+                      />
+                      <span class="scout-name" th:text="${s.name}">이름</span>
+                    </div>
+                    <div class="scout-right">
+                      <span class="scout-level" th:text="${s.level}">등급</span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="panel panel-chart">
+                <div class="panel-header">
+                  <h5 class="panel-title mb-0">일별 지원자 수</h5>
+                </div>
+                <div class="panel-body">
+                  <div class="chart-placeholder">
+                    <canvas id="applicantChart"></canvas>
+                  </div>
+                </div>
+              </section>
             </div>
-            <div
-              th:replace="~{recruiterView/fragments/rightSidebar :: rightSidebarFragment}"
-            ></div>
+
+            <section class="panel panel-myjobs mt-4">
+              <div
+                class="panel-header d-flex justify-content-between align-items-center"
+              >
+                <h5 class="panel-title mb-0">내 공고</h5>
+                <a
+                  class="panel-link text-decoration-none"
+                  th:href="@{/Recruiter/JobManage}"
+                  >전체보기</a
+                >
+              </div>
+              <div class="panel-body">
+                <div class="myjobs-head">
+                  <span>공고</span>
+                  <span>직무</span>
+                  <span>지역</span>
+                  <span>급여</span>
+                  <span>연락처</span>
+                  <span>액션</span>
+                  <span>등록</span>
+                </div>
+                <div
+                  class="empty-state"
+                  th:if="${myJobList == null or #lists.isEmpty(myJobList)}"
+                >
+                  등록된 공고가 없습니다.
+                </div>
+                <div class="myjobs-row" th:each="job : ${myJobList}">
+                  <div class="job-title">
+                    <div class="job-name text-truncate" th:text="${job.title}">
+                      공고명
+                    </div>
+                  </div>
+                  <div th:text="${job.position}">직무</div>
+                  <div th:text="${job.region}">지역</div>
+                  <div th:text="${job.wage}">급여</div>
+                  <div th:text="${job.contact}">연락처</div>
+                  <div>
+                    <a
+                      class="btn-detail"
+                      th:href="@{/recruiter/jobs/{id}(id=${job.jobId})}"
+                      >상세보기</a
+                    >
+                  </div>
+                  <div
+                    th:text="${#temporals.format(job.createdAt, 'yyyy-MM-dd')}"
+                  >
+                    등록
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <footer
+              th:replace="~{fragments/NonLoginFooter :: footerFragment}"
+            ></footer>
           </div>
+
+          <div
+            th:replace="~{recruiterView/fragments/rightSidebar :: rightSidebarFragment}"
+          ></div>
         </main>
-        <footer
-          th:replace="~{fragments/NonLoginFooter :: footerFragment}"
-        ></footer>
       </div>
     </div>
 
