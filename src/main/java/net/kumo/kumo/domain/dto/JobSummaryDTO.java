@@ -31,6 +31,9 @@ public class JobSummaryDTO {
         this.address = view.getAddress();
         this.writeTime = view.getWriteTime();
 
+        this.lat = view.getLat();
+        this.lng = view.getLng();
+
         // 언어 설정 처리
         boolean isJp = "jp".equalsIgnoreCase(lang);
         this.title = (isJp && view.getTitleJp() != null) ? view.getTitleJp() : view.getTitle();

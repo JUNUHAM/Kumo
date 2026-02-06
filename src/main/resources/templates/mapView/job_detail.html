@@ -3,75 +3,9 @@
 <head>
     <meta charset="UTF-8" /> <title th:text="${job.title}">상세 정보</title>
     <link rel="stylesheet" th:href="@{/css/header.css}">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" /> <style>
-    /* --- 기본 리셋 --- */
-    body { margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; background-color: #fff; color: #333; }
-    * { box-sizing: border-box; }
-
-    /* --- 레이아웃 --- */
-    .container {
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 40px 20px 100px;
-    }
-
-    /* --- 1. 상단 타이틀 영역 --- */
-    .header-section { margin-bottom: 40px; }
-    .job-title { font-size: 28px; font-weight: 700; margin-bottom: 10px; line-height: 1.4; }
-    .job-meta { font-size: 13px; color: #888; display: flex; align-items: center; gap: 10px; }
-
-    /* --- 2. 정보 그리드 (테이블 형태) --- */
-    .info-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px 40px;
-        border-top: 2px solid #333;
-        border-bottom: 1px solid #ddd;
-        padding: 30px 0;
-        margin-bottom: 40px;
-    }
-
-    .info-item { display: flex; flex-direction: column; }
-    .info-label { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 5px; }
-    .info-value { font-size: 15px; color: #555; }
-
-    .text-right { text-align: right; }
-
-    /* --- 3. 지도 영역 --- */
-    .map-section {
-        width: 100%;
-        height: 300px;
-        background-color: #f0f0f0;
-        margin-bottom: 40px;
-        border-radius: 8px;
-        overflow: hidden;
-    }
-
-    /* --- 4. 상세 설명 텍스트 --- */
-    .description-section { margin-bottom: 40px; }
-    .section-title { font-size: 18px; font-weight: 700; margin-bottom: 15px; color: #333; }
-    .description-text {
-        font-size: 15px;
-        line-height: 1.8;
-        color: #444;
-        white-space: pre-line;
-    }
-
-    /* --- 5. 이미지 갤러리 --- */
-    .image-gallery { margin-top: 30px; }
-    .gallery-img {
-        width: 100%;
-        max-height: 500px;
-        object-fit: cover;
-        border-radius: 8px;
-        margin-bottom: 10px;
-    }
-
-    @media (max-width: 600px) {
-        .info-grid { grid-template-columns: 1fr; gap: 20px; }
-        .job-title { font-size: 24px; }
-    }
-</style>
+    <link rel="stylesheet" th:href="@{/css/NonLoginFooter.css}">
+    <link rel="stylesheet" th:href="@{/css/job_detail.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
 </head>
 <body>
 
@@ -145,5 +79,6 @@
     </div>
 </div>
 
+<footer th:replace="~{NonLoginFooter.html}"></footer>
 </body>
 </html>
