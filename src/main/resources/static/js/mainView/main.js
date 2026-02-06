@@ -3,6 +3,10 @@ let map;
 let jobMarkers = []; // 직업 마커 보관 배열
 let markerTimeouts = [] // 애니메이션을 위한 타이머들을 받아둘 배열
 
+// 🌟 [추가] 자원 관리용 변수
+let debounceTimer;        // 딜레이 타이머
+let abortController = null; // 네트워크 요청 취소용 컨트롤러
+
 // Jquery를 사용하면 오히려 번거롭기 때문에 Vanilla JS를 사용하여 map 구축
 function initMap() {
     // [수정 후] 컨테이너 안에 있는 id="map" 요소를 찾음
@@ -23,10 +27,17 @@ function initMap() {
 
     drawMasking();
 
+    // 🌟 [수정] 이벤트 리스너: 디바운싱 적용
     map.addListener("idle", () => {
-        const bounds = map.getBounds();
-        loadJobs(bounds);
-    })
+        // 1. 기존에 대기 중이던 타이머가 있다면 취소 (아직 유저가 지도 조작 중이라는 뜻)
+        clearTimeout(debounceTimer);
+
+        // 2. 0.5초(500ms) 뒤에 실행하도록 예약
+        debounceTimer = setTimeout(() => {
+            const bounds = map.getBounds();
+            loadJobs(bounds);
+        }, 500);
+    });
 
     map.addListener("click", () => {
         closeJobCard();
@@ -130,8 +141,16 @@ function loadJobs(bounds) {
     const currentLang = new URLSearchParams(window.location.search).get('lang') === 'jp' ? 'jp' : 'kr';
     updateTableHeader(currentLang); // 헤더 언어 변경
 
+    // 🌟 [추가] 이전 네트워크 요청이 아직 살아있다면 강제 취소!
+    if (abortController) {
+        abortController.abort();
+    }
+    // 새 컨트롤러 생성
+    abortController = new AbortController();
+    const signal = abortController.signal;
+
     // 2. API 호출
-    fetch(`/map/api/jobs?${params.toString()}`)
+    fetch(`/map/api/jobs?${params.toString()}`,{ signal: signal })
         .then(res => res.json())
         .then(data => {
             // 🌟 [2] 데이터가 도착하면 기존 마커 지우고 -> 리스트 그리기 -> 새 마커 찍기
@@ -140,8 +159,12 @@ function loadJobs(bounds) {
             renderMarkers(data); // 3. 지도에 마커 꽂기 (NEW!)
         })
         .catch(err => {
-            console.error(err);
-            listBody.innerHTML = `<tr><td colspan="7" class="msg-box">데이터 로딩 실패</td></tr>`;
+            if (err.name === 'AbortError') {
+                console.log('이전 요청 취소됨 (정상)'); // 에러 아님
+            } else {
+                console.error(err);
+                listBody.innerHTML = `<tr><td colspan="7" class="msg-box">데이터 로딩 실패</td></tr>`;
+            }
         });
 }
 
@@ -183,7 +206,10 @@ function renderList(jobs, lang) {
             </td>
             <td>
                  <div class="btn-wrap">
-                    <button class="btn btn-view" onclick="window.open('/jobs/${job.id}')">상세</button>
+                    <button class="btn btn-view" 
+                        onclick="location.href='/map/jobs/detail?id=${job.id}&source=${job.source}&lang=${lang}'">
+                        ${lang === 'jp' ? '詳細' : '상세'}
+                    </button>
                  </div>
             </td>
         </tr>
@@ -263,32 +289,61 @@ function updateTableHeader(lang) {
     }
 }
 
-// 🌟 [NEW] 카드 열기 함수
+// 🌟 [NEW] 카드 열기 함수 & 자세히 보기 이벤트 연결
 function openJobCard(job) {
     const card = document.getElementById('jobDetailCard');
 
-    // 1. 데이터 채워넣기
+    // 1. 데이터 채워넣기 (기존 코드 유지)
     document.getElementById('card-company').innerText = job.companyName || '회사명 미정';
-    // document.getElementById('card-manager').innerText = job.manager || '담당자'; // DTO에 있다면
-    document.getElementById('card-img').src = job.thumbnailUrl || 'https://via.placeholder.com/300';
+    document.getElementById('card-manager').innerText = job.manager || '담당자';
+
+    // 이미지 에러 처리 포함
+    const imgEl = document.getElementById('card-img');
+    imgEl.src = job.thumbnailUrl || 'https://via.placeholder.com/300';
+    imgEl.onerror = function() { this.src='https://via.placeholder.com/300?text=No+Image'; };
+
     document.getElementById('card-title').innerText = job.title;
     document.getElementById('card-address').innerText = job.address;
     document.getElementById('card-phone').innerText = job.contactPhone || '-';
 
-    // 2. 버튼 이벤트 연결 (상세보기)
+    // 🌟 [핵심 수정] 자세히 보기 버튼 클릭 이벤트 연결
     const detailBtn = document.getElementById('btn-detail');
+
     detailBtn.onclick = function() {
-        window.open(`/jobs/${job.id}`);
+        // 현재 언어 설정 가져오기 (없으면 'kr')
+        const currentLang = new URLSearchParams(window.location.search).get('lang') || 'kr';
+
+        // 컨트롤러에 맞는 URL 생성 (/map/jobs/detail?id=...&source=...&lang=...)
+        // job.source가 DTO에 있으므로 반드시 넣어줘야 합니다!
+        const targetUrl = `/map/jobs/detail?id=${job.id}&source=${job.source}&lang=${currentLang}`;
+
+        // 페이지 이동 (새 창을 원하면 window.open(targetUrl) 사용)
+        window.location.href = targetUrl;
     };
 
-    // 3. 카드 보여주기
+    // 2. 카드 보여주기 & 바텀 시트 내리기
     card.style.display = 'block';
-
-    // 4. 바텀 시트가 열려있으면 시트 닫기
-    $("#bottomSheet").removeClass("active");
+    $('#bottomSheet').removeClass('active');
 }
 
 // 🌟 [NEW] 카드 닫기 함수
 function closeJobCard() {
     document.getElementById('jobDetailCard').style.display = 'none';
 }
+
+
+
+/* ======================================================================= 
+*                           좌표 관련 오류 발생시 로그 처리
+* 
+* 
+* 
+* // (26/2/6) 프로젝트 구조 변경으로 인한 마커 미출력 문제로 코드 검토중
+            console.log("서버에서 받은 데이터: ",data);
+
+            if (data.length > 0){
+                console.log("첫번째 데이터 샘플:", data[0]);
+                console.log("JS가 찾는 좌표:", data[0].lat, data[0].lng);
+            } 
+            * 위 내용을 fetch 내부에 삽입후 실행하면 데이터가 출력됨
+* */

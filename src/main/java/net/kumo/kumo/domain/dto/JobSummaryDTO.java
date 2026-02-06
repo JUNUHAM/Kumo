@@ -30,7 +30,8 @@ public class JobSummaryDTO {
         this.contactPhone = view.getContactPhone();
         this.address = view.getAddress();
         this.writeTime = view.getWriteTime();
-
+        
+        // 좌표 처리
         this.lat = view.getLat();
         this.lng = view.getLng();
 
