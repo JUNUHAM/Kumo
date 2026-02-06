@@ -1,239 +1,32 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KUMO - 로그인</title>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <style>
-        /* 1. 기본 설정 */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Noto Sans KR', sans-serif;
-        }
-
-        body {
-            background-color: #fff;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        ul {
-            list-style: none;
-        }
-
-        /* 2. 헤더 (KUMO 로고 및 네비게이션) */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 40px;
-        }
-
-        .logo {
-            font-size: 32px;
-            font-weight: 900;
-            color: #7db4e6;
-            /* 쿠모 블루 */
-            letter-spacing: -1px;
-        }
-
-        .nav-menu {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .icon-btn {
-            font-size: 18px;
-            cursor: pointer;
-        }
-
-        /* 3. 메인 컨텐츠 (로그인 폼) */
-        .login-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .login-header {
-            width: 100%;
-            margin-bottom: 30px;
-        }
-
-        .login-header h1 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .login-header p {
-            font-size: 14px;
-            color: #666;
-        }
-
-        /* 4. 입력 폼 스타일 */
-        .input-group {
-            width: 100%;
-            margin-bottom: 20px;
-        }
-
-        .input-label {
-            display: block;
-            font-size: 13px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .forgot-pw {
-            color: #0056b3;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .custom-input {
-            width: 100%;
-            padding: 15px;
-            background-color: #f5f6f8;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            transition: 0.2s;
-        }
-
-        .custom-input:focus {
-            background-color: #e8f0fe;
-            box-shadow: 0 0 0 2px #d2e3fc;
-        }
-
-        /* 5. 체크박스 (이메일 저장) */
-        .checkbox-group {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .checkbox-group input {
-            margin-right: 8px;
-            width: 16px;
-            height: 16px;
-            accent-color: #7db4e6;
-        }
-
-        /* 6. 버튼들 */
-        .btn-login {
-            width: 100%;
-            padding: 15px;
-            background-color: #7db4e6;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-bottom: 20px;
-            transition: background 0.3s;
-        }
-
-        .btn-login:hover {
-            background-color: #5a9bd5;
-        }
-
-        .social-btn {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            border: none;
-            font-size: 13px;
-            font-weight: 600;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            gap: 10px;
-        }
-
-        .btn-google {
-            background-color: #f5f5f5;
-            color: #333;
-        }
-
-        .btn-line {
-            background-color: #f5f5f5;
-            color: #333;
-        }
-
-        /* 아이콘 색상 */
-        .fa-google {
-            color: #EA4335;
-        }
-
-        .fa-line {
-            color: #00B900;
-        }
-
-        /* 7. 하단 링크 */
-        .signup-link {
-            margin-top: 30px;
-            font-size: 13px;
-            color: #666;
-        }
-
-        .signup-link a {
-            color: #0056b3;
-            font-weight: 700;
-            margin-left: 5px;
-        }
-
-        /* 8. 푸터 */
-        footer {
-            text-align: center;
-            padding: 30px;
-            font-size: 11px;
-            color: #999;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/login.css}">
 </head>
 
 <body>
 
     <header>
-        <div class="logo">KUMO</div>
+        <a href="/" class="logo">
+            <img th:src="@{/images/seekerLogo.png}" alt="KUMO 로고" style="height: 40px; vertical-align: middle;">
+        </a>
         <nav>
             <ul class="nav-menu">
-                <li><a href="#">회사 정보</a></li>
+                <li><a href="/company_info">회사 정보</a></li>
                 <li><a href="#">로그인</a></li>
-                <li class="icon-btn"><i class="fa-solid fa-globe"></i></li>
-                <li class="icon-btn"><i class="fa-regular fa-sun"></i></li>
+                <li class="icon-btn"><img src="/images/icons/translate.svg"></li>
+                <li class="icon-btn"><img src="/images/icons/darkmode.svg"></li>
             </ul>
         </nav>
     </header>
@@ -246,7 +39,7 @@
 
         <div class="input-group">
             <label class="input-label">아이디</label>
-            <input type="text" id="userId" class="custom-input" placeholder="아이디를 입력해주세요" value="scitmaster123">
+            <input type="text" id="userId" class="custom-input" placeholder="아이디를 입력해주세요" value="coexsexking123">
         </div>
 
         <div class="input-group">
@@ -265,10 +58,12 @@
         <button class="btn-login" id="loginBtn">로그인</button>
 
         <button class="social-btn btn-google">
-            <i class="fa-brands fa-google"></i> Google로 연결
+            <img src="/images/google.png" alt="구글 로고" style="width: 20px; height: 20px; margin-right: 5px;">
+            Google로 연결
         </button>
         <button class="social-btn btn-line">
-            <i class="fa-brands fa-line"></i> LINE으로 연결
+            <img src="/images/line.png" alt="구글 로고" style="width: 20px; height: 20px; margin-right: 5px;">
+            Google로 연결
         </button>
 
         <div class="signup-link">
