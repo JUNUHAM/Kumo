@@ -2,6 +2,7 @@ package net.kumo.kumo.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.kumo.kumo.domain.dto.JobDetailDTO;
 import net.kumo.kumo.domain.dto.JobSummaryDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -45,9 +46,25 @@ public class MapController {
      */
     @GetMapping("/job-list-view")
     public String jobListPage() {
-        // ★ 핵심: templates 폴더 아래의 경로를 정확히 적어줍니다.
-        // .html 확장자는 생략합니다.
         return "mapView/job_list";
+    }
+
+    @GetMapping("/jobs/detail")
+    public String jobDetailPage(
+            @RequestParam Long id,
+            @RequestParam String source,
+            @RequestParam(defaultValue = "kr") String lang,
+            Model model
+    ) {
+        // 1. 서비스에서 상세 데이터 조회
+        JobDetailDTO job = mapService.getJobDetail(id, source, lang);
+
+        // 2. 모델에 담기
+        model.addAttribute("job", job);
+        model.addAttribute("googleMapsKey", googleMapKey); // 지도 표시용
+
+        // 3. 뷰 반환 (templates/mapView/job_detail.html)
+        return "mapView/job_detail";
     }
 
     @GetMapping("/api/jobs")

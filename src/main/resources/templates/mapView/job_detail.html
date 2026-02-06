@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" /> <title th:text="${job.title}">상세 정보</title>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" /> <style>
+    /* --- 기본 리셋 --- */
+    body { margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; background-color: #fff; color: #333; }
+    * { box-sizing: border-box; }
+
+    /* --- 레이아웃 --- */
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 40px 20px 100px;
+    }
+
+    /* --- 1. 상단 타이틀 영역 --- */
+    .header-section { margin-bottom: 40px; }
+    .job-title { font-size: 28px; font-weight: 700; margin-bottom: 10px; line-height: 1.4; }
+    .job-meta { font-size: 13px; color: #888; display: flex; align-items: center; gap: 10px; }
+
+    /* --- 2. 정보 그리드 (테이블 형태) --- */
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px 40px;
+        border-top: 2px solid #333;
+        border-bottom: 1px solid #ddd;
+        padding: 30px 0;
+        margin-bottom: 40px;
+    }
+
+    .info-item { display: flex; flex-direction: column; }
+    .info-label { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 5px; }
+    .info-value { font-size: 15px; color: #555; }
+
+    .text-right { text-align: right; }
+
+    /* --- 3. 지도 영역 --- */
+    .map-section {
+        width: 100%;
+        height: 300px;
+        background-color: #f0f0f0;
+        margin-bottom: 40px;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    /* --- 4. 상세 설명 텍스트 --- */
+    .description-section { margin-bottom: 40px; }
+    .section-title { font-size: 18px; font-weight: 700; margin-bottom: 15px; color: #333; }
+    .description-text {
+        font-size: 15px;
+        line-height: 1.8;
+        color: #444;
+        white-space: pre-line;
+    }
+
+    /* --- 5. 이미지 갤러리 --- */
+    .image-gallery { margin-top: 30px; }
+    .gallery-img {
+        width: 100%;
+        max-height: 500px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+
+    @media (max-width: 600px) {
+        .info-grid { grid-template-columns: 1fr; gap: 20px; }
+        .job-title { font-size: 24px; }
+    }
+</style>
+</head>
+<body>
+
+<header th:replace="~{header.html}"></header>
+
+<div class="container">
+    <div class="header-section">
+        <h1 class="job-title" th:text="${job.title}">구인 제목</h1>
+        <div class="job-meta">
+            <span th:text="${job.address}">주소</span>
+            <span>•</span>
+            <span>ID: <span th:text="${job.id}">0</span></span>
+        </div>
+    </div>
+
+    <div class="info-grid">
+        <div class="info-item">
+            <span class="info-label">회사 이름</span>
+            <span class="info-value" th:text="${job.companyName}">-</span>
+        </div>
+
+        <div class="info-item text-right">
+            <span class="info-label">업무</span>
+            <span class="info-value" th:text="${job.position ?: '-'}">-</span>
+        </div>
+
+        <div class="info-item">
+            <span class="info-label">급여</span>
+            <span class="info-value" th:text="${job.wage}">-</span>
+        </div>
+
+        <div class="info-item text-right">
+            <span class="info-label">업무 상세</span>
+            <span class="info-value" th:text="${job.jobDescription ?: '-'}">-</span>
+        </div>
+
+        <div class="info-item">
+            <span class="info-label">연락처</span>
+            <span class="info-value" th:text="${job.contactPhone}">-</span>
+        </div>
+        <div class="info-item text-right">
+            <span class="info-label">회사 주소</span>
+            <span class="info-value" th:text="${job.address}">-</span>
+        </div>
+    </div>
+
+    <div class="map-section" th:if="${job.lat != null}">
+        <iframe
+                width="100%"
+                height="100%"
+                frameborder="0" style="border:0"
+                th:src="'https://maps.google.com/maps?q=' + ${job.lat} + ',' + ${job.lng} + '&z=15&output=embed'"
+                allowfullscreen="true">
+        </iframe>
+    </div>
+    <div class="map-section" th:unless="${job.lat != null}" style="display:flex; align-items:center; justify-content:center; color:#999;">
+        지도 정보가 없는 공고입니다.
+    </div>
+
+    <div class="description-section">
+        <h3 class="section-title">상세정보</h3>
+        <div class="description-text" th:text="${job.body}">
+            내용이 없습니다.
+        </div>
+    </div>
+
+    <div class="image-gallery" th:if="${job.imgUrls != null}">
+        <th:block th:each="img : ${#strings.arraySplit(job.imgUrls, ',')}">
+            <img th:src="${img}" class="gallery-img" alt="상세 이미지" />
+        </th:block>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,10 +1,10 @@
 package net.kumo.kumo.repository;
 
-import net.kumo.kumo.domain.entity.TokyoGeocodedEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
+import net.kumo.kumo.domain.entity.TokyoNoGeocodedEntity;
+import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+@Repository
+public interface TokyoNoGeocodedRepository extends BaseRepository<TokyoNoGeocodedEntity> {
 
-public interface TokyoNoGeocodedRepository extends JpaRepository<TokyoGeocodedEntity, Long> {
-	Optional<TokyoGeocodedEntity> findByDatanum(String datanum);
+    // 특별히 추가할 게 없다면 비워둬도 됨
 }

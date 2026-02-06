@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TokyoGeocodedRepository extends JpaRepository<TokyoGeocodedEntity, Long> {
-	Optional<TokyoGeocodedEntity> findByDatanum(String datanum);
 	
 	List<JobSummaryView> findTop300ByLatBetweenAndLngBetween(
 			Double minLat, Double maxLat, Double minLng, Double maxLng
