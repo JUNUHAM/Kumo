@@ -5,8 +5,9 @@
 <head>
 	<meta charset="UTF-8">
 	<title>KUMO - 지도 검색</title>
-	<link rel="stylesheet" th:href="@{/css/mainView/main.css}">
 	<link rel="stylesheet" th:href="@{/css/header.css}">
+	<link rel="stylesheet" th:href="@{/css/mainView/main.css}">
+	
 	<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
 	<script th:src="@{/js/mainView/main.js}"></script>
 	<script th:src="@{/js/geo/osaka.js}"></script>
@@ -17,7 +18,36 @@
 <header th:replace="~{header.html}"></header>
 
 <div class="map-container">
-	🗺️ 여기에 Google Maps가 들어갑니다
+	
+	<div id="map"></div>
+	
+	<div id="jobDetailCard" class="floating-card">
+		<button type="button" class="btn-close-card" onclick="closeJobCard()">×</button>
+		
+		<div class="card-header-section">
+			<div class="profile-icon">A</div>
+			<div class="profile-info">
+				<div id="card-company" class="company-name">ABC Company</div>
+				<div id="card-manager" class="manager-name">田中 部長</div>
+			</div>
+		</div>
+		
+		<div class="card-image-wrapper">
+			<img id="card-img" src="" alt="Office View"
+			     onerror="this.src='https://via.placeholder.com/300'">
+		</div>
+		
+		<div class="card-body-section">
+			<h3 id="card-title" class="job-title">비서 구합니다</h3>
+			<p class="job-address">주소: <span id="card-address">...</span></p>
+			<p class="job-phone" id="card-phone">010-xxxx-xxxx</p>
+		</div>
+		
+		<div class="card-footer-section">
+			<button class="btn-outline">찜하기</button>
+			<button id="btn-detail" class="btn-primary-custom">자세히 보기</button>
+		</div>
+	</div>
 </div>
 
 <div class="bottom-sheet" id="bottomSheet">

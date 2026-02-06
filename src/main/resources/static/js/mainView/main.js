@@ -1,10 +1,13 @@
 // 지도 생성
 let map;
-let jobMarkers = [];
+let jobMarkers = []; // 직업 마커 보관 배열
+let markerTimeouts = [] // 애니메이션을 위한 타이머들을 받아둘 배열
 
 // Jquery를 사용하면 오히려 번거롭기 때문에 Vanilla JS를 사용하여 map 구축
 function initMap() {
-    const mapElement = document.querySelector('.map-container');
+    // [수정 후] 컨테이너 안에 있는 id="map" 요소를 찾음
+    const mapElement = document.getElementById('map');
+
     if (!mapElement) return;
 
     const tokyo = { lat: 35.6804, lng: 139.7690 };
@@ -24,16 +27,24 @@ function initMap() {
         const bounds = map.getBounds();
         loadJobs(bounds);
     })
+
+    map.addListener("click", () => {
+        closeJobCard();
+    });
 }
 
 // HTML 문서가 다 로딩되면 실행 (jQuery의 ready 함수) <- Jquery 사용
 $(function() {
     // 1. '.sheet-handle' 클래스를 가진 요소를 클릭하면
     $('.sheet-handle').on('click', function() {
-
         // 2. '#bottomSheet' 아이디를 가진 요소에 'active' 클래스를 줬다 뺏었다 함
         $('#bottomSheet').toggleClass('active');
 
+        // 3. 만약 bottomSheet가 올라오면 플로팅 카드를 제거해주세용
+        if($("#bottomSheet").hasClass('active')) {
+            // 리스트 올라올시 카드 제거
+            closeJobCard();
+        }
     });
 });
 
@@ -178,44 +189,69 @@ function renderList(jobs, lang) {
         </tr>
         `;
     });
+    
     tbody.innerHTML = html;
 }
 
-// 🌟 [3] 마커 렌더링 함수 (새로 추가됨)
+// 🌟 [3][수정] 마커 렌더링 함수 (방사형 애니메이션 적용)
 function renderMarkers(jobs) {
     if (!jobs || jobs.length === 0) return;
 
-    jobs.forEach(job => {
-        // DTO에 있는 lat, lng 확인 (null 체크)
-        if (job.lat && job.lng) {
+    // 1. 현재 지도의 중심 좌표 가져오기
+    const center = map.getCenter();
+    const centerLat = center.lat();
+    const centerLng = center.lng();
 
-            const marker = new google.maps.Marker({
-                position: { lat: job.lat, lng: job.lng },
-                map: map,
-                title: job.title, // 마우스 올리면 나오는 툴팁
-                animation: google.maps.Animation.DROP // 툭 떨어지는 애니메이션
-            });
+    // 2. 거리 계산 후 정렬 (가까운 순에서 -> 먼 순)
+    const sortedJobs = jobs.map(job => {
+        // 거리값 (dist) 임시 추가
+        const distance = Math.pow(job.lat - centerLat, 2) + Math.pow(job.lng - centerLng, 2);
+        return { ...job, _dist: distance };
+    }).sort((a, b) => a._dist - b._dist); // 오름차순 정렬
 
-            // 마커 클릭 이벤트 (선택사항)
-            // 클릭하면 해당 공고 상세페이지를 새 창으로 띄움
-            marker.addListener("click", () => {
-                window.open(`/jobs/${job.id}`);
-            });
+    // 3. 순차적으로 마커 생성
+    sortedJobs.forEach((job, index) => {
+        // index가 커질수록(멀어질수록) 딜레이가 길어짐
+        // 30ms 간격으로 하나씩 톡, 톡, 톡 떨어짐
+        const timeoutId = setTimeout(() => {
 
-            // 배열에 저장 (나중에 지우기 위해)
-            jobMarkers.push(marker);
-        }
+            // DTO 유효성 체크
+            if (job.lat && job.lng) {
+                const marker = new google.maps.Marker({
+                    position: { lat: job.lat, lng: job.lng },
+                    map: map,
+                    title: job.title,
+                    // DROP 애니메이션을 쓰면 하늘에서 떨어지는 효과까지 더해짐
+                    animation: google.maps.Animation.DROP
+                });
+
+                // 🌟 [핵심] 마커 클릭 시 '플로팅 카드' 열기
+                marker.addListener("click", () => {
+                    openJobCard(job); // job 데이터를 넘겨줌
+                });
+
+                jobMarkers.push(marker);
+            }
+
+        }, index * 30); // ⚡ 속도 조절: 이 숫자가 작을수록 빨리 퍼짐 (20~50 추천)
+
+        // 타이머 ID 저장 (나중에 캔슬하기 위해)
+        markerTimeouts.push(timeoutId);
     });
 }
 
-// 🌟 [4] 마커 삭제 함수 (새로 추가됨)
+// 🌟 [수정] 마커 삭제 함수 (애니메이션 취소 기능 추가)
 function clearMarkers() {
-    // 지도에서 제거
+    // 1. 이미 찍힌 마커들 지도에서 제거
     jobMarkers.forEach(marker => {
         marker.setMap(null);
     });
-    // 배열 비우기
     jobMarkers = [];
+
+    // 2. 🌟 중요: 아직 실행 대기 중인(퍼지고 있는) 마커 생성 타이머들을 모두 취소!
+    // 이걸 안 하면 지도를 휙휙 움직였을 때 이전 위치의 마커들이 계속 생겨남
+    markerTimeouts.forEach(id => clearTimeout(id));
+    markerTimeouts = [];
 }
 
 // [추가] 헤더 언어 변경
@@ -225,4 +261,34 @@ function updateTableHeader(lang) {
         const jpHeaders = ['タイトル', '会社名', '勤務地', '給与', '連絡先', '担当者', '管理'];
         headers.forEach((th, idx) => { if(jpHeaders[idx]) th.innerText = jpHeaders[idx]; });
     }
+}
+
+// 🌟 [NEW] 카드 열기 함수
+function openJobCard(job) {
+    const card = document.getElementById('jobDetailCard');
+
+    // 1. 데이터 채워넣기
+    document.getElementById('card-company').innerText = job.companyName || '회사명 미정';
+    // document.getElementById('card-manager').innerText = job.manager || '담당자'; // DTO에 있다면
+    document.getElementById('card-img').src = job.thumbnailUrl || 'https://via.placeholder.com/300';
+    document.getElementById('card-title').innerText = job.title;
+    document.getElementById('card-address').innerText = job.address;
+    document.getElementById('card-phone').innerText = job.contactPhone || '-';
+
+    // 2. 버튼 이벤트 연결 (상세보기)
+    const detailBtn = document.getElementById('btn-detail');
+    detailBtn.onclick = function() {
+        window.open(`/jobs/${job.id}`);
+    };
+
+    // 3. 카드 보여주기
+    card.style.display = 'block';
+
+    // 4. 바텀 시트가 열려있으면 시트 닫기
+    $("#bottomSheet").removeClass("active");
+}
+
+// 🌟 [NEW] 카드 닫기 함수
+function closeJobCard() {
+    document.getElementById('jobDetailCard').style.display = 'none';
 }
