@@ -15,33 +15,69 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 public class RecruiterController {
 
+    /**
+     * 홈 메뉴 컨트롤러
+     * 
+     * @param model
+     * @return
+     */
     @GetMapping("Main")
     public String Main(Model model) {
-        model.addAttribute("currentMenu", "home"); // 홈 메뉴 식별자
+        model.addAttribute("currentMenu", "home"); // 사이드바 선택(홈 메뉴)
         return "recruiterView/main";
     }
 
+    /**
+     * 지원자 관리 컨트롤러
+     * 
+     * @param model
+     * @return
+     */
     @GetMapping("ApplicantInfo")
     public String ApplicantInfo(Model model) {
-        model.addAttribute("currentMenu", "applicants"); // 지원자 관리 식별자
+        model.addAttribute("currentMenu", "applicants"); // 사이드바 선택((지원자 관리)
         return "recruiterView/applicantInfo";
     }
 
+    /**
+     * 공고 관리 컨트롤러
+     * 
+     * @param model
+     * @return
+     */
     @GetMapping("JobManage")
     public String JobManage(Model model) {
-        model.addAttribute("currentMenu", "jobManage"); // 지원자 관리 식별자
+        model.addAttribute("currentMenu", "jobManage"); // 사이드바 선택(공고 관리)
         return "recruiterView/jobManage";
     }
 
+    /**
+     * 캘린더 컨트롤러
+     * 
+     * @param model
+     * @return
+     */
     @GetMapping("Calendar")
     public String Calender(Model model) {
-        model.addAttribute("currentMenu", "calendar"); // 지원자 관리 식별자
+        model.addAttribute("currentMenu", "calendar"); // 사이드바 선택(캘린더)
         return "recruiterView/calendar";
     }
 
+    /**
+     * 내 계정(settings) 컨트롤러
+     * 
+     * @param model
+     * @return
+     */
     @GetMapping("Settings")
     public String Settings(Model model) {
-        model.addAttribute("currentMenu", "settings"); // 지원자 관리 식별자
+        model.addAttribute("currentMenu", "settings"); // 사이드바 선택(내 계정)
         return "recruiterView/settings";
+    }
+
+    // // info 테스트
+    @GetMapping("Info")
+    public String Info(Model model) {
+        return "recruiterView/info";
     }
 }

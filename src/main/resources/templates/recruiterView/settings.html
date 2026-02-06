@@ -36,11 +36,10 @@
               <div class="profile-section mb-5">
                 <label class="info-label">프로필 사진</label>
                 <div class="profile-image-box">
-                  <img
-                    th:src="@{/images/default-profile.png}"
-                    alt="Profile"
-                    class="profile-img-lg"
-                  />
+                  <div class="default-profile-icon">
+                    <i class="bi bi-person-circle"></i>
+                  </div>
+
                   <button type="button" class="btn-profile-upload">
                     프로필 사진 업로드
                   </button>
@@ -107,7 +106,7 @@
               </div>
             </div>
             <footer
-              th:replace="~{recruiterView/fragments/footer :: footerFragment}"
+              th:replace="~{fragments/NonLoginFooter :: footerFragment}"
             ></footer>
           </div>
         </main>

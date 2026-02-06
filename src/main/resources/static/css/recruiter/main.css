@@ -13,25 +13,41 @@ body {
   width: 100%;
 }
 
+/* 다른 부분은 그대로 유지하고 .main-container 부분만 교체하세요 */
+
 .main-container {
   flex: 1;
-  margin-left: 240px; /* 왼쪽 사이드바 너비 */
-  margin-right: 340px; /* 오른쪽 사이드바 너비와 반드시 일치 */
-  padding-top: 80px; /* 헤더 높이만큼 아래로 */
+  min-width: 0;
+  /* 원우 사장님이 20px씩 줄이신 마진 반영 */
+  margin-left: 220px;
+  margin-right: 320px;
+  padding-top: 80px;
   height: 100vh;
   background-color: #f8faff;
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* 세로로 쌓이게 설정 */
+  box-sizing: border-box;
 }
+
+/* main.css 에 이미 있는 .content-body를 아래처럼 확실히 잡아주세요 */
 
 .content-body {
   padding: 30px 40px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  /* 내용이 너무 많아질 경우에만 내부 스크롤 허용 */
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow-y: auto; /* 내용이 길어지면 푸터 위에서 스크롤 발생 */
+  min-height: 0; /* [핵심] 자식 요소가 부모를 뚫고 나가는 현상 방지 */
+}
+
+/* 푸터가 본문 아래에 예쁘게 안착하도록 설정 */
+footer {
+  width: 100%;
+  flex-shrink: 0;
+  margin-top: auto; /* 본문 내용이 적어도 항상 바닥으로 밀어냄 */
+  padding: 20px 0; /* 푸터 높이가 줄어들지 않게 고정 */
+  border-top: 1px solid #f2f4f6;
+  background-color: transparent;
 }
 
 /* 좌측 콘텐츠 정렬 */

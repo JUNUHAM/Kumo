@@ -1,0 +1,34 @@
+.dashboard-footer {
+    width: 100%;
+    padding: 15px 40px; /* 좌우 여백 추가하여 정렬 맞춤 */
+    margin-top: auto;
+    border-top: 1px solid #f0f3f8;
+    background-color: transparent;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #b0b8c1;
+    font-size: 0.85rem;
+}
+
+.footer-links {
+    display: flex;
+    gap: 20px;
+}
+
+.footer-links a {
+    color: #b0b8c1;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer-links a:hover {
+    color: #7abaff;
+}
+
+.copyright strong {
+    color: #8fa1b3;
+}
