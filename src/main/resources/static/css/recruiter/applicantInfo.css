@@ -5,6 +5,13 @@
   border-radius: 25px;
   padding: 30px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+  /* ... 기존 배경, 패딩 설정 유지 ... */
+
+  /* [수정] main.css의 margin-left(180px)와 시각적 선을 맞추기 위한 설정 */
+  margin-left: 0; /* 부모 컨테이너가 이미 180px이므로 0으로 설정하여 정렬 */
+  width: 100%;
+  max-width: 1200px; /* 창이 커져도 깨지지 않는 적정 너비 */
+  box-sizing: border-box;
 }
 
 .card-header-flex {

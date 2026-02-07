@@ -98,7 +98,7 @@
 
 .start-animation .dashboard-right-sidebar {
   opacity: 0;
-  animation: fadeInUp 0.7s ease-out 0.5s forwards;
+  animation: fadeInUp 0.8s ease-out 0.6s forwards;
 }
 
 /* 기타 유틸리티 링크 스타일 */

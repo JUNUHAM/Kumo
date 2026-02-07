@@ -1,27 +1,32 @@
 * calendar.css */
 
-/* 캘린더 메인 레이아웃 보정 */
+/* 1. 캘린더 메인 레이아웃 */
 .calendar-main-layout {
   display: flex;
-  justify-content: flex-start; /* 왼쪽부터 배치 */
-  height: calc(100vh - 160px);
+  justify-content: flex-start;
+  min-height: calc(100vh - 180px);
+  margin-left: 0; /* 부모 padding-left가 있으므로 0으로 설정 */
+  padding-bottom: 50px;
 }
 
-/* 좌측 캘린더 영역: 우측 고정 사이드바 공간(340px)만큼 비워줌 */
+/* 2. 좌측 캘린더 영역 */
 .calendar-left-content {
   flex: 1;
-  margin-right: 340px; /* [핵심] 우측 사이드바 자리 확보 */
+  /* [수정] 이미 main-container에 padding-right가 있다면 0, 
+     없다면 340px을 주어 사이드바와 겹침을 방지합니다. */
   min-width: 0;
   display: flex;
   flex-direction: column;
 }
 
+/* 3. 캘린더 카드 자체 */
 #calendar {
   background: white;
   padding: 25px;
   border-radius: 25px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
-  flex: 1; /* 남은 높이 가득 채우기 */
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* 우측 스케줄 영역: 메인 rightSidebar와 완벽 일치 */
