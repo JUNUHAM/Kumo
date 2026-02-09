@@ -9,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import net.kumo.kumo.domain.dto.projection.JobSummaryView;
 import net.kumo.kumo.service.MapService;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -79,7 +78,9 @@ public class MapController {
         // 로그인 로직 대신, 파라미터로 유저 여부 전달
         model.addAttribute("isOwner", isOwner);
 
-        // 3. 뷰 반환 (templates/mapView/job_detail.html)
+        model.addAttribute("lang", lang);
+
+        // 4. 뷰 반환 (templates/mapView/job_detail.html)
         return "mapView/job_detail";
     }
 

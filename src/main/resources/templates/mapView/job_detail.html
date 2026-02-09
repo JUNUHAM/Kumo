@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" /> <title th:text="${job.title}">상세 정보</title>
+    <meta charset="UTF-8" />
+    <title th:text="${job.title}">상세 정보</title>
     <link rel="stylesheet" th:href="@{/css/header.css}">
     <link rel="stylesheet" th:href="@{/css/NonLoginFooter.css}">
     <link rel="stylesheet" th:href="@{/css/job_detail.css}">
@@ -15,7 +16,7 @@
     <div class="header-section">
         <h1 class="job-title" th:text="${job.title}">구인 제목</h1>
         <div class="job-meta">
-            <span th:text="${job.address}">주소</span>
+            <span th:text="${job.address} + ' • ' + (${lang == 'jp' ? '住所' : '주소'})">주소</span>
             <span>•</span>
             <span>ID: <span th:text="${job.id}">0</span></span>
         </div>
@@ -23,31 +24,31 @@
 
     <div class="info-grid">
         <div class="info-item">
-            <span class="info-label">회사 이름</span>
+            <span class="info-label" th:text="${lang == 'jp' ? '会社名' : '회사 이름'}">회사 이름</span>
             <span class="info-value" th:text="${job.companyName}">-</span>
         </div>
 
         <div class="info-item text-right">
-            <span class="info-label">업무</span>
+            <span class="info-label" th:text="${lang == 'jp' ? '職種' : '업무'}">업무</span>
             <span class="info-value" th:text="${job.position ?: '-'}">-</span>
         </div>
 
         <div class="info-item">
-            <span class="info-label">급여</span>
+            <span class="info-label" th:text="${lang == 'jp' ? '給与' : '급여'}">급여</span>
             <span class="info-value" th:text="${job.wage}">-</span>
         </div>
 
         <div class="info-item text-right">
-            <span class="info-label">업무 상세</span>
+            <span class="info-label" th:text="${lang == 'jp' ? '仕事内容' : '업무 상세'}">업무 상세</span>
             <span class="info-value" th:text="${job.jobDescription ?: '-'}">-</span>
         </div>
 
         <div class="info-item">
-            <span class="info-label">연락처</span>
+            <span class="info-label" th:text="${lang == 'jp' ? '連絡先' : '연락처'}">연락처</span>
             <span class="info-value" th:text="${job.contactPhone}">-</span>
         </div>
         <div class="info-item text-right">
-            <span class="info-label">회사 주소</span>
+            <span class="info-label" th:text="${lang == 'jp' ? '会社住所' : '회사 주소'}">회사 주소</span>
             <span class="info-value" th:text="${job.address}">-</span>
         </div>
     </div>
@@ -61,12 +62,15 @@
                 allowfullscreen="true">
         </iframe>
     </div>
-    <div class="map-section" th:unless="${job.lat != null}" style="display:flex; align-items:center; justify-content:center; color:#999;">
+
+    <div class="map-section" th:unless="${job.lat != null}"
+         style="display:flex; align-items:center; justify-content:center; color:#999;"
+         th:text="${lang == 'jp' ? '地図情報がありません。' : '지도 정보가 없는 공고입니다.'}">
         지도 정보가 없는 공고입니다.
     </div>
 
     <div class="description-section">
-        <h3 class="section-title">상세정보</h3>
+        <h3 class="section-title" th:text="${lang == 'jp' ? '詳細情報' : '상세정보'}">상세정보</h3>
         <div class="description-text" th:text="${job.body}">
             내용이 없습니다.
         </div>
@@ -81,10 +85,17 @@
 
 <div class="fixed-bottom-bar" th:if="${isOwner}">
     <div class="btn-group-owner">
-        <button class="btn-action btn-edit" onclick="alert('수정 페이지로 이동')">
+        <button class="btn-action btn-edit"
+                th:data-msg="${lang == 'jp' ? '修正ページへ移動' : '수정 페이지로 이동'}"
+                onclick="alert(this.getAttribute('data-msg'))"
+                th:text="${lang == 'jp' ? '修正' : '공고 수정'}">
             공고 수정
         </button>
-        <button class="btn-action btn-delete" onclick="alert('삭제 API 호출')">
+
+        <button class="btn-action btn-delete"
+                th:data-msg="${lang == 'jp' ? '削除API呼び出し' : '삭제 API 호출'}"
+                onclick="alert(this.getAttribute('data-msg'))"
+                th:text="${lang == 'jp' ? '削除' : '삭제'}">
             삭제
         </button>
     </div>
@@ -93,7 +104,10 @@
 <div class="fixed-bottom-bar" th:unless="${isOwner}">
     <div class="btn-group-seeker">
 
-        <button class="btn-action btn-apply" onclick="alert('구인 신청 완료!')">
+        <button class="btn-action btn-apply"
+                th:data-msg="${lang == 'jp' ? '応募完了!' : '구인 신청 완료!'}"
+                onclick="alert(this.getAttribute('data-msg'))"
+                th:text="${lang == 'jp' ? '応募する' : '구인 신청'}">
             구인 신청
         </button>
 
