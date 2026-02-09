@@ -1,5 +1,54 @@
 * calendar.css */
 
+/* ===================================================
+   [본 캘린더 전용] 일정 막대(Event) 고퀄리티 디자인
+   =================================================== */
+
+/* 1. 일정 막대 자체를 둥근 카드로 변경 */
+#calendar .fc-event {
+  border: none !important;
+  background-color: #f0f7ff !important; /* 연한 파스텔 배경 */
+  border-left: 4px solid #7abaff !important; /* 사장님의 시그니처 블루 */
+  border-radius: 8px !important;
+  padding: 4px 8px !important;
+  margin: 2px 4px !important;
+  box-shadow: 0 2px 6px rgba(122, 186, 255, 0.15) !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer;
+}
+
+#calendar .fc-event:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 10px rgba(122, 186, 255, 0.25) !important;
+  filter: brightness(0.98);
+}
+
+/* 2. 일정 내부 텍스트 스타일 (짜치지 않게!) */
+#calendar .fc-event-main {
+  padding: 2px 0 !important;
+}
+
+#calendar .fc-event-title {
+  color: #2d3748 !important; /* 다크 그레이로 세련되게 */
+  font-size: 0.85rem !important;
+  font-weight: 700 !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 3. 시간 표시가 있다면 더 작고 연하게 */
+#calendar .fc-event-time {
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+  color: #7abaff !important;
+  margin-right: 5px !important;
+}
+
+/* 4. [보너스] 메인 캘린더 날짜 칸 여백 조절 */
+#calendar .fc-daygrid-day-frame {
+  min-height: 120px !important; /* 칸을 시원하게 늘림 */
+}
 /* 1. 캘린더 메인 레이아웃 */
 .calendar-main-layout {
   display: flex;
@@ -156,12 +205,39 @@
   text-decoration: none !important;
 }
 
-/* 4. 일정 막대(Event) 안의 글자 예쁘게 */
-.fc-event-title {
+/* [KUMO RECRUITER] 본 캘린더 일정 글자 및 카드 디자인 정밀 교정 */
+
+/* 1. 메인 캘린더(#calendar)의 일정 글자만 예쁘게 */
+#calendar .fc-event-title {
+  display: block !important; /* 점으로 변하지 않게 강제 노출 */
   font-size: 0.85rem !important;
+  font-weight: 700 !important; /* 조금 더 굵게 해서 가독성 확보 */
+  color: #2d3748 !important; /* 세련된 다크 그레이 */
+  padding-left: 4px !important;
+  letter-spacing: -0.03em !important; /* 자간을 더 좁혀서 고급스럽게 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* 넘치는 글자는 세련되게 ... 처리 */
+}
+
+/* 2. 일정 카드 자체의 여백과 선을 티켓처럼 보정 */
+#calendar .fc-event {
+  border: none !important;
+  background-color: #f0f7ff !important;
+  border-left: 4px solid #7abaff !important; /* 사장님의 시그니처 블루 */
+  border-radius: 6px !important;
+  padding: 3px 6px !important;
+  margin: 1px 3px !important;
+  box-shadow: 0 2px 4px rgba(122, 186, 255, 0.12) !important;
+  text-decoration: none !important; /* 밑줄 방어 */
+}
+
+/* 3. 시간 표시 스타일 (있는 경우) */
+#calendar .fc-event-time {
+  font-size: 0.75rem !important;
   font-weight: 600 !important;
-  padding-left: 2px !important;
-  letter-spacing: -0.02em !important; /* 자간을 살짝 좁혀 가독성 향상 */
+  color: #7abaff !important;
+  margin-right: 4px !important;
 }
 
 /* 5. 오늘 날짜 강조 디자인 */
@@ -178,4 +254,150 @@
 .fc-day-sat .fc-col-header-cell-cushion,
 .fc-day-sat .fc-daygrid-day-number {
   color: #4facfe !important; /* 토요일은 연한 파랑 */
+}
+
+/* 본 캘린더 클릭 시 날짜 칸 전체 배경색 */
+#calendar .selected-day {
+  background-color: rgba(122, 186, 255, 0.1) !important; /* 은은한 하늘색 */
+  transition: background-color 0.2s ease;
+}
+
+/* 오늘 날짜이면서 클릭되었을 때 더 진하게 */
+#calendar .fc-day-today.selected-day {
+  background-color: rgba(122, 186, 255, 0.15) !important;
+}
+
+/* [KUMO RECRUITER] 미니 달력 및 상세 일정 카드 최종 완성본 */
+
+/* 1. 모든 테두리 및 외곽선 완전 제거 (격자 원천 차단) */
+#mini-calendar,
+#mini-calendar *,
+#mini-calendar .fc-theme-standard td,
+#mini-calendar .fc-theme-standard th,
+#mini-calendar .fc-theme-standard .fc-scrollgrid,
+#mini-calendar .fc-scrollgrid-section td,
+#mini-calendar .fc-scrollgrid-section table,
+#mini-calendar .fc-col-header-cell,
+#mini-calendar .fc-daygrid-day,
+#mini-calendar table {
+  border: none !important;
+  border-width: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  background: transparent !important;
+}
+
+/* 2. 요일 헤더 영역 (S M T W T F S) 다이어트 */
+#mini-calendar .fc-col-header-cell {
+  padding: 4px 0 !important;
+  height: 24px !important;
+}
+#mini-calendar .fc-col-header-cell-cushion {
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  color: #b0b8c1 !important;
+  text-decoration: none !important;
+}
+
+/* 3. 날짜 칸: 수직 배치 및 높이 압축 */
+#mini-calendar .fc-daygrid-day-frame {
+  height: 38px !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+/* 4. 숫자 스타일 및 선택 효과 (파란 원) */
+#mini-calendar .fc-daygrid-day-number {
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  color: #4a5568 !important;
+  width: 26px !important;
+  height: 26px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 auto !important;
+  text-decoration: none !important;
+  z-index: 5 !important;
+}
+
+#mini-calendar .selected-day .fc-daygrid-day-number {
+  background-color: #7abaff !important;
+  color: white !important;
+  border-radius: 50% !important;
+}
+.selected-day {
+  background-color: transparent !important;
+}
+
+/* 5. 일정 점(Dot) 가로 나열 및 위치 교정 */
+#mini-calendar .fc-daygrid-day-events {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  gap: 3px !important;
+  width: 100% !important;
+  min-height: 8px !important;
+  margin-top: -2px !important;
+}
+#mini-calendar .fc-daygrid-event-dot {
+  width: 5px !important;
+  height: 5px !important;
+  background-color: #7abaff !important;
+  border-radius: 50% !important;
+  border: none !important;
+}
+
+/* 6. 상세 일정 카드(바) 확장 - [사장님 요청 사항] */
+#event-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 5px 0;
+}
+
+.sidebar-card {
+  width: 100% !important; /* 가로로 꽉 채우기 */
+  background: #ffffff;
+  border-radius: 15px;
+  padding: 16px 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); /* 부드러운 그림자 */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  transition: transform 0.2s ease;
+  box-sizing: border-box;
+  border-left: 5px solid #7abaff; /* 사장님의 시그니처 컬러 */
+}
+
+.sidebar-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+
+.event-item-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #333d4b;
+}
+
+/* 7. 기타 레이아웃 정리 */
+#mini-calendar .fc-day-other {
+  visibility: hidden !important;
+}
+#mini-calendar .fc-event-title,
+#mini-calendar .fc-event-time {
+  display: none !important;
+}
+#mini-calendar .fc-view-harness {
+  height: auto !important;
+}
+#mini-calendar .fc-scroller {
+  overflow: hidden !important;
 }

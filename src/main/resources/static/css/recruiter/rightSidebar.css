@@ -1,4 +1,4 @@
-/* rightSidebar.css - 최종 최적화본 */
+/* [KUMO RECRUITER] 사이드바 레이아웃 최종 최적화 */
 
 .dashboard-right-sidebar {
   width: 340px;
@@ -8,34 +8,45 @@
   top: 80px;
   height: calc(100vh - 80px);
   background-color: #f8faff;
-  padding: 20px;
+  padding: 15px; /* 전체 여백을 살짝 줄여 내부 공간 확보 */
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 12px; /* 패널 사이 간격을 좁혀서 공간 효율 증대 */
   border-left: 1px solid #f0f3f8;
   z-index: 1000;
   box-sizing: border-box;
 }
 
-/* 내부 패널 디자인 */
+/* [핵심] 상단 달력 패널 - 길게 늘리기 */
+.side-panel:first-of-type {
+  flex: 1.2; /* 첫 번째 패널(달력)에 더 많은 가중치 부여 */
+  min-height: 320px; /* 짤림 방지용 최소 높이 */
+}
+
+/* [핵심] 하단 일정 패널 - 리스트 복구 */
+.side-panel:nth-of-type(2) {
+  flex: 1; /* 리스트가 보일 수 있도록 적절한 비중 유지 */
+  min-height: 200px;
+}
+
 .side-panel {
   background: #ffffff;
   border-radius: 20px;
-  padding: 20px;
+  padding: 16px 20px; /* 내부 여백 최적화 */
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.03);
   border: 1px solid #f0f3f8;
-  flex: 1;
-  min-height: 180px;
   display: flex;
   flex-direction: column;
-  position: relative; /* 배지 배치를 위한 기준점 */
+  position: relative;
+  overflow: hidden; /* 내부 요소 짤림 방지 */
 }
 
+/* [수정] 제목 영역 압축 - 2026년 2월 / 일정 칸 */
 .panel-header {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 800;
   color: #333d4b;
-  margin-bottom: 15px;
+  margin-bottom: 10px !important; /* 여백을 줄여 달력을 위로 올림 */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -55,13 +66,13 @@
   border: 1px dashed #e5e8eb;
 }
 
-/* [복구 완료] 하단 버튼 영역 */
+/* 하단 버튼 영역 - 위치 및 디자인 유지 */
 .side-action-buttons {
   display: flex;
   flex-direction: column;
-  gap: 12px; /* 버튼 사이의 일정한 간격 */
-  margin-top: auto;
-  padding-top: 20px;
+  gap: 10px;
+  margin-top: auto; /* 무조건 하단 고정 */
+  padding-top: 10px;
   flex-shrink: 0;
 }
 
@@ -72,12 +83,11 @@
 }
 
 .side-action-buttons .btn {
-  margin-bottom: 0;
-  /* 버튼이 링크 안에서도 꽉 차도록 설정 */
   width: 100%;
+  margin-bottom: 0;
 }
 
-/* 알림 배지 (패널 내부 기준 배치) */
+/* 알림 배지 */
 .badge-count {
   background: #ff6b6b;
   color: white;
@@ -86,8 +96,36 @@
   font-size: 0.75rem;
   font-weight: 700;
   position: absolute;
-  top: 20px;
+  top: 18px;
   right: 20px;
+}
+
+/* 버튼 디자인 및 호버 효과 유지 */
+.btn-sky-blue {
+  background-color: #7abaff !important;
+  color: white !important;
+  border: none !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.btn-sky-blue:hover {
+  background-color: #66aaff !important;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(122, 186, 255, 0.4) !important;
+}
+.btn-light-blue {
+  background-color: #92ccff !important;
+  color: white !important;
+  border: none !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.btn-light-blue:hover {
+  background-color: #7abaff !important;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(146, 204, 255, 0.4) !important;
+}
+.btn-sky-blue:active,
+.btn-light-blue:active {
+  transform: translateY(-1px);
 }
 
 /* 애니메이션 설정 */
@@ -99,61 +137,4 @@
 .start-animation .dashboard-right-sidebar {
   opacity: 0;
   animation: fadeInUp 0.8s ease-out 0.6s forwards;
-}
-
-/* 기타 유틸리티 링크 스타일 */
-.links {
-  color: #b0b8c1;
-  text-decoration: none;
-  font-size: 0.85rem;
-  transition: color 0.2s;
-}
-
-.links:hover {
-  color: #7abaff;
-}
-
-/* 공고 등록 버튼 전용 호버 효과 */
-.btn-sky-blue {
-  background-color: #7abaff !important;
-  color: white !important;
-  border: none !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; /* 자연스러운 가속도 */
-}
-
-.btn-sky-blue:hover {
-  background-color: #66aaff !important; /* 살짝 더 진한 파란색 */
-  transform: translateY(-3px); /* 살짝 위로 떠오르는 효과 */
-  box-shadow: 0 8px 20px rgba(122, 186, 255, 0.4) !important; /* 푸른색 그림자 */
-}
-
-/* 클릭(Active) 했을 때의 피드백 */
-.btn-sky-blue:active {
-  transform: translateY(-1px); /* 눌리는 느낌 */
-  box-shadow: 0 4px 10px rgba(122, 186, 255, 0.3) !important;
-}
-
-/* 채팅 버튼 전용 호버 효과 */
-.btn-light-blue {
-  background-color: #92ccff !important; /* 기존 사장님 컬러 유지 */
-  color: white !important;
-  border: none !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-.btn-light-blue:hover {
-  background-color: #7abaff !important; /* 호버 시 조금 더 선명한 파란색으로 */
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(146, 204, 255, 0.4) !important;
-}
-
-/* 채팅 버튼 클릭(Active) 시 피드백 */
-.btn-light-blue:active {
-  transform: translateY(-1px);
-}
-
-/* 배지도 버튼 호버 시 같이 부드럽게 반응하도록 보정 */
-.btn-light-blue:hover .badge-count {
-  transform: scale(1.1); /* 배지가 살짝 커지며 강조됨 */
-  transition: transform 0.3s ease;
 }
