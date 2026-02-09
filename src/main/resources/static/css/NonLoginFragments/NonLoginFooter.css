@@ -1,0 +1,57 @@
+/* ==============================
+   푸터(Footer) 스타일 정의
+   ============================== */
+
+/* 1. 푸터 전체 영역 */
+.dashboard-footer {
+    width: 100%;
+    background-color: transparent; /* 배경색 없이 투명하게 */
+    padding: 10px 40px;            /* 상하 40px, 좌우 40px 안쪽 여백 */
+
+    /* 상단에 아주 연한 회색 구분선 (투명도 5% 검정) */
+    border-top: 1px solid rgba(0,0,0,0.05);
+
+    /* ★[핵심]★ Flex 컨테이너(body) 안에서 남은 공간을 밀어내고 바닥에 붙음 */
+    /* 내용이 적어도 푸터가 화면 중간에 뜨지 않게 해주는 중요한 속성 */
+    margin-top: auto;
+}
+
+/* 2. 푸터 내부 콘텐츠 박스 (중앙 정렬용) */
+.footer-container {
+    max-width: 1400px; /* 화면이 아무리 커져도 내용은 1400px까지만 퍼짐 */
+    margin: 0 auto;    /* 박스를 화면 가로 중앙에 배치 */
+
+    display: flex;     /* 내부 요소(Copyright, 링크들)를 가로로 배치 */
+    justify-content: space-between; /* 요소들을 양 끝(좌/우)으로 쫙 벌림 */
+    align-items: center;            /* 수직 기준 중앙 정렬 */
+    flex-wrap: wrap;                /* 화면이 좁으면(모바일) 자동으로 줄바꿈 */
+    gap: 20px;                      /* 줄바꿈되거나 요소 사이의 간격 */
+}
+
+/* 3. 저작권 문구 (왼쪽) */
+.copyright {
+    font-size: 12px;
+    color: #888; /* 연한 회색 */
+}
+
+/* 4. 우측 링크 그룹 컨테이너 */
+.footer-links {
+    display: flex; /* 링크들을 가로로 나열 */
+    gap: 20px;     /* 링크 사이사이 20px 간격 */
+}
+
+/* 5. 개별 링크 스타일 (이용약관, 개인정보처리방침 등) */
+.footer-links a {
+    text-decoration: none; /* 밑줄 제거 */
+    font-size: 12px;       /* 글자 크기 */
+    color: #888;           /* 기본 색상 (회색) */
+    /* transition: color 0.2s;  <-- (선택사항) 호버 효과 부드럽게 하려면 추가 */
+}
+
+/* ==============================
+   다크 모드(Dark Mode) 대응
+   ============================== */
+body.dark-mode .dashboard-footer {
+    /* 배경이 어두우면 검은 선이 안 보이므로, 흰색(투명도 5%)으로 선 색상 변경 */
+    border-top-color: rgba(255,255,255,0.05);
+}

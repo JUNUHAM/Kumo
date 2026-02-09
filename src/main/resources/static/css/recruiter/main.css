@@ -1,0 +1,307 @@
+/* main.css */
+
+body {
+  background-color: #f8faff;
+  margin: 0;
+  padding: 0;
+  /* 바디 자체의 스크롤을 막아 대시보드 앱 느낌을 줍니다 */
+  overflow: hidden;
+}
+
+.dashboard-wrapper {
+  display: flex;
+  width: 100%;
+}
+
+.main-container {
+  flex: 1;
+  margin-left: 240px; /* 왼쪽 사이드바 너비 */
+  margin-right: 340px; /* 오른쪽 사이드바 너비와 반드시 일치 */
+  padding-top: 80px; /* 헤더 높이만큼 아래로 */
+  height: 100vh;
+  background-color: #f8faff;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-body {
+  padding: 30px 40px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  /* 내용이 너무 많아질 경우에만 내부 스크롤 허용 */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* 좌측 콘텐츠 정렬 */
+.dashboard-left-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* 통계 카드 그리드 (항상 4열 유지) */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 25px;
+  flex-shrink: 0; /* 높이가 찌그러지지 않게 방지 */
+}
+
+/* 통계 카드 스타일 */
+.stat-card {
+  background: white;
+  border: none;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+  transition: transform 0.3s ease;
+  height: 100%;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+/* 그래프 영역: 남은 모든 높이를 차지 */
+.graph-container {
+  flex: 1; /* 가변적으로 늘어남 */
+  min-height: 300px; /* 최소 높이 확보로 깨짐 방지 */
+  background: white;
+  border-radius: 25px;
+  padding: 25px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+}
+
+/* footer 괸련 */
+.dashboard-footer {
+  width: 100%;
+  padding: 15px 0;
+  margin-top: auto; /* 본문 내용이 적어도 항상 아래에 위치 */
+  border-top: 1px solid #f0f3f8;
+  background-color: transparent; /* 배경색에 녹아들게 설정 */
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #b0b8c1;
+  font-size: 0.85rem;
+}
+
+.footer-links {
+  display: flex;
+  gap: 20px;
+}
+
+.footer-links a {
+  color: #b0b8c1;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: #7abaff;
+}
+
+.copyright strong {
+  color: #8fa1b3;
+}
+
+
+.mid-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 좌/우 반반 */
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+/* 공통 패널 카드 스타일 */
+.panel {
+  background: white;
+  border-radius: 25px;
+  padding: 25px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+}
+
+/* 패널 헤더 */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.panel-title {
+  font-weight: 700;
+}
+
+/* 패널 바디 */
+.panel-body {
+  min-width: 0;
+}
+
+/* ✅ Scout 리스트 */
+.panel-scout .panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 360px; /* 너무 길어지면 내부 스크롤 */
+  overflow-y: auto;
+}
+
+.scout-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: #f8faff;
+}
+
+.scout-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.scout-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.scout-name {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.scout-level {
+  font-size: 0.85rem;
+  color: #7a8aa0;
+  white-space: nowrap;
+}
+
+/* ✅ Chart 자리 */
+.panel-chart .chart-placeholder {
+  height: 360px;
+  border-radius: 18px;
+  background: #f8faff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9aa7b6;
+  font-weight: 600;
+}
+
+/* ✅ MyJobs */
+.panel-myjobs .panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* 헤더(라벨) */
+.myjobs-head {
+  display: grid;
+  grid-template-columns: 2.2fr 1fr 1fr 1fr 1.4fr 0.9fr 0.8fr;
+  gap: 10px;
+  padding: 10px 6px;
+  color: #8fa1b3;
+  font-size: 0.85rem;
+  border-bottom: 1px solid #eef2f7;
+}
+
+/* 행 */
+.myjobs-row {
+  display: grid;
+  grid-template-columns: 2.2fr 1fr 1fr 1fr 1.4fr 0.9fr 0.8fr;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 6px;
+  border-radius: 14px;
+}
+
+.myjobs-row:hover {
+  background: #f8faff;
+}
+
+.job-title {
+  min-width: 0;
+}
+
+.job-name {
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.job-tags {
+  margin-top: 6px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #eaf2ff;
+  color: #2f6fed;
+  font-weight: 600;
+}
+
+/* 상세보기 버튼 느낌 */
+.btn-detail {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: #eef4ff;
+  color: #2f6fed;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.btn-detail:hover {
+  background: #dfeaff;
+}
+
+/* empty-state */
+.empty-state {
+  padding: 14px;
+  border-radius: 16px;
+  background: #f8faff;
+  color: #8fa1b3;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* ✅ 반응형: 화면 좁으면 1컬럼으로 */
+@media (max-width: 1200px) {
+  .mid-row {
+    grid-template-columns: 1fr;
+  }
+
+  .myjobs-head,
+  .myjobs-row {
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-auto-rows: auto;
+  }
+}
+
+.panel-link {
+  color: #9ca3af; /* 회색 (tailwind gray-400 느낌) */
+}

@@ -1,0 +1,286 @@
+/* ==============================
+   1. 기본 설정 (변수 및 초기화)
+   ============================== */
+:root {
+    --primary-color: #7db4e6;   /* 쿠모 블루 */
+    --bg-color: #fcfcfc;        /* 전체 배경 */
+    --text-main: #333333;       /* 기본 글씨 */
+    --text-strong: #000000;     /* 강조 글씨 */
+    --text-desc: #888888;       /* 설명 글씨 */
+}
+
+/* 다크모드 색상 */
+body.dark-mode {
+    --bg-color: #1a1a1a;
+    --text-main: #e0e0e0;
+    --text-strong: #ffffff;
+    --text-desc: #a0a0a0;
+}
+
+/* [중요] 모든 요소의 패딩/테두리 계산 통일 (가로 스크롤 원인 제거) */
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden; /* 가로 스크롤 강제 차단 */
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* ==============================
+   2. 메인 컨테이너 (중앙 정렬 핵심)
+   ============================== */
+.join-container {
+    flex: 1; /* 헤더-풋터 사이 공간 채우기 */
+
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* [핵심] 가로 중앙 정렬 */
+    /* 세로 중앙 정렬은 내용이 길어서 뺐습니다. 대신 위아래 여백을 줍니다. */
+
+    width: 100%;
+    padding: 60px 20px; /* 상하 여백 60px */
+}
+
+/* ==============================
+   3. 헤더 영역
+   ============================== */
+.join-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.join-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text-strong);
+}
+
+.join-desc {
+    font-size: 14px;
+    color: var(--text-desc);
+    margin-top: 10px;
+}
+
+/* ==============================
+   4. 폼 박스 스타일
+   ============================== */
+.join-form-box {
+    width: 100%;
+    max-width: 600px; /* 폼이 너무 넓게 퍼지지 않도록 제한 */
+    display: flex;
+    flex-direction: column;
+}
+
+/* 폼 행 (가로 배치용: 성/이름 등) */
+.form-row {
+    display: flex;
+    gap: 15px; /* 입력칸 사이 간격 */
+    width: 100%;
+}
+
+.form-col {
+    flex: 1; /* 공간 균등 분할 */
+    display: flex;
+    flex-direction: column;
+}
+
+/* ==============================
+   5. 입력창 및 라벨 스타일
+   ============================== */
+.input-group {
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.input-label {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text-strong);
+    display: block;
+}
+
+.custom-input {
+    width: 100%;
+    padding: 14px;
+    background-color: #f2f4f6;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #333; /* 입력 글씨는 잘 보이게 */
+    outline: none;
+    transition: 0.2s;
+}
+
+.custom-input:focus {
+    background-color: #e8f0fe;
+    box-shadow: 0 0 0 1px #7db4e6 inset; /* 파란 테두리 효과 */
+}
+
+/* ==============================
+   6. 특수 요소 (주소 검색, 셀렉트 박스)
+   ============================== */
+/* 주소 검색 행 */
+.address-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.btn-search {
+    /* 기존 속성 유지 */
+    padding: 0 20px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    cursor: pointer;
+    white-space: nowrap; /* 글자 줄바꿈 방지 */
+
+    /* ★★★ [핵심 추가] ★★★ */
+    flex-shrink: 0;  /* "공간이 좁아져도 나는 절대 안 찌그러질 거야!" 라는 뜻 */
+    height: 50px;    /* 입력창(.custom-input) 높이랑 강제로 맞춤 (padding 고려) */
+    display: flex;   /* 글자 정중앙 정렬을 위해 */
+    align-items: center;
+    justify-content: center;
+}
+.btn-search:hover { background-color: #f9f9f9; }
+
+/* 셀렉트 박스 */
+.custom-select {
+    width: 100%;
+    padding: 14px;
+    background-color: #f2f4f6;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #333;
+    outline: none;
+    /* 화살표 커스텀 (SVG) */
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 16px;
+}
+
+/* ==============================
+   7. 약관 동의 박스
+   ============================== */
+/* 약관 박스 스타일 업그레이드 */
+.terms-box {
+    background-color: #fcfcfc;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.term-divider {
+    border: 0;
+    border-top: 1px solid #444;
+    margin: 10px 0 15px 0;
+}
+
+/* 각 항목을 가로로 정렬 (체크박스글자 --- 화살표) */
+.term-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.term-item {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 12px;
+    flex-grow: 1; /* 글자 영역이 남은 공간 다 차지하게 */
+}
+
+.term-item input[type="checkbox"] {
+    margin-right: 10px;
+    accent-color: #7db4e6; /* 쿠모 브랜드 컬러 */
+    transform: scale(1.1);
+}
+
+.term-text {
+    font-size: 14px;
+
+}
+
+/* 필수/선택 뱃지 색상 */
+.required {
+    color: #EA4335; /* 빨간색 */
+    margin-right: 4px;
+    font-weight: bold;
+}
+
+.optional {
+    color: #999; /* 회색 */
+    margin-right: 4px;
+}
+
+/* 화살표 아이콘 스타일 */
+.term-link {
+    color: #888;
+    padding: 5px;
+    font-size: 12px;
+    transition: color 0.3s;
+}
+
+.term-link:hover {
+    color: #fff;
+}
+/* ==============================
+   8. 제출 버튼
+   ============================== */
+.btn-submit {
+    width: 100%;
+    padding: 16px;
+    background-color: var(--primary-color);
+    color: white !important;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 30px;
+}
+.btn-submit:hover { opacity: 0.9; }
+
+/* ==============================
+   9. 다크모드 대응
+   ============================== */
+body.dark-mode .custom-input,
+body.dark-mode .custom-select,
+body.dark-mode .btn-search {
+    background-color: #333;
+    color: #fff;
+    border-color: #555;
+}
+
+/* 셀렉트 박스 화살표 색상 변경 (흰색으로) */
+body.dark-mode .custom-select {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+}
+
+body.dark-mode .terms-box {
+    background-color: #2d2d2d;
+    border-color: #444;
+}
