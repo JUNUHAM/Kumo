@@ -97,4 +97,15 @@ public class RecruiterController {
     public String JobPosting(Model model) {
         return "recruiterView/jobPosting";
     }
+
+    /**
+     * 지원자 상세보기 컨트롤러
+     * 
+     * @param model
+     * @return
+     */
+    @GetMapping("ApplicantDetail")
+    public String ApplicantDetail(Model model) {
+        return "recruiterView/applicantDetail";
+    }
 }

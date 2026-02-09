@@ -30,7 +30,7 @@ body {
   /* [수정] 너비를 계산식으로 억제하지 말고, 자연스럽게 100%를 쓰게 둡니다. */
   width: 100% !important;
 
-  padding-top: 80px;
+  padding-top: 65px;
   height: 100vh;
   background-color: #f8faff;
   display: flex;
