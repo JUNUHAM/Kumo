@@ -1,0 +1,72 @@
+/* 사이드바 컨테이너 */
+.sidebar-container {
+  width: 240px;
+  height: calc(100vh - 70px);
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* [추가] 상단과 하단을 양 끝으로 밀어냄 */
+  padding: 20px 0;
+  position: fixed;
+  top: 70px;
+  left: 0;
+  z-index: 1000;
+  border-right: 1px solid #f2f4f6; /* [추가] 메인 본문과의 구분선 */
+  box-sizing: border-box; /* [추가] 패딩이 너비에 영향을 주지 않도록 설정 */
+}
+
+/* 상단 메뉴 그룹 */
+.sidebar-top {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* 메뉴 공통 스타일 */
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 25px;
+  text-decoration: none;
+  color: #a0a0a0;
+  font-size: 15px;
+  font-weight: 600;
+  border-left: 4px solid transparent;
+  transition: all 0.3s ease;
+  white-space: nowrap; /* [추가] 글자 줄바꿈 방지 */
+}
+
+.nav-item i {
+  font-size: 20px;
+  margin-right: 15px;
+  width: 24px; /* [추가] 아이콘 너비 고정으로 텍스트 정렬 유지 */
+  text-align: center;
+}
+
+/* [핵심] 선택된 메뉴(active) 스타일 */
+.nav-item.active {
+  background-color: #f0f7ff;
+  color: #4a90e2;
+  border-left: 4px solid #4a90e2;
+}
+
+/* 마우스 호버 시 효과 */
+.nav-item:hover {
+  background-color: #f8fbff;
+  color: #4a90e2;
+}
+
+/* 하단 영역 (로그아웃 버튼) */
+.sidebar-bottom {
+  padding-bottom: 20px; /* [추가] 바닥에서 살짝 띄움 */
+}
+
+.logout-btn {
+  border-left: none;
+  color: #8b95a1; /* [수정] 좀 더 세련된 회색으로 변경 */
+}
+
+.logout-btn:hover {
+  color: #ff5b5b;
+  background-color: #fff0f0; /* [추가] 로그아웃 호버 배경색 */
+}

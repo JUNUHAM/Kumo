@@ -1,0 +1,351 @@
+/* main.css */
+
+body {
+  background-color: #f8faff;
+  margin: 0;
+  padding: 0;
+  /* 바디 자체의 스크롤을 막아 대시보드 앱 느낌을 줍니다 */
+  overflow: hidden;
+}
+
+.dashboard-wrapper {
+  display: flex;
+  width: 100%;
+}
+
+/* 다른 부분은 그대로 유지하고 .main-container 부분만 교체하세요 */
+
+.main-container {
+  flex: 1;
+  /* [유지] 사장님이 설정한 최소 너비 방어막 */
+  min-width: 1000px;
+  /* [유지] 좌측 사이드바 간격 */
+  margin-left: 220px;
+
+  /* [수정] 마진 대신 패딩을 사용해 우측 사이드바(340px) 공간을 비워둡니다. 
+     이렇게 해야 흰색 박스 크기가 변하지 않고 우측 사이드바 아래로 안 들어갑니다. */
+  margin-right: 0 !important;
+  padding-right: 325px !important;
+
+  /* [수정] 너비를 계산식으로 억제하지 말고, 자연스럽게 100%를 쓰게 둡니다. */
+  width: 100% !important;
+
+  padding-top: 65px;
+  height: 100vh;
+  background-color: #f8faff;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* 내부 콘텐츠 영역도 함께 보호 */
+.content-body {
+  padding: 30px 40px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 920px; /* 패딩을 제외한 실질적 최소 너비 */
+  overflow-y: auto;
+}
+
+/* 3. (필살기) 애니메이션이 진행되는 동안만 스크롤바를 완전히 제거 */
+.start-animation .content-body {
+  overflow: hidden !important;
+}
+
+/* 푸터가 우측 사이드바에 가려지지 않게 수정 */
+footer {
+  width: 100%;
+  flex-shrink: 0;
+  margin-top: auto;
+  /* [수정] 푸터도 우측 사이드바 너비만큼 오른쪽 여백을 줘서 글자가 가려지지 않게 합니다. */
+  padding: 20px 360px 20px 40px;
+  border-top: 1px solid #f2f4f6;
+  background-color: transparent;
+  box-sizing: border-box;
+}
+
+/* 좌측 콘텐츠 정렬 */
+.dashboard-left-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* 1. 통계 카드 행 (4열 그리드) */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 25px;
+
+  /* [추가] 부모의 패딩 설정과 충돌하지 않도록 너비를 100%로 확실히 고정 */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 통계 카드 스타일 */
+.stat-card {
+  background: white;
+  border: none;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+  transition: transform 0.3s ease;
+  height: 100%;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+/* 그래프 영역: 남은 모든 높이를 차지 */
+.graph-container {
+  flex: 1; /* 가변적으로 늘어남 */
+  min-height: 300px; /* 최소 높이 확보로 깨짐 방지 */
+  background: white;
+  border-radius: 25px;
+  padding: 25px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+}
+
+/* footer 괸련 */
+.dashboard-footer {
+  width: 100%;
+  padding: 15px 0;
+  margin-top: auto; /* 본문 내용이 적어도 항상 아래에 위치 */
+  border-top: 1px solid #f0f3f8;
+  background-color: transparent; /* 배경색에 녹아들게 설정 */
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #b0b8c1;
+  font-size: 0.85rem;
+}
+
+.footer-links {
+  display: flex;
+  gap: 20px;
+}
+
+.footer-links a {
+  color: #b0b8c1;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: #7abaff;
+}
+
+.copyright strong {
+  color: #8fa1b3;
+}
+
+/* 쓱 올라오는 애니메이션 정의 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0); /* 20px 밑에서 시작 */
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0); /* 제자리로 */
+  }
+}
+
+/* 웰컴 섹션에 애니메이션 적용 */
+.welcome-section {
+  animation: fadeInUp 0.5s ease-out forwards; /* 0.8초 동안 부드럽게 실행 */
+}
+
+/* (보너스) 만약 밑에 있는 카드들도 순차적으로 올라오게 하고 싶다면? */
+.stat-row {
+  animation: fadeInUp 0.8s ease-out 0.2s forwards; /* 0.2초 뒤늦게 시작 */
+  opacity: 0; /* 시작 전엔 안보이게 */
+}
+
+.graph-container {
+  animation: fadeInUp 0.8s ease-out 0.4s forwards; /* 0.4초 뒤늦게 시작 */
+  opacity: 0;
+}
+
+/* 공통 버튼 규격 */
+.btn-common-action {
+  height: 55px !important; /* 높이를 고정하면 크기 차이가 안 납니다 */
+  border-radius: 18px !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  border: none !important;
+}
+
+.btn-sky-blue {
+  background-color: #7abaff !important;
+  color: white !important;
+}
+.btn-light-blue {
+  background-color: #92ccff !important;
+  color: white !important;
+}
+
+/* main.css */
+
+/* [필독] 기존에 각 요소에 직접 넣었던 animation 속성들은 다 지워주세요! */
+
+/* main.css */
+
+/* 1. 기본 상태: 평상시에는 애니메이션 없이 바로 보임 */
+.welcome-section,
+.stat-row,
+.graph-container {
+  opacity: 1;
+  transform: none;
+  /* 중요: 여기에 개별 animation 속성이 남아있으면 안 됩니다! */
+}
+
+/* 2. 애니메이션 모드: body에 .start-animation이 붙었을 때만 숨겼다가 올림 */
+.start-animation .welcome-section {
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+.start-animation .stat-row {
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out 0.2s forwards;
+}
+.start-animation .graph-container {
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out 0.4s forwards;
+}
+
+/* ============================================================
+   여기서부터는 원우 사장님이 새로 추가한 요소들(main2) 전용 스타일입니다.
+   기존 디자인을 해치지 않도록 조심스럽게 추가했습니다!
+   ============================================================ */
+
+/* 2. 중간 행 (스카우트 & 차트) */
+.mid-row {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 20px;
+  margin-bottom: 25px;
+
+  /* [추가] 너비 고정 */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 2. 스카우트, 내 공고 등을 감싸는 공통 패널(카드) 스타일 */
+.panel {
+  background: white;
+  border-radius: 25px;
+  padding: 25px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+}
+
+.panel-title {
+  font-weight: 800;
+  color: #333d4b;
+  font-size: 1.1rem;
+}
+
+/* 3. 스카우트 개별 아이템 디자인 */
+.scout-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #f9f9f9;
+}
+
+.scout-avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.scout-level {
+  font-size: 0.75rem;
+  background: #f2f4f6;
+  color: #8b95a1;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+/* 4. 내 공고 테이블 디자인 (칼정렬) */
+.myjobs-head {
+  display: grid;
+  grid-template-columns: 2.5fr 1fr 1fr 1.2fr 1.5fr 0.8fr 1fr;
+  padding: 12px;
+  background-color: #f9fafb;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #b0b8c1;
+  margin-bottom: 10px;
+}
+
+.myjobs-row {
+  display: grid;
+  grid-template-columns: 2.5fr 1fr 1fr 1.2fr 1.5fr 0.8fr 1fr;
+  padding: 15px 12px;
+  border-bottom: 1px solid #f2f4f6;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.btn-detail {
+  color: #7abaff;
+  background: #e8f3ff;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* 3. 내 공고 패널 */
+.panel-myjobs {
+  width: 100%;
+  box-sizing: border-box;
+  /* 카드 자체가 너무 넓어지는 것을 방지하고 싶다면 max-width를 활용하세요 */
+  max-width: 1200px;
+}
+
+/* 5. 사장님의 애니메이션 모드 - 순차적 등장 로직 (수정본) */
+
+/* (1) 스카우트 & 차트 영역: 0.5초 뒤에 등장 */
+.start-animation .mid-row {
+  opacity: 0;
+  animation: fadeInUp 0.5s ease-out 0.3s forwards;
+}
+
+/* (2) 내 공고 영역: 0.7초 뒤에 등장 (스카우트보다 0.2초 늦게) */
+.start-animation .panel-myjobs {
+  opacity: 0;
+  animation: fadeInUp 0.6s ease-out 0.4s forwards;
+}
+
+/* 내 공고 우측 '전체보기' 링크 */
+.panel-link {
+  font-size: 0.8rem !important; /* [수정] 크기를 0.8rem으로 줄임 */
+  font-weight: 600;
+  color: #8b95a1 !important; /* [수정] 텍스트 색상을 부드러운 회색으로 변경 */
+  text-decoration: none; /* 밑줄 제거 */
+  transition: color 0.2s;
+}
+
+.panel-link:hover {
+  color: #7abaff !important; /* 호버 시에만 사장님 포인트 컬러(하늘색)로 변경 */
+  text-decoration: underline; /* 호버 시에만 살짝 밑줄 */
+}
