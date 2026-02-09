@@ -8,6 +8,7 @@
 	<link rel="stylesheet" th:href="@{/css/header.css}">
 	<link rel="stylesheet" th:href="@{/css/mainView/main.css}">
 	
+	<script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
 	<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
 	<script th:src="@{/js/mainView/main.js}"></script>
 	<script th:src="@{/js/geo/osaka.js}"></script>
@@ -20,6 +21,10 @@
 <div class="map-container">
 	
 	<div id="map"></div>
+	
+	<button id="btn-my-location" class="btn-location">
+		🎯
+	</button>
 	
 	<div id="jobDetailCard" class="floating-card">
 		<button type="button" class="btn-close-card" onclick="closeJobCard()">×</button>
