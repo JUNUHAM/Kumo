@@ -8,6 +8,7 @@ import net.kumo.kumo.domain.entity.*;
 @NoArgsConstructor
 public class JobDetailDTO {
     private Long id;
+    private String source;
     private String title;
     private String companyName;
     private String address;
