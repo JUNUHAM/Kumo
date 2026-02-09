@@ -1,0 +1,267 @@
+/* ==============================
+   1. 변수 설정 (색상 통합 관리)
+   ============================== */
+:root {
+    /* 브랜드 메인 컬러 (쿠모 블루) */
+    --primary-color: #7db4e6;
+
+    /* 라이트 모드(기본) 색상 팔레트 */
+    --bg-color: #fcfcfc;        /* 전체 배경색 */
+    --text-main: #333333;       /* 기본 글자색 */
+    --text-strong: #000000;     /* 강조 글자색 (제목 등) */
+    --text-desc: #888888;       /* 설명 글자색 (회색) */
+    --card-bg: #ffffff;         /* 카드/박스 배경 */
+    --card-border: #f0f0f0;     /* 테두리 색상 */
+    --card-shadow: rgba(0,0,0,0.03); /* 그림자 */
+}
+
+/* 다크 모드 활성화 시 색상 재정의 */
+body.dark-mode {
+    --bg-color: #1a1a1a;
+    --text-main: #e0e0e0;
+    --text-strong: #ffffff;
+    --text-desc: #a0a0a0;
+    --card-bg: #2d2d2d;
+    --card-border: #444444;
+    --card-shadow: rgba(0,0,0,0.5);
+}
+
+/* ==============================
+   2. 전체 레이아웃 (스크롤바 제거 및 풀스크린 핵심)
+   ============================== */
+* {
+    /* 패딩(padding)이나 테두리(border)가 너비를 늘리지 않도록 설정 */
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    /* 가로 스크롤바가 생기는 것을 원천적으로 차단 */
+    overflow-x: hidden;
+}
+
+body {
+    /* 세로로 요소들을 배치 (헤더 -> 본문 -> 푸터) */
+    display: flex;
+    flex-direction: column;
+
+    /* 내용이 적어도 화면 꽉 차게 만듦 (푸터 바닥 고정용) */
+    min-height: 100vh;
+
+    /* 변수 적용 및 부드러운 전환 효과 */
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* ==============================
+   3. 로그인 컨테이너 (화면 정중앙 배치)
+   ============================== */
+.login-container {
+    /* [핵심] 남은 빈 공간을 모두 차지함 -> 자연스럽게 푸터를 바닥으로 밀어냄 */
+    flex: 1;
+
+    /* 내부 내용물(로그인 박스)을 정중앙에 배치 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 수직 중앙 */
+    align-items: center;     /* 수평 중앙 */
+
+    width: 100%;
+    padding: 20px; /* 모바일에서도 여백 유지 */
+}
+
+/* 실제 로그인 폼이 들어가는 박스 (너비 제한) */
+.login-box {
+    width: 100%;
+    max-width: 400px; /* 피그마 디자인처럼 너무 넓어지지 않게 고정 */
+    display: flex;
+    flex-direction: column;
+}
+
+/* ==============================
+   4. 타이틀 영역
+   ============================== */
+.login-header {
+    width: 100%;
+    margin-bottom: 30px;
+    text-align: left; /* 왼쪽 정렬 */
+}
+
+.login-header h1 {
+    font-size: 30px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    color: var(--text-strong); /* 다크모드 대응 변수 */
+}
+
+.login-header p {
+    font-size: 14px;
+    color: var(--text-desc);
+}
+
+/* ==============================
+   5. 입력창 (피그마 스타일: 회색 박스)
+   ============================== */
+.input-group {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.input-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text-strong);
+}
+
+.custom-input {
+    width: 100%;
+    padding: 16px;
+    background-color: #f2f4f6; /* 피그마 디자인의 연한 회색 배경 */
+    border: none;              /* 테두리 없음 */
+    border-radius: 6px;        /* 둥글기 6px */
+    font-size: 15px;
+    color: #333;               /* 입력 글씨는 잘 보이게 */
+    outline: none;             /* 클릭 시 기본 테두리 제거 */
+    transition: 0.2s;
+}
+
+/* 입력창 클릭(포커스) 시 효과 */
+.custom-input:focus {
+    background-color: #e8f0fe;
+    box-shadow: 0 0 0 1px #7db4e6 inset; /* 안쪽으로 파란 테두리 생김 */
+}
+
+/* ==============================
+   6. 옵션 (아이디 저장 & 비번 찾기)
+   ============================== */
+.options-row {
+    display: flex;
+    justify-content: space-between; /* 양 끝 정렬 */
+    align-items: center;
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.checkbox-container input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: #7db4e6; /* 체크박스 체크 시 파란색 */
+    cursor: pointer;
+}
+
+.checkbox-container span {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-strong);
+}
+
+/* 링크 스타일 공통 */
+.forgot-id, .forgot-pw {
+    font-size: 13px;
+    color: #0056b3; /* 진한 파란색 링크 */
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.forgot-id {
+    margin-left: 20px; /* 왼쪽 공간을 다 차지해서 오른쪽 끝으로 밈 */
+}
+
+
+/* ==============================
+   7. 버튼 스타일 (디자인 복구 핵심)
+   ============================== */
+.btn-login {
+    width: 100%;
+    padding: 16px;
+    background-color: var(--primary-color); /* 쿠모 블루 */
+    color: white !important; /* 글자색 강제 흰색 */
+    border: none !important; /* 테두리 강제 제거 (기본 스타일 덮어쓰기) */
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.social-btn {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 10px;
+    background-color: #f2f4f6; /* 회색 배경 */
+    color: #333 !important;
+    border: none !important;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+/* 하단 회원가입 링크 영역 */
+.signup-link {
+    margin-top: 30px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-desc);
+}
+
+.signup-link a {
+    color: #0056b3;
+    font-weight: 700;
+    margin-left: 5px;
+}
+
+.social-icon {
+    /* 여기서 정하는 게 진짜 크기입니다 */
+    width: 20px;   /* 버튼 글씨 크기랑 비슷하게 */
+    height: 20px;
+
+    /* 혹시 모를 여백 문제 방지 */
+    display: block;
+}
+
+.social-icon2 {
+    /* 여기서 정하는 게 진짜 크기입니다 */
+    width: 25px;   /* 버튼 글씨 크기랑 비슷하게 */
+    height: 25px;
+
+    /* 혹시 모를 여백 문제 방지 */
+    display: block;
+}
+
+/* ==============================
+   8. 다크 모드 예외 처리
+   ============================== */
+/* 다크모드일 때 입력창과 소셜 버튼을 어둡게 변경 */
+body.dark-mode .custom-input,
+body.dark-mode .social-btn {
+    background-color: #333;
+    color: #fff !important;
+}
+
+/* 다크모드일 때 링크 색상을 브랜드 컬러로 변경 */
+body.dark-mode .forgot-pw,        /* 콤마(,) 필수! */
+body.dark-mode .forgot-id,        /* 콤마(,) 필수! */
+body.dark-mode .signup-link a {
+    color: var(--primary-color);
+}

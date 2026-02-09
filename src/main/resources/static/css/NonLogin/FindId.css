@@ -1,0 +1,247 @@
+/* ==============================
+   1. 기본 변수 (다크모드 대응)
+   ============================== */
+:root {
+    --primary-color: #7db4e6;
+    --bg-color: #fcfcfc;
+    --text-main: #333333;
+    --text-strong: #000000;
+    --text-desc: #888888;
+    --card-bg: #ffffff;
+    --input-bg: #f2f4f6;
+    --border-color: #e1e4e8;
+    --error-color: #EA4335;
+}
+
+/* 다크모드 변수 재정의 */
+body.dark-mode {
+    --bg-color: #1a1a1a;
+    --text-main: #e0e0e0;
+    --text-strong: #ffffff;
+    --text-desc: #a0a0a0;
+    --card-bg: #2d2d2d;
+    --input-bg: #333333;
+    --border-color: #444444;
+}
+
+/* ==============================
+   2. 레이아웃
+   ============================== */
+.find-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 60px 20px;
+    background-color: var(--bg-color);
+    min-height: calc(100vh - 120px);
+}
+
+.find-box {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ==============================
+   3. 타이틀 & 탭
+   ============================== */
+.find-header { margin-bottom: 30px; }
+
+.find-header h1 {
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 20px;
+    color: var(--text-strong);
+}
+
+.tab-group {
+    display: flex;
+    background-color: var(--input-bg);
+    border-radius: 25px;
+    padding: 4px;
+    margin-bottom: 15px;
+}
+
+.tab-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #888;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.tab-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.find-desc {
+    font-size: 13px;
+    color: var(--text-desc);
+    margin-top: 10px;
+}
+
+/* ==============================
+   4. 입력 폼 & 에러
+   ============================== */
+.input-group {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.input-label {
+    width: 60px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-strong);
+    flex-shrink: 0;
+}
+
+.custom-input {
+    flex: 1;
+    padding: 14px;
+    background-color: var(--input-bg);
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--text-main);
+    outline: none;
+    transition: 0.2s;
+}
+
+.custom-input:focus {
+    box-shadow: 0 0 0 2px var(--primary-color) inset;
+    background-color: var(--card-bg);
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 14px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: opacity 0.2s;
+}
+.btn-submit:hover { opacity: 0.9; }
+
+.error-text {
+    color: var(--error-color);
+    font-size: 13px;
+    text-align: center;
+    margin-bottom: 15px;
+    font-weight: 500;
+    background-color: rgba(234, 67, 53, 0.1);
+    padding: 10px;
+    border-radius: 6px;
+}
+
+/* ==============================
+   5. 결과 박스 (수정됨)
+   ============================== */
+.result-container {
+    margin-top: 30px;
+    padding: 25px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    animation: slideDown 0.4s ease-out;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.result-title {
+    font-size: 14px;
+    color: var(--text-desc);
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* 이메일 표시 박스 (복사 버튼 삭제, 중앙 정렬) */
+.found-email-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(125, 180, 230, 0.1);
+    border: 1px dashed var(--primary-color);
+    padding: 20px; /* 높이감 약간 추가 */
+    border-radius: 8px;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+.email-text {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-strong);
+}
+
+/* ▼▼▼ 버튼 그룹 (로그인 + 비번찾기) ▼▼▼ */
+.result-btn-group {
+    display: flex;
+    gap: 10px; /* 버튼 사이 간격 */
+    width: 100%;
+}
+
+/* 1) 로그인 하러 가기 (강조) */
+.btn-go-login {
+    flex: 1; /* 1:1 비율 */
+    display: block;
+    padding: 12px;
+    background-color: var(--primary-color);
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    transition: 0.2s;
+}
+.btn-go-login:hover { opacity: 0.9; }
+
+/* 2) 비밀번호 찾기 (보조) */
+.btn-go-pw {
+    flex: 1; /* 1:1 비율 */
+    display: block;
+    padding: 12px;
+    background-color: var(--card-bg); /* 배경색 변수 사용 */
+    border: 1px solid var(--border-color);
+    color: var(--text-desc);
+    text-align: center;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.btn-go-pw:hover {
+    background-color: var(--input-bg);
+    color: var(--text-main);
+    border-color: #ccc;
+}
+
+/* 다크모드에서 비밀번호 찾기 버튼 호버 */
+body.dark-mode .btn-go-pw:hover {
+    background-color: #444;
+    color: white;
+}

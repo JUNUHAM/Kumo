@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.5.8'
+    id 'org.springframework.boot' version '4.0.2'
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
@@ -53,7 +53,6 @@ dependencies {
     // .env 파일을 읽어오는 라이브러리
     implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 }
-
 tasks.named('test') {
     useJUnitPlatform()
 }
