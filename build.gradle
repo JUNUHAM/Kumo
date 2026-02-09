@@ -50,6 +50,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 
+    // .env 파일을 읽어오는 라이브러리
     implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 }
 
