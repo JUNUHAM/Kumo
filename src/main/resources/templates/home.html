@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>KUMO - 일본 1위 구인구직 플랫폼</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" th:href="@{/css/NonLoginFragments/NonLoginHeader.css}">
+    <link rel="stylesheet" th:href="@{/css/NonLoginFragments/NonLoginFooter.css}">
+    <link rel="stylesheet" th:href="@{/css/NonLogin/home.css}">
+</head>
+<body>
+
+<div th:replace="~{NonLoginFragments/NonLoginHeader :: headerFragment}"></div>
+
+<main class="home-container">
+
+    <div class="main-icon">
+        <img th:src="@{/images/NonLogin/cloud.png}" alt="구름 아이콘" class="cloud-img">
+    </div>
+
+    <div class="text-group">
+        <h1 th:utext="#{home.title}">일본 1위<br>구인구직 플랫폼</h1>
+        <p th:text="#{home.subtitle}">일본 전국 일자리 찾기 지도</p>
+    </div>
+
+    <div class="button-group">
+        <a th:href="@{/map_non_login_view}" class="card-btn primary">
+            <span class="btn-text" th:text="#{home.btn.job}">일자리 찾기</span>
+        </a>
+
+        <div class="card-btn secondary">
+            <span class="btn-text">
+                <span th:text="#{home.btn.play}">놀거리찾기</span><br>
+                <small th:text="#{home.btn.dev}">(개발중)</small>
+            </span>
+        </div>
+    </div>
+
+</main>
+
+<div th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"></div>
+
+</body>
+</html>

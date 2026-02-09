@@ -38,3 +38,6 @@ out/
 
 ### .env ###
 .env
+
+### .gemini.md ###
+gemini.md
