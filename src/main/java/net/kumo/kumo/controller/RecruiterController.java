@@ -64,6 +64,18 @@ public class RecruiterController {
     }
 
     /**
+     * 회사 정보 컨트롤러
+     * 
+     * @param model
+     * @return
+     */
+    @GetMapping("CompanyInfo")
+    public String CompanyInfo(Model model) {
+        model.addAttribute("currentMenu", "companyInfo"); // 사이드바 선택(회사 정보))
+        return "recruiterView/companyInfo";
+    }
+
+    /**
      * 내 계정(settings) 컨트롤러
      * 
      * @param model
@@ -84,11 +96,5 @@ public class RecruiterController {
     @GetMapping("JobPosting")
     public String JobPosting(Model model) {
         return "recruiterView/jobPosting";
-    }
-
-    // // info 테스트
-    @GetMapping("Info")
-    public String Info(Model model) {
-        return "recruiterView/info";
     }
 }

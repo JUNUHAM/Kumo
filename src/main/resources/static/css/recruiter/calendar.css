@@ -335,6 +335,27 @@
   background-color: transparent !important;
 }
 
+/* [미니 달력] 오늘 날짜를 노란색 원으로 꽉 채우기 */
+#mini-calendar .fc-day-today .fc-daygrid-day-number {
+  background-color: #ffe68b !important; /* 선명한 노란색 원 */
+  color: #333d4b !important; /* 노란 배경에서 잘 보이도록 어두운 글자색 */
+  border-radius: 50% !important;
+  width: 26px !important;
+  height: 26px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto !important;
+  font-weight: 800 !important;
+  box-shadow: 0 2px 4px rgba(255, 212, 59, 0.3); /* 은은한 강조 효과 */
+}
+
+/* [핵심] 오늘 날짜를 클릭했을 때: 노란색 원이 파란색 원으로 자연스럽게 교체되도록 설정 */
+#mini-calendar .fc-day-today.selected-day .fc-daygrid-day-number {
+  background-color: #7abaff !important; /* 클릭 시 사장님의 시그니처 블루로 변경 */
+  color: white !important;
+}
+
 /* 5. 일정 점(Dot) 가로 나열 및 위치 교정 */
 #mini-calendar .fc-daygrid-day-events {
   display: flex !important;

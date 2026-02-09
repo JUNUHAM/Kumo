@@ -31,16 +31,16 @@
   width: 10%;
 }
 .kumo-table th:nth-child(3) {
-  width: 12%;
+  width: 14%;
 }
 .kumo-table th:nth-child(4) {
   width: 24%; /* [수정] 26% -> 20% (가장 널널한 연락처 공간을 활용) */
 }
 .kumo-table th:nth-child(5) {
-  width: 10%;
+  width: 12%;
 }
 .kumo-table th:nth-child(6) {
-  width: 8%; /* [수정] 8% -> 10% (마감여부 텍스트 공간 확보) */
+  width: 10%; /* [수정] 8% -> 10% (마감여부 텍스트 공간 확보) */
 }
 .kumo-table th:nth-child(7) {
   width: 18%; /* [수정] 11% -> 20% (버튼 영역을 대폭 넓혀 짤림 방지) */

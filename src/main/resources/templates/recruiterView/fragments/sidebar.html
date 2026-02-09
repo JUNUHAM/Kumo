@@ -53,6 +53,15 @@
           </a>
 
           <a
+            th:href="@{/Recruiter/CompanyInfo}"
+            class="nav-item"
+            th:classappend="${currentMenu == 'companyInfo'} ? 'active'"
+          >
+            <i class="bi bi-building-fill"></i>
+            <span>회사 정보</span>
+          </a>
+
+          <a
             th:href="@{/Recruiter/Settings}"
             class="nav-item"
             th:classappend="${currentMenu == 'settings'} ? 'active'"
