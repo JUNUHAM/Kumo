@@ -1,0 +1,29 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <body>
+    <aside th:fragment="rightSidebarFragment" class="dashboard-right-sidebar">
+      <div class="side-panel calendar-section">
+        <div class="panel-header">November, 2020</div>
+        <div class="panel-placeholder">
+          <i class="bi bi-calendar3 fs-4 mb-2"></i>
+          <p class="mb-0">캘린더 준비 중</p>
+        </div>
+      </div>
+
+      <div class="side-panel schedule-section">
+        <div class="panel-header">Today's Schedule</div>
+        <div class="panel-placeholder">
+          <p class="mb-0 text-center">예정된 면접 일정이<br />없습니다.</p>
+        </div>
+      </div>
+
+      <div class="side-action-buttons">
+        <button class="btn btn-sky-blue w-100">공고 등록</button>
+        <button class="btn btn-light-blue w-100 position-relative">
+          <i class="bi bi-chat-dots-fill me-2"></i>채팅
+          <span class="badge-count">3</span>
+        </button>
+      </div>
+    </aside>
+  </body>
+</html>
