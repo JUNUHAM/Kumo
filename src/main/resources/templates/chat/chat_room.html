@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>채팅방</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/chat_room.css}">
+
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+
+<body>
+
+    <input type="hidden" id="roomId" th:value="${roomId}">
+    <input type="hidden" id="myId" th:value="${userId}">
+
+    <div class="mobile-container">
+
+        <div class="chat-header">
+            <i class="fa-solid fa-arrow-left header-icon" onclick="history.back()"></i>
+            <span class="header-title">채팅방 [[${roomId}]]</span>
+            <i class="fa-solid fa-bars header-icon"></i>
+        </div>
+
+        <div class="msg-area" id="msgArea">
+
+            <th:block th:each="msg : ${history}">
+                <div th:classappend="${msg.senderId == userId} ? 'me' : 'other'" class="msg-row">
+                    <img th:if="${msg.senderId != userId}" th:src="@{/images/dog_profile.jpg}" class="profile-img">
+
+                    <div style="display: flex; align-items: flex-end;">
+                        <span th:if="${msg.senderId == userId}" class="msg-time"
+                            th:text="${#temporals.format(msg.sentAt, 'HH:mm')}"></span>
+
+                        <div class="msg-bubble" th:text="${msg.message}">내용</div>
+
+                        <span th:if="${msg.senderId != userId}" class="msg-time"
+                            th:text="${#temporals.format(msg.sentAt, 'HH:mm')}"></span>
+                    </div>
+                </div>
+            </th:block>
+
+        </div>
+
+        <div class="input-area">
+            <i class="fa-solid fa-plus btn-plus"></i>
+            <input type="text" class="input-field" id="msgInput" placeholder="메시지 입력..."
+                onkeypress="if(event.keyCode==13) sendMessage()">
+            <button class="btn-send" onclick="sendMessage()">전송</button>
+        </div>
+
+    </div>
+
+    <script>
+        var stompClient = null;
+        var roomId = document.getElementById("roomId").value;
+        var myId = document.getElementById("myId").value;
+        var msgArea = document.getElementById("msgArea");
+
+        // [1] 페이지 열리면 바로 연결 시작
+        connect();
+
+        function connect() {
+            var socket = new SockJS('/ws-stomp'); // 1. 연결 요청 (End point)
+            stompClient = Stomp.over(socket);
+
+            stompClient.connect({}, function (frame) {
+                console.log('Connected: ' + frame);
+
+                // 2. 구독 신청 (방 번호에 귀를 기울임)
+                stompClient.subscribe('/sub/chat/room/' + roomId, function (messageOutput) {
+                    // 누가 메시지를 보내면 여기서 받음!
+                    showMessage(JSON.parse(messageOutput.body));
+                });
+            });
+
+            // 스크롤을 맨 아래로 내림
+            msgArea.scrollTop = msgArea.scrollHeight;
+        }
+
+        // [2] 메시지 전송 함수
+        function sendMessage() {
+            var messageContent = document.getElementById("msgInput").value;
+
+            if (messageContent && stompClient) {
+                var chatMessage = {
+                    roomId: roomId,
+                    senderId: myId,
+                    message: messageContent,
+                    type: 'TALK'
+                };
+
+                // 3. 서버로 보냄 (Publish)
+                stompClient.send("/pub/chat/message", {}, JSON.stringify(chatMessage));
+
+                document.getElementById("msgInput").value = ''; // 입력창 비우기
+            }
+        }
+
+        // [3] 받은 메시지를 화면에 그리는 함수
+        function showMessage(message) {
+            var isMe = (message.senderId === myId); // 내가 보낸 건가?
+
+            var div = document.createElement('div');
+            div.className = isMe ? "msg-row me" : "msg-row other";
+
+            var html = '';
+
+            if (!isMe) {
+                // 상대방이면 프사 추가
+                html += '<img src="/images/dog_profile.jpg" class="profile-img">';
+                html += '<div><div class="name">' + message.senderId + '</div>';
+            }
+
+            html += '<div style="display: flex; align-items: flex-end;">';
+
+            // 내 메시지는 시간 먼저
+            if (isMe) html += '<span class="msg-time">방금</span>';
+
+            html += '<div class="msg-bubble">' + message.message + '</div>';
+
+            // 상대방 메시지는 시간 나중
+            if (!isMe) {
+                html += '<span class="msg-time">방금</span>';
+                html += '</div></div>'; // 닫는 태그
+            } else {
+                html += '</div>'; // 닫는 태그
+            }
+
+            div.innerHTML = html;
+            msgArea.appendChild(div);
+
+            // 스크롤 맨 아래로
+            msgArea.scrollTop = msgArea.scrollHeight;
+        }
+    </script>
+
+</body>
+
+</html>

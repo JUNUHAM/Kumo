@@ -14,7 +14,7 @@ public class HomeController {
         return "home";
     }
 
-    // 2. 회사 정보 페이지 (✨여기가 핵심!)
+    // 2. 회사 정보 페이지
     // localhost:8080/company_info 접속 시 실행
     @GetMapping("/company_info")
     public String companyInfo() {

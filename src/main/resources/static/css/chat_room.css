@@ -1,0 +1,174 @@
+@charset "UTF-8";
+
+/* 기본 설정 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+body {
+    background-color: #f2f2f2;
+    /* 채팅방 배경은 약간 회색 (카톡 느낌) */
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+/* 모바일 컨테이너 (480px 고정) */
+.mobile-container {
+    width: 480px;
+    background-color: #b2c7da;
+    /* 카톡 기본 배경색 느낌 */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* 1. 헤더 (고정) */
+.chat-header {
+    background-color: #a9bdce;
+    /* 배경보다 살짝 진하게 */
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.header-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+}
+
+.header-icon {
+    font-size: 18px;
+    color: #333;
+    cursor: pointer;
+}
+
+/* 2. 채팅 메시지 영역 */
+.msg-area {
+    flex: 1;
+    /* 남은 공간 다 차지 */
+    padding: 20px;
+    padding-bottom: 80px;
+    /* 입력창 가리지 않게 여백 */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    overflow-y: auto;
+    /* 스크롤 가능 */
+}
+
+/* 메시지 공통 행 */
+.msg-row {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+/* (A) 상대방 메시지 (왼쪽) */
+.msg-row.other {
+    justify-content: flex-start;
+}
+
+.msg-row.other .profile-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 40%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.msg-row.other .name {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 5px;
+    margin-left: 2px;
+}
+
+.msg-bubble {
+    max-width: 70%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.4;
+    position: relative;
+}
+
+.msg-row.other .msg-bubble {
+    background-color: #fff;
+    color: #333;
+    border-top-left-radius: 0;
+    /* 말풍선 꼬리 효과 */
+}
+
+/* (B) 내 메시지 (오른쪽) */
+.msg-row.me {
+    justify-content: flex-end;
+}
+
+.msg-row.me .msg-bubble {
+    background-color: #ffeb33;
+    /* 카톡 노란색 */
+    color: #333;
+    border-top-right-radius: 0;
+    /* 말풍선 꼬리 효과 */
+}
+
+/* 시간 표시 */
+.msg-time {
+    font-size: 10px;
+    color: #555;
+    margin-top: auto;
+    margin: 0 5px;
+}
+
+
+/* 3. 하단 입력창 (고정) */
+.input-area {
+    position: fixed;
+    bottom: 0;
+    width: 480px;
+    /* 컨테이너 너비와 동일 */
+    background-color: #fff;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-top: 1px solid #eee;
+}
+
+.input-field {
+    flex: 1;
+    padding: 10px 15px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    font-size: 14px;
+    outline: none;
+}
+
+.btn-send {
+    background-color: #ffeb33;
+    /* 전송 버튼 노란색 */
+    border: none;
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-plus {
+    color: #aaa;
+    font-size: 20px;
+    cursor: pointer;
+}

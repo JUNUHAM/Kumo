@@ -33,7 +33,7 @@ public class LoginController {
     }
 
     // ==============================
-    // 4. 구인자 회원가입 화면 (아직 파일 없음)
+    // 4. 구인자 회원가입 화면
     // ==============================
     @GetMapping("/signup/recruiter")
     public String recruiterSignupForm() {
