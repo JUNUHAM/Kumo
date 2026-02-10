@@ -1,0 +1,154 @@
+/* 컨테이너 배경 및 폰트 */
+.company-mgmt-container {
+  padding: 20px;
+  font-family: "Pretendard", sans-serif !important;
+}
+
+/* 탭 메뉴 디자인 (회사1, 회사2, +) */
+.nav-pills-wrapper {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.nav-pill {
+  padding: 10px 24px;
+  border-radius: 50px;
+  border: 1px solid #edf2f7;
+  background: #ffffff;
+  color: #718096;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.nav-pill.active {
+  background: #7abaff;
+  color: white;
+  border-color: #7abaff;
+  box-shadow: 0 4px 14px rgba(122, 186, 255, 0.4);
+}
+
+.nav-pill-add {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px dashed #cbd5e0;
+  background: transparent;
+  color: #a0aec0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.nav-pill-add:hover {
+  border-color: #7abaff;
+  color: #7abaff;
+  background: #f0f7ff;
+}
+
+.nav-pill-link {
+  font-size: 0.8rem !important; /* [수정] 크기를 0.8rem으로 줄임 */
+  font-weight: 600;
+  color: #8b95a1 !important; /* [수정] 텍스트 색상을 부드러운 회색으로 변경 */
+  text-decoration: none; /* 밑줄 제거 */
+  transition: color 0.2s;
+}
+
+/* 정보 입력 카드 (이미지_3eea5d 감성) */
+.info-glass-card {
+  background: white;
+  border-radius: 30px;
+  padding: 40px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(240, 243, 248, 0.8);
+}
+
+.info-label {
+  display: block;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+}
+
+.kumo-form-control {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 15px;
+  border: 1px solid #e2e8f0;
+  background: #fcfdfe;
+  transition: all 0.2s;
+}
+
+.kumo-form-control:focus {
+  outline: none;
+  border-color: #7abaff;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(122, 186, 255, 0.1);
+}
+
+/* 주소 입력 그룹 컨테이너 */
+.kumo-input-group {
+  display: flex;
+  position: relative;
+  width: 100%;
+}
+
+/* 주소 입력창 (버튼 자리를 위해 오른쪽 패딩 확보) */
+.kumo-form-control.address-input {
+  border-radius: 15px !important; /* 전체 둥글게 유지 */
+  padding-right: 110px !important; /* 버튼이 들어올 공간 확보 */
+}
+
+/* 주소 찾기 버튼 (입력창 안쪽 오른쪽으로 고정) */
+.btn-address-search {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  bottom: 6px;
+  width: 90px;
+  background: #f0f3f8 !important; /* 이미지와 유사한 연한 회색 */
+  border: none;
+  border-radius: 10px !important; /* 입력창 곡률보다 살짝 작게 */
+  color: #4a5568;
+  font-weight: 700;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.btn-address-search:hover {
+  background: #7abaff !important; /* 호버 시 사장님의 시그니처 블루 */
+  color: white;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-save {
+  background: #7abaff;
+  color: white;
+  border: none;
+  padding: 14px 40px;
+  border-radius: 15px;
+  font-weight: 700;
+  transition: transform 0.2s;
+}
+
+.btn-save:hover {
+  transform: translateY(-2px);
+}
+
+.btn-delete {
+  background: transparent;
+  color: #ff6b6b;
+  border: none;
+  font-weight: 600;
+  text-decoration: none;
+}
