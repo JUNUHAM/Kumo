@@ -85,4 +85,6 @@ public class ChatController {
         // 2. 메시지 배달
         messagingTemplate.convertAndSend("/sub/chat/room/" + message.getRoomId(), savedMessage);
     }
+
+    // 항가항가
 }
