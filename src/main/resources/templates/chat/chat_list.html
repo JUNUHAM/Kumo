@@ -30,7 +30,7 @@
 
         <div class="chat-list">
 
-            <div class="chat-item" onclick="location.href='/chat/room/1'">
+            <div class="chat-item" onclick="enterRoom(1)">
                 <div class="avatar-wrapper">
                     <img th:src="@{/images/dog_profile.jpg}" class="avatar-img" alt="프로필">
                     <div class="status-dot"></div>
@@ -134,6 +134,22 @@
         </div>
 
     </div>
+
+    <script>
+        function enterRoom(roomId) {
+            // 1. 현재 주소창(URL)에서 '?userId=xxx' 부분을 찾습니다.
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('userId');
+
+            // 2. userId가 있으면 채팅방 주소 뒤에 붙여서 이동합니다.
+            if (userId) {
+                location.href = '/chat/room/' + roomId + '?userId=' + userId;
+            } else {
+                // 테스트용: userId가 없으면 경고창을 띄웁니다.
+                alert("로그인 정보(userId)가 URL에 없습니다! (/chat/list?userId=test 로 접속해주세요)");
+            }
+        }
+    </script>
 
 </body>
 

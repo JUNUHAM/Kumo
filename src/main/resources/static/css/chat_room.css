@@ -1,6 +1,8 @@
 @charset "UTF-8";
 
-/* 기본 설정 */
+/* =========================================
+   기본 초기화 및 레이아웃 설정
+   ========================================= */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -10,34 +12,37 @@
 
 body {
     background-color: #f2f2f2;
-    /* 채팅방 배경은 약간 회색 (카톡 느낌) */
     display: flex;
     justify-content: center;
-    min-height: 100vh;
+    height: 100vh;
+    /* 화면 전체 높이 */
+    overflow: hidden;
+    /* 이중 스크롤 방지 */
 }
 
-/* 모바일 컨테이너 (480px 고정) */
 .mobile-container {
     width: 480px;
     background-color: #b2c7da;
-    /* 카톡 기본 배경색 느낌 */
-    min-height: 100vh;
+    /* 배경색 */
+    height: 100vh;
     display: flex;
     flex-direction: column;
+    /* 세로 배치 */
     position: relative;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
-/* 1. 헤더 (고정) */
+/* =========================================
+   1. 헤더 (고정 영역)
+   ========================================= */
 .chat-header {
+    flex: 0 0 auto;
+    /* 크기 고정 */
     background-color: #a9bdce;
-    /* 배경보다 살짝 진하게 */
     padding: 15px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    position: sticky;
-    top: 0;
     z-index: 10;
 }
 
@@ -53,28 +58,40 @@ body {
     cursor: pointer;
 }
 
-/* 2. 채팅 메시지 영역 */
+/* =========================================
+   2. 메시지 영역 (가변 영역 + 스크롤)
+   ========================================= */
 .msg-area {
     flex: 1;
-    /* 남은 공간 다 차지 */
+    /* 남은 공간 모두 차지 */
+    overflow-y: auto;
+    /* 내용 넘치면 스크롤 */
     padding: 20px;
-    padding-bottom: 80px;
-    /* 입력창 가리지 않게 여백 */
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    overflow-y: auto;
-    /* 스크롤 가능 */
+    gap: 10px;
+    /* 메시지 박스 사이 간격 */
+
+    /* 스크롤바 숨기기 */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
-/* 메시지 공통 행 */
+.msg-area::-webkit-scrollbar {
+    display: none;
+}
+
+/* =========================================
+   3. 메시지 행 (가로 정렬 제어) - 핵심!
+   ========================================= */
 .msg-row {
+    width: 100%;
     display: flex;
-    align-items: flex-start;
-    margin-bottom: 10px;
+    align-items: flex-end;
+    /* ★중요: 시간과 말풍선 밑줄 맞춤 */
 }
 
-/* (A) 상대방 메시지 (왼쪽) */
+/* (A) 상대방 (왼쪽) */
 .msg-row.other {
     justify-content: flex-start;
 }
@@ -85,59 +102,64 @@ body {
     border-radius: 40%;
     object-fit: cover;
     margin-right: 10px;
-}
-
-.msg-row.other .name {
-    font-size: 12px;
-    color: #555;
-    margin-bottom: 5px;
-    margin-left: 2px;
-}
-
-.msg-bubble {
-    max-width: 70%;
-    padding: 10px 14px;
-    border-radius: 12px;
-    font-size: 14px;
-    line-height: 1.4;
-    position: relative;
+    align-self: flex-start;
+    /* 프사는 항상 맨 위 */
 }
 
 .msg-row.other .msg-bubble {
     background-color: #fff;
-    color: #333;
     border-top-left-radius: 0;
-    /* 말풍선 꼬리 효과 */
 }
 
-/* (B) 내 메시지 (오른쪽) */
+/* (B) 나 (오른쪽) */
 .msg-row.me {
     justify-content: flex-end;
 }
 
 .msg-row.me .msg-bubble {
     background-color: #ffeb33;
-    /* 카톡 노란색 */
-    color: #333;
     border-top-right-radius: 0;
-    /* 말풍선 꼬리 효과 */
+}
+
+/* =========================================
+   ★ 말풍선 텍스트 처리 (유격/줄바꿈 해결) ★
+   ========================================= */
+.msg-bubble {
+    max-width: 70%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    position: relative;
+    color: #333;
+
+    /* 1. "사장님" 같은 한글 단어 끊김 방지 */
+    word-break: keep-all;
+
+    /* 2. "ㅁㄴㅇㄹ..." 같은 긴 외계어는 강제로 줄바꿈 */
+    overflow-wrap: anywhere;
 }
 
 /* 시간 표시 */
 .msg-time {
     font-size: 10px;
     color: #555;
-    margin-top: auto;
     margin: 0 5px;
+    margin-bottom: 2px;
+    /* 바닥에서 살짝 띄움 */
+
+    /* 시간 찌그러짐 방지 */
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
-
-/* 3. 하단 입력창 (고정) */
+/* =========================================
+   4. 입력창 (고정 영역)
+   ========================================= */
 .input-area {
-    position: fixed;
-    bottom: 0;
-    width: 480px;
-    /* 컨테이너 너비와 동일 */
+    flex: 0 0 auto;
+    /* 크기 고정 */
+    width: 100%;
     background-color: #fff;
     padding: 10px;
     display: flex;
@@ -158,17 +180,18 @@ body {
 
 .btn-send {
     background-color: #ffeb33;
-    /* 전송 버튼 노란색 */
     border: none;
     padding: 10px 15px;
     border-radius: 10px;
     font-size: 14px;
     font-weight: 700;
     cursor: pointer;
+    white-space: nowrap;
+    /* 버튼 글자 줄바꿈 방지 */
 }
 
 .btn-plus {
-    color: #aaa;
     font-size: 20px;
+    color: #aaa;
     cursor: pointer;
 }
