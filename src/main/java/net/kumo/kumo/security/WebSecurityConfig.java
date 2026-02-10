@@ -34,10 +34,13 @@ public class WebSecurityConfig {
 						.requestMatchers("/api/check/**","/api/**").permitAll()
 						
 						// (3) 관리자 전용
-						.requestMatchers("/admin/**").hasRole("ADMIN")
+						// .requestMatchers("/admin/**").hasRole("ADMIN")
 						
 						// (4) 그 외 모든 요청은 인증 필요
-						.anyRequest().authenticated()
+						// .anyRequest().authenticated()
+
+                        // 모든 요청 허용 (개발용)
+                        .anyRequest().permitAll()
 				)
 				
 				// 3. 로그인 설정

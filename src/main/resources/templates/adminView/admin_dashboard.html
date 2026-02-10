@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>KUMO Admin Dashboard</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" th:href="@{/css/adminView/admin_dashboard.css}">
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="logo-area">
+        <div class="logo-text">KUMO</div>
+    </div>
+    <ul class="nav-menu">
+        <li class="nav-item active">
+            <span class="nav-icon">🏠</span> DashBoard
+        </li>
+        <li class="nav-item">
+            <span class="nav-icon">👥</span> Users
+        </li>
+        <li class="nav-item">
+            <span class="nav-icon">📄</span> Post
+        </li>
+        <li class="nav-item">
+            <span class="nav-icon">🕸️</span> DataOps
+        </li>
+        <li class="nav-item">
+            <span class="nav-icon">⚙️</span> Setting
+        </li>
+    </ul>
+</aside>
+
+<main class="main-content">
+    <header class="top-header">
+        <div class="page-title">DashBoard</div>
+        <div class="header-links">
+            <a href="#">회사 정보</a>
+            <a href="#">다운 로드</a>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <div class="welcome-banner">
+            <h2 class="welcome-text">관리자 페이지에 오신것을 환영합니다 <span th:text="${adminName}">User</span>.</h2>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-value" id="totalUsers">-</div>
+                <div class="stat-label">전체 회원</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="newUsers">-</div>
+                <div class="stat-label">신규 회원</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value loading" id="totalPosts">-</div>
+                <div class="stat-label">전체 공고수</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value loading" id="newPosts">-</div>
+                <div class="stat-label">신규 공고수</div>
+            </div>
+        </div>
+
+        <div class="charts-middle-row">
+            <div class="chart-box-left">
+                <div class="chart-header">
+                    <span class="chart-title">주간 공고 등록 수 (최근 7일)</span>
+                </div>
+                <canvas id="barChart"></canvas>
+            </div>
+
+            <div class="chart-box-right">
+                <div class="chart-header">
+                    <span class="chart-title">지역별 공고 수</span>
+                    <div class="toggle-group">
+                        <button class="toggle-btn active" onclick="toggleRegion('osaka')">오사카</button>
+                        <button class="toggle-btn" onclick="toggleRegion('tokyo')">도쿄</button>
+                    </div>
+                </div>
+
+                <div style="width: 180px; height: 180px; position: relative; margin: 0 auto;">
+                    <canvas id="doughnutChart"></canvas>
+                </div>
+
+                <div id="customLegend" class="chart-legend-container">
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-box-bottom">
+            <div class="chart-header">
+                <span class="chart-title">월별 신규 회원 수</span>
+            </div>
+            <canvas id="lineChart"></canvas>
+        </div>
+    </div>
+</main>
+
+<script>
+    // 전역 변수 설정
+    let barChart, doughnutChart, lineChart;
+    let dashboardData = {};
+
+    // 1. 차트 초기화 (페이지 로드 시 빈 차트 생성)
+    function initCharts() {
+        // [Bar Chart] 주간 통계
+        const ctxBar = document.getElementById('barChart').getContext('2d');
+        barChart = new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: '등록 수',
+                    data: [],
+                    backgroundColor: '#3b5bdb', // 파란색
+                    borderRadius: 15,
+                    barThickness: 30
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, grid: { borderDash: [5, 5] } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // [Doughnut Chart] 지역 통계
+        const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
+        doughnutChart = new Chart(ctxDoughnut, {
+            type: 'doughnut',
+            data: {
+                labels: [],
+                datasets: [{
+                    data: [],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    // ★ [수정] 기본 범례 비활성화 (가장 중요!)
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: true // 툴팁은 유지
+                    }
+                }
+            }
+        });
+
+        // [Line Chart] 월별 회원 (그라데이션 효과)
+        const ctxLine = document.getElementById('lineChart').getContext('2d');
+        const gradient = ctxLine.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, 'rgba(51, 154, 240, 0.4)');
+        gradient.addColorStop(1, 'rgba(51, 154, 240, 0.0)');
+
+        lineChart = new Chart(ctxLine, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Users',
+                    data: [],
+                    borderColor: '#339af0',
+                    backgroundColor: gradient,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { borderDash: [5, 5] } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    // 2. 데이터 가져오기 (Fetch API)
+    async function fetchDashboardData() {
+        try {
+            // AdminController 의 @GetMapping("/data") 호출
+            const response = await fetch('/admin/data');
+
+            if (!response.ok) throw new Error('Network response was not ok');
+
+            dashboardData = await response.json();
+
+            // UI 업데이트 시작
+            updateUI(dashboardData);
+
+        } catch (error) {
+            console.error("데이터 로딩 중 오류 발생:", error);
+            // 에러 시 0으로 표시
+            document.getElementById('totalPosts').innerText = "0";
+            document.getElementById('newPosts').innerText = "0";
+        }
+    }
+
+    // 3. UI 및 차트 업데이트
+    function updateUI(data) {
+        // [카드] 숫자 업데이트 (toLocaleString으로 천단위 콤마)
+        document.getElementById('totalUsers').innerText = data.totalUsers.toLocaleString();
+        document.getElementById('newUsers').innerText = data.newUsers.toLocaleString();
+        document.getElementById('totalPosts').innerText = data.totalPosts.toLocaleString();
+        document.getElementById('newPosts').innerText = data.newPosts.toLocaleString();
+
+        // 로딩 스타일 제거
+        document.querySelectorAll('.loading').forEach(el => el.classList.remove('loading'));
+
+        // [Bar Chart] 주간 통계 업데이트
+        // 날짜(Key) 순서대로 정렬
+        const sortedWeekly = Object.entries(data.weeklyPostStats || {})
+            .sort((a, b) => a[0].localeCompare(b[0]));
+
+        barChart.data.labels = sortedWeekly.map(entry => entry[0].substring(5)); // 'yyyy-MM-dd' -> 'MM-dd'
+        barChart.data.datasets[0].data = sortedWeekly.map(entry => entry[1]);
+        barChart.update();
+
+        // [Doughnut Chart] 지역 통계 (초기값: 오사카)
+        updateRegionChart('osaka');
+
+        // [Line Chart] 월별 통계 (임시 데이터)
+        const sortedMonthly = Object.entries(data.monthlyUserStats || {});
+        lineChart.data.labels = sortedMonthly.map(entry => entry[0]);
+        lineChart.data.datasets[0].data = sortedMonthly.map(entry => entry[1]);
+        lineChart.update();
+    }
+
+    function generateCustomLegend(chart) {
+        const legendContainer = document.getElementById('customLegend');
+        legendContainer.innerHTML = ''; // 기존 내용 초기화
+
+        const data = chart.data;
+        if (!data.labels.length || !data.datasets.length) return;
+
+        const listUl = document.createElement('ul');
+        listUl.className = 'legend-list';
+
+        data.labels.forEach((label, index) => {
+            const color = data.datasets[0].backgroundColor[index];
+            const value = data.datasets[0].data[index];
+
+            const li = document.createElement('li');
+            li.className = 'legend-item';
+
+            // 색상 박스
+            const colorBox = document.createElement('span');
+            colorBox.className = 'legend-color-box';
+            colorBox.style.backgroundColor = color;
+
+            // 라벨 텍스트 (구 이름)
+            const textSpan = document.createElement('span');
+            textSpan.className = 'legend-text';
+            textSpan.innerText = label;
+            textSpan.title = label; // 마우스 올리면 전체 이름 표시
+
+            // 값 (건수)
+            const valueSpan = document.createElement('span');
+            valueSpan.className = 'legend-value';
+            valueSpan.innerText = value.toLocaleString(); // 천단위 콤마
+
+            li.appendChild(colorBox);
+            li.appendChild(textSpan);
+            li.appendChild(valueSpan);
+            listUl.appendChild(li);
+        });
+
+        legendContainer.appendChild(listUl);
+    }
+
+    // 4. 지역 토글 기능
+    function toggleRegion(region) {
+        // 버튼 스타일 활성화/비활성화
+        document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+
+        // 차트 데이터 교체
+        updateRegionChart(region);
+    }
+
+    function updateRegionChart(region) {
+        let stats = {};
+        if (region === 'osaka') {
+            stats = dashboardData.osakaWardStats || {};
+        } else {
+            stats = dashboardData.tokyoWardStats || {};
+        }
+
+        // 데이터가 비어있을 경우 처리
+        if (Object.keys(stats).length === 0) {
+            doughnutChart.data.labels = ['데이터 없음'];
+            doughnutChart.data.datasets[0].data = [1];
+            doughnutChart.data.datasets[0].backgroundColor = ['#e9ecef'];
+        } else {
+            doughnutChart.data.labels = Object.keys(stats);
+            doughnutChart.data.datasets[0].data = Object.values(stats);
+            // 색상 배열은 초기화 시 설정된 값 사용
+            doughnutChart.data.datasets[0].backgroundColor = ['#364fc7', '#e599f7', '#339af0', '#ff922b', '#adb5bd', '#63e6be'];
+        }
+        doughnutChart.update();
+
+        generateCustomLegend(doughnutChart);
+    }
+
+    // 페이지 로드 완료 시 실행
+    document.addEventListener('DOMContentLoaded', () => {
+        initCharts();         // 차트 틀 생성
+        fetchDashboardData(); // 데이터 불러오기
+    });
+</script>
+</body>
+</html>
