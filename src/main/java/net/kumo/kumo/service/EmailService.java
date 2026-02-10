@@ -66,7 +66,7 @@ public class EmailService {
 	
 	public String createKey(){
 		Random random = new Random();
-		
+		return "ㅋㅋ";
 	}
 	
 	
