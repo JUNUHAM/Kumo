@@ -1,0 +1,118 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>KUMO RECRUITER - 내 계정</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+
+    <link rel="stylesheet" th:href="@{/css/recruiter/header.css}" />
+    <link rel="stylesheet" th:href="@{/css/recruiter/sidebar.css}" />
+    <link rel="stylesheet" th:href="@{/css/recruiter/main.css}" />
+    <link rel="stylesheet" th:href="@{/css/recruiter/settings.css}" />
+  </head>
+  <body>
+    <header
+      th:replace="~{recruiterView/fragments/header :: headerFragment}"
+    ></header>
+
+    <div class="dashboard-wrapper">
+      <div
+        th:replace="~{recruiterView/fragments/sidebar :: sidebarFragment}"
+      ></div>
+
+      <div class="main-container" style="margin-right: 0;">
+        <main class="content-body">
+          <div class="settings-container">
+            <h2 class="settings-title">내 계정</h2>
+
+            <div class="settings-form-wrapper">
+              <div class="profile-section mb-5">
+                <label class="info-label">프로필 사진</label>
+                <div class="profile-image-box">
+                  <div class="default-profile-icon">
+                    <i class="bi bi-person-circle"></i>
+                  </div>
+
+                  <button type="button" class="btn-profile-upload">
+                    프로필 사진 업로드
+                  </button>
+                </div>
+              </div>
+
+              <div class="info-group">
+                <div class="info-row">
+                  <span class="info-label">이름</span>
+                  <span class="info-value">JisuMOM</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">생년월일</span>
+                  <span class="info-value"
+                    >1000 / 01 / 01
+                    <span class="text-muted ms-2">( 만 40세 )</span></span
+                  >
+                </div>
+                <div class="info-row">
+                  <span class="info-label">닉네임</span>
+                  <span class="info-value">타락한윤병진83</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">이메일</span>
+                  <span class="info-value">hello@designdrops.io</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">주소</span>
+                  <span class="info-value"
+                    >오사카특별시 오사카부 오사카시 오사카 101호</span
+                  >
+                </div>
+              </div>
+
+              <div class="info-group mt-4">
+                <div class="info-row align-items-center">
+                  <span class="info-label">LINE 연동</span>
+                  <div class="form-check form-switch custom-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      id="lineLink"
+                    />
+                  </div>
+                </div>
+                <div class="info-row align-items-center">
+                  <span class="info-label">Google 연동</span>
+                  <div class="form-check form-switch custom-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      id="googleLink"
+                      checked
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="settings-footer-actions">
+                <button type="button" class="btn-quit">회원 탈퇴</button>
+                <button type="button" class="btn-submit">회원정보 수정</button>
+              </div>
+            </div>
+            <footer
+              th:replace="~{fragments/NonLoginFooter :: footerFragment}"
+            ></footer>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

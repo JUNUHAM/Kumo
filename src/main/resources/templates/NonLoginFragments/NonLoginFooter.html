@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="footerFragment">
+    <footer th:fragment="footerFragment" class="dashboard-footer">
+        <div class="footer-container">
+    <span class="copyright">
+      © 2026 <strong th:text="#{footer.copyright}">KUMO</strong>. <span th:text="#{footer.rights}">All rights reserved.</span>
+    </span>
+            <div class="footer-links">
+                <a href="#" th:text="#{footer.terms}">이용약관</a>
+                <a href="#" th:text="#{footer.privacy}">개인정보처리방침</a>
+                <a href="#" th:text="#{footer.center}">고객센터</a>
+            </div>
+        </div>
+    </footer>
+</div>
+<script>
+    const toggleBtn = document.getElementById('darkModeBtn');
+    const icon = document.getElementById('darkModeIcon');
+    const body = document.body;
+
+    // 1. 페이지 로드 시 사용자의 기존 설정 확인
+    const currentTheme = localStorage.getItem('theme');
+    if (currentTheme === 'dark') {
+        body.classList.add('dark-mode');
+        icon.classList.remove('fa-sun');
+        icon.classList.add('fa-moon'); // 달 아이콘으로 변경
+    }
+
+    // 2. 버튼 클릭 이벤트
+    toggleBtn.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+
+        if (body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark'); // 설정 저장
+            icon.classList.remove('fa-sun');
+            icon.classList.add('fa-moon');
+        } else {
+            localStorage.setItem('theme', 'light');
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
+        }
+    });
+</script>
+</html>

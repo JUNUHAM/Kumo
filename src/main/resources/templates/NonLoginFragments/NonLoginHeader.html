@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="headerFragment">
+
+    <header class="non-login-header">
+        <a th:href="@{/}" class="logo">
+            <img th:src="@{/images/NonLogin/seekerLogo.png}" alt="KUMO" style="height: 40px;">
+        </a>
+        <nav>
+            <ul class="nav-menu">
+                <li><a th:href="@{/info}" th:text="#{header.company}">회사 정보</a></li>
+
+                <li><a th:href="@{Login}" th:text="#{header.login}">로그인</a></li>
+
+                <li class="icon-btn lang-container" id="langBtn">
+                    <i class="fa-solid fa-globe"></i>
+                    <div class="lang-dropdown" id="langMenu">
+                        <a href="javascript:changeLang('ko')" class="lang-item">한국어</a>
+                        <a href="javascript:changeLang('ja')" class="lang-item">日本語</a>
+                    </div>
+                </li>
+
+                <li class="icon-btn" id="darkModeBtn">
+                    <i class="fa-regular fa-sun" id="darkModeIcon"></i>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // [다크모드 로직]
+            const toggleBtn = document.getElementById('darkModeBtn');
+            const icon = document.getElementById('darkModeIcon');
+            const body = document.body;
+            const currentTheme = localStorage.getItem('theme');
+
+            if (currentTheme === 'dark') {
+                body.classList.add('dark-mode');
+                if(icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
+            }
+
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', () => {
+                    body.classList.toggle('dark-mode');
+                    if (body.classList.contains('dark-mode')) {
+                        localStorage.setItem('theme', 'dark');
+                        if(icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
+                    } else {
+                        localStorage.setItem('theme', 'light');
+                        if(icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
+                    }
+                });
+            }
+
+            // [언어 드롭다운 로직]
+            const langBtn = document.getElementById('langBtn');
+            const langMenu = document.getElementById('langMenu');
+
+            if (langBtn && langMenu) {
+                langBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    langMenu.classList.toggle('show');
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!langBtn.contains(e.target)) {
+                        langMenu.classList.remove('show');
+                    }
+                });
+            }
+        });
+
+        // [언어 변경 함수]
+        function changeLang(lang) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('lang', lang);
+            window.location.href = url.toString();
+        }
+    </script>
+
+</div>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>KUMO - 비밀번호 찾기</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" th:href="@{/css/NonLoginFragments/NonLoginHeader.css}">
+    <link rel="stylesheet" th:href="@{/css/NonLoginFragments/NonLoginFooter.css}">
+    <link rel="stylesheet" th:href="@{/css/NonLogin/FindPw.css}">
+</head>
+<body>
+
+<div th:replace="~{NonLoginFragments/NonLoginHeader :: headerFragment}"></div>
+
+<main class="find-container">
+    <div class="find-box">
+
+        <h1 class="page-title" th:text="#{find.pw.title}">비밀번호 찾기</h1>
+
+        <div class="tab-group">
+            <button type="button" class="tab-btn active" onclick="selectRole('SEEKER')"
+                    th:text="#{find.tab.seeker}">구직자</button>
+            <button type="button" class="tab-btn" onclick="selectRole('RECRUITER')"
+                    th:text="#{find.tab.recruiter}">구인자</button>
+        </div>
+
+        <p class="find-desc" th:text="#{find.pw.desc}">회원정보에 등록된 연락처로 아이디를 찾을 수 있습니다.</p>
+
+        <form id="findPwForm" class="form-box">
+            <input type="hidden" id="roleInput" name="role" value="SEEKER">
+
+            <div class="input-group">
+                <label class="input-label" th:text="#{find.label.name}">이름</label>
+                <input type="text" id="name" class="custom-input" th:placeholder="#{find.placeholder.name}">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label" th:text="#{find.label.id}">아이디</label>
+                <input type="text" id="loginId" class="custom-input" th:placeholder="#{find.placeholder.id}">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label" th:text="#{find.label.email}">이메일</label>
+                <div class="input-wrapper-row">
+                    <input type="email" id="email" class="custom-input" th:placeholder="#{find.placeholder.email}">
+                    <button type="button" class="btn-verify" th:text="#{find.btn.verify}">인증</button>
+                </div>
+            </div>
+
+            <button type="button" class="btn-submit" onclick="findPw()" th:text="#{find.btn.submit_pw}">비밀번호 찾기</button>
+        </form>
+
+    </div>
+</main>
+
+<div th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"></div>
+
+<script>
+    /* 불필요한 다크모드 JS 삭제함 -> 헤더 프래그먼트가 알아서 함 */
+
+    /* 탭 전환 기능 */
+    function selectRole(role) {
+        const tabs = document.querySelectorAll('.tab-btn');
+        tabs.forEach(btn => btn.classList.remove('active'));
+
+        if(role === 'SEEKER') {
+            tabs[0].classList.add('active');
+        } else {
+            tabs[1].classList.add('active');
+        }
+
+        document.getElementById('roleInput').value = role;
+    }
+
+    /* 비밀번호 찾기 요청 */
+    function findPw() {
+        alert("비밀번호 찾기 기능을 요청합니다.");
+    }
+</script>
+
+</body>
+</html>

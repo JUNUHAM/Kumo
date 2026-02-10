@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>KUMO - 회원가입</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" th:href="@{/css/NonLoginFragments/NonLoginHeader.css}">
+    <link rel="stylesheet" th:href="@{/css/NonLoginFragments/NonLoginFooter.css}">
+    <link rel="stylesheet" th:href="@{/css/NonLogin/join.css}">
+</head>
+<body>
+
+<div th:replace="~{NonLoginFragments/NonLoginHeader :: headerFragment}"></div>
+
+<main class="join-container">
+
+    <div class="join-header">
+        <img th:src="@{/images/NonLogin/cloud.png}" alt="Cloud Icon" class="cloud-icon">
+
+        <h1 class="join-title">
+            <span class="highlight">KUMO</span> <span th:text="#{join.title}">회원가입</span>
+        </h1>
+    </div>
+
+    <div class="card-wrapper">
+
+        <a th:href="@{/join/seeker}" class="join-card seeker">
+            <h2 class="card-title" th:text="#{join.seeker.title}">구직자 회원</h2>
+            <p class="card-desc" th:text="#{join.seeker.desc}">이력서를 등록하고 일자리를 찾아보세요</p>
+
+            <img th:src="@{/images/NonLogin/sign_up_seeker.svg}" alt="Seeker Icon" class="card-icon-img">
+        </a>
+
+        <a th:href="@{/join/recruiter}" class="join-card recruiter">
+            <h2 class="card-title" th:text="#{join.recruiter.title}">구인자 회원</h2>
+            <p class="card-desc" th:text="#{join.recruiter.desc}">공고를 등록하고 인재를 찾아보세요</p>
+
+            <img th:src="@{/images/NonLogin/sign_up_recruiter.svg}" alt="Recruiter Icon" class="card-icon-img">
+        </a>
+
+    </div>
+
+</main>
+
+<div th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"></div>
+
+</body>
+</html>

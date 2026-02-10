@@ -1,0 +1,136 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>KUMO RECRUITER - 일정 관리</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link rel="stylesheet" th:href="@{/css/recruiter/header.css}" />
+    <link rel="stylesheet" th:href="@{/css/recruiter/sidebar.css}" />
+    <link rel="stylesheet" th:href="@{/css/recruiter/main.css}" />
+    <link rel="stylesheet" th:href="@{/css/recruiter/calendar.css}" />
+  </head>
+
+  <body>
+    <header
+      th:replace="~{recruiterView/fragments/header :: headerFragment}"
+    ></header>
+
+    <div class="dashboard-wrapper">
+      <div
+        th:replace="~{recruiterView/fragments/sidebar :: sidebarFragment}"
+      ></div>
+
+      <!--
+          Body 부분
+      -->
+      <div class="main-container" style="margin-right: 0;">
+        <main class="content-body">
+          <div class="calendar-main-layout">
+            <div class="calendar-left-content">
+              <div id="calendar"></div>
+              <footer
+                th:replace="~{fragments/NonLoginFooter :: footerFragment}"
+                style="margin-top: 30px;"
+              ></footer>
+            </div>
+
+            <aside class="calendar-side-area">
+              <div class="schedule-full-panel">
+                <div class="panel-header" id="selected-date-title">
+                  오늘의 일정
+                </div>
+                <div id="event-list-container" class="event-scroll-area">
+                  <div class="empty-state">
+                    <i class="bi bi-calendar-check d-block mb-3 fs-1"></i>
+                    날짜를 클릭하여<br />일정을 확인하세요.
+                  </div>
+                </div>
+              </div>
+
+              <div class="side-action-buttons">
+                <button
+                  class="btn btn-common-action btn-sky-blue w-100 shadow-sm"
+                >
+                  스케줄 등록
+                </button>
+                <button
+                  class="btn btn-common-action btn-light-blue w-100 position-relative shadow-sm"
+                >
+                  수정
+                </button>
+              </div>
+            </aside>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      window.addEventListener('load', function() {
+        const mainEl = document.getElementById('calendar');
+
+        if (mainEl && typeof FullCalendar !== "undefined") {
+          const mainCal = new FullCalendar.Calendar(mainEl, {
+            initialView: 'dayGridMonth',
+            locale: 'ko',
+            headerToolbar: {
+              left: 'prev,next today',
+              center: 'title',
+              right: 'dayGridMonth'
+            },
+            events: [
+              { title: '면접(김철수)', start: '2026-02-10T00:00:00', color: '#7abaff' },
+              { title: '면접(김갈수)', start: '2026-02-10T00:00:00', color: '#7abaff' },
+              { title: '회의', start: '2026-02-14T00:00:00', color: '#92ccff' }
+            ],
+            // [수정] 클릭 시 색깔 변경 로직 추가
+            dateClick: function(info) {
+              // 1. 본 캘린더 내부에서 기존에 선택된 칸의 색깔을 지움
+              document.querySelectorAll('#calendar .selected-day').forEach(el => {
+                el.classList.remove('selected-day');
+              });
+
+              // 2. 지금 클릭한 칸(info.dayEl)에 색깔 클래스 추가
+              info.dayEl.classList.add('selected-day');
+
+              // 3. 우측 리스트 업데이트
+              updateAll(info.dateStr, mainCal);
+            }
+          });
+          mainCal.render();
+
+          window.updateAll = function(date, cal) {
+            document.querySelectorAll('#selected-date-title').forEach(el => el.innerText = date + " 일정");
+
+            const evs = cal.getEvents().filter(e => {
+                const d = e.start;
+                const eventDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                return eventDate === date;
+            });
+
+            document.querySelectorAll('#event-list-container').forEach(c => {
+              c.innerHTML = evs.length ? '' : '<div class="empty-state">일정이 없습니다.</div>';
+              evs.forEach(e => {
+                // [디자인] 사장님이 공들인 sidebar-card 스타일 적용
+                const card = document.createElement("div");
+                card.className = "sidebar-card";
+                card.style.borderLeft = `5px solid ${e.backgroundColor || "#7abaff"}`;
+                card.innerHTML = `<div class="fw-bold">${e.title}</div>`;
+                c.appendChild(card);
+              });
+            });
+          };
+        }
+      });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.10/index.global.min.js"></script>
+    <script th:src="@{/js/recruiter/global-calendar.js}"></script>
+  </body>
+</html>
