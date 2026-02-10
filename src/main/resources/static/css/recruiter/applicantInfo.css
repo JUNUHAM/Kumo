@@ -126,7 +126,7 @@
   background-color: #f8faff !important; /* 부드러운 배경색 */
   min-height: calc(100vh - 80px);
   /* 오른쪽 sidebar(350px) 공간을 360px로 최적화하여 카드 확장 */
-  padding: 30px 340px 30px 40px !important;
+  padding: 20px 340px 30px 40px !important;
   overflow-x: hidden;
   overflow-y: auto;
 }
@@ -134,7 +134,6 @@
 .applicant-detail-wrapper {
   max-width: 1150px; /* 사장님 피드백 반영: 가로 너비 확장 */
   margin: 0;
-  padding-top: 60px;
 }
 
 /* 2. 상단 타이틀 (콤팩트 사이즈) */

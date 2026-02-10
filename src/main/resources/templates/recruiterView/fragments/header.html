@@ -1,119 +1,96 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-  <body>
-    <nav
-      th:fragment="headerFragment"
-      class="navbar navbar-expand-lg bg-white custom-header"
-    >
-      <div class="header-left-section">
-        <a class="navbar-brand py-0" th:href="@{/Recruiter/Main}">
+  <div th:fragment="headerFragment">
+    <header th:fragment="headerFragment" class="non-login-header">
+      <div class="logo">
+        <a th:href="@{/}">
           <img
             th:src="@{/images/recruiter/recruiterLogo.png}"
-            alt="KUMO RECRUITER"
-            class="header-logo-img"
+            alt="KUMO"
+            style="height: 35px;"
           />
         </a>
       </div>
 
-      <div class="header-right-section d-flex align-items-center gap-3">
-        <div class="dropdown">
-          <a
-            href="#"
-            class="header-icon-link position-relative"
-            id="notificationMenu"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            <i class="bi bi-bell fs-4 text-secondary"></i>
-            <span class="notification-badge-dot"></span>
-          </a>
+      <ul class="nav-menu">
+        <li><a th:href="@{/info}">회사 정보</a></li>
 
-          <ul
-            class="dropdown-menu dropdown-menu-end custom-notification-menu shadow border-0"
-            aria-labelledby="notificationMenu"
-          >
-            <div class="menu-pointer"></div>
-            <div class="notification-content">
-              <div class="notif-item success">
-                <div class="notif-header">
-                  <span class="label">Success note</span>
-                  <button type="button" class="btn-close-small">
-                    <i class="bi bi-x"></i>
-                  </button>
-                </div>
-                <div class="notif-body">
-                  <i class="bi bi-check-circle-fill icon-success"></i>
-                  <div>
-                    <h6 class="notif-title">Well done Anakin!</h6>
-                    <p class="notif-text">
-                      Qrygg elomin kashyyyk skirata. Oswaft mirta omwati kohl
-                      shmi.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div class="notif-item warning">
-                <div class="notif-header">
-                  <span class="label">Warning note</span>
-                  <button type="button" class="btn-close-small">
-                    <i class="bi bi-x"></i>
-                  </button>
-                </div>
-                <div class="notif-body">
-                  <i class="bi bi-exclamation-triangle-fill icon-warning"></i>
-                  <div>
-                    <h6 class="notif-title">My Lord, is that legal?</h6>
-                    <p class="notif-text">
-                      Leia plo darth bail mon obi-wan dun hausen typho kastolar.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </ul>
-        </div>
+        <li sec:authorize="isAnonymous()">
+          <a th:href="@{/login}">로그인</a>
+        </li>
 
-        <div class="dropdown">
-          <a
-            class="profile-avatar"
-            href="#"
-            id="userMenu"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            <img
-              th:src="@{/images/recruiter/user 3 1.svg}"
-              alt="profile"
-              class="avatar-img shadow-sm"
-            />
-          </a>
+        <li sec:authorize="isAuthenticated()">
+          <a th:href="@{/recruiter/profile}">마이페이지</a>
+        </li>
 
-          <ul
-            class="dropdown-menu dropdown-menu-end custom-profile-menu shadow border-0"
-            aria-labelledby="userMenu"
-          >
-            <div class="menu-pointer"></div>
-            <li class="px-4 py-3 text-center">
-              <span
-                class="profile-user-name"
-                th:text="${session.userName} ?: '山田課長'"
-                >山田課장</span
-              >
-            </li>
-            <li class="px-3 pb-3">
-              <div class="d-grid gap-2">
-                <a th:href="@{/recruiter/profile}" class="btn btn-profile-edit"
-                  >내 프로필 편집</a
-                >
-                <a th:href="@{/recruiter/company}" class="btn btn-company-edit"
-                  >회사 정보 편집</a
-                >
-                <a href="/logout" class="btn btn-logout-custom">로그아웃</a>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-  </body>
+        <li class="icon-btn lang-container" id="langBtn">
+          <i class="fa-solid fa-globe"></i>
+          <div class="lang-dropdown" id="langMenu">
+            <a href="javascript:changeLang('ko')" class="lang-item">한국어</a>
+            <a href="javascript:changeLang('ja')" class="lang-item">日本語</a>
+          </div>
+        </li>
+
+        <li class="icon-btn" id="darkModeBtn">
+          <i class="fa-regular fa-sun" id="darkModeIcon"></i>
+        </li>
+      </ul>
+    </header>
+
+    <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                // [다크모드 로직]
+                const toggleBtn = document.getElementById('darkModeBtn');
+                const icon = document.getElementById('darkModeIcon');
+                const body = document.body;
+                const currentTheme = localStorage.getItem('theme');
+
+        // [header.html 내부 스크립트 수정 제안]
+      if (currentTheme === 'dark') {
+          body.classList.add('dark-mode');
+          // 아이콘이 있을 때만 클래스 교체 (에러 방지)
+          if(icon) {
+              icon.classList.replace('fa-sun', 'fa-moon'); // replace가 더 안전합니다
+          }
+      }
+
+                if (toggleBtn) {
+                    toggleBtn.addEventListener('click', () => {
+                        body.classList.toggle('dark-mode');
+                        if (body.classList.contains('dark-mode')) {
+                            localStorage.setItem('theme', 'dark');
+                            if(icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
+                        } else {
+                            localStorage.setItem('theme', 'light');
+                            if(icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
+                        }
+                    });
+                }
+
+                // [언어 드롭다운 로직]
+                const langBtn = document.getElementById('langBtn');
+                const langMenu = document.getElementById('langMenu');
+
+                if (langBtn && langMenu) {
+                    langBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        langMenu.classList.toggle('show');
+                    });
+
+                    document.addEventListener('click', (e) => {
+                        if (!langBtn.contains(e.target)) {
+                            langMenu.classList.remove('show');
+                        }
+                    });
+                }
+            });
+
+            // [언어 변경 함수]
+            function changeLang(lang) {
+                const url = new URL(window.location.href);
+                url.searchParams.set('lang', lang);
+                window.location.href = url.toString();
+            }
+    </script>
+  </div>
 </html>

@@ -1,0 +1,247 @@
+/* ============================================================
+   [KUMO RECRUITER] 통합 다크모드 마스터 v7.0 (사장님 전용)
+   ============================================================ */
+
+/* 1. 글로벌 배경 및 텍스트 밝기 (최상급 가독성) */
+body.dark-mode {
+  background-color: #121212 !important;
+  color: #ffffff !important; /* 전체 기본 글자 흰색 */
+}
+
+/* 2. 모든 페이지 컨테이너 통합 배경 */
+body.dark-mode .main-container,
+body.dark-mode .content-body,
+body.dark-mode .dashboard-wrapper,
+body.dark-mode .applicant-detail-bg,
+body.dark-mode .company-mgmt-container,
+body.dark-mode .settings-container {
+  background-color: #121212 !important;
+}
+
+/* 3. 좌측 사이드바 (sidebar.css) */
+body.dark-mode .sidebar-container {
+  background-color: #1a1a1a !important;
+  border-right: 1px solid #2d2d2d !important;
+}
+body.dark-mode .nav-item {
+  color: #ffffff !important;
+} /* 메뉴 흰색 */
+body.dark-mode .nav-item i {
+  color: #ffffff !important;
+}
+body.dark-mode .nav-item.active {
+  background-color: #1e293b !important;
+  color: #7abaff !important;
+  border-left: 4px solid #7abaff !important;
+}
+body.dark-mode .nav-item:hover {
+  background-color: #242f3f !important;
+  color: #7abaff !important;
+}
+body.dark-mode .logout-btn:hover {
+  background-color: #331a1a !important;
+  color: #ff6b6b !important;
+}
+
+/* 4. 중앙 대시보드 및 모든 판넬/카드 (main.css, jobManage.css, jobPosting.css) */
+body.dark-mode .stat-card,
+body.dark-mode .panel,
+body.dark-mode .graph-container,
+body.dark-mode .applicant-card,
+body.dark-mode .applicant-white-card,
+body.dark-mode .info-glass-card,
+body.dark-mode .job-manage-card,
+body.dark-mode .posting-card {
+  background-color: #1e1e1e !important;
+  border: 1px solid #2d2d2d !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* [긴급수정] 오늘의 채용 현황, 스카우트 등 제목 텍스트 강제 밝기 */
+body.dark-mode .welcome-section h2,
+body.dark-mode .welcome-section p,
+body.dark-mode .panel-title,
+body.dark-mode .text-muted,
+body.dark-mode .small {
+  color: #ffffff !important; /* 어두운 회색 다 꺼져! 무조건 흰색 */
+}
+
+body.dark-mode .panel-header,
+body.dark-mode .card-top-actions,
+body.dark-mode .myjobs-row,
+body.dark-mode .kumo-table td {
+  border-bottom: 1px solid #2d2d2d !important;
+  color: #ffffff !important;
+}
+
+/* 5. 지원자 정보 및 테이블 (applicant_info.css) */
+body.dark-mode .kumo-table th {
+  color: #ffffff !important;
+  border-bottom: 1px solid #333 !important;
+}
+body.dark-mode .job-name,
+body.dark-mode .table-title,
+body.dark-mode .name-line h1 {
+  color: #ffffff !important;
+}
+body.dark-mode .applicant-count,
+body.dark-mode .info-item span {
+  color: #ffffff !important;
+}
+body.dark-mode .pr-box {
+  background: #252525 !important;
+  color: #ffffff !important;
+}
+body.dark-mode .middle-border {
+  border-color: #2d2d2d !important;
+}
+body.dark-mode .btn-view,
+body.dark-mode .btn-action-main {
+  background: #7abaff !important;
+  color: #fff !important;
+}
+
+/* 6. 공고 관리 특화 (jobManage.css) */
+body.dark-mode .status-ing {
+  background-color: rgba(92, 184, 92, 0.2) !important;
+  color: #72d572 !important;
+}
+body.dark-mode .status-end {
+  background-color: rgba(255, 92, 92, 0.2) !important;
+  color: #ff8080 !important;
+}
+body.dark-mode .salary-text {
+  color: #7abaff !important;
+}
+body.dark-mode .job-closed td,
+body.dark-mode .job-closed .job-name {
+  color: #718096 !important;
+}
+body.dark-mode .myjobs-head {
+  background-color: #252525 !important;
+  color: #ffffff !important;
+}
+
+/* 7. 회사 정보 및 모든 입력창 (companyInfo.css, jobPosting.css) */
+body.dark-mode .nav-pill {
+  background: #252525 !important;
+  color: #ffffff !important;
+  border-color: #333 !important;
+}
+body.dark-mode .nav-pill.active {
+  background: #7abaff !important;
+  color: #fff !important;
+}
+body.dark-mode .kumo-form-control,
+body.dark-mode .kumo-input,
+body.dark-mode .kumo-input-sm {
+  background: #252525 !important;
+  border: 1px solid #333 !important;
+  color: #ffffff !important;
+}
+body.dark-mode .info-label,
+body.dark-mode .form-label {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+body.dark-mode .btn-address-search,
+body.dark-mode .upload-btn {
+  background: #333d4b !important;
+  color: #fff !important;
+}
+body.dark-mode .upload-container {
+  background: #1a1a1a !important;
+  border-color: #333 !important;
+}
+
+/* 8. 우측 사이드바 및 캘린더 (rightSidebar.css, calendar.css) - [이 부분만 어둡게 보정] */
+body.dark-mode .dashboard-right-sidebar,
+body.dark-mode .calendar-side-area {
+  background-color: #121212 !important;
+  border-left: 1px solid #2d2d2d !important;
+}
+body.dark-mode .side-panel,
+body.dark-mode .schedule-full-panel,
+body.dark-mode .calendar-card,
+body.dark-mode .sidebar-card {
+  background-color: #1e1e1e !important;
+  border: 1px solid #2d2d2d !important;
+  color: #ffffff !important;
+}
+
+/* [보정] 하얀 캘린더 격자와 배경을 다크로 강제 전환 */
+body.dark-mode #calendar,
+body.dark-mode .fc-theme-standard td,
+body.dark-mode .fc-theme-standard th,
+body.dark-mode .fc-scrollgrid {
+  background-color: #1e1e1e !important;
+  border-color: #2d2d2d !important;
+}
+
+/* [긴급수정] 2026-02-05 일정 등 캘린더 제목 흰색 */
+body.dark-mode .panel-header,
+body.dark-mode .fc-daygrid-day-number,
+body.dark-mode .fc-col-header-cell-cushion {
+  color: #ffffff !important;
+}
+body.dark-mode #calendar .fc-event {
+  background-color: #1a2635 !important;
+  border-left: 4px solid #7abaff !important;
+}
+body.dark-mode #mini-calendar .fc-day-today .fc-daygrid-day-number {
+  background-color: #fcc419 !important;
+  color: #121212 !important;
+}
+body.dark-mode .panel-placeholder {
+  background: #1a1a1a !important;
+  border-color: #333 !important;
+  color: #ffffff !important;
+}
+
+/* 9. 계정 설정 및 프로필 (settings.css) */
+body.dark-mode .settings-title {
+  color: #ffffff !important;
+}
+body.dark-mode .default-profile-icon {
+  background-color: #2d2d2d !important;
+  color: #ffffff !important;
+}
+body.dark-mode .profile-img-lg {
+  border: 2px solid #333 !important;
+}
+body.dark-mode .info-value {
+  color: #ffffff !important;
+}
+body.dark-mode .btn-profile-upload {
+  background: #333d4b !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+/* 10. 공통 푸터 보정 */
+body.dark-mode footer,
+body.dark-mode .dashboard-footer {
+  border-top: 1px solid #2d2d2d !important;
+}
+body.dark-mode .footer-container {
+  color: #ffffff !important;
+}
+
+/* 처음 로딩 시에는 애니메이션을 차단합니다 */
+body.dark-mode,
+body.dark-mode .main-container,
+body.dark-mode .panel,
+body.dark-mode .sidebar-container {
+  transition: none !important;
+}
+
+/* 페이지 로드가 완료된 후, 이 클래스가 붙었을 때만 부드럽게 바뀝니다 */
+body.preload-ready.dark-mode,
+body.preload-ready.dark-mode .main-container,
+body.preload-ready.dark-mode .panel,
+body.preload-ready.dark-mode .sidebar-container {
+  transition:
+    background-color 0.25s ease-in-out,
+    color 0.25s ease-in-out !important;
+}

@@ -30,7 +30,6 @@ body {
   /* [수정] 너비를 계산식으로 억제하지 말고, 자연스럽게 100%를 쓰게 둡니다. */
   width: 100% !important;
 
-  padding-top: 65px;
   height: 100vh;
   background-color: #f8faff;
   display: flex;
@@ -43,7 +42,7 @@ body {
 
 /* 내부 콘텐츠 영역도 함께 보호 */
 .content-body {
-  padding: 30px 40px;
+  padding: 20px 40px;
   flex: 1;
   display: flex;
   flex-direction: column;
