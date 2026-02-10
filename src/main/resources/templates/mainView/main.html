@@ -9,14 +9,14 @@
 	<link rel="stylesheet" th:href="@{/css/mainView/main.css}">
 	
 	<script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
-	<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 	<script th:src="@{/js/mainView/main.js}"></script>
 	<script th:src="@{/js/geo/osaka.js}"></script>
 	<script th:src="@{/js/geo/tokyo.js}"></script>
 	<script th:src="@{/js/geo/osakaCity.js}"></script>
 </head>
 <body>
-<header th:replace="~{header.html}"></header>
+<header th:replace="~{/NonLoginFragments/NonLoginHeader.html}"></header>
 
 <div class="map-container">
 	
@@ -27,7 +27,7 @@
 	</button>
 	
 	<div id="jobDetailCard" class="floating-card">
-		<button type="button" class="btn-close-card" onclick="closeJobCard()">×</button>
+		<button type="button" class="btn-close-card">×</button>
 		
 		<div class="card-header-section">
 			<div class="profile-icon">A</div>

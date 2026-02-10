@@ -22,7 +22,7 @@ import java.util.List;
 public class MapController {
 
 	// Key
-	@Value("${GOOGLE_MAPS_KEY}")
+	@Value("${kumo.google.maps.key}")
 	private String googleMapKey;
 	
     private final MapService mapService;

@@ -27,7 +27,7 @@ public class WebSecurityConfig {
 						
 						// (2) 로그인 없이 접근 가능한 페이지
 						.requestMatchers("/", "/login", "/signup", "/join", "/join/**", "/info").permitAll()
-						.requestMatchers("/map_non_login_view", "/FindId", "/FindPw", "/findIdProc", "/nickname").permitAll()
+						.requestMatchers("/map/main", "/FindId", "/FindPw", "/findIdProc", "/nickname").permitAll()
 						.requestMatchers("/Recruiter/**").permitAll() // 테스트용
 						
 						// ★★★ [여기 추가] AJAX 중복확인 API는 로그인 없이 접근 가능해야 함 ★★★
