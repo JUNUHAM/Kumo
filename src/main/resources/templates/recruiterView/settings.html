@@ -16,10 +16,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
-    <link
-      rel="stylesheet"
-      th:href="@{/css/NonLoginFragments/NonLoginHeader.css}"
-    />
+    <link rel="stylesheet" th:href="@{/css/recruiter/header.css}" />
     <link
       rel="stylesheet"
       th:href="@{/css/NonLoginFragments/NonLoginFooter.css}"
@@ -42,17 +39,25 @@
       <div class="main-container" style="margin-right: 0;">
         <main class="content-body">
           <div class="settings-container">
-            <h2 class="settings-title">내 계정</h2>
+            <h2 class="settings-title" th:text="#{sidebar.menu.settings}">
+              내 계정
+            </h2>
 
             <div class="settings-form-wrapper">
               <div class="profile-section mb-5">
-                <label class="info-label">프로필 사진</label>
+                <label class="info-label" th:text="#{set.label.profile}"
+                  >프로필 사진</label
+                >
                 <div class="profile-image-box">
                   <div class="default-profile-icon">
                     <i class="bi bi-person-circle"></i>
                   </div>
 
-                  <button type="button" class="btn-profile-upload">
+                  <button
+                    type="button"
+                    class="btn-profile-upload"
+                    th:text="#{set.btn.upload}"
+                  >
                     프로필 사진 업로드
                   </button>
                 </div>
@@ -60,26 +65,40 @@
 
               <div class="info-group">
                 <div class="info-row">
-                  <span class="info-label">이름</span>
+                  <span class="info-label" th:text="#{set.label.name}"
+                    >이름</span
+                  >
                   <span class="info-value">JisuMOM</span>
                 </div>
                 <div class="info-row">
-                  <span class="info-label">생년월일</span>
-                  <span class="info-value"
-                    >1000 / 01 / 01
-                    <span class="text-muted ms-2">( 만 40세 )</span></span
+                  <span class="info-label" th:text="#{join.label.birth}"
+                    >생년월일</span
                   >
+                  <span class="info-value">
+                    1000 / 01 / 01
+                    <span
+                      class="text-muted ms-2"
+                      th:text="#{set.label.age_suffix(40)}"
+                      >( 만 40세 )</span
+                    >
+                  </span>
                 </div>
                 <div class="info-row">
-                  <span class="info-label">닉네임</span>
+                  <span class="info-label" th:text="#{join.label.nickname}"
+                    >닉네임</span
+                  >
                   <span class="info-value">타락한윤병진83</span>
                 </div>
                 <div class="info-row">
-                  <span class="info-label">이메일</span>
+                  <span class="info-label" th:text="#{join.label.email}"
+                    >이메일</span
+                  >
                   <span class="info-value">hello@designdrops.io</span>
                 </div>
                 <div class="info-row">
-                  <span class="info-label">주소</span>
+                  <span class="info-label" th:text="#{join.label.address}"
+                    >주소</span
+                  >
                   <span class="info-value"
                     >오사카특별시 오사카부 오사카시 오사카 101호</span
                   >
@@ -88,7 +107,9 @@
 
               <div class="info-group mt-4">
                 <div class="info-row align-items-center">
-                  <span class="info-label">LINE 연동</span>
+                  <span class="info-label" th:text="#{set.label.line}"
+                    >LINE 연동</span
+                  >
                   <div class="form-check form-switch custom-switch">
                     <input
                       class="form-check-input"
@@ -99,7 +120,9 @@
                   </div>
                 </div>
                 <div class="info-row align-items-center">
-                  <span class="info-label">Google 연동</span>
+                  <span class="info-label" th:text="#{set.label.google}"
+                    >Google 연동</span
+                  >
                   <div class="form-check form-switch custom-switch">
                     <input
                       class="form-check-input"
@@ -113,8 +136,20 @@
               </div>
 
               <div class="settings-footer-actions">
-                <button type="button" class="btn-quit">회원 탈퇴</button>
-                <button type="button" class="btn-submit">회원정보 수정</button>
+                <button
+                  type="button"
+                  class="btn-quit"
+                  th:text="#{set.btn.quit}"
+                >
+                  회원 탈퇴
+                </button>
+                <button
+                  type="button"
+                  class="btn-submit"
+                  th:text="#{set.btn.edit}"
+                >
+                  회원정보 수정
+                </button>
               </div>
             </div>
             <footer

@@ -15,10 +15,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
-    <link
-      rel="stylesheet"
-      th:href="@{/css/NonLoginFragments/NonLoginHeader.css}"
-    />
+    <link rel="stylesheet" th:href="@{/css/recruiter/header.css}" />
     <link
       rel="stylesheet"
       th:href="@{/css/NonLoginFragments/NonLoginFooter.css}"
@@ -46,13 +43,17 @@
           <div class="applicant-card">
             <div class="card-header-flex">
               <div class="header-title-area">
-                <h2 class="table-title">지원자 정보</h2>
+                <h2 class="table-title" th:text="#{app.info.title}">
+                  지원자 정보
+                </h2>
                 <div class="applicant-count">
-                  전체 지원자 수 <span class="count-badge">20</span>
+                  <span th:text="#{app.info.total_count}">전체 지원자 수</span>
+                  <span class="count-badge">20</span>
                 </div>
               </div>
               <button class="btn-filter">
-                <i class="bi bi-funnel"></i> 필터
+                <i class="bi bi-funnel"></i>
+                <span th:text="#{app.info.btn.filter}">필터</span>
               </button>
             </div>
 
@@ -64,15 +65,22 @@
                       <input type="checkbox" class="kumo-check" id="checkAll" />
                     </th>
                     <th>
-                      지원자 이름 <i class="bi bi-arrow-down-up sort-icon"></i>
+                      <span th:text="#{app.info.table.name}">지원자 이름</span>
+                      <i class="bi bi-arrow-down-up sort-icon"></i>
                     </th>
-                    <th>나이<i class="bi bi-arrow-down-up sort-icon"></i></th>
-                    <th>성별<i class="bi bi-arrow-down-up sort-icon"></i></th>
-                    <th>
-                      지원 공고 <i class="bi bi-arrow-down-up sort-icon"></i>
+                    <th th:utext="#{app.info.table.age}">
+                      나이<i class="bi bi-arrow-down-up sort-icon"></i>
+                    </th>
+                    <th th:utext="#{app.info.table.gender}">
+                      성별<i class="bi bi-arrow-down-up sort-icon"></i>
                     </th>
                     <th>
-                      지원 일자 <i class="bi bi-arrow-down-up sort-icon"></i>
+                      <span th:text="#{app.info.table.job}">지원 공고</span>
+                      <i class="bi bi-arrow-down-up sort-icon"></i>
+                    </th>
+                    <th>
+                      <span th:text="#{app.info.table.date}">지원 일자</span>
+                      <i class="bi bi-arrow-down-up sort-icon"></i>
                     </th>
                     <th></th>
                   </tr>
@@ -93,12 +101,17 @@
                       </div>
                     </td>
                     <td>40</td>
-                    <td>여자</td>
+                    <td th:text="#{join.gender.female}">여자</td>
                     <td>오사카 한식당 홀서빙 구해요</td>
                     <td>2022-03-01</td>
                     <td>
                       <a th:href="@{/Recruiter/ApplicantDetail}"
-                        ><button class="btn-view">열람</button></a
+                        ><button
+                          class="btn-view"
+                          th:text="#{main.status.viewed}"
+                        >
+                          열람
+                        </button></a
                       >
                     </td>
                   </tr>
@@ -117,12 +130,17 @@
                       </div>
                     </td>
                     <td>40</td>
-                    <td>여자</td>
+                    <td th:text="#{join.gender.female}">여자</td>
                     <td>오사카 한식당 주방 구해요</td>
                     <td>2022-03-01</td>
                     <td>
                       <a th:href="@{/Recruiter/ApplicantDetail}"
-                        ><button class="btn-view">열람</button></a
+                        ><button
+                          class="btn-view"
+                          th:text="#{main.status.viewed}"
+                        >
+                          열람
+                        </button></a
                       >
                     </td>
                   </tr>

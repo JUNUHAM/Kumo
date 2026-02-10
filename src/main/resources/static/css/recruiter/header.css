@@ -1,125 +1,128 @@
-/* header.css */
-
-.custom-header {
-  width: 100%;
-  height: 70px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1100;
-  background: white;
-  border-bottom: 1px solid #f0f0f0;
+/* ==============================
+   1. 헤더 기본 레이아웃
+   ============================== */
+.non-login-header {
   display: flex;
-  justify-content: space-between; /* 양 끝 정렬 */
-  padding: 0 !important; /* 내부 섹션 너비를 위해 패딩 제거 */
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 20px 40px; /* 여백 */
+  background-color: white;
+  z-index: 1000;
 }
 
-/* 왼쪽 로고 영역: 사이드바 너비(240px)와 똑같이 맞추고 중앙 정렬 */
-.header-left-section {
-  width: 240px;
-  height: 100%;
+.logo {
   display: flex;
-  justify-content: center;
   align-items: center;
 }
 
-/* 오른쪽 아이콘 영역: 오른쪽 끝에서 적당히 띄움 */
-.header-right-section {
-  padding-right: 30px;
-}
-
-.header-logo-img {
-  height: 45px;
-  width: auto;
-}
-
-.avatar-img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-/* 알림 점 스타일 (시안처럼 살구색) */
-.notification-badge-dot {
-  position: absolute;
-  top: 3px;
-  right: 2px;
-  width: 8px;
-  height: 8px;
-  background-color: #ff8b7b;
-  border-radius: 50%;
-  border: 2px solid white;
-}
-
-/* 드롭다운 메뉴 본체 */
-.custom-profile-menu {
-  min-width: 220px;
-  border-radius: 20px !important;
-  margin-top: 15px !important;
+.nav-menu {
+  display: flex;
+  gap: 25px; /* 메뉴 간격 */
+  align-items: center;
+  list-style: none;
+  margin: 0;
   padding: 0;
-  overflow: visible; /* 꼬리표가 밖으로 나와야 함 */
 }
 
-/* 말풍선 꼬리(삼각형) */
-.menu-pointer {
+/* 메뉴 링크 스타일 */
+.non-login-header .nav-menu a {
+  text-decoration: none;
+  color: var(--text-main); /* 다크모드 변수 사용 */
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.non-login-header .nav-menu a:hover {
+  color: #7db4e6;
+}
+
+/* 아이콘 버튼 공통 */
+.icon-btn {
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative; /* 드롭다운 위치 기준점 */
+}
+
+.icon-btn:hover {
+  color: #7db4e6;
+}
+
+/* ==============================
+   2. 언어 선택 드롭다운 (핵심!)
+   ============================== */
+.lang-dropdown {
+  display: none; /* 평소에는 숨김 */
   position: absolute;
-  top: -10px;
-  right: 15px;
-  width: 0;
-  height: 0;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-bottom: 10px solid #ffffff;
+  top: 30px; /* 아이콘 바로 아래 */
+  right: -10px; /* 오른쪽 정렬 */
+  background-color: white;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  flex-direction: column;
+  min-width: 100px;
+  z-index: 2000;
+  padding: 5px;
+  overflow: hidden;
 }
 
-/* 사용자 이름 폰트 */
-.profile-user-name {
-  font-size: 24px;
-  font-weight: 800;
-  color: #33475b;
+/* JS로 .show 클래스가 붙으면 보임 */
+.lang-dropdown.show {
+  display: flex;
+  animation: fadeIn 0.2s ease;
+}
+
+/* 드롭다운 메뉴 아이템 */
+.lang-item {
+  padding: 10px 15px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #333 !important; /* 강제 적용 */
+  text-align: center;
+  border-radius: 6px;
+  transition: background 0.2s;
+  text-decoration: none;
   display: block;
-  margin-bottom: 10px;
+  white-space: nowrap; /* 줄바꿈 방지 */
 }
 
-/* 공통 버튼 스타일 */
-.custom-profile-menu .btn {
-  border-radius: 10px;
-  padding: 10px;
-  font-weight: 600;
-  font-size: 15px;
-  border: none;
-  color: white !important;
+.lang-item:hover {
+  background-color: #f5f7fa;
+  color: #7db4e6 !important;
 }
 
-/* 내 프로필 / 회사 정보 편집 버튼 (시안의 하늘색) */
-.btn-profile-edit,
-.btn-company-edit {
-  background-color: #8bbbe5 !important;
+/* 등장 애니메이션 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.btn-profile-edit:hover,
-.btn-company-edit:hover {
-  background-color: #7aaad4 !important;
+/* ==============================
+   3. 다크모드 대응
+   ============================== */
+body.dark-mode .lang-dropdown {
+  background-color: #2d2d2d;
+  border-color: #444;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
 }
 
-/* 로그아웃 버튼 (시안의 분홍색) */
-.btn-logout-custom {
-  background-color: #f39695 !important;
+body.dark-mode .lang-item {
+  color: #e0e0e0 !important;
 }
 
-.btn-logout-custom:hover {
-  background-color: #e28584 !important;
-}
-
-/* 알림 도트 (시안처럼 주황색 계열) */
-.notification-badge-dot {
-  position: absolute;
-  top: 5px;
-  right: 3px;
-  width: 8px;
-  height: 8px;
-  background-color: #ff8b7b;
-  border-radius: 50%;
-  border: 2px solid white;
+body.dark-mode .lang-item:hover {
+  background-color: #3a3a3a;
+  color: #7db4e6 !important;
 }

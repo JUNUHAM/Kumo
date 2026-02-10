@@ -1,91 +1,107 @@
-<!DOCTYPE html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-	<meta charset="UTF-8">
-	<title>KUMO - 지도 검색</title>
-	<link rel="stylesheet" th:href="@{/css/header.css}">
-	<link rel="stylesheet" th:href="@{/css/mainView/main.css}">
-	
-	<script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
-	<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
-	<script th:src="@{/js/mainView/main.js}"></script>
-	<script th:src="@{/js/geo/osaka.js}"></script>
-	<script th:src="@{/js/geo/tokyo.js}"></script>
-	<script th:src="@{/js/geo/osakaCity.js}"></script>
-</head>
-<body>
-<header th:replace="~{header.html}"></header>
+<!doctype html>
+<html
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>KUMO - 지도 검색</title>
+    <link
+      rel="stylesheet"
+      th:href="@{/css/NonLoginFragments/NonLoginHeader.css}"
+    />
+    <link rel="stylesheet" th:href="@{/css/mainView/main.css}" />
 
-<div class="map-container">
-	
-	<div id="map"></div>
-	
-	<button id="btn-my-location" class="btn-location">
-		🎯
-	</button>
-	
-	<div id="jobDetailCard" class="floating-card">
-		<button type="button" class="btn-close-card" onclick="closeJobCard()">×</button>
-		
-		<div class="card-header-section">
-			<div class="profile-icon">A</div>
-			<div class="profile-info">
-				<div id="card-company" class="company-name">ABC Company</div>
-				<div id="card-manager" class="manager-name">田中 部長</div>
-			</div>
-		</div>
-		
-		<div class="card-image-wrapper">
-			<img id="card-img" src="" alt="Office View"
-			     onerror="this.src='https://via.placeholder.com/300'">
-		</div>
-		
-		<div class="card-body-section">
-			<h3 id="card-title" class="job-title">비서 구합니다</h3>
-			<p class="job-address">주소: <span id="card-address">...</span></p>
-			<p class="job-phone" id="card-phone">010-xxxx-xxxx</p>
-		</div>
-		
-		<div class="card-footer-section">
-			<button class="btn-outline">찜하기</button>
-			<button id="btn-detail" class="btn-primary-custom">자세히 보기</button>
-		</div>
-	</div>
-</div>
+    <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script th:src="@{/js/mainView/main.js}"></script>
+    <script th:src="@{/js/geo/osaka.js}"></script>
+    <script th:src="@{/js/geo/tokyo.js}"></script>
+    <script th:src="@{/js/geo/osakaCity.js}"></script>
+  </head>
+  <body>
+    <header th:replace="~{/NonLoginFragments/NonLoginHeader.html}"></header>
 
-<div class="bottom-sheet" id="bottomSheet">
-	
-	<div class="sheet-handle">
-		<div class="handle-bar"></div>
-	</div>
-	
-	<div class="sheet-content">
-		<h2 style="padding: 0 10px; font-size: 18px;">구직 정보 리스트 📋</h2>
-		
-		<div class="table-wrapper">
-			<table class="job-table">
-				<thead>
-				<tr id="tableHeader">
-					<th>제목</th>
-					<th>상호명</th>
-					<th>근무지</th>
-					<th>급여</th>
-					<th>연락처</th>
-					<th>담당자</th>
-					<th>관리</th>
-				</tr>
-				</thead>
-				<tbody id="listBody">
-				<tr><td colspan="7" class="msg-box">지도를 움직이면 공고를 불러옵니다...</td></tr>
-				</tbody>
-			</table>
-		</div>
-	</div>
-</div>
+    <div class="map-container">
+      <div id="map"></div>
 
-<script th:src="@{'https://maps.googleapis.com/maps/api/js?key=' + ${googleMapsKey} + '&callback=initMap&loading=async'}"
-        async defer></script>
-</body>
+      <button id="btn-my-location" class="btn-location">🎯</button>
+
+      <div id="jobDetailCard" class="floating-card">
+        <button type="button" class="btn-close-card" onclick="closeJobCard()">
+          ×
+        </button>
+
+        <div class="card-header-section">
+          <div class="profile-icon">A</div>
+          <div class="profile-info">
+            <div id="card-company" class="company-name">ABC Company</div>
+            <div id="card-manager" class="manager-name">田中 部長</div>
+          </div>
+        </div>
+
+        <div class="card-image-wrapper">
+          <img
+            id="card-img"
+            src=""
+            alt="Office View"
+            onerror="this.src='https://via.placeholder.com/300'"
+          />
+        </div>
+
+        <div class="card-body-section">
+          <h3 id="card-title" class="job-title">비서 구합니다</h3>
+          <p class="job-address">주소: <span id="card-address">...</span></p>
+          <p class="job-phone" id="card-phone">010-xxxx-xxxx</p>
+        </div>
+
+        <div class="card-footer-section">
+          <button class="btn-outline">찜하기</button>
+          <button id="btn-detail" class="btn-primary-custom">
+            자세히 보기
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-sheet" id="bottomSheet">
+      <div class="sheet-handle">
+        <div class="handle-bar"></div>
+      </div>
+
+      <div class="sheet-content">
+        <h2 style="padding: 0 10px; font-size: 18px;">구직 정보 리스트 📋</h2>
+
+        <div class="table-wrapper">
+          <table class="job-table">
+            <thead>
+              <tr id="tableHeader">
+                <th>제목</th>
+                <th>상호명</th>
+                <th>근무지</th>
+                <th>급여</th>
+                <th>연락처</th>
+                <th>담당자</th>
+                <th>관리</th>
+              </tr>
+            </thead>
+            <tbody id="listBody">
+              <tr>
+                <td colspan="7" class="msg-box">
+                  지도를 움직이면 공고를 불러옵니다...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script
+      th:src="@{'https://maps.googleapis.com/maps/api/js?key=' + ${googleMapsKey} + '&callback=initMap&loading=async'}"
+      async
+      defer
+    ></script>
+  </body>
 </html>

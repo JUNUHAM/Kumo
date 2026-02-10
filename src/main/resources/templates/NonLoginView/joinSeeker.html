@@ -1,294 +1,508 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>KUMO - 구직자 회원가입</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
 
-    <link rel="stylesheet" th:href="@{/css/NonLoginFragments/NonLoginHeader.css}">
-    <link rel="stylesheet" th:href="@{/css/NonLoginFragments/NonLoginFooter.css}">
-    <link rel="stylesheet" th:href="@{/css/NonLogin/joinSeeker.css}">
+    <link
+      rel="stylesheet"
+      th:href="@{/css/NonLoginFragments/NonLoginHeader.css}"
+    />
+    <link
+      rel="stylesheet"
+      th:href="@{/css/NonLoginFragments/NonLoginFooter.css}"
+    />
+    <link rel="stylesheet" th:href="@{/css/NonLogin/joinSeeker.css}" />
 
     <style>
-        .error-msg {
-            color: #EA4335;
-            font-size: 12px;
-            margin-top: 5px;
-            display: none;
-        }
+      .error-msg {
+          color: #EA4335;
+          font-size: 12px;
+          margin-top: 5px;
+          display: none;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
+    <div
+      th:replace="~{NonLoginFragments/NonLoginHeader :: headerFragment}"
+    ></div>
 
-<div th:replace="~{NonLoginFragments/NonLoginHeader :: headerFragment}"></div>
-
-<main class="join-container">
-
-    <div class="join-header">
+    <main class="join-container">
+      <div class="join-header">
         <h1 class="join-title">
-            <span th:text="#{join.seeker.title}">구직자 회원가입</span>
+          <span th:text="#{join.seeker.title}">구직자 회원가입</span>
         </h1>
-        <p class="join-desc" th:text="#{join.seeker.welcome}">쿠모에 오신것을 환영합니다!</p>
-    </div>
+        <p class="join-desc" th:text="#{join.seeker.welcome}">
+          쿠모에 오신것을 환영합니다!
+        </p>
+      </div>
 
-    <form id="joinForm" class="join-form-box" th:action="@{/join/seeker}" method="post">
+      <form
+        id="joinForm"
+        class="join-form-box"
+        th:action="@{/join/seeker}"
+        method="post"
+      >
+        <div class="form-row">
+          <div class="form-col">
+            <label class="input-label" th:text="#{join.label.sei}">성</label>
+            <input
+              type="text"
+              id="name_kanji_sei"
+              name="nameKanjiSei"
+              class="custom-input"
+              placeholder="例) 山田"
+            />
+            <div id="error_name_kanji_sei" class="error-msg">
+              성을 입력해주세요.
+            </div>
+          </div>
+          <div class="form-col">
+            <label class="input-label" th:text="#{join.label.mei}">이름</label>
+            <input
+              type="text"
+              id="name_kanji_mei"
+              name="nameKanjiMei"
+              class="custom-input"
+              placeholder="例) 太郎"
+            />
+            <div id="error_name_kanji_mei" class="error-msg">
+              이름을 입력해주세요.
+            </div>
+          </div>
+        </div>
+        <br />
 
         <div class="form-row">
-            <div class="form-col">
-                <label class="input-label" th:text="#{join.label.sei}">성</label>
-                <input type="text" id="name_kanji_sei" name="nameKanjiSei" class="custom-input" placeholder="例) 山田">
-                <div id="error_name_kanji_sei" class="error-msg">성을 입력해주세요.</div>
+          <div class="form-col">
+            <label class="input-label" th:text="#{join.label.sei_kana}"
+              >성(가타카나)</label
+            >
+            <input
+              type="text"
+              id="name_kana_sei"
+              name="nameKanaSei"
+              class="custom-input"
+              placeholder="例) ヤマダ"
+            />
+            <div id="error_name_kana_sei" class="error-msg">
+              성(가타카나)을 입력해주세요.
             </div>
-            <div class="form-col">
-                <label class="input-label" th:text="#{join.label.mei}">이름</label>
-                <input type="text" id="name_kanji_mei" name="nameKanjiMei" class="custom-input" placeholder="例) 太郎">
-                <div id="error_name_kanji_mei" class="error-msg">이름을 입력해주세요.</div>
+          </div>
+          <div class="form-col">
+            <label class="input-label" th:text="#{join.label.mei_kana}"
+              >이름(가타카나)</label
+            >
+            <input
+              type="text"
+              id="name_kana_mei"
+              name="nameKanaMei"
+              class="custom-input"
+              placeholder="例) タロウ"
+            />
+            <div id="error_name_kana_mei" class="error-msg">
+              이름(가타카나)을 입력해주세요.
             </div>
+          </div>
         </div>
-        <br>
+        <br />
+
+        <div class="input-group">
+          <label class="input-label" th:text="#{join.label.nickname}"
+            >닉네임</label
+          >
+          <div class="address-row">
+            <input
+              type="text"
+              id="nickname"
+              name="nickname"
+              class="custom-input"
+            />
+            <button
+              type="button"
+              class="btn-search"
+              onclick="checkNickname()"
+              th:text="#{join.btn.check_dup}"
+            >
+              중복확인
+            </button>
+          </div>
+          <div id="error_nickname" class="error-msg">
+            닉네임을 입력해주세요.
+          </div>
+          <input type="hidden" id="nicknameChecked" value="false" />
+        </div>
 
         <div class="form-row">
-            <div class="form-col">
-                <label class="input-label" th:text="#{join.label.sei_kana}">성(가타카나)</label>
-                <input type="text" id="name_kana_sei" name="nameKanaSei" class="custom-input" placeholder="例) ヤマダ">
-                <div id="error_name_kana_sei" class="error-msg">성(가타카나)을 입력해주세요.</div>
+          <div class="form-col" style="flex: 2;">
+            <label class="input-label" th:text="#{join.label.birth}"
+              >생년월일</label
+            >
+            <div class="form-row" style="gap: 5px;">
+              <select id="birth_year" name="birthYear" class="custom-select">
+                <option value="">YYYY</option>
+                <option
+                  th:each="i : ${#numbers.sequence(1960, 2010)}"
+                  th:value="${i}"
+                  th:text="${i}"
+                ></option>
+              </select>
+              <select id="birth_month" name="birthMonth" class="custom-select">
+                <option value="">MM</option>
+                <option
+                  th:each="i : ${#numbers.sequence(1, 12)}"
+                  th:value="${i}"
+                  th:text="${i}"
+                ></option>
+              </select>
+              <select id="birth_day" name="birthDay" class="custom-select">
+                <option value="">DD</option>
+                <option
+                  th:each="i : ${#numbers.sequence(1, 31)}"
+                  th:value="${i}"
+                  th:text="${i}"
+                ></option>
+              </select>
             </div>
-            <div class="form-col">
-                <label class="input-label" th:text="#{join.label.mei_kana}">이름(가타카나)</label>
-                <input type="text" id="name_kana_mei" name="nameKanaMei" class="custom-input" placeholder="例) タロウ">
-                <div id="error_name_kana_mei" class="error-msg">이름(가타카나)을 입력해주세요.</div>
+            <div id="error_birth" class="error-msg">
+              생년월일을 모두 선택해주세요.
             </div>
-        </div>
-        <br>
-
-        <div class="input-group">
-            <label class="input-label" th:text="#{join.label.nickname}">닉네임</label>
-            <div class="address-row">
-                <input type="text" id="nickname" name="nickname" class="custom-input">
-                <button type="button" class="btn-search" onclick="checkNickname()" th:text="#{join.btn.check_dup}">중복확인</button>
-            </div>
-            <div id="error_nickname" class="error-msg">닉네임을 입력해주세요.</div>
-            <input type="hidden" id="nicknameChecked" value="false">
-        </div>
-
-        <div class="form-row">
-            <div class="form-col" style="flex: 2;">
-                <label class="input-label" th:text="#{join.label.birth}">생년월일</label>
-                <div class="form-row" style="gap: 5px;">
-                    <select id="birth_year" name="birthYear" class="custom-select">
-                        <option value="">YYYY</option>
-                        <option th:each="i : ${#numbers.sequence(1960, 2010)}" th:value="${i}" th:text="${i}"></option>
-                    </select>
-                    <select id="birth_month" name="birthMonth" class="custom-select">
-                        <option value="">MM</option>
-                        <option th:each="i : ${#numbers.sequence(1, 12)}" th:value="${i}" th:text="${i}"></option>
-                    </select>
-                    <select id="birth_day" name="birthDay" class="custom-select">
-                        <option value="">DD</option>
-                        <option th:each="i : ${#numbers.sequence(1, 31)}" th:value="${i}" th:text="${i}"></option>
-                    </select>
-                </div>
-                <div id="error_birth" class="error-msg">생년월일을 모두 선택해주세요.</div>
-            </div>
-            <div class="form-col" style="flex: 1;">
-                <label class="input-label" th:text="#{join.label.gender}">성별</label>
-                <select name="gender" class="custom-select">
-                    <option value="M" th:text="#{join.gender.male}">남자</option>
-                    <option value="F" th:text="#{join.gender.female}">여자</option>
-                </select>
-            </div>
-        </div>
-        <br>
-
-        <div class="input-group">
-            <label class="input-label" th:text="#{join.label.address}">주소</label>
-            <div class="address-row">
-                <input type="text" id="zipcode" name="zipCode" class="custom-input"
-                       th:placeholder="#{join.placeholder.zipcode}" maxlength="7" inputmode="numeric"
-                       oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                <button type="button" class="btn-search" onclick="searchAddress()" th:text="#{join.btn.find_addr}">찾기</button>
-                <div id="error_zipcode" class="error-msg"></div>
-            </div>
-
-            <input type="hidden" id="addr_prefecture" name="addrPrefecture">
-            <input type="hidden" id="addr_city" name="addrCity">
-            <input type="hidden" id="addr_town" name="addrTown">
-            <input type="hidden" id="latitude" name="latitude">
-            <input type="hidden" id="longitude" name="longitude">
-
-            <input type="text" id="address_main" name="addressMain" class="custom-input" style="margin-top: 10px;" th:placeholder="#{join.placeholder.address_main}" readonly>
-            <input type="text" id="address_detail" name="addressDetail" class="custom-input" style="margin-top: 10px;" th:placeholder="#{join.placeholder.address_detail}">
-            <div id="error_address_detail" class="error-msg">상세주소를 입력해주세요.</div>
-        </div>
-
-        <div class="input-group">
-            <label class="input-label" th:text="#{join.label.phone}">전화번호</label>
-            <input type="tel" id="contact" name="contact" class="custom-input"
-                   placeholder="090-1234-5678" maxlength="13"
-                   oninput="this.value = this.value.replace(/[^0-9-]/g, '')">
-            <div id="error_contact" class="error-msg">전화번호를 입력해주세요.</div>
-        </div>
-
-        <div class="input-group">
-            <label class="input-label" th:text="#{join.label.email}">이메일</label>
-            <div class="address-row">
-                <input type="email" id="email" name="email" class="custom-input" th:placeholder="#{join.placeholder.email}">
-                <button type="button" class="btn-search" onclick="checkEmail()" th:text="#{join.btn.check_dup}">중복확인</button>
-            </div>
-            <div id="error_email" class="error-msg">이메일을 입력해주세요.</div>
-            <input type="hidden" id="emailChecked" value="false">
-        </div>
-
-        <div class="input-group">
-            <label class="input-label" th:text="#{join.label.pw}">비밀번호</label>
-            <input type="password" id="password" name="password" class="custom-input" th:placeholder="#{join.placeholder.pw}">
-            <div id="error_password" class="error-msg">비밀번호를 입력해주세요.</div>
-        </div>
-
-        <div class="input-group">
-            <label class="input-label" th:text="#{join.label.pw_confirm}">비밀번호 확인</label>
-            <input type="password" id="password_confirm" class="custom-input">
-            <div id="error_password_confirm" class="error-msg">비밀번호가 일치하지 않습니다.</div>
-        </div>
-
-        <div class="input-group">
-            <label class="input-label" th:text="#{join.label.path}">가입경로</label>
-            <select id="join_path" name="joinPath" class="custom-select">
-                <option value="" th:text="#{join.path.select}">선택해주세요</option>
-                <option value="SEARCH_PORTAL" th:text="#{join.path.portal}">주요 포털사이트 검색</option>
-                <option value="APP_STORE" th:text="#{join.path.appstore}">앱스토어 검색</option>
-                <option value="AD_RADIO" th:text="#{join.path.radio}">라디오 광고</option>
-                <option value="AD_TV" th:text="#{join.path.tv}">TV 광고</option>
-                <option value="NEWS" th:text="#{join.path.news}">뉴스(신문, 인터넷 등)</option>
-                <option value="AD_ONLINE" th:text="#{join.path.online}">모바일(온라인) 광고 배너</option>
-                <option value="REFERRAL" th:text="#{join.path.referral}">친구 및 지인 소개</option>
-                <option value="COMMUNITY" th:text="#{join.path.community}">인터넷 커뮤니티 및 게시판</option>
-                <option value="AD_CINEMA" th:text="#{join.path.cinema}">극장광고</option>
-                <option value="ETC" th:text="#{join.path.etc}">기타(버스,지하철,판촉물 등)</option>
+          </div>
+          <div class="form-col" style="flex: 1;">
+            <label class="input-label" th:text="#{join.label.gender}"
+              >성별</label
+            >
+            <select name="gender" class="custom-select">
+              <option value="M" th:text="#{join.gender.male}">남자</option>
+              <option value="F" th:text="#{join.gender.female}">여자</option>
             </select>
-            <div id="error_join_path" class="error-msg">가입경로를 선택해주세요.</div>
+          </div>
+        </div>
+        <br />
+
+        <div class="input-group">
+          <label class="input-label" th:text="#{join.label.address}"
+            >주소</label
+          >
+          <div class="address-row">
+            <input
+              type="text"
+              id="zipcode"
+              name="zipCode"
+              class="custom-input"
+              th:placeholder="#{join.placeholder.zipcode}"
+              maxlength="7"
+              inputmode="numeric"
+              oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+            />
+            <button
+              type="button"
+              class="btn-search"
+              onclick="searchAddress()"
+              th:text="#{join.btn.find_addr}"
+            >
+              찾기
+            </button>
+            <div id="error_zipcode" class="error-msg"></div>
+          </div>
+
+          <input type="hidden" id="addr_prefecture" name="addrPrefecture" />
+          <input type="hidden" id="addr_city" name="addrCity" />
+          <input type="hidden" id="addr_town" name="addrTown" />
+          <input type="hidden" id="latitude" name="latitude" />
+          <input type="hidden" id="longitude" name="longitude" />
+
+          <input
+            type="text"
+            id="address_main"
+            name="addressMain"
+            class="custom-input"
+            style="margin-top: 10px;"
+            th:placeholder="#{join.placeholder.address_main}"
+            readonly
+          />
+          <input
+            type="text"
+            id="address_detail"
+            name="addressDetail"
+            class="custom-input"
+            style="margin-top: 10px;"
+            th:placeholder="#{join.placeholder.address_detail}"
+          />
+          <div id="error_address_detail" class="error-msg">
+            상세주소를 입력해주세요.
+          </div>
         </div>
 
-        <div class="input-label" style="margin-bottom: 10px;" th:text="#{join.label.terms}">약관 동의</div>
+        <div class="input-group">
+          <label class="input-label" th:text="#{join.label.phone}"
+            >전화번호</label
+          >
+          <input
+            type="tel"
+            id="contact"
+            name="contact"
+            class="custom-input"
+            placeholder="090-1234-5678"
+            maxlength="13"
+            oninput="this.value = this.value.replace(/[^0-9-]/g, '')"
+          />
+          <div id="error_contact" class="error-msg">
+            전화번호를 입력해주세요.
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label" th:text="#{join.label.email}"
+            >이메일</label
+          >
+          <div class="address-row">
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="custom-input"
+              th:placeholder="#{join.placeholder.email}"
+            />
+            <button
+              type="button"
+              class="btn-search"
+              onclick="checkEmail()"
+              th:text="#{join.btn.check_dup}"
+            >
+              중복확인
+            </button>
+          </div>
+          <div id="error_email" class="error-msg">이메일을 입력해주세요.</div>
+          <input type="hidden" id="emailChecked" value="false" />
+        </div>
+
+        <div class="input-group">
+          <label class="input-label" th:text="#{join.label.pw}">비밀번호</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            class="custom-input"
+            th:placeholder="#{join.placeholder.pw}"
+          />
+          <div id="error_password" class="error-msg">
+            비밀번호를 입력해주세요.
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label" th:text="#{join.label.pw_confirm}"
+            >비밀번호 확인</label
+          >
+          <input type="password" id="password_confirm" class="custom-input" />
+          <div id="error_password_confirm" class="error-msg">
+            비밀번호가 일치하지 않습니다.
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label" th:text="#{join.label.path}"
+            >가입경로</label
+          >
+          <select id="join_path" name="joinPath" class="custom-select">
+            <option value="" th:text="#{join.path.select}">선택해주세요</option>
+            <option value="SEARCH_PORTAL" th:text="#{join.path.portal}">
+              주요 포털사이트 검색
+            </option>
+            <option value="APP_STORE" th:text="#{join.path.appstore}">
+              앱스토어 검색
+            </option>
+            <option value="AD_RADIO" th:text="#{join.path.radio}">
+              라디오 광고
+            </option>
+            <option value="AD_TV" th:text="#{join.path.tv}">TV 광고</option>
+            <option value="NEWS" th:text="#{join.path.news}">
+              뉴스(신문, 인터넷 등)
+            </option>
+            <option value="AD_ONLINE" th:text="#{join.path.online}">
+              모바일(온라인) 광고 배너
+            </option>
+            <option value="REFERRAL" th:text="#{join.path.referral}">
+              친구 및 지인 소개
+            </option>
+            <option value="COMMUNITY" th:text="#{join.path.community}">
+              인터넷 커뮤니티 및 게시판
+            </option>
+            <option value="AD_CINEMA" th:text="#{join.path.cinema}">
+              극장광고
+            </option>
+            <option value="ETC" th:text="#{join.path.etc}">
+              기타(버스,지하철,판촉물 등)
+            </option>
+          </select>
+          <div id="error_join_path" class="error-msg">
+            가입경로를 선택해주세요.
+          </div>
+        </div>
+
+        <div
+          class="input-label"
+          style="margin-bottom: 10px;"
+          th:text="#{join.label.terms}"
+        >
+          약관 동의
+        </div>
         <div class="terms-box" id="terms_box">
+          <label class="term-item check-all-row">
+            <input type="checkbox" id="checkAll" />
+            <span class="term-text"
+              ><strong th:text="#{join.term.all}">전체 동의</strong></span
+            >
+          </label>
 
-            <label class="term-item check-all-row">
-                <input type="checkbox" id="checkAll">
-                <span class="term-text"><strong th:text="#{join.term.all}">전체 동의</strong></span>
-            </label>
+          <hr class="term-divider" />
 
-            <hr class="term-divider">
+          <label class="term-item">
+            <input type="checkbox" id="term_age" name="term_age" />
+            <span class="term-text">
+              <span class="required" th:text="#{join.required}">(필수)</span>
+              <span th:text="#{join.term.age}">만 15세 이상입니다.</span>
+            </span>
+          </label>
 
+          <div class="term-row">
             <label class="term-item">
-                <input type="checkbox" id="term_age" name="term_age">
-                <span class="term-text">
-            <span class="required" th:text="#{join.required}">(필수)</span>
-            <span th:text="#{join.term.age}">만 15세 이상입니다.</span>
-        </span>
-            </label>
-
-            <div class="term-row">
-                <label class="term-item">
-                    <input type="checkbox" id="term_service" name="term_service">
-                    <span class="term-text">
+              <input type="checkbox" id="term_service" name="term_service" />
+              <span class="term-text">
                 <span class="required" th:text="#{join.required}">(필수)</span>
                 <span th:text="#{join.term.service}">서비스 이용약관 동의</span>
-            </span>
-                </label>
-                <a href="#" class="term-link"><i class="fa-solid fa-chevron-right"></i></a>
-            </div>
-
-            <div class="term-row">
-                <label class="term-item">
-                    <input type="checkbox" id="term_privacy" name="term_privacy">
-                    <span class="term-text">
-                <span class="required" th:text="#{join.required}">(필수)</span>
-                <span th:text="#{join.term.privacy}">개인정보 수집 및 이용 동의</span>
-            </span>
-                </label>
-                <a href="#" class="term-link"><i class="fa-solid fa-chevron-right"></i></a>
-            </div>
-
-            <div class="term-row">
-                <label class="term-item">
-                    <input type="checkbox" id="term_location" name="term_location">
-                    <span class="term-text">
-                <span class="required" th:text="#{join.required}">(필수)</span>
-                <span th:text="#{join.term.location}">위치기반 서비스 이용약관 동의</span>
-            </span>
-                </label>
-                <a href="#" class="term-link"><i class="fa-solid fa-chevron-right"></i></a>
-            </div>
-
-            <div class="term-row">
-                <label class="term-item">
-                    <input type="checkbox" id="term_provision" name="term_provision">
-                    <span class="term-text">
-                <span class="required" th:text="#{join.required}">(필수)</span>
-                <span th:text="#{join.term.provision}">제3자 정보 제공 동의</span>
-            </span>
-                </label>
-                <a href="#" class="term-link"><i class="fa-solid fa-chevron-right"></i></a>
-            </div>
-
-            <label class="term-item">
-                <input type="checkbox" name="adReceive">
-                <span class="term-text">
-            <span class="optional" th:text="#{join.optional}">(선택)</span>
-            <span th:text="#{join.term.marketing}">이벤트 및 혜택 알림 수신 동의</span>
-        </span>
+              </span>
             </label>
-            <button type="submit" class="btn-submit" th:text="#{join.btn.join}">회원 가입</button><br>
-            <div id="error_terms" class="error-msg" style="margin-top: -20px; margin-bottom: 20px;">동의칸에 체크해주세요.</div>
+            <a href="#" class="term-link"
+              ><i class="fa-solid fa-chevron-right"></i
+            ></a>
+          </div>
 
+          <div class="term-row">
+            <label class="term-item">
+              <input type="checkbox" id="term_privacy" name="term_privacy" />
+              <span class="term-text">
+                <span class="required" th:text="#{join.required}">(필수)</span>
+                <span th:text="#{join.term.privacy}"
+                  >개인정보 수집 및 이용 동의</span
+                >
+              </span>
+            </label>
+            <a href="#" class="term-link"
+              ><i class="fa-solid fa-chevron-right"></i
+            ></a>
+          </div>
+
+          <div class="term-row">
+            <label class="term-item">
+              <input type="checkbox" id="term_location" name="term_location" />
+              <span class="term-text">
+                <span class="required" th:text="#{join.required}">(필수)</span>
+                <span th:text="#{join.term.location}"
+                  >위치기반 서비스 이용약관 동의</span
+                >
+              </span>
+            </label>
+            <a href="#" class="term-link"
+              ><i class="fa-solid fa-chevron-right"></i
+            ></a>
+          </div>
+
+          <div class="term-row">
+            <label class="term-item">
+              <input
+                type="checkbox"
+                id="term_provision"
+                name="term_provision"
+              />
+              <span class="term-text">
+                <span class="required" th:text="#{join.required}">(필수)</span>
+                <span th:text="#{join.term.provision}"
+                  >제3자 정보 제공 동의</span
+                >
+              </span>
+            </label>
+            <a href="#" class="term-link"
+              ><i class="fa-solid fa-chevron-right"></i
+            ></a>
+          </div>
+
+          <label class="term-item">
+            <input type="checkbox" name="adReceive" />
+            <span class="term-text">
+              <span class="optional" th:text="#{join.optional}">(선택)</span>
+              <span th:text="#{join.term.marketing}"
+                >이벤트 및 혜택 알림 수신 동의</span
+              >
+            </span>
+          </label>
+          <button type="submit" class="btn-submit" th:text="#{join.btn.join}">
+            회원 가입</button
+          ><br />
+          <div
+            id="error_terms"
+            class="error-msg"
+            style="margin-top: -20px; margin-bottom: 20px;"
+          >
+            동의칸에 체크해주세요.
+          </div>
         </div>
-    </form>
+      </form>
+    </main>
 
-</main>
+    <div
+      th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"
+    ></div>
 
-<div th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"></div>
+    <script th:inline="javascript">
+          const errorMessages = {
+          name_kanji_sei: [[#{error.name.kanji.sei}]],
+          name_kanji_mei: [[#{error.name.kanji.mei}]],
+          name_kana_sei: [[#{error.name.kana.sei}]],
+          name_kana_mei: [[#{error.name.kana.mei}]],
+          nickname: [[#{error.nickname}]],
+          birth: [[#{error.birth}]],
+          zipcode: [[#{error.zipcode}]],
+          address_detail: [[#{error.address.detail}]],
+          contact_empty: [[#{error.contact.empty}]],
+          contact_invalid: [[#{error.contact.invalid}]],
+          email_empty: [[#{error.email.empty}]],
+          email_invalid: [[#{error.email.invalid}]],
+          pw_empty: [[#{error.pw.empty}]],
+          pw_invalid: [[#{error.pw.invalid}]],
+          pw_mismatch: [[#{error.pw.mismatch}]],
+          joinpath: [[#{error.joinpath}]],
+          terms: [[#{error.terms}]],
 
-<script th:inline="javascript">
-    const errorMessages = {
-    name_kanji_sei: [[#{error.name.kanji.sei}]],
-    name_kanji_mei: [[#{error.name.kanji.mei}]],
-    name_kana_sei: [[#{error.name.kana.sei}]],
-    name_kana_mei: [[#{error.name.kana.mei}]],
-    nickname: [[#{error.nickname}]],
-    birth: [[#{error.birth}]],
-    zipcode: [[#{error.zipcode}]],
-    address_detail: [[#{error.address.detail}]],
-    contact_empty: [[#{error.contact.empty}]],
-    contact_invalid: [[#{error.contact.invalid}]],
-    email_empty: [[#{error.email.empty}]],
-    email_invalid: [[#{error.email.invalid}]],
-    pw_empty: [[#{error.pw.empty}]],
-    pw_invalid: [[#{error.pw.invalid}]],
-    pw_mismatch: [[#{error.pw.mismatch}]],
-    joinpath: [[#{error.joinpath}]],
-    terms: [[#{error.terms}]],
+          email_duplicate: [[#{error.email.duplicate}]],
+          nickname_duplicate: [[#{error.nickname.duplicate}]],
 
-    email_duplicate: [[#{error.email.duplicate}]],
-    nickname_duplicate: [[#{error.nickname.duplicate}]],
+          // ★ [핵심] 중복확인 경고 메시지 추가
+          check_dup: [[#{error.check.dup}]],
 
-    // ★ [핵심] 중복확인 경고 메시지 추가
-    check_dup: [[#{error.check.dup}]],
+          zipcode_check: [[#{error.zipcode.check}]],
+          search_fail: [[#{error.search.fail}]],
 
-    zipcode_check: [[#{error.zipcode.check}]],
-    search_fail: [[#{error.search.fail}]],
+          regex_kanji: [[#{error.regex.kanji}]],
+          regex_kana: [[#{error.regex.kana}]],
 
-    regex_kanji: [[#{error.regex.kanji}]],
-    regex_kana: [[#{error.regex.kana}]],
+          success_email: [[#{join.success.email}]],
+          success_nickname: [[#{join.success.nickname}]]
+      };
+    </script>
 
-    success_email: [[#{join.success.email}]],
-    success_nickname: [[#{join.success.nickname}]]
-};
-</script>
-
-<script th:src="@{/js/NonLogin/joinSeeker.js}"></script>
-<script th:src="@{https://maps.googleapis.com/maps/api/js(key=${googleKey}, libraries='places')}"></script>
-
-</body>
+    <script th:src="@{/js/NonLogin/joinSeeker.js}"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=services&language=ja"></script>
+  </body>
 </html>

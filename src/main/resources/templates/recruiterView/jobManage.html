@@ -17,7 +17,7 @@
     />
     <link
       rel="stylesheet"
-      th:href="@{/css/NonLoginFragments/NonLoginHeader.css}"
+      th:href="@{/css/recruiter/header.css}"
     />
     <link
       rel="stylesheet"
@@ -44,22 +44,22 @@
         <main class="content-body">
           <div class="job-manage-card">
             <div class="card-header-flex">
-              <h2 class="table-title">공고 관리</h2>
+              <h2 class="table-title" th:text="#{job.manage.title}">공고 관리</h2>
             </div>
 
             <table class="kumo-table">
               <thead>
                 <tr>
-                  <th>
+                  <th th:utext="#{job.manage.table.title}">
                     공고 제목 <i class="bi bi-arrow-down-up sort-icon"></i>
                   </th>
-                  <th>업무 <i class="bi bi-arrow-down-up sort-icon"></i></th>
-                  <th>급료 <i class="bi bi-arrow-down-up sort-icon"></i></th>
-                  <th>연락처</th>
-                  <th>
+                  <th th:utext="#{job.manage.table.task}">업무 <i class="bi bi-arrow-down-up sort-icon"></i></th>
+                  <th th:utext="#{job.manage.table.wage}">급료 <i class="bi bi-arrow-down-up sort-icon"></i></th>
+                  <th th:text="#{job.manage.table.contact}">연락처</th>
+                  <th th:utext="#{job.manage.table.reg_date}">
                     등록 날짜 <i class="bi bi-arrow-down-up sort-icon"></i>
                   </th>
-                  <th>마감여부</th>
+                  <th th:text="#{job.manage.table.status}">마감여부</th>
                   <th></th>
                 </tr>
               </thead>
@@ -80,11 +80,11 @@
                     >
                   </td>
                   <td><span class="date-text">1년 전</span></td>
-                  <td><span class="status-badge status-ing">모집중</span></td>
+                  <td><span class="status-badge status-ing" th:text="#{job.manage.status.ing}">모집중</span></td>
                   <td>
                     <div class="action-buttons">
-                      <button class="btn-manage">관리</button>
-                      <button class="btn-close-job">마감</button>
+                      <button class="btn-manage" th:text="#{job.manage.btn.manage}">관리</button>
+                      <button class="btn-close-job" th:text="#{job.manage.btn.close}">마감</button>
                     </div>
                   </td>
                 </tr>
@@ -105,7 +105,7 @@
                     >
                   </td>
                   <td><span class="date-text">2개월 전</span></td>
-                  <td><span class="status-badge status-end">마감됨</span></td>
+                  <td><span class="status-badge status-end" th:text="#{job.manage.status.end}">마감됨</span></td>
                   <td></td>
                 </tr>
               </tbody>

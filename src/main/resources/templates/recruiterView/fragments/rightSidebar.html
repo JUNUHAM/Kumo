@@ -2,20 +2,41 @@
 <html xmlns:th="http://www.thymeleaf.org">
   <aside th:fragment="rightSidebarFragment" class="dashboard-right-sidebar">
     <div class="side-panel calendar-section">
-      <div class="panel-header" id="current-month-title">2026년 2월</div>
+      <div
+        class="panel-header"
+        id="current-month-title"
+        th:text="#{main.sidebar.calendar_title}"
+      >
+        2026년 2월
+      </div>
       <div id="mini-calendar" class="mini-calendar-container"></div>
     </div>
 
     <div class="side-panel schedule-section">
-      <div class="panel-header" id="selected-date-title">상세 일정</div>
+      <div
+        class="panel-header"
+        id="selected-date-title"
+        th:text="#{main.panel.today_schedule}"
+      >
+        상세 일정
+      </div>
       <div id="event-list-container" class="panel-placeholder">
-        <p class="mb-0 text-center">날짜를 클릭하여<br />일정을 확인하세요.</p>
+        <p
+          class="mb-0 text-center"
+          th:utext="#{main.sidebar.no_schedule_guide}"
+        >
+          날짜를 클릭하여<br />일정을 확인하세요.
+        </p>
       </div>
     </div>
 
     <div class="side-action-buttons">
       <a th:href="@{/Recruiter/JobPosting}" class="links text-decoration-none">
-        <button class="btn btn-common-action btn-sky-blue w-100" type="button">
+        <button
+          class="btn btn-common-action btn-sky-blue w-100"
+          type="button"
+          th:text="#{main.welcome.btn.post}"
+        >
           공고 등록
         </button>
       </a>
@@ -23,7 +44,8 @@
         class="btn btn-common-action btn-light-blue w-100 position-relative"
         type="button"
       >
-        <i class="bi bi-chat-dots-fill me-2"></i>채팅
+        <i class="bi bi-chat-dots-fill me-2"></i
+        ><span th:text="#{main.sidebar.chat}">채팅</span>
         <span class="badge-count">3</span>
       </button>
     </div>

@@ -22,7 +22,7 @@
             th:classappend="${currentMenu == 'home'} ? 'active'"
           >
             <i class="bi bi-house-door-fill"></i>
-            <span>Home</span>
+            <span th:text="#{sidebar.menu.home}">Home</span>
           </a>
 
           <a
@@ -31,7 +31,7 @@
             th:classappend="${currentMenu == 'applicants'} ? 'active'"
           >
             <i class="bi bi-person-fill"></i>
-            <span>지원자 관리</span>
+            <span th:text="#{sidebar.menu.applicants}">지원자 관리</span>
           </a>
 
           <a
@@ -40,7 +40,7 @@
             th:classappend="${currentMenu == 'jobManage'} ? 'active'"
           >
             <i class="bi bi-bar-chart-line-fill"></i>
-            <span>공고 관리</span>
+            <span th:text="#{sidebar.menu.jobs}">공고 관리</span>
           </a>
 
           <a
@@ -49,7 +49,7 @@
             th:classappend="${currentMenu == 'calendar'} ? 'active'"
           >
             <i class="bi bi-calendar-event-fill"></i>
-            <span>캘린더</span>
+            <span th:text="#{sidebar.menu.calendar}">캘린더</span>
           </a>
 
           <a
@@ -58,7 +58,7 @@
             th:classappend="${currentMenu == 'companyInfo'} ? 'active'"
           >
             <i class="bi bi-building-fill"></i>
-            <span>회사 정보</span>
+            <span th:text="#{sidebar.menu.company}">회사 정보</span>
           </a>
 
           <a
@@ -67,7 +67,7 @@
             th:classappend="${currentMenu == 'settings'} ? 'active'"
           >
             <i class="bi bi-gear-fill"></i>
-            <span>내 계정</span>
+            <span th:text="#{sidebar.menu.settings}">내 계정</span>
           </a>
         </nav>
       </div>
@@ -75,7 +75,7 @@
       <div class="sidebar-bottom">
         <a href="/logout" class="nav-item logout-btn">
           <i class="bi bi-power"></i>
-          <span>LOGOUT</span>
+          <span th:text="#{sidebar.menu.logout}">LOGOUT</span>
         </a>
       </div>
     </aside>

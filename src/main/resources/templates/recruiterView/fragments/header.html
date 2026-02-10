@@ -1,9 +1,12 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
   <div th:fragment="headerFragment">
-    <header th:fragment="headerFragment" class="non-login-header">
+    <header class="non-login-header">
       <div class="logo">
-        <a th:href="@{/}">
+        <a th:href="@{/Recruiter/Main}">
           <img
             th:src="@{/images/recruiter/recruiterLogo.png}"
             alt="KUMO"
@@ -13,14 +16,16 @@
       </div>
 
       <ul class="nav-menu">
-        <li><a th:href="@{/info}">회사 정보</a></li>
+        <li><a th:href="@{/info}" th:text="#{header.company}">회사 정보</a></li>
 
         <li sec:authorize="isAnonymous()">
-          <a th:href="@{/login}">로그인</a>
+          <a th:href="@{/login}" th:text="#{header.login}">로그인</a>
         </li>
 
         <li sec:authorize="isAuthenticated()">
-          <a th:href="@{/recruiter/profile}">마이페이지</a>
+          <a th:href="@{/recruiter/profile}" th:text="#{header.mypage}"
+            >마이페이지</a
+          >
         </li>
 
         <li class="icon-btn lang-container" id="langBtn">
@@ -37,60 +42,59 @@
       </ul>
     </header>
 
-    <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                // [다크모드 로직]
-                const toggleBtn = document.getElementById('darkModeBtn');
-                const icon = document.getElementById('darkModeIcon');
-                const body = document.body;
-                const currentTheme = localStorage.getItem('theme');
+    <script th:inline="javascript">
+      /* <![CDATA[ */
+      document.addEventListener("DOMContentLoaded", function() {
+          // [다크모드 로직]
+          const toggleBtn = document.getElementById('darkModeBtn');
+          const icon = document.getElementById('darkModeIcon');
+          const body = document.body;
+          const currentTheme = localStorage.getItem('theme');
 
-        // [header.html 내부 스크립트 수정 제안]
-      if (currentTheme === 'dark') {
-          body.classList.add('dark-mode');
-          // 아이콘이 있을 때만 클래스 교체 (에러 방지)
-          if(icon) {
-              icon.classList.replace('fa-sun', 'fa-moon'); // replace가 더 안전합니다
+          if (currentTheme === 'dark') {
+              body.classList.add('dark-mode');
+              if(icon) {
+                  icon.classList.replace('fa-sun', 'fa-moon');
+              }
           }
+
+          if (toggleBtn) {
+              toggleBtn.addEventListener('click', () => {
+                  body.classList.toggle('dark-mode');
+                  if (body.classList.contains('dark-mode')) {
+                      localStorage.setItem('theme', 'dark');
+                      if(icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
+                  } else {
+                      localStorage.setItem('theme', 'light');
+                      if(icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
+                  }
+              });
+          }
+
+          // [언어 드롭다운 로직]
+          const langBtn = document.getElementById('langBtn');
+          const langMenu = document.getElementById('langMenu');
+
+          if (langBtn && langMenu) {
+              langBtn.addEventListener('click', (e) => {
+                  e.stopPropagation();
+                  langMenu.classList.toggle('show');
+              });
+
+              document.addEventListener('click', (e) => {
+                  if (!langBtn.contains(e.target)) {
+                      langMenu.classList.remove('show');
+                  }
+              });
+          }
+      });
+
+      function changeLang(lang) {
+          const url = new URL(window.location.href);
+          url.searchParams.set('lang', lang);
+          window.location.href = url.toString();
       }
-
-                if (toggleBtn) {
-                    toggleBtn.addEventListener('click', () => {
-                        body.classList.toggle('dark-mode');
-                        if (body.classList.contains('dark-mode')) {
-                            localStorage.setItem('theme', 'dark');
-                            if(icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
-                        } else {
-                            localStorage.setItem('theme', 'light');
-                            if(icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
-                        }
-                    });
-                }
-
-                // [언어 드롭다운 로직]
-                const langBtn = document.getElementById('langBtn');
-                const langMenu = document.getElementById('langMenu');
-
-                if (langBtn && langMenu) {
-                    langBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        langMenu.classList.toggle('show');
-                    });
-
-                    document.addEventListener('click', (e) => {
-                        if (!langBtn.contains(e.target)) {
-                            langMenu.classList.remove('show');
-                        }
-                    });
-                }
-            });
-
-            // [언어 변경 함수]
-            function changeLang(lang) {
-                const url = new URL(window.location.href);
-                url.searchParams.set('lang', lang);
-                window.location.href = url.toString();
-            }
+      /* ]]> */
     </script>
   </div>
 </html>

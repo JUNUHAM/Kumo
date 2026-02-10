@@ -15,10 +15,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
-    <link
-      rel="stylesheet"
-      th:href="@{/css/NonLoginFragments/NonLoginHeader.css}"
-    />
+    <link rel="stylesheet" th:href="@{/css/recruiter/header.css}" />
     <link
       rel="stylesheet"
       th:href="@{/css/NonLoginFragments/NonLoginFooter.css}"
@@ -44,8 +41,10 @@
         <main class="content-body">
           <div class="company-mgmt-container">
             <div class="header-title-area mb-4">
-              <h2 class="table-title">회사 정보 관리</h2>
-              <p class="text-muted small">
+              <h2 class="table-title" th:text="#{biz.info.title}">
+                회사 정보 관리
+              </h2>
+              <p class="text-muted small" th:text="#{biz.info.subtitle}">
                 등록된 회사 정보를 확인하고 수정할 수 있습니다.
               </p>
             </div>
@@ -64,7 +63,9 @@
               <form id="companyDetailForm">
                 <div class="row g-4">
                   <div class="col-md-6">
-                    <label class="info-label">회사명</label>
+                    <label class="info-label" th:text="#{biz.label.name}"
+                      >회사명</label
+                    >
                     <input
                       type="text"
                       class="kumo-form-control"
@@ -72,39 +73,64 @@
                     />
                   </div>
                   <div class="col-md-6">
-                    <label class="info-label">대표자명</label>
+                    <label class="info-label" th:text="#{biz.label.ceo}"
+                      >대표자명</label
+                    >
                     <input
                       type="text"
                       class="kumo-form-control"
+                      th:placeholder="#{biz.placeholder.ceo}"
                       placeholder="성함을 입력하세요"
                     />
                   </div>
                   <div class="col-md-12">
-                    <label class="info-label">회사 주소</label>
+                    <label class="info-label" th:text="#{biz.label.address}"
+                      >회사 주소</label
+                    >
                     <div class="kumo-input-group">
                       <input
                         type="text"
                         class="kumo-form-control address-input"
+                        th:placeholder="#{biz.placeholder.address}"
                         placeholder="도쿄도 미나토구..."
                       />
-                      <button type="button" class="btn-address-search">
+                      <button
+                        type="button"
+                        class="btn-address-search"
+                        th:text="#{biz.btn.find_addr}"
+                      >
                         주소 찾기
                       </button>
                     </div>
                   </div>
                   <div class="col-md-12">
-                    <label class="info-label">회사 소개</label>
+                    <label class="info-label" th:text="#{biz.label.intro}"
+                      >회사 소개</label
+                    >
                     <textarea
                       class="kumo-form-control"
                       rows="5"
+                      th:placeholder="#{biz.placeholder.intro}"
                       placeholder="회사에 대한 간단한 설명을 작성해 주세요."
                     ></textarea>
                   </div>
                 </div>
 
                 <div class="form-actions mt-5">
-                  <button type="button" class="btn-delete">회사 삭제</button>
-                  <button type="submit" class="btn-save">설정 저장하기</button>
+                  <button
+                    type="button"
+                    class="btn-delete"
+                    th:text="#{biz.btn.delete}"
+                  >
+                    회사 삭제
+                  </button>
+                  <button
+                    type="submit"
+                    class="btn-save"
+                    th:text="#{biz.btn.save}"
+                  >
+                    설정 저장하기
+                  </button>
                 </div>
               </form>
             </div>

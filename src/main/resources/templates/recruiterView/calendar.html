@@ -15,10 +15,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
-    <link
-      rel="stylesheet"
-      th:href="@{/css/NonLoginFragments/NonLoginHeader.css}"
-    />
+    <link rel="stylesheet" th:href="@{/css/recruiter/header.css}" />
     <link
       rel="stylesheet"
       th:href="@{/css/NonLoginFragments/NonLoginFooter.css}"
@@ -39,9 +36,6 @@
         th:replace="~{recruiterView/fragments/sidebar :: sidebarFragment}"
       ></div>
 
-      <!--
-          Body 부분
-      -->
       <div class="main-container" style="margin-right: 0;">
         <main class="content-body">
           <div class="calendar-main-layout">
@@ -54,13 +48,19 @@
 
             <aside class="calendar-side-area">
               <div class="schedule-full-panel">
-                <div class="panel-header" id="selected-date-title">
+                <div
+                  class="panel-header"
+                  id="selected-date-title"
+                  th:text="#{main.panel.today_schedule}"
+                >
                   오늘의 일정
                 </div>
                 <div id="event-list-container" class="event-scroll-area">
                   <div class="empty-state">
                     <i class="bi bi-calendar-check d-block mb-3 fs-1"></i>
-                    날짜를 클릭하여<br />일정을 확인하세요.
+                    <span th:utext="#{main.sidebar.no_schedule_guide}"
+                      >날짜를 클릭하여<br />일정을 확인하세요.</span
+                    >
                   </div>
                 </div>
               </div>
@@ -68,11 +68,13 @@
               <div class="side-action-buttons">
                 <button
                   class="btn btn-common-action btn-sky-blue w-100 shadow-sm"
+                  th:text="#{cal.btn.add}"
                 >
                   스케줄 등록
                 </button>
                 <button
                   class="btn btn-common-action btn-light-blue w-100 position-relative shadow-sm"
+                  th:text="#{cal.btn.edit}"
                 >
                   수정
                 </button>
@@ -83,14 +85,17 @@
       </div>
     </div>
 
-    <script>
+    <script th:inline="javascript">
+      /* <![CDATA[ */
       window.addEventListener('load', function() {
         const mainEl = document.getElementById('calendar');
+        // 세션이나 쿠키의 언어 설정 가져오기 (Thymeleaf 변수 활용)
+        const currentLang = /*[[${#locale.language}]]*/ 'ko';
 
         if (mainEl && typeof FullCalendar !== "undefined") {
           const mainCal = new FullCalendar.Calendar(mainEl, {
             initialView: 'dayGridMonth',
-            locale: 'ko',
+            locale: currentLang, // [수정] 언어 설정 동적 반영
             headerToolbar: {
               left: 'prev,next today',
               center: 'title',
@@ -118,7 +123,9 @@
           mainCal.render();
 
           window.updateAll = function(date, cal) {
-            document.querySelectorAll('#selected-date-title').forEach(el => el.innerText = date + " 일정");
+            // [번역 대응] "일정" 텍스트
+            const scheduleText = currentLang === 'ja' ? 'の予定' : ' 일정';
+            document.querySelectorAll('#selected-date-title').forEach(el => el.innerText = date + scheduleText);
 
             const evs = cal.getEvents().filter(e => {
                 const d = e.start;
@@ -127,9 +134,11 @@
             });
 
             document.querySelectorAll('#event-list-container').forEach(c => {
-              c.innerHTML = evs.length ? '' : '<div class="empty-state">일정이 없습니다.</div>';
+              // [번역 대응] "일정이 없습니다."
+              const noEventMsg = currentLang === 'ja' ? '予定がありません。' : '일정이 없습니다.';
+              c.innerHTML = evs.length ? '' : `<div class="empty-state">${noEventMsg}</div>`;
               evs.forEach(e => {
-                // [디자인] 사장님이 공들인 sidebar-card 스타일 적용
+                // [디자인] 사장님이 공들이인 sidebar-card 스타일 적용
                 const card = document.createElement("div");
                 card.className = "sidebar-card";
                 card.style.borderLeft = `5px solid ${e.backgroundColor || "#7abaff"}`;
@@ -140,6 +149,7 @@
           };
         }
       });
+      /* ]]> */
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.10/index.global.min.js"></script>
     <script th:src="@{/js/recruiter/global-calendar.js}"></script>

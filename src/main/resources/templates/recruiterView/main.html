@@ -15,13 +15,10 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
+    <link rel="stylesheet" th:href="@{/css/recruiter/header.css}" />
     <link
       rel="stylesheet"
-      th:href="@{/css/NonLoginFragments/NonLoginHeader.css}"
-    />
-    <link
-      rel="stylesheet"
-      th:href="@{/css/NonLoginFragments/NonLoginFooter.css}"
+      href="@{/css/NonLoginFragments/NonLoginFooter.css}"
     />
     <link rel="stylesheet" th:href="@{/css/recruiter/sidebar.css}" />
     <link rel="stylesheet" th:href="@{/css/recruiter/main.css}" />
@@ -43,17 +40,25 @@
         <main class="content-body">
           <div class="dashboard-left-content">
             <div class="welcome-section mb-4">
-              <h2>
+              <h2
+                th:utext="${#messages.msg('main.welcome.title', session.companyName ?: '원우')}"
+              >
                 어서오세요,
-                <span th:text="${session.companyName} ?: '원우'">원우</span>
+                <span>원우</span>
                 사장님!
               </h2>
-              <p class="text-muted">오늘의 채용 현황을 확인해보세요.</p>
+              <p class="text-muted" th:text="#{main.welcome.subtitle}">
+                오늘의 채용 현황을 확인해보세요.
+              </p>
             </div>
 
             <div class="stat-row">
               <div class="stat-card">
-                <span class="text-muted small">전체 지원자</span>
+                <span
+                  class="text-muted small"
+                  th:text="#{main.stat.total_applicants}"
+                  >전체 지원자</span
+                >
                 <h4
                   class="fw-bold mt-2 mb-0"
                   th:text="${#numbers.formatInteger(totalApplicants ?: 0, 0, 'COMMA')}"
@@ -62,7 +67,11 @@
                 </h4>
               </div>
               <div class="stat-card">
-                <span class="text-muted small">미확인 지원자</span>
+                <span
+                  class="text-muted small"
+                  th:text="#{main.stat.new_applicants}"
+                  >미확인 지원자</span
+                >
                 <h4
                   class="fw-bold mt-2 mb-0 text-primary"
                   th:text="${#numbers.formatInteger(unreadApplicants ?: 0, 0, 'COMMA')}"
@@ -71,7 +80,9 @@
                 </h4>
               </div>
               <div class="stat-card">
-                <span class="text-muted small">모집 중 공고</span>
+                <span class="text-muted small" th:text="#{main.stat.total_jobs}"
+                  >모집 중 공고</span
+                >
                 <h4
                   class="fw-bold mt-2 mb-0"
                   th:text="${#numbers.formatInteger(openJobCount ?: 0, 0, 'COMMA')}"
@@ -80,7 +91,11 @@
                 </h4>
               </div>
               <div class="stat-card">
-                <span class="text-muted small">오늘 방문수</span>
+                <span
+                  class="text-muted small"
+                  th:text="#{main.stat.today_visits}"
+                  >오늘 방문수</span
+                >
                 <h4
                   class="fw-bold mt-2 mb-0 text-success"
                   th:text="${#numbers.formatInteger(todayVisits ?: 0, 0, 'COMMA')}"
@@ -93,12 +108,18 @@
             <div class="mid-row mt-4">
               <section class="panel panel-scout">
                 <div class="panel-header">
-                  <h5 class="panel-title mb-0">스카우트</h5>
+                  <h5
+                    class="panel-title mb-0"
+                    th:text="#{main.panel.scout_status}"
+                  >
+                    스카우트
+                  </h5>
                 </div>
                 <div class="panel-body">
                   <div
                     class="empty-state"
                     th:if="${scoutList == null or #lists.isEmpty(scoutList)}"
+                    th:text="#{main.scout.empty}"
                   >
                     스카우트할 인재가 없습니다.
                   </div>
@@ -125,7 +146,12 @@
 
               <section class="panel panel-chart">
                 <div class="panel-header">
-                  <h5 class="panel-title mb-0">일별 지원자 수</h5>
+                  <h5
+                    class="panel-title mb-0"
+                    th:text="#{main.panel.applicant_chart}"
+                  >
+                    일별 지원자 수
+                  </h5>
                 </div>
                 <div class="panel-body">
                   <div class="chart-placeholder">
@@ -139,26 +165,30 @@
               <div
                 class="panel-header d-flex justify-content-between align-items-center"
               >
-                <h5 class="panel-title mb-0">내 공고</h5>
+                <h5 class="panel-title mb-0" th:text="#{main.panel.my_jobs}">
+                  내 공고
+                </h5>
                 <a
                   class="panel-link text-decoration-none"
                   th:href="@{/Recruiter/JobManage}"
+                  th:text="#{main.sidebar.view_all}"
                   >전체보기</a
                 >
               </div>
               <div class="panel-body">
                 <div class="myjobs-head">
-                  <span>공고</span>
-                  <span>직무</span>
-                  <span>지역</span>
-                  <span>급여</span>
-                  <span>연락처</span>
-                  <span>액션</span>
-                  <span>등록</span>
+                  <span th:text="#{main.table.job}">공고</span>
+                  <span th:text="#{main.table.position}">직무</span>
+                  <span th:text="#{main.table.region}">지역</span>
+                  <span th:text="#{main.table.salary}">급여</span>
+                  <span th:text="#{main.table.contact}">연락처</span>
+                  <span th:text="#{main.table.action}">액션</span>
+                  <span th:text="#{main.table.date}">등록</span>
                 </div>
                 <div
                   class="empty-state"
                   th:if="${myJobList == null or #lists.isEmpty(myJobList)}"
+                  th:text="#{main.jobs.empty}"
                 >
                   등록된 공고가 없습니다.
                 </div>
@@ -176,6 +206,7 @@
                     <a
                       class="btn-detail"
                       th:href="@{/recruiter/jobs/{id}(id=${job.jobId})}"
+                      th:text="#{main.btn.view_detail}"
                       >상세보기</a
                     >
                   </div>
