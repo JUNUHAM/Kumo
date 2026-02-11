@@ -214,7 +214,14 @@ public class LoginController {
 		
 		return maskedId + "@" + domain;
 	}
-
+	
+	@PostMapping("/changePw")
+	public String changePw(@RequestParam("email") String email, Model model){
+		model.addAttribute("email",email);
+		return "NonLoginView/changePw";
+	}
+	
+	
 	
 }
 	

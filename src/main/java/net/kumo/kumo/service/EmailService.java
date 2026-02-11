@@ -66,7 +66,12 @@ public class EmailService {
 	
 	public String createKey(){
 		Random random = new Random();
-		return "ㅋㅋ";
+		StringBuilder key = new StringBuilder();
+		for (int i = 0; i<6; i++){
+			key.append(random.nextInt(10));
+		}
+		
+		return key.toString();
 	}
 	
 	

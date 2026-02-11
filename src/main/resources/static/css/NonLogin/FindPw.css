@@ -59,9 +59,10 @@ body.dark-mode .non-login-header .icon-btn {
     max-width: 500px;
     display: flex;
     flex-direction: column;
-
+    /* align-items: center; -> 제거 (왼쪽 정렬이 자연스러움) */
 }
 
+/* 타이틀 */
 .page-title {
     font-size: 24px;
     font-weight: 700;
@@ -69,7 +70,7 @@ body.dark-mode .non-login-header .icon-btn {
     color: var(--text-strong);
 }
 
-/* 탭 */
+/* 탭 (구직자/구인자) */
 .tab-group {
     display: flex;
     background-color: var(--input-bg);
@@ -77,14 +78,16 @@ body.dark-mode .non-login-header .icon-btn {
     padding: 4px;
     margin-bottom: 15px;
 }
+
+
 .tab-btn {
     flex: 1;
     border: none;
     background: transparent;
-    padding: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #888;
+    padding: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-desc);
     border-radius: 20px;
     cursor: pointer;
     transition: 0.2s;
@@ -93,6 +96,7 @@ body.dark-mode .non-login-header .icon-btn {
 .tab-btn.active {
     background-color: var(--primary-color);
     color: white;
+    font-weight: 700;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
@@ -102,7 +106,9 @@ body.dark-mode .non-login-header .icon-btn {
     margin-bottom: 40px;
 }
 
-/* 폼 레이아웃 (가로 배치) */
+/* ==============================
+   3. 입력 폼
+   ============================== */
 .form-box { width: 100%; }
 
 .input-group {
@@ -111,6 +117,7 @@ body.dark-mode .non-login-header .icon-btn {
     margin-bottom: 20px;
 }
 
+/* 라벨 (이름, 연락처, 이메일 등) */
 .input-label {
     width: 80px;
     font-size: 15px;
@@ -119,6 +126,7 @@ body.dark-mode .non-login-header .icon-btn {
     flex-shrink: 0;
 }
 
+/* 입력창 공통 */
 .custom-input {
     flex: 1;
     padding: 12px 15px;
@@ -136,13 +144,14 @@ body.dark-mode .non-login-header .icon-btn {
     background-color: var(--card-bg);
 }
 
-/* 인증 버튼 래퍼 */
+/* 버튼과 함께 있는 입력창 (이메일, 인증번호) */
 .input-wrapper-row {
     flex: 1;
     display: flex;
     gap: 8px;
 }
 
+/* 인증/확인 버튼 */
 .btn-verify {
     padding: 0 15px;
     background-color: var(--card-bg);
@@ -161,6 +170,15 @@ body.dark-mode .non-login-header .icon-btn {
     background-color: #f0f7ff;
 }
 
+/* 비활성화된 버튼 (전송중...) */
+.btn-verify:disabled {
+    background-color: #eee;
+    color: #999;
+    border-color: #ddd;
+    cursor: not-allowed;
+}
+
+/* 다크모드 대응 */
 body.dark-mode .btn-verify {
     background-color: #333;
     border-color: #555;
@@ -171,8 +189,20 @@ body.dark-mode .btn-verify:hover {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
 }
+body.dark-mode .btn-verify:disabled {
+    background-color: #444;
+    color: #666;
+    border-color: #444;
+}
 
-/* 제출 버튼 */
+/* ==============================
+   4. 인증 성공 메시지 & 제출 버튼
+   ============================== */
+#auth-success-msg {
+    margin-top: -10px; /* 위쪽 여백 줄이기 */
+    margin-bottom: 20px;
+}
+
 .btn-submit {
     width: 100%;
     padding: 15px;
@@ -183,8 +213,36 @@ body.dark-mode .btn-verify:hover {
     font-size: 15px;
     font-weight: 700;
     cursor: pointer;
-    margin-top: 30px;
+    margin-top: 10px;
     transition: opacity 0.2s;
 }
 
 .btn-submit:hover { opacity: 0.9; }
+
+/* ==============================
+   6. [추가] 유효성 검사 에러 텍스트
+   ============================== */
+.error-msg {
+    display: none; /* 평소에는 숨김 */
+    font-size: 12px;
+    color: #EA4335; /* 구글 에러 레드 컬러 */
+    margin-top: -15px; /* input-group과의 간격 조절 */
+    margin-bottom: 15px;
+    padding-left: 85px; /* 라벨 너비(80px) + 여백(5px) 만큼 들여쓰기 */
+    text-align: left;
+    animation: shake 0.3s ease-in-out; /* 흔들림 효과 (선택사항) */
+}
+
+/* 에러 발생 시 입력창 테두리 빨갛게 (JS로 클래스 토글) */
+.input-error {
+    border: 1px solid #EA4335 !important;
+    background-color: #fff8f8 !important;
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}

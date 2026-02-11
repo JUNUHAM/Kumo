@@ -27,30 +27,59 @@
                     th:text="#{find.tab.recruiter}">구인자</button>
         </div>
 
-        <p class="find-desc" th:text="#{find.pw.desc}">회원정보에 등록된 연락처로 아이디를 찾을 수 있습니다.</p>
+        <p class="find-desc" th:text="#{find.pw.desc}">회원정보에 등록된 연락처로 비밀번호를 찾을 수 있습니다.</p>
 
         <form id="findPwForm" class="form-box">
             <input type="hidden" id="roleInput" name="role" value="SEEKER">
+            <input type="hidden" id="isVerified" value="false">
 
             <div class="input-group">
                 <label class="input-label" th:text="#{find.label.name}">이름</label>
-                <input type="text" id="name" class="custom-input" th:placeholder="#{find.placeholder.name}">
+                <input type="text" id="name" name="name" class="custom-input"
+                       th:placeholder="#{find.placeholder.name}" oninput="clearError('name')">
             </div>
+            <p id="err-name" class="error-msg">이름을 입력해 주세요.</p>
+
 
             <div class="input-group">
-                <label class="input-label" th:text="#{find.label.id}">아이디</label>
-                <input type="text" id="loginId" class="custom-input" th:placeholder="#{find.placeholder.id}">
+                <label class="input-label" th:text="#{find.label.contact}">연락처</label>
+                <input type="tel" id="contact" name="contact" class="custom-input"
+                       th:placeholder="#{find.placeholder.contact}" maxlength="13"
+                       oninput="autoHyphen(this); clearError('contact')">
             </div>
+            <p id="err-contact" class="error-msg">연락처를 입력해 주세요.</p>
+
 
             <div class="input-group">
                 <label class="input-label" th:text="#{find.label.email}">이메일</label>
                 <div class="input-wrapper-row">
-                    <input type="email" id="email" class="custom-input" th:placeholder="#{find.placeholder.email}">
-                    <button type="button" class="btn-verify" th:text="#{find.btn.verify}">인증</button>
+                    <input type="email" id="email" name="email" class="custom-input"
+                           th:placeholder="#{find.placeholder.email}" oninput="clearError('email')">
+                    <button type="button" id="btn-email-send" class="btn-verify"
+                            onclick="sendMail()" th:text="#{find.btn.verify}">인증</button>
                 </div>
             </div>
+            <p id="err-email" class="error-msg">이메일을 입력해 주세요.</p>
 
-            <button type="button" class="btn-submit" onclick="findPw()" th:text="#{find.btn.submit_pw}">비밀번호 찾기</button>
+
+            <div class="input-group" id="auth-box" style="display: none;">
+                <label class="input-label" th:text="#{find.label.auth_code}">인증번호</label>
+                <div class="input-wrapper-row">
+                    <input type="text" id="authCode" class="custom-input"
+                           th:placeholder="#{find.placeholder.auth_code}" oninput="clearError('authCode')">
+                    <button type="button" class="btn-verify" onclick="checkCode()" th:text="#{find.btn.confirm}">확인</button>
+                </div>
+            </div>
+            <p id="err-authCode" class="error-msg" style="display: none;">인증번호를 입력해 주세요.</p>
+
+
+            <div id="auth-success-msg" style="display: none; text-align: center; margin-bottom: 20px;">
+                <i class="fa-solid fa-check-circle" style="color: #7db4e6;"></i>
+                <span style="color: #7db4e6; font-weight: bold; font-size: 14px;" th:text="#{find.msg.auth_success}">인증이 완료되었습니다.</span>
+            </div>
+            <p id="err-verify" class="error-msg" style="padding-left: 0; text-align: center;">이메일 인증을 완료해 주세요.</p>
+
+            <button type="button" class="btn-submit" onclick="goToChangePw()" th:text="#{find.btn.submit_pw}">비밀번호 찾기</button>
         </form>
 
     </div>
@@ -58,28 +87,7 @@
 
 <div th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"></div>
 
-<script>
-    /* 불필요한 다크모드 JS 삭제함 -> 헤더 프래그먼트가 알아서 함 */
-
-    /* 탭 전환 기능 */
-    function selectRole(role) {
-        const tabs = document.querySelectorAll('.tab-btn');
-        tabs.forEach(btn => btn.classList.remove('active'));
-
-        if(role === 'SEEKER') {
-            tabs[0].classList.add('active');
-        } else {
-            tabs[1].classList.add('active');
-        }
-
-        document.getElementById('roleInput').value = role;
-    }
-
-    /* 비밀번호 찾기 요청 */
-    function findPw() {
-        alert("비밀번호 찾기 기능을 요청합니다.");
-    }
-</script>
+<script th:src="@{/js/NonLogin/FindPw.js}"></script>
 
 </body>
 </html>

@@ -1,0 +1,152 @@
+/* ==============================
+   1. 기본 변수 (다크모드 대응)
+   ============================== */
+:root {
+    --primary-color: #7db4e6;
+    --bg-color: #fcfcfc;
+    --text-main: #333333;
+    --text-strong: #000000;
+    --text-desc: #888888;
+    --card-bg: #ffffff;
+    --input-bg: #f2f4f6;
+    --border-color: #e1e4e8;
+    --error-color: #EA4335;
+}
+
+body.dark-mode {
+    --bg-color: #1a1a1a;
+    --text-main: #e0e0e0;
+    --text-strong: #ffffff;
+    --text-desc: #a0a0a0;
+    --card-bg: #2d2d2d;
+    --input-bg: #333333;
+    --border-color: #444444;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0; padding: 0;
+    display: flex; flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* ==============================
+   ★ 헤더 강제 다크모드 적용 (필수)
+   ============================== */
+body.dark-mode .non-login-header .nav-menu a,
+body.dark-mode .non-login-header .icon-btn {
+    color: #ffffff !important;
+}
+
+/* ==============================
+   2. 레이아웃
+   ============================== */
+.change-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 60px 20px;
+}
+
+.change-box {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--text-strong);
+}
+
+.change-desc {
+    font-size: 14px;
+    color: var(--text-desc);
+    margin-bottom: 40px;
+}
+
+/* ==============================
+   3. 입력 폼
+   ============================== */
+.form-box { width: 100%; }
+
+.input-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.input-label {
+    width: 100px; /* 라벨 너비 약간 넓게 */
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-strong);
+    flex-shrink: 0;
+}
+
+.custom-input {
+    flex: 1;
+    padding: 12px 15px;
+    background-color: var(--input-bg);
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--text-main);
+    outline: none;
+    transition: 0.2s;
+}
+
+.custom-input:focus {
+    box-shadow: 0 0 0 2px var(--primary-color) inset;
+    background-color: var(--card-bg);
+}
+
+/* 읽기 전용 필드 스타일 (이메일 표시용) */
+.custom-input.readonly {
+    background-color: #eaeaea;
+    color: #666;
+    cursor: not-allowed;
+}
+
+body.dark-mode .custom-input.readonly {
+    background-color: #444;
+    color: #aaa;
+}
+
+/* ==============================
+   4. 에러 메시지 & 버튼
+   ============================== */
+.error-text {
+    font-size: 13px;
+    color: var(--error-color);
+    margin-top: -10px;
+    margin-bottom: 20px;
+    padding-left: 105px; /* 라벨 너비만큼 들여쓰기 */
+    text-align: left;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 15px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: opacity 0.2s;
+}
+
+.btn-submit:hover { opacity: 0.9; }
