@@ -59,13 +59,17 @@
                     </div>
                 </th:block>
 
-                <div th:if="${msg.senderId != userId}" class="msg-row other">
+                <div th:if="${msg.senderId != userId}" class="msg-row other"
+                    th:data-date="${#temporals.format(msg.sentAt, 'yyyy-MM-dd')}">
+
                     <img th:src="@{/images/dog_profile.jpg}" class="profile-img">
                     <div class="msg-bubble" th:text="${msg.message}">내용</div>
                     <span class="msg-time" th:text="${#temporals.format(msg.sentAt, 'HH:mm')}"></span>
                 </div>
 
-                <div th:if="${msg.senderId == userId}" class="msg-row me">
+                <div th:if="${msg.senderId == userId}" class="msg-row me"
+                    th:data-date="${#temporals.format(msg.sentAt, 'yyyy-MM-dd')}">
+
                     <span class="msg-time" th:text="${#temporals.format(msg.sentAt, 'HH:mm')}"></span>
                     <div class="msg-bubble" th:text="${msg.message}">내용</div>
                 </div>
@@ -104,12 +108,13 @@
                 console.log('Connected: ' + frame);
 
                 // 1. 페이지 로딩 시, 화면에 이미 뿌려진 마지막 날짜가 있다면 가져오기
-                // (Thymeleaf로 렌더링된 마지막 날짜 구분선을 찾아서 기준점으로 삼음)
                 initLastChatDate();
 
                 stompClient.subscribe('/sub/chat/room/' + roomId, function (messageOutput) {
                     showMessage(JSON.parse(messageOutput.body));
                 });
+
+                // 연결 후 스크롤 내리기
                 scrollToBottom();
             });
         }
@@ -122,22 +127,17 @@
                     senderId: myId,
                     message: messageContent,
                     type: 'TALK'
-                    // 주의: 서버에서 sentAt(시간)을 찍어서 보내주는 것이 가장 정확합니다.
-                    // 여기서는 일단 보낼 때는 내용만 보냅니다.
                 };
                 stompClient.send("/pub/chat/message", {}, JSON.stringify(chatMessage));
                 document.getElementById("msgInput").value = '';
-                // 내가 보낸 건 서버 응답(구독)으로 받아서 그릴 것이므로 여기서 그리지 않음 (혹은 최적화 가능)
-                // 만약 즉시 그리기(Optimistic UI)를 한다면 여기서 showMessage 호출
             }
         }
 
         function showMessage(message) {
-            // 서버에서 날짜 정보(sentAt)가 오는지 확인 필요. 
-            // 만약 없으면 현재 시간(new Date()) 사용
+            // 서버에서 날짜 정보(sentAt)가 오면 사용, 없으면 현재 시간
             var dateObj = message.sentAt ? new Date(message.sentAt) : new Date();
 
-            // ★ [핵심] 날짜가 바뀌었는지 확인 ★
+            // ★ [핵심] 날짜가 바뀌었는지 확인하고 구분선 추가
             checkAndAddDateDivider(dateObj);
 
             var isMe = (message.senderId === myId);
@@ -147,14 +147,24 @@
             var timeString = dateObj.getHours().toString().padStart(2, '0') + ':' +
                 dateObj.getMinutes().toString().padStart(2, '0');
 
+            // ★ [중요] JS로 메시지를 그릴 때도 data-date 속성을 넣어줘야
+            //    채팅을 계속 칠 때도 마지막 날짜를 갱신할 수 있습니다.
+            //    (날짜 포맷 일치시키기: yyyy-MM-dd)
+            var year = dateObj.getFullYear();
+            var month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+            var day = dateObj.getDate().toString().padStart(2, '0');
+            var dateStr = year + "-" + month + "-" + day;
+
             if (isMe) {
                 div.className = "msg-row me";
+                div.setAttribute("data-date", dateStr); // 날짜 정보 심기
                 div.innerHTML = `
                     <span class="msg-time">${timeString}</span>
                     <div class="msg-bubble">${message.message}</div>
                 `;
             } else {
                 div.className = "msg-row other";
+                div.setAttribute("data-date", dateStr); // 날짜 정보 심기
                 div.innerHTML = `
                     <img src="/images/dog_profile.jpg" class="profile-img">
                     <div class="msg-bubble">${message.message}</div>
@@ -166,19 +176,19 @@
             scrollToBottom();
         }
 
-        // ★ [함수] 날짜 구분선 추가 로직 ★
+        // ★ [함수] 날짜 구분선 추가 로직 (수정됨) ★
         function checkAndAddDateDivider(dateObj) {
-            // "YYYY-MM-DD" 문자열 생성
+            // "YYYY-MM-DD" 문자열 생성 (서버 포맷과 일치시키기 위해 0 채우기 필수!)
             var year = dateObj.getFullYear();
-            var month = dateObj.getMonth() + 1;
-            var day = dateObj.getDate();
+            var month = (dateObj.getMonth() + 1).toString().padStart(2, '0'); // 2월 -> '02'
+            var day = dateObj.getDate().toString().padStart(2, '0');         // 5일 -> '05'
             var dateStr = year + "-" + month + "-" + day;
 
             // 마지막 날짜와 다르면 구분선 추가
             if (lastChatDate !== dateStr) {
                 var days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
                 var dayName = days[dateObj.getDay()];
-                var fullDateText = year + "년 " + month + "월 " + day + "일 " + dayName;
+                var fullDateText = year + "년 " + parseInt(month) + "월 " + parseInt(day) + "일 " + dayName;
 
                 var dividerDiv = document.createElement('div');
                 dividerDiv.className = "date-divider";
@@ -191,17 +201,23 @@
             }
         }
 
-        // ★ [함수] 초기 로딩 시 마지막 날짜 인식 ★
+        // ★ [함수] 초기 로딩 시 마지막 날짜 인식 (구현 완료) ★
         function initLastChatDate() {
-            // 화면에 렌더링된 마지막 'date-divider'가 있는지 찾는다.
-            // (Thymeleaf가 이미 그렸을 수 있음)
-            // 하지만 JS 로직상 가장 확실한 건, 오늘 날짜로 초기화하거나
-            // 히스토리의 마지막 메시지 날짜를 읽어오는 것입니다.
-            // 여기서는 간단하게 "오늘 처음 채팅하면 오늘 날짜가 뜨도록" null로 시작합니다.
-            // 단, 페이지에 이미 날짜선이 있다면 그 날짜를 lastChatDate로 잡는 로직이 필요할 수 있습니다.
+            // 1. 화면에 있는 모든 메시지 행(.msg-row)을 가져옵니다.
+            var rows = document.querySelectorAll('.msg-row');
 
-            // 간단 구현: 현재 히스토리의 마지막 날짜 구분선을 찾아서 그 날짜를 기억함 (중복 방지)
-            // (복잡해질 수 있으니, 실시간 채팅에서는 '오늘' 날짜가 처음 뜨게 놔둬도 무방합니다.)
+            // 2. 메시지가 하나라도 있다면
+            if (rows.length > 0) {
+                // 3. 가장 마지막 메시지를 찾아서
+                var lastRow = rows[rows.length - 1];
+
+                // 4. 아까 HTML에 숨겨둔 날짜(data-date)를 읽어서 변수에 저장합니다.
+                var dateAttr = lastRow.getAttribute('data-date');
+                if (dateAttr) {
+                    lastChatDate = dateAttr;
+                    console.log("초기화된 마지막 날짜: " + lastChatDate);
+                }
+            }
         }
 
         function scrollToBottom() {
