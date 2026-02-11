@@ -21,13 +21,12 @@ document.addEventListener("DOMContentLoaded", function () {
       headerToolbar: false,
       height: "auto",
       contentHeight: "auto",
-      timeZone: "local", // 로컬 타임존 사용
+      timeZone: "local",
 
       dayCellContent: (arg) => {
         return { html: arg.date.getDate() };
       },
 
-      // 셀이 생성될 때 저장된 날짜와 비교하여 즉시 클래스 부여 (딜레이 제로)
       dayCellDidMount: function (arg) {
         const d = arg.date;
         const cellDate =
@@ -59,11 +58,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
       dateClick: function (info) {
         localStorage.setItem("selectedDate", info.dateStr);
-
         document.querySelectorAll(".selected-day").forEach((el) => {
           el.classList.remove("selected-day");
         });
-
         info.dayEl.classList.add("selected-day");
         updateScheduleDetail(info.dateStr, miniCalendar);
       },
@@ -75,7 +72,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function updateScheduleDetail(dateStr, calendarApi) {
     const titleEl = document.getElementById("selected-date-title");
-    if (titleEl) titleEl.innerText = dateStr + " 일정";
+
+    // [다국어 적용] HTML에서 넘겨준 kumoMsgs 객체 사용
+    const titleSuffix =
+      typeof kumoMsgs !== "undefined" ? kumoMsgs.scheduleTitle : " 일정";
+    if (titleEl) titleEl.innerText = dateStr + " " + titleSuffix;
 
     const events = calendarApi.getEvents().filter((e) => {
       const d = e.start;
@@ -91,7 +92,15 @@ document.addEventListener("DOMContentLoaded", function () {
     container.innerHTML = "";
 
     if (events.length === 0) {
-      container.innerHTML = `<div class="empty-state text-center p-3"><i class="bi bi-calendar-x d-block mb-2 fs-2 text-muted"></i>일정이 없습니다.</div>`;
+      // [다국어 적용] 일정이 없을 때 메시지
+      const emptyMsg =
+        typeof kumoMsgs !== "undefined"
+          ? kumoMsgs.noSchedule
+          : "일정이 없습니다.";
+      container.innerHTML = `<div class="empty-state text-center p-3">
+                               <i class="bi bi-calendar-x d-block mb-2 fs-2 text-muted"></i>
+                               ${emptyMsg}
+                             </div>`;
     } else {
       events.forEach((e) => {
         const card = document.createElement("div");

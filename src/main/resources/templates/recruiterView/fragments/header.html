@@ -4,6 +4,25 @@
   xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
 >
   <div th:fragment="headerFragment">
+    <script th:inline="javascript">
+      /* <![CDATA[ */
+      (function() {
+        // 1. 깜빡임 방지: CSS보다 빠르게 배경색 선제 타격
+        const theme = localStorage.getItem('theme');
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark-mode');
+          // CSS 로드 전 0.1초의 공백을 메꾸는 긴급 스타일
+          document.write('<style id="anti-flash">html, body { background-color: #1a1a1b !important; color: #e2e8f0 !important; }</style>');
+        }
+
+        // 2. 다국어 메시지 전역 설정: 모든 JS 파일에서 공유
+        window.kumoMsgs = {
+          scheduleTitle: /*[[#{main.calendar.schedule_detail}]]*/ ' 일정',
+          noSchedule: /*[[#{main.calendar.no_schedule}]]*/ '일정이 없습니다.'
+        };
+      })();
+      /* ]]> */
+    </script>
     <header class="non-login-header">
       <div class="logo">
         <a th:href="@{/Recruiter/Main}">

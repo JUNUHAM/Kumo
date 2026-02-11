@@ -27,3 +27,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
+window.addEventListener("load", function () {
+  const container = document.querySelector(".main-container");
+  if (container) {
+    container.classList.add("fade-in");
+  }
+});
