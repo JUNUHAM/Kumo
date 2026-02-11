@@ -387,3 +387,18 @@ body {
     opacity: 1.0;
     /* 마우스 올리면 진해짐 */
 }
+
+/* 사진 첨부 버튼 스타일 */
+.btn-img-upload {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    cursor: pointer;
+    flex-shrink: 0;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.btn-img-upload:hover {
+    opacity: 1.0;
+}

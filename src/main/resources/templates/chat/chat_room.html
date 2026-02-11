@@ -80,157 +80,173 @@
         <div class="input-area">
             <i class="fa-solid fa-plus btn-plus"></i>
 
-            <img th:src="@{/images/icons/chat_room_images.svg}" class="btn-img-upload" alt="사진첨부">
+            <input type="file" id="fileInput" style="display: none;" accept="image/*" onchange="uploadImage()">
+
+            <img th:src="@{/images/icons/chat_room_images.svg}" class="btn-img-upload" alt="사진첨부"
+                onclick="document.getElementById('fileInput').click()">
 
             <input type="text" class="input-field" id="msgInput" placeholder="메시지 입력..."
                 onkeypress="if(event.keyCode==13) sendMessage()">
 
             <button class="btn-send" onclick="sendMessage()">전송</button>
         </div>
-    </div>
 
-    <script>
-        var stompClient = null;
-        var roomId = document.getElementById("roomId").value;
-        var myId = document.getElementById("myId").value;
-        var msgArea = document.getElementById("msgArea");
+        <script>
+            var stompClient = null;
+            var roomId = document.getElementById("roomId").value;
+            var myId = document.getElementById("myId").value;
+            var msgArea = document.getElementById("msgArea");
 
-        // ★ [핵심] 마지막으로 표시된 날짜를 저장하는 변수
-        var lastChatDate = null;
+            // ★ [핵심] 마지막으로 표시된 날짜를 저장하는 변수
+            var lastChatDate = null;
 
-        connect();
+            connect();
 
-        function connect() {
-            var socket = new SockJS('/ws-stomp');
-            stompClient = Stomp.over(socket);
+            function connect() {
+                var socket = new SockJS('/ws-stomp');
+                stompClient = Stomp.over(socket);
 
-            stompClient.connect({}, function (frame) {
-                console.log('Connected: ' + frame);
+                stompClient.connect({}, function (frame) {
+                    console.log('Connected: ' + frame);
 
-                // 1. 페이지 로딩 시, 화면에 이미 뿌려진 마지막 날짜가 있다면 가져오기
-                initLastChatDate();
+                    // 1. 페이지 로딩 시, 화면에 이미 뿌려진 마지막 날짜가 있다면 가져오기
+                    initLastChatDate();
 
-                stompClient.subscribe('/sub/chat/room/' + roomId, function (messageOutput) {
-                    showMessage(JSON.parse(messageOutput.body));
+                    stompClient.subscribe('/sub/chat/room/' + roomId, function (messageOutput) {
+                        showMessage(JSON.parse(messageOutput.body));
+                    });
+
+                    // 연결 후 스크롤 내리기
+                    scrollToBottom();
                 });
-
-                // 연결 후 스크롤 내리기
-                scrollToBottom();
-            });
-        }
-
-        function sendMessage() {
-            var messageContent = document.getElementById("msgInput").value;
-            if (messageContent && stompClient) {
-                var chatMessage = {
-                    roomId: roomId,
-                    senderId: myId,
-                    message: messageContent,
-                    type: 'TALK'
-                };
-                stompClient.send("/pub/chat/message", {}, JSON.stringify(chatMessage));
-                document.getElementById("msgInput").value = '';
             }
-        }
 
-        function showMessage(message) {
-            // 서버에서 날짜 정보(sentAt)가 오면 사용, 없으면 현재 시간
-            var dateObj = message.sentAt ? new Date(message.sentAt) : new Date();
+            function sendMessage() {
+                var messageContent = document.getElementById("msgInput").value;
+                if (messageContent && stompClient) {
+                    var chatMessage = {
+                        roomId: roomId,
+                        senderId: myId,
+                        message: messageContent,
+                        type: 'TALK'
+                    };
+                    stompClient.send("/pub/chat/message", {}, JSON.stringify(chatMessage));
+                    document.getElementById("msgInput").value = '';
+                }
+            }
 
-            // ★ [핵심] 날짜가 바뀌었는지 확인하고 구분선 추가
-            checkAndAddDateDivider(dateObj);
+            function showMessage(message) {
+                // 서버에서 날짜 정보(sentAt)가 오면 사용, 없으면 현재 시간
+                var dateObj = message.sentAt ? new Date(message.sentAt) : new Date();
 
-            var isMe = (message.senderId === myId);
-            var div = document.createElement('div');
+                // ★ [핵심] 날짜가 바뀌었는지 확인하고 구분선 추가
+                checkAndAddDateDivider(dateObj);
 
-            // 시간 포맷 (오전/오후 빼고 24시간제 HH:mm)
-            var timeString = dateObj.getHours().toString().padStart(2, '0') + ':' +
-                dateObj.getMinutes().toString().padStart(2, '0');
+                var isMe = (message.senderId === myId);
+                var div = document.createElement('div');
 
-            // ★ [중요] JS로 메시지를 그릴 때도 data-date 속성을 넣어줘야
-            //    채팅을 계속 칠 때도 마지막 날짜를 갱신할 수 있습니다.
-            //    (날짜 포맷 일치시키기: yyyy-MM-dd)
-            var year = dateObj.getFullYear();
-            var month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-            var day = dateObj.getDate().toString().padStart(2, '0');
-            var dateStr = year + "-" + month + "-" + day;
+                // 시간 포맷 (오전/오후 빼고 24시간제 HH:mm)
+                var timeString = dateObj.getHours().toString().padStart(2, '0') + ':' +
+                    dateObj.getMinutes().toString().padStart(2, '0');
 
-            if (isMe) {
-                div.className = "msg-row me";
-                div.setAttribute("data-date", dateStr); // 날짜 정보 심기
-                div.innerHTML = `
+                // ★ [중요] JS로 메시지를 그릴 때도 data-date 속성을 넣어줘야
+                //    채팅을 계속 칠 때도 마지막 날짜를 갱신할 수 있습니다.
+                //    (날짜 포맷 일치시키기: yyyy-MM-dd)
+                var year = dateObj.getFullYear();
+                var month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+                var day = dateObj.getDate().toString().padStart(2, '0');
+                var dateStr = year + "-" + month + "-" + day;
+
+                if (isMe) {
+                    div.className = "msg-row me";
+                    div.setAttribute("data-date", dateStr); // 날짜 정보 심기
+                    div.innerHTML = `
                     <span class="msg-time">${timeString}</span>
                     <div class="msg-bubble">${message.message}</div>
                 `;
-            } else {
-                div.className = "msg-row other";
-                div.setAttribute("data-date", dateStr); // 날짜 정보 심기
-                div.innerHTML = `
+                } else {
+                    div.className = "msg-row other";
+                    div.setAttribute("data-date", dateStr); // 날짜 정보 심기
+                    div.innerHTML = `
                     <img src="/images/dog_profile.jpg" class="profile-img">
                     <div class="msg-bubble">${message.message}</div>
                     <span class="msg-time">${timeString}</span>
                 `;
+                }
+
+                msgArea.appendChild(div);
+                scrollToBottom();
             }
 
-            msgArea.appendChild(div);
-            scrollToBottom();
-        }
+            // ★ [함수] 날짜 구분선 추가 로직 (수정됨) ★
+            function checkAndAddDateDivider(dateObj) {
+                // "YYYY-MM-DD" 문자열 생성 (서버 포맷과 일치시키기 위해 0 채우기 필수!)
+                var year = dateObj.getFullYear();
+                var month = (dateObj.getMonth() + 1).toString().padStart(2, '0'); // 2월 -> '02'
+                var day = dateObj.getDate().toString().padStart(2, '0');         // 5일 -> '05'
+                var dateStr = year + "-" + month + "-" + day;
 
-        // ★ [함수] 날짜 구분선 추가 로직 (수정됨) ★
-        function checkAndAddDateDivider(dateObj) {
-            // "YYYY-MM-DD" 문자열 생성 (서버 포맷과 일치시키기 위해 0 채우기 필수!)
-            var year = dateObj.getFullYear();
-            var month = (dateObj.getMonth() + 1).toString().padStart(2, '0'); // 2월 -> '02'
-            var day = dateObj.getDate().toString().padStart(2, '0');         // 5일 -> '05'
-            var dateStr = year + "-" + month + "-" + day;
+                // 마지막 날짜와 다르면 구분선 추가
+                if (lastChatDate !== dateStr) {
+                    var days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+                    var dayName = days[dateObj.getDay()];
+                    var fullDateText = year + "년 " + parseInt(month) + "월 " + parseInt(day) + "일 " + dayName;
 
-            // 마지막 날짜와 다르면 구분선 추가
-            if (lastChatDate !== dateStr) {
-                var days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
-                var dayName = days[dateObj.getDay()];
-                var fullDateText = year + "년 " + parseInt(month) + "월 " + parseInt(day) + "일 " + dayName;
+                    var dividerDiv = document.createElement('div');
+                    dividerDiv.className = "date-divider";
+                    dividerDiv.innerHTML = `<span class="date-divider-text">${fullDateText}</span>`;
 
-                var dividerDiv = document.createElement('div');
-                dividerDiv.className = "date-divider";
-                dividerDiv.innerHTML = `<span class="date-divider-text">${fullDateText}</span>`;
+                    msgArea.appendChild(dividerDiv);
 
-                msgArea.appendChild(dividerDiv);
-
-                // 마지막 날짜 업데이트
-                lastChatDate = dateStr;
-            }
-        }
-
-        // ★ [함수] 초기 로딩 시 마지막 날짜 인식 (구현 완료) ★
-        function initLastChatDate() {
-            // 1. 화면에 있는 모든 메시지 행(.msg-row)을 가져옵니다.
-            var rows = document.querySelectorAll('.msg-row');
-
-            // 2. 메시지가 하나라도 있다면
-            if (rows.length > 0) {
-                // 3. 가장 마지막 메시지를 찾아서
-                var lastRow = rows[rows.length - 1];
-
-                // 4. 아까 HTML에 숨겨둔 날짜(data-date)를 읽어서 변수에 저장합니다.
-                var dateAttr = lastRow.getAttribute('data-date');
-                if (dateAttr) {
-                    lastChatDate = dateAttr;
-                    console.log("초기화된 마지막 날짜: " + lastChatDate);
+                    // 마지막 날짜 업데이트
+                    lastChatDate = dateStr;
                 }
             }
-        }
 
-        function scrollToBottom() {
-            setTimeout(function () {
-                msgArea.scrollTop = msgArea.scrollHeight;
-            }, 50);
-        }
+            // ★ [함수] 초기 로딩 시 마지막 날짜 인식 (구현 완료) ★
+            function initLastChatDate() {
+                // 1. 화면에 있는 모든 메시지 행(.msg-row)을 가져옵니다.
+                var rows = document.querySelectorAll('.msg-row');
 
-        function goBackToList() {
-            var userId = document.getElementById("myId").value;
-            location.href = userId ? '/chat/list?userId=' + userId : '/chat/list';
-        }
-    </script>
+                // 2. 메시지가 하나라도 있다면
+                if (rows.length > 0) {
+                    // 3. 가장 마지막 메시지를 찾아서
+                    var lastRow = rows[rows.length - 1];
+
+                    // 4. 아까 HTML에 숨겨둔 날짜(data-date)를 읽어서 변수에 저장합니다.
+                    var dateAttr = lastRow.getAttribute('data-date');
+                    if (dateAttr) {
+                        lastChatDate = dateAttr;
+                        console.log("초기화된 마지막 날짜: " + lastChatDate);
+                    }
+                }
+            }
+
+            function scrollToBottom() {
+                setTimeout(function () {
+                    msgArea.scrollTop = msgArea.scrollHeight;
+                }, 50);
+            }
+
+            function goBackToList() {
+                var userId = document.getElementById("myId").value;
+                location.href = userId ? '/chat/list?userId=' + userId : '/chat/list';
+            }
+
+            // ★ [함수] 사진을 선택했을 때 실행되는 함수 ★
+            function uploadImage() {
+                var fileInput = document.getElementById('fileInput');
+                var file = fileInput.files[0]; // 사용자가 선택한 파일
+
+                if (file) {
+                    // 일단 확인용으로 로그만 찍어봅니다.
+                    console.log("선택된 파일: " + file.name);
+
+                    // TODO: 여기서 2단계(서버로 전송하기)를 구현하면 됩니다.
+                    // alert(file.name + " 파일을 선택했습니다! 이제 서버로 보낼 준비 완료!");
+                }
+            }
+        </script>
 </body>
 
 </html>
