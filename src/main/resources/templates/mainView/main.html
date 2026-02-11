@@ -5,15 +5,16 @@
 <head>
 	<meta charset="UTF-8">
 	<title>KUMO - 지도 검색</title>
-	<link rel="stylesheet" th:href="@{/css/header.css}">
+	<link rel="stylesheet" th:href="@{/css/NonLoginFragments/NonLoginHeader.css}">
 	<link rel="stylesheet" th:href="@{/css/mainView/main.css}">
 	
 	<script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
 	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-	<script th:src="@{/js/mainView/main.js}"></script>
+	<script th:src="@{/js/mapStyle/mapStyles.js}"></script>
 	<script th:src="@{/js/geo/osaka.js}"></script>
 	<script th:src="@{/js/geo/tokyo.js}"></script>
 	<script th:src="@{/js/geo/osakaCity.js}"></script>
+	<script th:src="@{/js/mainView/main.js}"></script>
 </head>
 <body>
 <header th:replace="~{/NonLoginFragments/NonLoginHeader.html}"></header>

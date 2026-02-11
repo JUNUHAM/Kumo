@@ -53,15 +53,24 @@ const MapManager = {
 
         const tokyo = { lat: 35.6804, lng: 139.7690 };
 
+        // 1. 현재 브라우저가 다크모드 인지 확인 하기
+        const isDark = document.body.classList.contains('dark-mode') || localStorage.getItem('theme') === 'dark';
+
+        // 2. 초기 스타일 결정
+        const initialStyle = isDark ? MapStyles.dark : MapStyles.light;
+
         AppState.map = new google.maps.Map(mapElement, {
             center: tokyo,
             zoom: 10,
             disableDefaultUI: true,
-            styles: [{ "stylers": [{ "saturation": -20 }] }]
+            styles: initialStyle
         });
 
         MapManager.drawMasking();
         MapManager.bindMapEvents();
+
+        // 4. 다크모드 변경 감지기 실행
+        MapManager.observeThemeChange();
     },
 
     bindMapEvents: function() {
@@ -169,7 +178,37 @@ const MapManager = {
             fillColor: "#000000", fillOpacity: 0.6,
             map: AppState.map, clickable: false
         });
-    }
+    },
+
+
+    // 🌟 [NEW] 테마 변경 실시간 감지 함수
+    observeThemeChange: function() {
+        // MutationObserver: HTML 요소의 변화를 감시하는 기능
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                // body 태그의 class 속성이 변했을 때만 실행
+                if (mutation.attributeName === 'class') {
+                    const isDarkMode = document.body.classList.contains('dark-mode');
+                    MapManager.setMapStyle(isDarkMode);
+                }
+            });
+        });
+
+        // body 태그 감시 시작 (속성 변화 감지)
+        observer.observe(document.body, { attributes: true });
+    },
+
+    // 🌟 [NEW] 지도 스타일 갈아끼우기 함수
+    setMapStyle: function(isDark) {
+        if (!AppState.map) return;
+
+        const newStyle = isDark ? MapStyles.dark : MapStyles.light;
+
+        // setOptions를 통해 실행 중에 스타일만 쏙 바꿉니다.
+        AppState.map.setOptions({ styles: newStyle });
+
+        console.log(`🎨 지도 테마 변경: ${isDark ? 'Dark' : 'Light'}`);
+    },
 };
 
 // ============================================================
