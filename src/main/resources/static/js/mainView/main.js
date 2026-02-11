@@ -63,7 +63,8 @@ const MapManager = {
             center: tokyo,
             zoom: 10,
             disableDefaultUI: true,
-            styles: initialStyle
+            styles: initialStyle,
+            gestureHandling: 'greedy'
         });
 
         MapManager.drawMasking();
