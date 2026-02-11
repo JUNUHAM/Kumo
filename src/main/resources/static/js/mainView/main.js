@@ -262,7 +262,7 @@ const JobService = {
         }
 
         // 언어 설정
-        const currentLang = new URLSearchParams(window.location.search).get('lang') === 'jp' ? 'jp' : 'kr';
+        const currentLang = new URLSearchParams(window.location.search).get('lang') === 'ja' ? 'ja' : 'kr';
         UIManager.updateTableHeader(currentLang);
         params.lang = currentLang;
 
@@ -356,35 +356,49 @@ const MarkerManager = {
 
 // ============================================================
 // [6] UI 관리자 (UI Manager - jQuery)
-// ============================================================
 const UIManager = {
+    // 🌟 [핵심] job_list.html의 로직을 여기로 통합!
     renderList: function(jobs) {
         const $tbody = $('#listBody');
-        const lang = new URLSearchParams(window.location.search).get('lang') || 'kr';
+        // URL에서 lang 파라미터 가져오기 (없으면 'kr')
+        const urlParams = new URLSearchParams(window.location.search);
+        const lang = urlParams.get('lang') === 'ja' ? 'ja' : 'kr'; // ja 대신 jp로 통일 권장
 
+        // 1. 데이터가 없을 때 처리
         if (!jobs || jobs.length === 0) {
-            $tbody.html(`<tr><td colspan="7" class="msg-box">조건에 맞는 공고가 없습니다.</td></tr>`);
+            const emptyMsg = lang === 'ja' ? '現在、この地域には求人がありません。' : '현재 이 지역에 공고가 없습니다.';
+            $tbody.html(`<tr><td colspan="7" class="msg-box">${emptyMsg}</td></tr>`);
             return;
         }
 
         let html = '';
         jobs.forEach(job => {
-            const title = (lang === 'jp' && job.titleJp) ? job.titleJp : job.title;
-            const company = (lang === 'jp' && job.companyNameJp) ? job.companyNameJp : job.companyName;
-            const wage = (lang === 'jp' && job.wageJp) ? job.wageJp : (job.wage || '협의');
+            // DTO에서 이미 언어 처리가 끝난 상태로 옴 (title, companyName 등)
+            const title = job.title || (lang === 'ja' ? 'タイトルなし' : '제목 없음');
+            const company = job.companyName || (lang === 'ja' ? '会社名未定' : '회사명 미정');
+            const wage = job.wage || (lang === 'ja' ? '協議' : '협의');
             const address = job.address || '-';
+
+            // 썸네일 & 날짜 등
             const thumb = job.thumbnailUrl || 'https://placehold.co/40';
-            const dateStr = job.writeTime || 'Recently';
+            const dateStr = job.writeTime || (lang === 'ja' ? 'ついさっき' : '방금 전');
             const contact = job.contactPhone || '-';
 
-            // 상세 페이지 URL 생성
+            // 상세 페이지 URL
             const detailUrl = `/map/jobs/detail?id=${job.id}&source=${job.source}&lang=${lang}`;
+
+            // 뱃지 텍스트
+            const badgeRecruit = lang === 'ja' ? '募集中' : '구인중';
+            const badgeUrgent = lang === 'ja' ? '急募' : '급구';
+            const btnSave = lang === 'ja' ? '保存' : '찜';
+            const btnDetail = lang === 'ja' ? '詳細' : '상세';
 
             html += `
             <tr>
                 <td>
                     <span class="title-text">${title}</span>
-                    <span class="badge bg-blue">${lang === 'jp' ? '募集中' : '구인중'}</span>
+                    <span class="badge bg-blue">${badgeRecruit}</span>
+                    <span class="badge bg-yellow">${badgeUrgent}</span>
                 </td>
                 <td><a href="#" class="company-text">${company}</a></td>
                 <td><span class="addr-text">${address}</span></td>
@@ -392,14 +406,18 @@ const UIManager = {
                 <td style="color:#666; font-size:12px;">${contact}</td>
                 <td>
                     <div class="profile-wrap">
-                        <img src="${thumb}" class="profile-img" onerror="this.src='https://placehold.co/40?text=No+Image'">
-                        <div class="profile-info"><div>Admin</div><div>${dateStr}</div></div>
+                        <img src="${thumb}" class="profile-img" onerror="this.src='https://placehold.co/40?text=No+Img'">
+                        <div class="profile-info">
+                            <div>Admin</div>
+                            <div>${dateStr}</div>
+                        </div>
                     </div>
                 </td>
                 <td>
                      <div class="btn-wrap">
+                        <button class="btn">${btnSave}</button>
                         <button class="btn btn-view" onclick="location.href='${detailUrl}'">
-                            ${lang === 'jp' ? '詳細' : '상세'}
+                            ${btnDetail}
                         </button>
                      </div>
                 </td>
@@ -407,14 +425,21 @@ const UIManager = {
         });
 
         $tbody.html(html);
+
+        // 🌟 테이블 헤더도 언어에 맞게 변경
+        UIManager.updateTableHeader(lang);
     },
 
     openJobCard: function(job) {
-        const $card = $('#jobDetailCard');
+        // ... (기존 openJobCard 코드 유지) ...
+        // 단, 여기도 lang 체크해서 버튼 텍스트 등을 바꿔주면 좋습니다.
         const lang = new URLSearchParams(window.location.search).get('lang') || 'kr';
+        // ...
+
+        // (기존 코드 그대로 두셔도 무방합니다)
+        const $card = $('#jobDetailCard');
         const detailUrl = `/map/jobs/detail?id=${job.id}&source=${job.source}&lang=${lang}`;
 
-        // 데이터 채우기 (jQuery 사용)
         $('#card-company').text(job.companyName || '회사명 미정');
         $('#card-manager').text(job.manager || '담당자');
         $('#card-title').text(job.title);
@@ -423,9 +448,8 @@ const UIManager = {
 
         const $img = $('#card-img');
         $img.attr('src', job.thumbnailUrl || 'https://placehold.co/300');
-        $img.on('error', function() { $(this).attr('src', 'https://placehold.co/300?text=No+Image'); });
+        $img.off('error').on('error', function() { $(this).attr('src', 'https://placehold.co/300?text=No+Image'); });
 
-        // 버튼 이벤트
         $('#btn-detail').off('click').on('click', function() {
             window.location.href = detailUrl;
         });
@@ -438,12 +462,22 @@ const UIManager = {
         $('#jobDetailCard').hide();
     },
 
+    // 테이블 헤더 언어 변경 함수
     updateTableHeader: function(lang) {
-        if (lang === 'jp') {
+        if (lang === 'ja') {
             const headers = $('#tableHeader th');
             const jpHeaders = ['タイトル', '会社名', '勤務地', '給与', '連絡先', '担当者', '管理'];
+
+            // jQuery each를 써서 안전하게 변경
             headers.each(function(index) {
                 if(jpHeaders[index]) $(this).text(jpHeaders[index]);
+            });
+        } else {
+            // 한국어 (기본값) 복구
+            const headers = $('#tableHeader th');
+            const krHeaders = ['제목', '상호명', '근무지', '급여', '연락처', '담당자', '관리'];
+            headers.each(function(index) {
+                if(krHeaders[index]) $(this).text(krHeaders[index]);
             });
         }
     }

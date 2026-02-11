@@ -36,7 +36,7 @@ public class JobSummaryDTO {
         this.lng = view.getLng();
 
         // 언어 설정 처리
-        boolean isJp = "jp".equalsIgnoreCase(lang);
+        boolean isJp = "ja".equalsIgnoreCase(lang);
         this.title = (isJp && view.getTitleJp() != null) ? view.getTitleJp() : view.getTitle();
         this.companyName = (isJp && view.getCompanyNameJp() != null) ? view.getCompanyNameJp() : view.getCompanyName();
         this.wage = (isJp && view.getWageJp() != null) ? view.getWageJp() : view.getWage();
