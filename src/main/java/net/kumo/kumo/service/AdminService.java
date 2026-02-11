@@ -2,7 +2,9 @@ package net.kumo.kumo.service;
 
 import lombok.RequiredArgsConstructor;
 import net.kumo.kumo.domain.dto.AdminDashboardDTO;
+import net.kumo.kumo.domain.dto.ReportDTO;
 import net.kumo.kumo.domain.entity.BaseEntity;
+import net.kumo.kumo.domain.entity.JobPostingEntity;
 import net.kumo.kumo.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,20 @@ public class AdminService {
     private final TokyoGeocodedRepository tokyoGeoRepo;
     private final OsakaNoGeocodedRepository osakaNoRepo;
     private final TokyoNoGeocodedRepository tokyoNoRepo;
+    private final JobPostingRepository jobPostingRepository;
+    private final ReportRepository reportRepository;
+
+    @Transactional(readOnly = true)
+    public List<JobPostingEntity> getAllJobPostings() {
+        return jobPostingRepository.findAllByOrderByCreatedAtDesc();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReportDTO> getAllReports() {
+        return reportRepository.findAllByOrderByCreatedAtDesc().stream()
+                .map(ReportDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
 
     @Transactional(readOnly = true)
     public AdminDashboardDTO getDashboardData() {

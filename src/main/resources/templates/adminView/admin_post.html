@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>KUMO Admin - Post</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/adminView/admin_post.css}">
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="logo-text">KUMO</div>
+    <ul class="nav-menu">
+        <a href="/admin/dashboard" class="nav-item">
+            <span class="nav-icon">🏠</span> DashBoard
+        </a>
+        <li class="nav-item">
+            <span class="nav-icon">👥</span> Users
+        </li>
+        <a href="/admin/post" class="nav-item active">
+            <span class="nav-icon">📄</span> Post
+        </a>
+        <li class="nav-item">
+            <span class="nav-icon">🕸️</span> DataOps
+        </li>
+        <li class="nav-item">
+            <span class="nav-icon">⚙️</span> Setting
+        </li>
+    </ul>
+</aside>
+
+<main class="main-content">
+    <div class="top-controls">
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="Search">
+        </div>
+        <select class="filter-select"><option>지역명</option></select>
+        <select class="filter-select"><option>Status</option></select>
+    </div>
+
+    <div class="tab-menu">
+        <div id="tab-btn-all" class="tab-item active" onclick="switchTab('all')">전체 공고</div>
+        <div id="tab-btn-report" class="tab-item" onclick="switchTab('report')">신고 / 차단</div>
+    </div>
+
+    <div class="action-buttons">
+        <button class="btn btn-dark">✅ 선택 항목 CSV 다운로드</button>
+        <button class="btn btn-dark">🗑️ 삭제</button>
+    </div>
+
+    <div id="tab-content-all" class="tab-content active">
+        <div class="table-container">
+            <table class="custom-table">
+                <thead>
+                <tr>
+                    <th class="col-check"><input type="checkbox"></th>
+                    <th class="col-title">공고 정보</th>
+                    <th>카테고리</th>
+                    <th>등록 일</th>
+                    <th>마감 일</th>
+                    <th>상태</th>
+                    <th>관리</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(posts)}"><td colspan="7">등록된 공고가 없습니다.</td></tr>
+
+                <tr th:each="post : ${posts}">
+                    <td><input type="checkbox"></td>
+                    <td class="col-title" th:text="${post.title}">제목</td>
+                    <td th:text="${post.position}">직무</td>
+                    <td th:text="${#temporals.format(post.createdAt, 'yyyy.MM.dd')}">날짜</td>
+                    <td th:text="${post.deadline}">마감일</td>
+                    <td>
+                                <span class="badge"
+                                      th:classappend="${post.status == 'RECRUITING' ? 'badge-green' : 'badge-grey'}"
+                                      th:text="${post.status == 'RECRUITING' ? '승인됨' : '마감'}">상태</span>
+                    </td>
+                    <td>
+                        <span style="cursor:pointer; margin-right:10px;">수정</span>
+                        <span style="cursor:pointer; color:#fa5252;">삭제</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="tab-content-report" class="tab-content">
+        <div class="table-container">
+            <table class="custom-table">
+                <thead>
+                <tr>
+                    <th class="col-check"><input type="checkbox"></th>
+                    <th class="col-title">공고 출처/ID</th> <th>신고 사유</th>
+                    <th>등록 일</th>
+                    <th>상태</th>
+                    <th>관리</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="report : ${reports}">
+                    <td><input type="checkbox"></td>
+                    <td class="col-title">
+                        <span th:text="'[' + ${report.targetSource} + '] ID: ' + ${report.targetPostId}"></span>
+                    </td>
+                    <td th:text="${report.reasonCategory}">사유</td>
+                    <td th:text="${#temporals.format(report.createdAt, 'yyyy.MM.dd')}">날짜</td>
+                    <td><span class="badge badge-green" th:text="${report.status}">PENDING</span></td>
+                    <td>
+                        <button class="btn-detail" th:onclick="alert([[${report.description}]])">내용 확인</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<script>
+    function switchTab(tabName) {
+        // 모든 탭 비활성화
+        document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+
+        // 선택된 탭 활성화
+        document.getElementById('tab-btn-' + tabName).classList.add('active');
+        document.getElementById('tab-content-' + tabName).classList.add('active');
+    }
+</script>
+</body>
+</html>

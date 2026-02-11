@@ -3,17 +3,12 @@ package net.kumo.kumo.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reports")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class ReportEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "report_id")
@@ -25,18 +20,17 @@ public class ReportEntity {
     @Column(name = "target_post_id")
     private Long targetPostId;
 
-    // HTML select의 value 값들이 들어감 (spam, false_info, abuse, other)
     @Column(name = "reason_category", length = 50)
     private String reasonCategory;
 
     @Column(columnDefinition = "TEXT")
-    private String description;
+    private String description; // 여기에 "[OSAKA] 실제내용" 형태로 저장됨
 
-    @Column(columnDefinition = "ENUM('PENDING', 'CLOSED', 'BLOCKED') DEFAULT 'PENDING'")
+    @Column(columnDefinition = "VARCHAR(20) DEFAULT 'PENDING'")
     @Builder.Default
     private String status = "PENDING";
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 }
