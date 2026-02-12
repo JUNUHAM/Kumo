@@ -56,8 +56,10 @@
                     <th class="col-check">
                         <input type="checkbox" id="checkAllPosts" onclick="toggleAll('postIds', this.checked)">
                     </th>
-                    <th class="col-title">공고 제목</th>
-                    <th class="col-sub">직무 / 카테고리</th> <th class="col-extra">마감일</th>      <th class="col-date">등록일</th>
+                    <th class="col-title">공고 정보</th>
+                    <th class="col-cate">카테고리</th>
+                    <th class="col-date1">등록 일</th>
+                    <th class="col-date2">마감 일</th>
                     <th class="col-status">상태</th>
                     <th class="col-manage">관리</th>
                 </tr>
@@ -66,19 +68,28 @@
                 <tr th:if="${#lists.isEmpty(posts)}"><td colspan="7">등록된 공고가 없습니다.</td></tr>
 
                 <tr th:each="post : ${posts}">
-                    <td><input type="checkbox" name="postIds" th:value="${post.jobPostId}"></td>
-                    <td class="col-title" th:text="${post.title}" title="${post.title}">제목</td>
-                    <td class="col-sub" th:text="${post.position}">직무</td>
-                    <td th:text="${post.deadline}">마감일</td>
-                    <td th:text="${#temporals.format(post.createdAt, 'yyyy.MM.dd')}">등록일</td>
                     <td>
-                        <span class="badge"
-                              th:classappend="${post.status == 'RECRUITING' ? 'badge-green' : 'badge-grey'}"
-                              th:text="${post.status == 'RECRUITING' ? '승인됨' : '마감'}">상태</span>
+                        <input type="checkbox" name="postIds" th:value="${post.source + '_' + post.id}">
                     </td>
+
+                    <td class="col-title">
+                        <span class="title-text" th:text="${post.title}" th:title="${post.title}">알바 제목</span>
+                        <span class="sub-text" th:text="${post.source}">OSAKA</span>
+                    </td>
+
+                    <td class="col-cate" th:text="${post.position}">요식업</td>
+
+                    <td th:text="${post.createdAt != null ? #temporals.format(post.createdAt, 'yyyy.MM.dd') : '-'}">2026.01.01</td>
+
+                    <td th:text="${post.deadline != null ? post.deadline : '-'}">2026.12.31</td>
+
                     <td>
-                        <span style="cursor:pointer; margin-right:10px;">수정</span>
-                        <span style="cursor:pointer; color:#fa5252;">삭제</span>
+                        <span class="badge badge-green">승인됨</span>
+                    </td>
+
+                    <td>
+                        <a class="action-link edit" th:href="@{/job/detail(id=${post.id}, source=${post.source})}">수정</a>
+                        <span class="action-link delete" th:onclick="deleteOnePost([[${post.source}]], [[${post.id}]])">삭제</span>
                     </td>
                 </tr>
                 </tbody>
@@ -95,22 +106,29 @@
                         <input type="checkbox" id="checkAllReports" onclick="toggleAll('reportIds', this.checked)">
                     </th>
                     <th class="col-title">공고 제목</th>
-                    <th class="col-sub">신고자 이메일</th>   <th class="col-extra">신고 사유</th>    <th class="col-date">등록일</th>
+                    <th class="col-cate">신고자</th>
+                    <th class="col-date1">등록일</th>
+                    <th class="col-date2">사유</th>
                     <th class="col-status">상태</th>
                     <th class="col-manage">관리</th>
                 </tr>
                 </thead>
                 <tbody>
+                <tr th:if="${#lists.isEmpty(reports)}"><td colspan="7">신고 내역이 없습니다.</td></tr>
+
                 <tr th:each="report : ${reports}">
                     <td><input type="checkbox" name="reportIds" th:value="${report.reportId}"></td>
 
-                    <td class="col-title" th:text="${report.targetPostTitle}" th:title="${report.targetPostTitle}">제목</td>
+                    <td class="col-title">
+                        <span class="title-text" th:text="${report.targetPostTitle}" th:title="${report.targetPostTitle}">공고 제목</span>
+                        <span class="sub-text" th:text="'ID: ' + ${report.targetPostId}">ID</span>
+                    </td>
 
-                    <td class="col-sub" th:text="${report.reporterEmail}" th:title="${report.reporterEmail}">이메일</td>
+                    <td class="col-cate" th:text="${report.reporterEmail}" th:title="${report.reporterEmail}">user@email.com</td>
 
-                    <td th:text="${report.reasonCategory}">사유</td>
+                    <td th:text="${#temporals.format(report.createdAt, 'yyyy.MM.dd')}">2026.01.01</td>
 
-                    <td th:text="${#temporals.format(report.createdAt, 'yyyy.MM.dd')}">등록일</td>
+                    <td class="col-date2" th:text="${report.reasonCategory}">스팸/부적절</td>
 
                     <td>
                         <span class="badge"
@@ -121,7 +139,12 @@
                     </td>
 
                     <td>
-                        <button class="btn-detail" th:onclick="alert([[${report.description}]])">내용 확인</button>
+                        <button class="btn-detail"
+                                type="button"
+                                th:data-desc="${report.description}"
+                                onclick="alert(this.getAttribute('data-desc'))">
+                            내용 확인
+                        </button>
                     </td>
                 </tr>
                 </tbody>
@@ -131,7 +154,7 @@
 </main>
 
 <script>
-    // 탭 전환, 전체선택, 삭제 스크립트 (기존과 동일)
+    // 탭 전환
     function switchTab(tabName) {
         document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -139,19 +162,44 @@
         document.getElementById('tab-content-' + tabName).classList.add('active');
     }
 
+    // 전체 선택
     function toggleAll(name, isChecked) {
         document.querySelectorAll(`input[name="${name}"]`).forEach(cb => cb.checked = isChecked);
     }
 
+    // 단일 항목 삭제 (텍스트 링크용)
+    function deleteOnePost(source, id) {
+        if(!confirm("정말 이 공고를 삭제하시겠습니까?")) return;
+
+        // 배열 형태로 보내야 함
+        const ids = [source + "_" + id];
+
+        fetch('/admin/post/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: ids })
+        }).then(res => {
+            if (res.ok) { alert("삭제되었습니다."); location.reload(); }
+            else { alert("삭제 실패"); }
+        }).catch(err => {
+            console.error(err);
+            alert("오류 발생");
+        });
+    }
+
+    // 선택 삭제 기능 (상단 버튼용)
     function deleteSelectedItems() {
         const isReportTab = document.getElementById('tab-content-report').classList.contains('active');
         const targetName = isReportTab ? 'reportIds' : 'postIds';
         const itemLabel = isReportTab ? '신고 내역' : '공고';
         const apiUrl = isReportTab ? '/admin/report/delete' : '/admin/post/delete';
+
         const checkedBoxes = document.querySelectorAll(`input[name="${targetName}"]:checked`);
 
         if (checkedBoxes.length === 0) { alert("삭제할 항목을 선택해주세요."); return; }
-        const ids = Array.from(checkedBoxes).map(cb => cb.value);
+
+        const ids = Array.from(checkedBoxes).map(cb => isReportTab ? parseInt(cb.value) : cb.value);
+
         if (!confirm(`선택한 ${checkedBoxes.length}개의 ${itemLabel}을(를) 정말 삭제하시겠습니까?`)) { return; }
 
         fetch(apiUrl, {
@@ -161,6 +209,9 @@
         }).then(res => {
             if (res.ok) { alert("삭제되었습니다."); location.reload(); }
             else { alert("삭제 실패"); }
+        }).catch(err => {
+            console.error(err);
+            alert("오류 발생");
         });
     }
 </script>

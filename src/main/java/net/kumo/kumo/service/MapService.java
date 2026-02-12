@@ -7,6 +7,7 @@ import net.kumo.kumo.domain.dto.ReportDTO;
 import net.kumo.kumo.domain.dto.projection.JobSummaryView;
 import net.kumo.kumo.domain.entity.BaseEntity;
 import net.kumo.kumo.domain.entity.ReportEntity;
+import net.kumo.kumo.domain.entity.UserEntity;
 import net.kumo.kumo.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,8 +24,9 @@ public class MapService {
     private final OsakaNoGeocodedRepository osakaNoRepo;
     private final TokyoNoGeocodedRepository tokyoNoRepo;
 
-    // ★ [추가] 신고 저장을 위한 리포지토리
-    private final ReportRepository reportRepository;
+    // 신고 관련 리포지토리
+    private final ReportRepository reportRepo;
+    private final UserRepository userRepo; // ★ [추가] 신고자(User) 조회를 위해 필요
 
     // --- 1. 지도용 리스트 조회 ---
     @Transactional(readOnly = true)
@@ -47,6 +49,7 @@ public class MapService {
     public JobDetailDTO getJobDetail(Long id, String source, String lang) {
         BaseEntity entity = null;
 
+        // 소스에 따라 적절한 리포지토리 선택
         if ("OSAKA".equalsIgnoreCase(source)) {
             entity = osakaRepo.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공고입니다."));
         } else if ("TOKYO".equalsIgnoreCase(source)) {
@@ -59,23 +62,28 @@ public class MapService {
             throw new IllegalArgumentException("잘못된 접근입니다 (Source 오류).");
         }
 
-        // ★ [수정] DTO 생성 시 source도 함께 전달 (JobDetailDTO 생성자 수정 필요)
+        // JobDetailDTO 생성자에 source도 함께 전달
         return new JobDetailDTO(entity, lang, source);
     }
 
-    // --- 3. [NEW] 신고 등록 ---
+    // --- 3. [수정] 신고 등록 ---
     @Transactional
     public void createReport(ReportDTO dto) {
-        // 엔티티 변환 및 저장
+        // 1. 신고자(User) 조회
+        // DTO에 있는 reporterId로 실제 유저 엔티티를 찾아야 연관관계를 맺을 수 있음
+        UserEntity reporter = userRepo.findById(dto.getReporterId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        // 2. 엔티티 변환 및 저장 (변경된 DB 구조 반영)
         ReportEntity report = ReportEntity.builder()
-                .reporterId(dto.getReporterId())
+                .reporter(reporter)            // [변경] ID 대신 UserEntity 객체 주입
                 .targetPostId(dto.getTargetPostId())
-                // DB에 target_source 컬럼이 있다면 추가 (없다면 description에 포함)
-                .description("[" + dto.getTargetSource() + "] " + dto.getDescription())
+                .targetSource(dto.getTargetSource()) // [변경] 이제 별도 컬럼에 저장
                 .reasonCategory(dto.getReasonCategory())
-                .status("PENDING")
+                .description(dto.getDescription())   // [변경] 순수 본문만 저장 (앞에 [OSAKA] 안 붙임)
+                .status("PENDING")             // 기본 상태
                 .build();
 
-        reportRepository.save(report);
+        reportRepo.save(report);
     }
 }

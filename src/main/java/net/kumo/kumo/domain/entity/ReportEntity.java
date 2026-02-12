@@ -7,30 +7,45 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reports")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class ReportEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "report_id")
     private Long reportId;
 
-    @Column(name = "reporter_id", nullable = false)
-    private Long reporterId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reporter_id", nullable = false)
+    private UserEntity reporter;
 
-    @Column(name = "target_post_id")
+    @Column(name = "target_post_id", nullable = false)
     private Long targetPostId;
 
-    @Column(name = "reason_category", length = 50)
+    @Column(name = "target_source", nullable = false, length = 50)
+    private String targetSource;
+
+    @Column(name = "reason_category", nullable = false, length = 50)
     private String reasonCategory;
 
-    @Column(columnDefinition = "TEXT")
-    private String description; // 여기에 "[OSAKA] 실제내용" 형태로 저장됨
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
 
-    @Column(columnDefinition = "VARCHAR(20) DEFAULT 'PENDING'")
+    // ★ [수정] Enum 대신 String 사용
+    // DB의 ENUM 값('PENDING', 'CLOSED', 'CHECKED')이 문자열로 들어옵니다.
+    @Column(name = "status", nullable = false)
     @Builder.Default
-    private String status = "PENDING";
+    private String status = "PENDING"; // 기본값 설정
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    // 상태 변경 메서드 (문자열로 받음)
+    public void updateStatus(String newStatus) {
+        this.status = newStatus;
+    }
 }
