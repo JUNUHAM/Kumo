@@ -3,20 +3,20 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-	<meta charset="UTF-8">
-	<title>KUMO - 지도 검색</title>
-	<link rel="stylesheet" th:href="@{/css/header.css}">
-	<link rel="stylesheet" th:href="@{/css/mainView/main.css}">
-	
-	<script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
-	<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
-	<script th:src="@{/js/mainView/main.js}"></script>
-	<script th:src="@{/js/geo/osaka.js}"></script>
-	<script th:src="@{/js/geo/tokyo.js}"></script>
-	<script th:src="@{/js/geo/osakaCity.js}"></script>
+    <meta charset="UTF-8">
+    <title>KUMO - 지도 검색</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
+
+    <script th:src="@{/js/geo/tokyo.js}"></script>
+    <script th:src="@{/js/geo/osaka.js}"></script>
+    <script th:src="@{/js/geo/osakaCity.js}"></script>
+
+    <script th:src="@{/js/mainView/main.js}"></script>
 </head>
 <body>
-<header th:replace="~{header.html}"></header>
+<div th:replace="~{NonLoginFragments/NonLoginHeader :: headerFragment}"></div>
 
 <div class="map-container">
 	
@@ -36,11 +36,11 @@
 				<div id="card-manager" class="manager-name">田中 部長</div>
 			</div>
 		</div>
-		
-		<div class="card-image-wrapper">
-			<img id="card-img" src="" alt="Office View"
-			     onerror="this.src='https://via.placeholder.com/300'">
-		</div>
+
+        <div class="card-image-wrapper">
+            <img id="card-img" src="" alt="Office View"
+                 onerror="this.src='https://placehold.co/300'">
+        </div>
 		
 		<div class="card-body-section">
 			<h3 id="card-title" class="job-title">비서 구합니다</h3>
@@ -84,6 +84,7 @@
 		</div>
 	</div>
 </div>
+<div th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"></div>
 
 <script th:src="@{'https://maps.googleapis.com/maps/api/js?key=' + ${googleMapsKey} + '&callback=initMap&loading=async'}"
         async defer></script>
