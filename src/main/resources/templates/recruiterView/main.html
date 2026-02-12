@@ -16,10 +16,10 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
-    <link rel="stylesheet" th:href="@{/css/recruiter/header.css}" />
+    <link rel="stylesheet" th:href="@{/css/recruiter/recruiterHeader.css}" />
     <link
       rel="stylesheet"
-      href="@{/css/NonLoginFragments/NonLoginFooter.css}"
+      th:href="@{/css/NonLoginFragments/NonLoginFooter.css}"
     />
     <link rel="stylesheet" th:href="@{/css/recruiter/sidebar.css}" />
     <link rel="stylesheet" th:href="@{/css/recruiter/main.css}" />
@@ -29,7 +29,7 @@
   </head>
   <body>
     <header
-      th:replace="~{recruiterView/fragments/header :: headerFragment}"
+      th:replace="~{recruiterView/fragments/recruiterHeader :: headerFragment}"
     ></header>
 
     <div class="dashboard-wrapper">
@@ -42,15 +42,11 @@
           <div class="dashboard-left-content">
             <div class="welcome-section mb-4">
               <div sec:authorize="isAuthenticated()">
-                <h2>
-                  어서오세요,
-                  <span th:text="${#authentication.name}"></span>
-                  사장님!
-                </h2>
+                <h2 th:text="#{main.welcome.title(${fullName})}"></h2>
+                <p class="text-muted" th:text="#{main.welcome.subtitle}">
+                  오늘의 채용 현황을 확인해보세요.
+                </p>
               </div>
-              <p class="text-muted" th:text="#{main.welcome.subtitle}">
-                오늘의 채용 현황을 확인해보세요.
-              </p>
             </div>
 
             <div class="stat-row">
