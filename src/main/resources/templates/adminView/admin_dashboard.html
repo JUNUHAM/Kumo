@@ -12,19 +12,16 @@
 <body>
 
 <aside class="sidebar">
-    <div class="logo-area">
-        <div class="logo-text">KUMO</div>
-    </div>
     <ul class="nav-menu">
-        <li class="nav-item active">
+        <a href="/admin/dashboard" class="nav-item active">
             <span class="nav-icon">🏠</span> DashBoard
-        </li>
+        </a>
         <li class="nav-item">
             <span class="nav-icon">👥</span> Users
         </li>
-        <li class="nav-item">
+        <a href="/admin/post" class="nav-item">
             <span class="nav-icon">📄</span> Post
-        </li>
+        </a>
         <li class="nav-item">
             <span class="nav-icon">🕸️</span> DataOps
         </li>
@@ -35,14 +32,6 @@
 </aside>
 
 <main class="main-content">
-    <header class="top-header">
-        <div class="page-title">DashBoard</div>
-        <div class="header-links">
-            <a href="#">회사 정보</a>
-            <a href="#">다운 로드</a>
-        </div>
-    </header>
-
     <div class="dashboard-container">
         <div class="welcome-banner">
             <h2 class="welcome-text">관리자 페이지에 오신것을 환영합니다 <span th:text="${adminName}">User</span>.</h2>

@@ -5,6 +5,7 @@ import net.kumo.kumo.domain.dto.AdminDashboardDTO;
 import net.kumo.kumo.domain.dto.ReportDTO;
 import net.kumo.kumo.domain.entity.BaseEntity;
 import net.kumo.kumo.domain.entity.JobPostingEntity;
+import net.kumo.kumo.domain.entity.ReportEntity;
 import net.kumo.kumo.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,19 +24,62 @@ public class AdminService {
     private final TokyoGeocodedRepository tokyoGeoRepo;
     private final OsakaNoGeocodedRepository osakaNoRepo;
     private final TokyoNoGeocodedRepository tokyoNoRepo;
-    private final JobPostingRepository jobPostingRepository;
-    private final ReportRepository reportRepository;
+    private final JobPostingRepository jobPostingRepo;
+    private final ReportRepository reportRepo;
+    private final UserRepository userRepo;
 
     @Transactional(readOnly = true)
     public List<JobPostingEntity> getAllJobPostings() {
-        return jobPostingRepository.findAllByOrderByCreatedAtDesc();
+        return jobPostingRepo.findAllByOrderByCreatedAtDesc();
     }
 
     @Transactional(readOnly = true)
     public List<ReportDTO> getAllReports() {
-        return reportRepository.findAllByOrderByCreatedAtDesc().stream()
-                .map(ReportDTO::fromEntity)
-                .collect(Collectors.toList());
+        List<ReportEntity> entities = reportRepo.findAllByOrderByCreatedAtDesc();
+
+        return entities.stream().map(entity -> {
+            ReportDTO dto = ReportDTO.fromEntity(entity);
+            // 2. 공고 제목 찾기 (targetPostId 이용)
+            // (만약 외부 크롤링 데이터라면 제목 찾기가 어려울 수 있으니 예외처리)
+            if (entity.getTargetPostId() != null) {
+                jobPostingRepo.findById(entity.getTargetPostId())
+                        .ifPresentOrElse(
+                                post -> dto.setTargetPostTitle(post.getTitle()), // 찾으면 제목 설정
+                                () -> dto.setTargetPostTitle("삭제된 공고 또는 외부 공고 (ID: " + entity.getTargetPostId() + ")") // 없으면 ID 표시
+                        );
+            } else {
+                dto.setTargetPostTitle("정보 없음");
+            }
+
+            if (entity.getReporterId() != null) {
+                userRepo.findById(entity.getReporterId())
+                        .ifPresentOrElse(
+                                user -> dto.setReporterEmail(user.getEmail()),
+                                () -> dto.setReporterEmail("알 수 없음 (ID: " + entity.getReporterId() + ")")
+                        );
+            } else {
+                dto.setReporterEmail("비회원/익명");
+            }
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    // ★ [추가] 공고 일괄 삭제
+    @Transactional
+    public void deleteJobPostings(List<Long> ids) {
+        // null 체크나 빈 리스트 체크를 해도 좋지만, JPA가 알아서 처리해주기도 함
+        if (ids != null && !ids.isEmpty()) {
+            jobPostingRepo.deleteAllById(ids);
+        }
+    }
+
+    // ★ [추가] 신고 내역 일괄 삭제
+    @Transactional
+    public void deleteReports(List<Long> ids) {
+        if (ids != null && !ids.isEmpty()) {
+            reportRepo.deleteAllById(ids);
+        }
     }
 
     @Transactional(readOnly = true)

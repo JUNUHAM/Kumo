@@ -30,17 +30,6 @@ body {
     z-index: 100;
 }
 
-.logo-area {
-    padding: 0 30px 40px;
-}
-
-.logo-text {
-    font-size: 28px;
-    font-weight: 900;
-    color: #74c0fc;
-    letter-spacing: -1px;
-}
-
 .nav-menu {
     list-style: none;
     padding: 0;
@@ -85,29 +74,10 @@ body {
     overflow-y: auto; /* 내부 스크롤 허용 */
 }
 
-/* 상단 헤더 */
-.top-header {
-    background-color: #fff;
-    height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 40px;
-    border-bottom: 1px solid #eee;
-}
-
 .page-title {
     font-size: 20px;
     font-weight: 700;
     color: #868e96;
-}
-
-.header-links a {
-    font-size: 14px;
-    color: #333;
-    text-decoration: none;
-    margin-left: 20px;
-    font-weight: 500;
 }
 
 /* 대시보드 컨테이너 */

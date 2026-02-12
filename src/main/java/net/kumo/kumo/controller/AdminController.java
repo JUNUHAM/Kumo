@@ -8,14 +8,14 @@ import net.kumo.kumo.domain.entity.JobPostingEntity;
 import net.kumo.kumo.repository.JobPostingRepository;
 import net.kumo.kumo.repository.ReportRepository;
 import net.kumo.kumo.service.AdminService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -48,6 +48,38 @@ public class AdminController {
     @ResponseBody // HTML이 아니라 JSON 데이터를 반환한다는 표시
     public AdminDashboardDTO getDashboardData() {
         return adminService.getDashboardData();
+    }
+
+    /**
+     * 3. 공고 삭제 API
+     * URL: /admin/post/delete
+     */
+    @PostMapping("/post/delete")
+    @ResponseBody // 페이지 이동이 아니라 데이터(성공여부)만 리턴
+    public ResponseEntity<String> deletePosts(@RequestBody Map<String, List<Long>> payload) {
+        List<Long> ids = payload.get("ids"); // JS에서 보낸 key 이름이 'ids'
+
+        log.info("삭제할 공고 ID 목록: {}", ids);
+
+        adminService.deleteJobPostings(ids);
+
+        return ResponseEntity.ok("Deleted successfully");
+    }
+
+    /**
+     * 4. 신고 내역 삭제 API
+     * URL: /admin/report/delete
+     */
+    @PostMapping("/report/delete")
+    @ResponseBody
+    public ResponseEntity<String> deleteReports(@RequestBody Map<String, List<Long>> payload) {
+        List<Long> ids = payload.get("ids");
+
+        log.info("삭제할 신고 ID 목록: {}", ids);
+
+        adminService.deleteReports(ids);
+
+        return ResponseEntity.ok("Deleted successfully");
     }
 
     /**
