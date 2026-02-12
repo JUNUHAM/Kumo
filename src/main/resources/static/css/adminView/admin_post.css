@@ -80,3 +80,35 @@ body { margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; backgroun
 /* [탭 제어] */
 .tab-content { display: none; }
 .tab-content.active { display: block; }
+
+.lang-switch-container {
+     margin-top: auto;
+     padding: 20px;
+     border-top: 1px solid #eee;
+     text-align: center;
+ }
+.btn-lang {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 700;
+    color: #555;
+    transition: 0.2s;
+}
+.btn-lang:hover { background: #f1f3f5; }
+.btn-lang.active {
+    background: #3b5bdb;
+    color: white;
+    border-color: #3b5bdb;
+}
+.title-link {
+    text-decoration: none;
+    color: #333;
+    transition: 0.2s;
+}
+.title-link:hover {
+    color: #1c7ed6;
+    text-decoration: underline;
+}

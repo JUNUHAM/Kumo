@@ -5,47 +5,67 @@
     <title>KUMO Admin - Post</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/adminView/admin_post.css}">
+
 </head>
 <body>
 
 <aside class="sidebar">
     <ul class="nav-menu">
-        <a href="/admin/dashboard" class="nav-item">
-            <span class="nav-icon">🏠</span> DashBoard
+        <a th:href="@{/admin/dashboard(lang=${lang})}" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span th:text="${lang == 'ja' ? 'ダッシュボード' : 'DashBoard'}">DashBoard</span>
         </a>
         <li class="nav-item">
-            <span class="nav-icon">👥</span> Users
+            <span class="nav-icon">👥</span>
+            <span th:text="${lang == 'ja' ? '会員管理' : 'Users'}">Users</span>
         </li>
-        <a href="/admin/post" class="nav-item active">
-            <span class="nav-icon">📄</span> Post
+        <a th:href="@{/admin/post(lang=${lang})}" class="nav-item active">
+            <span class="nav-icon">📄</span>
+            <span th:text="${lang == 'ja' ? '求人管理' : 'Post'}">Post</span>
         </a>
         <li class="nav-item">
             <span class="nav-icon">🕸️</span> DataOps
         </li>
         <li class="nav-item">
-            <span class="nav-icon">⚙️</span> Setting
+            <span class="nav-icon">⚙️</span>
+            <span th:text="${lang == 'ja' ? '設定' : 'Setting'}">Setting</span>
         </li>
     </ul>
+
+    <div class="lang-switch-container">
+        <button class="btn-lang"
+                th:classappend="${lang == 'ko' || lang == null ? 'active' : ''}"
+                onclick="changeLanguage('ko')">KO</button>
+        <button class="btn-lang"
+                th:classappend="${lang == 'ja' ? 'active' : ''}"
+                onclick="changeLanguage('ja')">JP</button>
+    </div>
 </aside>
 
 <main class="main-content">
     <div class="top-controls">
         <div class="search-box">
             <span class="search-icon">🔍</span>
-            <input type="text" class="search-input" placeholder="Search">
+            <input type="text" class="search-input" th:placeholder="${lang == 'ja' ? '検索' : 'Search'}">
         </div>
-        <select class="filter-select"><option>지역명</option></select>
-        <select class="filter-select"><option>Status</option></select>
+        <select class="filter-select">
+            <option th:text="${lang == 'ja' ? '地域' : '지역명'}">지역명</option>
+        </select>
+        <select class="filter-select">
+            <option th:text="${lang == 'ja' ? '状態' : 'Status'}">Status</option>
+        </select>
     </div>
 
     <div class="tab-menu">
-        <div id="tab-btn-all" class="tab-item active" onclick="switchTab('all')">전체 공고</div>
-        <div id="tab-btn-report" class="tab-item" onclick="switchTab('report')">신고 / 차단</div>
+        <div id="tab-btn-all" class="tab-item active" onclick="switchTab('all')"
+             th:text="${lang == 'ja' ? '全求人' : '전체 공고'}">전체 공고</div>
+        <div id="tab-btn-report" class="tab-item" onclick="switchTab('report')"
+             th:text="${lang == 'ja' ? '申告/遮断' : '신고 / 차단'}">신고 / 차단</div>
     </div>
 
     <div class="action-buttons">
-        <button class="btn btn-dark">✅ 선택 항목 CSV 다운로드</button>
-        <button class="btn btn-dark" onclick="deleteSelectedItems()">🗑️ 삭제</button>
+        <button class="btn btn-dark" th:text="${lang == 'ja' ? '✅ CSVダウンロード' : '✅ 선택 항목 CSV 다운로드'}">✅ 선택 항목 CSV 다운로드</button>
+        <button class="btn btn-dark" onclick="deleteSelectedItems()" th:text="${lang == 'ja' ? '🗑️ 削除' : '🗑️ 삭제'}">🗑️ 삭제</button>
     </div>
 
     <div id="tab-content-all" class="tab-content active">
@@ -56,16 +76,18 @@
                     <th class="col-check">
                         <input type="checkbox" id="checkAllPosts" onclick="toggleAll('postIds', this.checked)">
                     </th>
-                    <th class="col-title">공고 정보</th>
-                    <th class="col-cate">카테고리</th>
-                    <th class="col-date1">등록 일</th>
-                    <th class="col-date2">마감 일</th>
-                    <th class="col-status">상태</th>
-                    <th class="col-manage">관리</th>
+                    <th class="col-title" th:text="${lang == 'ja' ? '求人情報' : '공고 정보'}">공고 정보</th>
+                    <th class="col-cate" th:text="${lang == 'ja' ? 'カテゴリ' : '카테고리'}">카테고리</th>
+                    <th class="col-date1" th:text="${lang == 'ja' ? '登録日' : '등록 일'}">등록 일</th>
+                    <th class="col-date2" th:text="${lang == 'ja' ? '締切日' : '마감 일'}">마감 일</th>
+                    <th class="col-status" th:text="${lang == 'ja' ? '状態' : '상태'}">상태</th>
+                    <th class="col-manage" th:text="${lang == 'ja' ? '管理' : '관리'}">관리</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:if="${#lists.isEmpty(posts)}"><td colspan="7">등록된 공고가 없습니다.</td></tr>
+                <tr th:if="${#lists.isEmpty(posts)}">
+                    <td colspan="7" th:text="${lang == 'ja' ? '登録された求人がありません。' : '등록된 공고가 없습니다.'}">등록된 공고가 없습니다.</td>
+                </tr>
 
                 <tr th:each="post : ${posts}">
                     <td>
@@ -73,23 +95,32 @@
                     </td>
 
                     <td class="col-title">
-                        <span class="title-text" th:text="${post.title}" th:title="${post.title}">알바 제목</span>
+                        <a class="title-link"
+                           th:href="@{/job/detail(id=${post.id}, source=${post.source}, lang=${lang})}"
+                           target="_blank">
+                            <span class="title-text" th:text="${post.title}" th:title="${post.title}">제목</span>
+                        </a>
                         <span class="sub-text" th:text="${post.source}">OSAKA</span>
                     </td>
 
-                    <td class="col-cate" th:text="${post.position}">요식업</td>
+                    <td class="col-cate" th:text="${post.position}">직무</td>
 
-                    <td th:text="${post.createdAt != null ? #temporals.format(post.createdAt, 'yyyy.MM.dd') : '-'}">2026.01.01</td>
+                    <td th:text="${post.createdAt != null ? #temporals.format(post.createdAt, 'yyyy.MM.dd') : '-'}">날짜</td>
 
-                    <td th:text="${post.deadline != null ? post.deadline : '-'}">2026.12.31</td>
+                    <td th:text="${post.deadline != null ? post.deadline : '-'}">마감일</td>
 
                     <td>
-                        <span class="badge badge-green">승인됨</span>
+                        <span class="badge badge-green" th:text="${lang == 'ja' ? '承認済み' : '승인됨'}">승인됨</span>
                     </td>
 
                     <td>
-                        <a class="action-link edit" th:href="@{/job/detail(id=${post.id}, source=${post.source})}">수정</a>
-                        <span class="action-link delete" th:onclick="deleteOnePost([[${post.source}]], [[${post.id}]])">삭제</span>
+                        <a class="action-link edit"
+                           th:href="@{/job/detail(id=${post.id}, source=${post.source}, lang=${lang})}"
+                           th:text="${lang == 'ja' ? '修正' : '수정'}">수정</a>
+
+                        <span class="action-link delete"
+                              th:onclick="deleteOnePost([[${post.source}]], [[${post.id}]])"
+                              th:text="${lang == 'ja' ? '削除' : '삭제'}">삭제</span>
                     </td>
                 </tr>
                 </tbody>
@@ -105,35 +136,42 @@
                     <th class="col-check">
                         <input type="checkbox" id="checkAllReports" onclick="toggleAll('reportIds', this.checked)">
                     </th>
-                    <th class="col-title">공고 제목</th>
-                    <th class="col-cate">신고자</th>
-                    <th class="col-date1">등록일</th>
-                    <th class="col-date2">사유</th>
-                    <th class="col-status">상태</th>
-                    <th class="col-manage">관리</th>
+                    <th class="col-title" th:text="${lang == 'ja' ? '求人タイトル' : '공고 제목'}">공고 제목</th>
+                    <th class="col-cate" th:text="${lang == 'ja' ? '申告者' : '신고자'}">신고자</th>
+                    <th class="col-date1" th:text="${lang == 'ja' ? '登録日' : '등록일'}">등록일</th>
+                    <th class="col-date2" th:text="${lang == 'ja' ? '事由' : '사유'}">사유</th>
+                    <th class="col-status" th:text="${lang == 'ja' ? '状態' : '상태'}">상태</th>
+                    <th class="col-manage" th:text="${lang == 'ja' ? '管理' : '관리'}">관리</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:if="${#lists.isEmpty(reports)}"><td colspan="7">신고 내역이 없습니다.</td></tr>
+                <tr th:if="${#lists.isEmpty(reports)}">
+                    <td colspan="7" th:text="${lang == 'ja' ? '申告内訳がありません。' : '신고 내역이 없습니다.'}">신고 내역이 없습니다.</td>
+                </tr>
 
                 <tr th:each="report : ${reports}">
                     <td><input type="checkbox" name="reportIds" th:value="${report.reportId}"></td>
 
                     <td class="col-title">
-                        <span class="title-text" th:text="${report.targetPostTitle}" th:title="${report.targetPostTitle}">공고 제목</span>
+                        <a class="title-link"
+                           th:href="@{/job/detail(id=${report.targetPostId}, source=${report.targetSource}, lang=${lang})}"
+                           target="_blank">
+                            <span class="title-text" th:text="${report.targetPostTitle}" th:title="${report.targetPostTitle}">제목</span>
+                        </a>
                         <span class="sub-text" th:text="'ID: ' + ${report.targetPostId}">ID</span>
                     </td>
 
-                    <td class="col-cate" th:text="${report.reporterEmail}" th:title="${report.reporterEmail}">user@email.com</td>
+                    <td class="col-cate" th:text="${report.reporterEmail}">이메일</td>
 
-                    <td th:text="${#temporals.format(report.createdAt, 'yyyy.MM.dd')}">2026.01.01</td>
+                    <td th:text="${#temporals.format(report.createdAt, 'yyyy.MM.dd')}">날짜</td>
 
-                    <td class="col-date2" th:text="${report.reasonCategory}">스팸/부적절</td>
+                    <td class="col-date2" th:text="${report.reasonCategory}">사유</td>
 
                     <td>
                         <span class="badge"
                               th:classappend="${report.status == 'PENDING' ? 'badge-grey' : (report.status == 'BLOCKED' ? 'badge-red' : 'badge-green')}"
-                              th:text="${report.status == 'PENDING' ? '대기중' : (report.status == 'BLOCKED' ? '차단됨' : '처리완료')}">
+                              th:text="${report.status == 'PENDING' ? (lang == 'ja' ? '待機中' : '대기중') :
+                                        (report.status == 'BLOCKED' ? (lang == 'ja' ? '遮断済み' : '차단됨') : (lang == 'ja' ? '完了' : '처리완료'))}">
                             상태
                         </span>
                     </td>
@@ -142,7 +180,8 @@
                         <button class="btn-detail"
                                 type="button"
                                 th:data-desc="${report.description}"
-                                onclick="alert(this.getAttribute('data-desc'))">
+                                onclick="alert(this.getAttribute('data-desc'))"
+                                th:text="${lang == 'ja' ? '内容確認' : '내용 확인'}">
                             내용 확인
                         </button>
                     </td>
@@ -153,8 +192,15 @@
     </div>
 </main>
 
-<script>
-    // 탭 전환
+<script th:inline="javascript">
+    const currentLang = [[${lang}]] || 'ko';
+
+    function changeLanguage(lang) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('lang', lang);
+        window.location.href = url.toString();
+    }
+
     function switchTab(tabName) {
         document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -162,16 +208,14 @@
         document.getElementById('tab-content-' + tabName).classList.add('active');
     }
 
-    // 전체 선택
     function toggleAll(name, isChecked) {
         document.querySelectorAll(`input[name="${name}"]`).forEach(cb => cb.checked = isChecked);
     }
 
-    // 단일 항목 삭제 (텍스트 링크용)
     function deleteOnePost(source, id) {
-        if(!confirm("정말 이 공고를 삭제하시겠습니까?")) return;
+        const msg = currentLang === 'ja' ? "本当にこの求人を削除しますか？" : "정말 이 공고를 삭제하시겠습니까?";
+        if(!confirm(msg)) return;
 
-        // 배열 형태로 보내야 함
         const ids = [source + "_" + id];
 
         fetch('/admin/post/delete', {
@@ -179,39 +223,49 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ids: ids })
         }).then(res => {
-            if (res.ok) { alert("삭제되었습니다."); location.reload(); }
-            else { alert("삭제 실패"); }
-        }).catch(err => {
-            console.error(err);
-            alert("오류 발생");
+            if (res.ok) {
+                alert(currentLang === 'ja' ? "削除されました。" : "삭제되었습니다.");
+                location.reload();
+            }
+            else {
+                alert(currentLang === 'ja' ? "削除に失敗しました。" : "삭제 실패");
+            }
         });
     }
 
-    // 선택 삭제 기능 (상단 버튼용)
     function deleteSelectedItems() {
         const isReportTab = document.getElementById('tab-content-report').classList.contains('active');
         const targetName = isReportTab ? 'reportIds' : 'postIds';
-        const itemLabel = isReportTab ? '신고 내역' : '공고';
+        const itemLabel = isReportTab ? (currentLang === 'ja' ? '件の申告内訳' : '개의 신고 내역') : (currentLang === 'ja' ? '件の求人' : '개의 공고');
         const apiUrl = isReportTab ? '/admin/report/delete' : '/admin/post/delete';
 
         const checkedBoxes = document.querySelectorAll(`input[name="${targetName}"]:checked`);
 
-        if (checkedBoxes.length === 0) { alert("삭제할 항목을 선택해주세요."); return; }
+        if (checkedBoxes.length === 0) {
+            alert(currentLang === 'ja' ? "削除する項目を選択してください。" : "삭제할 항목을 선택해주세요.");
+            return;
+        }
 
         const ids = Array.from(checkedBoxes).map(cb => isReportTab ? parseInt(cb.value) : cb.value);
 
-        if (!confirm(`선택한 ${checkedBoxes.length}개의 ${itemLabel}을(를) 정말 삭제하시겠습니까?`)) { return; }
+        const confirmMsg = currentLang === 'ja'
+            ? `選択した ${checkedBoxes.length}${itemLabel} を本当に削除しますか？`
+            : `선택한 ${checkedBoxes.length}${itemLabel}을(를) 정말 삭제하시겠습니까?`;
+
+        if (!confirm(confirmMsg)) { return; }
 
         fetch(apiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ids: ids })
         }).then(res => {
-            if (res.ok) { alert("삭제되었습니다."); location.reload(); }
-            else { alert("삭제 실패"); }
-        }).catch(err => {
-            console.error(err);
-            alert("오류 발생");
+            if (res.ok) {
+                alert(currentLang === 'ja' ? "削除されました。" : "삭제되었습니다.");
+                location.reload();
+            }
+            else {
+                alert(currentLang === 'ja' ? "削除に失敗しました。" : "삭제 실패");
+            }
         });
     }
 </script>

@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AdminService {
 
-    // 크롤링 데이터 리포지토리 (4종)만 남김
+    // 크롤링 데이터 리포지토리 (4종)
     private final OsakaGeocodedRepository osakaGeoRepo;
     private final TokyoGeocodedRepository tokyoGeoRepo;
     private final OsakaNoGeocodedRepository osakaNoRepo;
@@ -32,12 +32,11 @@ public class AdminService {
     private final UserRepository userRepo;
 
     // =================================================================
-    // 1. 전체 공고 통합 조회 (4개 테이블 Merge)
+    // 1. 전체 공고 통합 조회 (Lang 적용)
     // =================================================================
     @Transactional(readOnly = true)
-    public List<JobSummaryDTO> getAllJobSummaries() {
+    public List<JobSummaryDTO> getAllJobSummaries(String lang) {
         List<JobSummaryDTO> unifiedList = new ArrayList<>();
-        String lang = "ko"; // 어드민 기본 언어
 
         // 1. Osaka Geocoded
         unifiedList.addAll(osakaGeoRepo.findAll().stream()
@@ -59,7 +58,7 @@ public class AdminService {
                 .map(e -> new JobSummaryDTO(e, lang, "TOKYO_NO"))
                 .toList());
 
-        // 5. 최신순 정렬 (작성일 기준 내림차순)
+        // 5. 최신순 정렬
         unifiedList.sort((a, b) -> {
             String timeA = a.getWriteTime();
             String timeB = b.getWriteTime();
@@ -72,11 +71,12 @@ public class AdminService {
     }
 
     // =================================================================
-    // 2. 신고 목록 조회 (제목 매핑)
+    // 2. 신고 목록 조회 (Lang 적용 - 제목 번역)
     // =================================================================
     @Transactional(readOnly = true)
-    public List<ReportDTO> getAllReports() {
+    public List<ReportDTO> getAllReports(String lang) { // ★ lang 파라미터 추가
         List<ReportEntity> entities = reportRepo.findAllByOrderByCreatedAtDesc();
+        boolean isJp = "ja".equalsIgnoreCase(lang); // 언어 체크
 
         return entities.stream().map(entity -> {
             ReportDTO dto = ReportDTO.fromEntity(entity);
@@ -85,24 +85,42 @@ public class AdminService {
             if (entity.getReporter() != null) {
                 dto.setReporterEmail(entity.getReporter().getEmail());
             } else {
-                dto.setReporterEmail("알 수 없음");
+                dto.setReporterEmail(isJp ? "不明" : "알 수 없음");
             }
 
             // 공고 제목 찾기
             String source = entity.getTargetSource();
             Long targetId = entity.getTargetPostId();
-            String title = "삭제된 공고";
+
+            // 기본 메시지 다국어 처리
+            String title = isJp ? "削除された求人" : "삭제된 공고";
+            String deletedSuffix = isJp ? "(削除済み)" : "(삭제됨)";
 
             try {
+                BaseEntity targetEntity = null;
+
+                // 리포지토리에서 엔티티 조회
                 if ("OSAKA".equals(source)) {
-                    title = osakaGeoRepo.findById(targetId).map(BaseEntity::getTitle).orElse("삭제됨(OSAKA)");
+                    targetEntity = osakaGeoRepo.findById(targetId).orElse(null);
                 } else if ("TOKYO".equals(source)) {
-                    title = tokyoGeoRepo.findById(targetId).map(BaseEntity::getTitle).orElse("삭제됨(TOKYO)");
+                    targetEntity = tokyoGeoRepo.findById(targetId).orElse(null);
                 } else if ("OSAKA_NO".equals(source)) {
-                    title = osakaNoRepo.findById(targetId).map(BaseEntity::getTitle).orElse("삭제됨(OSAKA_NO)");
+                    targetEntity = osakaNoRepo.findById(targetId).orElse(null);
                 } else if ("TOKYO_NO".equals(source)) {
-                    title = tokyoNoRepo.findById(targetId).map(BaseEntity::getTitle).orElse("삭제됨(TOKYO_NO)");
+                    targetEntity = tokyoNoRepo.findById(targetId).orElse(null);
                 }
+
+                // 엔티티가 존재하면 언어에 맞는 제목 추출
+                if (targetEntity != null) {
+                    if (isJp && hasText(targetEntity.getTitleJp())) {
+                        title = targetEntity.getTitleJp();
+                    } else {
+                        title = targetEntity.getTitle();
+                    }
+                } else {
+                    title = title + " " + source; // 삭제된 경우
+                }
+
             } catch (Exception e) {
                 log.warn("신고 대상 공고 조회 실패: ID={}, Source={}", targetId, source);
             }
@@ -113,7 +131,7 @@ public class AdminService {
     }
 
     // =================================================================
-    // 3. 공고 일괄 삭제 (복합 ID 파싱)
+    // 3. 공고 일괄 삭제
     // =================================================================
     @Transactional
     public void deleteMixedPosts(List<String> mixedIds) {
@@ -121,7 +139,6 @@ public class AdminService {
 
         for (String mixedId : mixedIds) {
             try {
-                // "OSAKA_NO_123" 같은 경우를 위해 lastIndexOf 사용
                 int lastUnderscore = mixedId.lastIndexOf('_');
                 if (lastUnderscore == -1) continue;
 
@@ -152,23 +169,20 @@ public class AdminService {
     }
 
     // =================================================================
-    // 5. 대시보드 데이터 (JobPosting 제외)
+    // 5. 대시보드 데이터
     // =================================================================
     @Transactional(readOnly = true)
     public AdminDashboardDTO getDashboardData() {
         LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(6).withHour(0).withMinute(0);
 
-        // 전체 공고 수 (4개 테이블)
         long totalPosts = osakaGeoRepo.count() + tokyoGeoRepo.count()
                 + osakaNoRepo.count() + tokyoNoRepo.count();
 
-        // 신규 공고 수 (4개 테이블)
         long newPosts = osakaGeoRepo.countByCreatedAtAfter(sevenDaysAgo)
                 + tokyoGeoRepo.countByCreatedAtAfter(sevenDaysAgo)
                 + osakaNoRepo.countByCreatedAtAfter(sevenDaysAgo)
                 + tokyoNoRepo.countByCreatedAtAfter(sevenDaysAgo);
 
-        // 주간 통계 리스트 취합
         List<BaseEntity> recentPosts = new ArrayList<>();
         recentPosts.addAll(osakaGeoRepo.findByCreatedAtAfter(sevenDaysAgo));
         recentPosts.addAll(tokyoGeoRepo.findByCreatedAtAfter(sevenDaysAgo));
@@ -182,17 +196,15 @@ public class AdminService {
                 ));
         weeklyStats = fillMissingDates(weeklyStats, 7);
 
-        // 지역별 통계
         Map<String, Long> osakaWards = listToMap(osakaGeoRepo.countByWard());
         Map<String, Long> tokyoWards = listToMap(tokyoGeoRepo.countByWard());
 
-        // 회원 통계 (Mock)
         Map<String, Long> mockUserStats = new LinkedHashMap<>();
         mockUserStats.put("Jan", 120L); mockUserStats.put("Feb", 150L);
 
         return AdminDashboardDTO.builder()
                 .totalUsers(userRepo.count())
-                .newUsers(0L) // User 로직 필요 시 추가
+                .newUsers(0L)
                 .totalPosts(totalPosts)
                 .newPosts(newPosts)
                 .weeklyPostStats(weeklyStats)
@@ -202,6 +214,7 @@ public class AdminService {
                 .build();
     }
 
+    // --- Helper Methods ---
     private Map<String, Long> listToMap(List<Object[]> list) {
         Map<String, Long> map = new HashMap<>();
         for (Object[] row : list) {
@@ -220,5 +233,9 @@ public class AdminService {
             sorted.putIfAbsent(date, 0L);
         }
         return sorted;
+    }
+
+    private boolean hasText(String str) {
+        return str != null && !str.isBlank();
     }
 }

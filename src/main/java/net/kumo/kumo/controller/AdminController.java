@@ -24,8 +24,10 @@ public class AdminController {
 
     // 대시보드 페이지
     @GetMapping("/dashboard")
-    public String dashboardPage(Model model) {
+    public String dashboardPage(Model model,
+                                @RequestParam(value = "lang", defaultValue = "ko") String lang) {
         model.addAttribute("adminName", "Administrator");
+        model.addAttribute("lang", lang);
         return "adminView/admin_dashboard";
     }
 
@@ -41,16 +43,16 @@ public class AdminController {
      * URL: /admin/post
      */
     @GetMapping("/post")
-    public String postManagementPage(Model model) {
+    public String postManagementPage(Model model,
+                                     @RequestParam(value = "lang", defaultValue = "ko") String lang) {
         model.addAttribute("adminName", "Administrator");
+        model.addAttribute("lang", lang); // 뷰에서 언어 판단용
 
-        // 탭 1: 전체 공고 (JobSummaryDTO)
-        // Service에서 이미 4개 테이블 데이터를 합쳐서 줍니다.
-        List<JobSummaryDTO> posts = adminService.getAllJobSummaries();
+        // 서비스에 lang 전달 -> DTO 생성 시 제목/직무 등을 해당 언어로 변환
+        List<JobSummaryDTO> posts = adminService.getAllJobSummaries(lang);
         model.addAttribute("posts", posts);
 
-        // 탭 2: 신고 내역
-        List<ReportDTO> reports = adminService.getAllReports();
+        List<ReportDTO> reports = adminService.getAllReports(lang);
         model.addAttribute("reports", reports);
 
         return "adminView/admin_post";
