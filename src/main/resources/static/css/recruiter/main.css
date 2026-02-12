@@ -349,13 +349,19 @@ footer {
   text-decoration: underline; /* 호버 시에만 살짝 밑줄 */
 }
 
-/* 레이아웃에 영향을 주지 않는 순수 페이드 효과 */
-.main-container {
-  opacity: 0.1 !important;
-  transition: opacity 0.15s ease-in-out !important;
+/* 글로벌 스타일 또는 마스터 다크모드 CSS */
+.main-content {
+  /* 페이지 전환 시 투명도만 아주 살짝 조절 */
+  animation: snappyFade 0.15s ease-out;
 }
 
-/* 로딩 완료 시 클래스 */
-.main-container.fade-in {
-  opacity: 1 !important;
+@keyframes snappyFade {
+  from {
+    opacity: 0.8;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

@@ -41,13 +41,13 @@
         <main class="content-body">
           <div class="dashboard-left-content">
             <div class="welcome-section mb-4">
-              <h2
-                th:utext="${#messages.msg('main.welcome.title', session.companyName ?: '원우')}"
-              >
-                어서오세요,
-                <span>원우</span>
-                사장님!
-              </h2>
+              <div sec:authorize="isAuthenticated()">
+                <h2>
+                  어서오세요,
+                  <span th:text="${#authentication.name}"></span>
+                  사장님!
+                </h2>
+              </div>
               <p class="text-muted" th:text="#{main.welcome.subtitle}">
                 오늘의 채용 현황을 확인해보세요.
               </p>

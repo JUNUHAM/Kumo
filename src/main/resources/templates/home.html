@@ -19,13 +19,22 @@
     />
     <link
       rel="stylesheet"
+      th:href="@{/css/AuthenticatedFragments/AuthenticatedHeader.css}"
+    />
+    <link
+      rel="stylesheet"
       th:href="@{/css/NonLoginFragments/NonLoginFooter.css}"
     />
     <link rel="stylesheet" th:href="@{/css/NonLogin/home.css}" />
   </head>
   <body>
     <div
+      sec:authorize="isAnonymous()"
       th:replace="~{NonLoginFragments/NonLoginHeader :: headerFragment}"
+    ></div>
+    <div
+      sec:authorize="isAuthenticated()"
+      th:replace="~{AuthenticatedFragments/AuthenticatedHeader :: headerFragment}"
     ></div>
 
     <main class="home-container">
