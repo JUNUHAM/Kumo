@@ -1,18 +1,24 @@
 /* [기본 설정] */
+:root { --light-bg: #f8f9fa; }
 * { box-sizing: border-box; }
-:root { --primary-blue: #4dabf7; --light-bg: #f8f9fa; --sidebar-width: 250px; }
-body { margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; background-color: var(--light-bg); display: flex; height: 100vh; overflow: hidden; }
 
-/* [사이드바] */
-.sidebar { width: var(--sidebar-width); background: #fff; border-right: 1px solid #eee; display: flex; flex-direction: column; padding-top: 20px; flex-shrink: 0; }
-.nav-menu { list-style: none; padding: 0; margin: 0; }
-.nav-item { display: flex; align-items: center; padding: 15px 30px; color: #333; text-decoration: none; font-weight: 600; transition: 0.2s; cursor: pointer; }
-.nav-item:hover { background: #f1f3f5; }
-.nav-item.active { color: #1c7ed6; background: #e7f5ff; border-right: 4px solid #1c7ed6; }
-.nav-icon { width: 24px; margin-right: 15px; text-align: center; }
+body {
+    margin: 0; padding: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: var(--light-bg);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
 
 /* [메인 컨텐츠] */
-.main-content { flex: 1; padding: 40px; overflow-y: scroll; }
+.main-content {
+    flex: 1;
+    padding: 40px;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+}
 
 /* [상단 컨트롤] */
 .top-controls { display: flex; gap: 15px; margin-bottom: 20px; }
@@ -38,77 +44,39 @@ body { margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; backgroun
 .table-container { width: 100%; background: white; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); overflow: hidden; }
 .custom-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
 
-/* 헤더 */
 .custom-table th { background: #e9ecef; padding: 16px 10px; font-weight: 700; color: #495057; text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px; white-space: nowrap; }
-
-/* 바디 */
 .custom-table td { height: 65px; padding: 0 10px; border-bottom: 1px solid #f1f3f5; text-align: center; color: #333; vertical-align: middle; font-size: 14px; font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .custom-table tr:hover { background-color: #f8f9fa; }
 
-/* [컬럼 너비 - 탭 공통 (Total 100%)] */
-.col-check    { width: 5%; }
-.col-title    { width: 35%; text-align: left !important; padding-left: 20px !important; }
-.col-cate     { width: 12%; } /* 카테고리 / 이메일 */
-.col-date1    { width: 12%; } /* 등록일 */
-.col-date2    { width: 12%; } /* 마감일 / 사유 */
-.col-status   { width: 10%; }
-.col-manage   { width: 14%; }
+/* [컬럼 너비] */
+.col-check { width: 5%; }
+.col-title { width: 35%; text-align: left !important; padding-left: 20px !important; }
+.col-cate { width: 12%; }
+.col-date1 { width: 12%; }
+.col-date2 { width: 12%; }
+.col-status { width: 10%; }
+.col-manage { width: 14%; }
 
-/* [텍스트 스타일] */
+/* [텍스트/뱃지/버튼 스타일] */
 .title-text { font-size: 14px; font-weight: 600; color: #333; display: block; overflow: hidden; text-overflow: ellipsis; }
 .sub-text { font-size: 11px; color: #adb5bd; font-weight: 400; display: block; margin-top: 2px; }
 
-/* [뱃지 스타일] */
 .badge { display: inline-flex; justify-content: center; align-items: center; width: 80px; height: 32px; border-radius: 20px; font-size: 13px; font-weight: 700; color: white; }
 .badge-grey { background-color: #adb5bd; }
-.badge-green { background-color: #0ca678; } /* 승인됨 색상 */
+.badge-green { background-color: #0ca678; }
 .badge-red { background-color: #fa5252; }
 
-/* [관리 버튼 스타일] */
-
-/* 1. 공고 탭용 (텍스트 링크) */
 .action-link { cursor: pointer; font-weight: 500; font-size: 14px; margin: 0 5px; transition: 0.2s; text-decoration: none; }
 .action-link.edit { color: #495057; }
 .action-link.edit:hover { color: #228be6; text-decoration: underline; }
 .action-link.delete { color: #fa5252; }
 .action-link.delete:hover { color: #c92a2a; text-decoration: underline; }
 
-/* 2. 신고 탭용 (버튼) */
 .btn-detail { padding: 6px 12px; background-color: white; border: 1px solid #dee2e6; border-radius: 4px; color: #495057; font-size: 12px; cursor: pointer; transition: 0.2s; }
 .btn-detail:hover { background: #f1f3f5; color: #333; border-color: #ced4da; }
 
-/* [탭 제어] */
+.title-link { text-decoration: none; color: #333; transition: 0.2s; }
+.title-link:hover { color: #1c7ed6; text-decoration: underline; }
+
 .tab-content { display: none; }
 .tab-content.active { display: block; }
-
-.lang-switch-container {
-     margin-top: auto;
-     padding: 20px;
-     border-top: 1px solid #eee;
-     text-align: center;
- }
-.btn-lang {
-    padding: 8px 16px;
-    border: 1px solid #ddd;
-    background: #fff;
-    border-radius: 20px;
-    cursor: pointer;
-    font-weight: 700;
-    color: #555;
-    transition: 0.2s;
-}
-.btn-lang:hover { background: #f1f3f5; }
-.btn-lang.active {
-    background: #3b5bdb;
-    color: white;
-    border-color: #3b5bdb;
-}
-.title-link {
-    text-decoration: none;
-    color: #333;
-    transition: 0.2s;
-}
-.title-link:hover {
-    color: #1c7ed6;
-    text-decoration: underline;
-}

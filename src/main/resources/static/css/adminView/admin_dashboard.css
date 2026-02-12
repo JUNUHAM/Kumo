@@ -17,89 +17,8 @@ body {
     overflow: hidden; /* 전체 스크롤 방지 */
 }
 
-.sidebar {
-    width: var(--sidebar-width);
-    background-color: #fff;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-
-    border-right: 1px solid #eee;
-    padding-top: 20px;
-    position: fixed;
-    z-index: 100;
-}
-
-.nav-menu {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    /* flex-grow를 주지 않아 상단에 고정됩니다 */
-}
-
-.nav-item {
-    display: flex;
-    align-items: center;
-    padding: 15px 30px;
-    color: #333;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 16px;
-    transition: 0.2s;
-    cursor: pointer;
-}
-
-.nav-item:hover {
-    background-color: #f1f3f5;
-}
-
-.nav-item.active {
-    color: #1c7ed6;
-    background-color: #e7f5ff;
-    border-right: 4px solid #1c7ed6;
-}
-
-.nav-icon {
-    width: 24px;
-    margin-right: 15px;
-    text-align: center;
-}
-
-.lang-switch-container {
-    margin-top: auto;
-    padding: 20px;
-    border-top: 1px solid #eee;
-    text-align: center;
-}
-.btn-lang {
-    padding: 8px 16px;
-    border: 1px solid #ddd;
-    background: #fff;
-    border-radius: 20px;
-    cursor: pointer;
-    font-weight: 700;
-    color: #555;
-    transition: 0.2s;
-}
-.btn-lang:hover { background: #f1f3f5; }
-.btn-lang.active {
-    background: #3b5bdb;
-    color: white;
-    border-color: #3b5bdb;
-}
-.title-link {
-    text-decoration: none;
-    color: #333;
-    transition: 0.2s;
-}
-.title-link:hover {
-    color: #1c7ed6;
-    text-decoration: underline;
-}
-
 /* --- [3. 메인 컨텐츠] --- */
 .main-content {
-    margin-left: var(--sidebar-width);
     flex: 1;
     display: flex;
     flex-direction: column;

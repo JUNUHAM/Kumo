@@ -7,41 +7,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" th:href="@{/css/adminView/admin_dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/adminView/admin_sidebar.css}">
 </head>
 <body>
 
-<aside class="sidebar">
-    <ul class="nav-menu">
-        <a th:href="@{/admin/dashboard(lang=${lang})}" class="nav-item active">
-            <span class="nav-icon">🏠</span>
-            <span th:text="${lang == 'ja' ? 'ダッシュボード' : 'DashBoard'}">DashBoard</span>
-        </a>
-        <li class="nav-item">
-            <span class="nav-icon">👥</span>
-            <span th:text="${lang == 'ja' ? '会員管理' : 'Users'}">Users</span>
-        </li>
-        <a th:href="@{/admin/post(lang=${lang})}" class="nav-item">
-            <span class="nav-icon">📄</span>
-            <span th:text="${lang == 'ja' ? '求人管理' : 'Post'}">Post</span>
-        </a>
-        <li class="nav-item">
-            <span class="nav-icon">🕸️</span> DataOps
-        </li>
-        <li class="nav-item">
-            <span class="nav-icon">⚙️</span>
-            <span th:text="${lang == 'ja' ? '設定' : 'Setting'}">Setting</span>
-        </li>
-    </ul>
-
-    <div class="lang-switch-container">
-        <button class="btn-lang"
-                th:classappend="${lang == 'ko' || lang == null ? 'active' : ''}"
-                onclick="changeLanguage('ko')">KO</button>
-        <button class="btn-lang"
-                th:classappend="${lang == 'ja' ? 'active' : ''}"
-                onclick="changeLanguage('ja')">JP</button>
-    </div>
-</aside>
+<aside th:replace="~{adminView/admin_sidebar :: admin_sidebar('dashboard', ${lang})}"></aside>
 
 <main class="main-content">
     <div class="dashboard-container">
