@@ -9,7 +9,8 @@
     --text-desc: #888888;
     --card-bg: #ffffff;
     --input-bg: #f2f4f6;
-    --border-color: #e1e4e8;
+    --input-border: #e1e4e8;
+    --input-text: #333333;
     --error-color: #EA4335;
 }
 
@@ -20,7 +21,8 @@ body.dark-mode {
     --text-desc: #a0a0a0;
     --card-bg: #2d2d2d;
     --input-bg: #333333;
-    --border-color: #444444;
+    --input-border: #444444;
+    --input-text: #ffffff;
 }
 
 * { box-sizing: border-box; }
@@ -44,7 +46,7 @@ body.dark-mode .non-login-header .icon-btn {
 }
 
 /* ==============================
-   2. 레이아웃
+   2. 레이아웃 (컨테이너)
    ============================== */
 .change-container {
     flex: 1;
@@ -57,7 +59,7 @@ body.dark-mode .non-login-header .icon-btn {
 
 .change-box {
     width: 100%;
-    max-width: 500px;
+    max-width: 500px; /* 적절한 최대 너비 설정 */
     display: flex;
     flex-direction: column;
 }
@@ -75,66 +77,113 @@ body.dark-mode .non-login-header .icon-btn {
     margin-bottom: 40px;
 }
 
-/* ==============================
-   3. 입력 폼
-   ============================== */
 .form-box { width: 100%; }
 
+/* ==============================
+   3. 입력 그룹 및 구조 (수정됨)
+   ============================== */
+/* 라벨과 입력창+에러를 좌우로 배치 */
 .input-group {
     display: flex;
-    align-items: center;
+    justify-content: space-between;
+    align-items: flex-start; /* 에러 메시지가 떠도 라벨 위치 고정 */
     margin-bottom: 20px;
+    width: 100%;
 }
 
+/* 라벨 스타일 */
 .input-label {
-    width: 100px; /* 라벨 너비 약간 넓게 */
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--text-strong);
-    flex-shrink: 0;
+    width: 140px;           /* 라벨 너비 고정 */
+    color: var(--text-desc);
+    font-weight: 500;
+    font-size: 14px;
+    margin-top: 12px;       /* 입력창 텍스트와 높이 맞춤 */
+    flex-shrink: 0;         /* 줄어들지 않음 */
 }
 
+/* 입력창과 에러 메시지를 감싸는 수직 기둥 */
+.input-wrapper-col {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;           /* 남은 공간 꽉 채우기 */
+    width: 100%;
+}
+
+/* ==============================
+   4. 입력창 디자인 (다크모드 완벽 대응)
+   ============================== */
 .custom-input {
-    flex: 1;
-    padding: 12px 15px;
-    background-color: var(--input-bg);
-    border: none;
-    border-radius: 6px;
+    width: 100%;
+    height: 45px;
+    padding: 0 15px;
+    background-color: var(--input-bg);    /* 변수 사용 */
+    border: 1px solid var(--input-border); /* 변수 사용 */
+    border-radius: 5px;
+    color: var(--input-text);             /* 변수 사용 */
     font-size: 14px;
-    color: var(--text-main);
-    outline: none;
-    transition: 0.2s;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
 }
 
 .custom-input:focus {
-    box-shadow: 0 0 0 2px var(--primary-color) inset;
-    background-color: var(--card-bg);
+    outline: none;
+    border-color: var(--primary-color);
+    background-color: var(--card-bg); /* 포커스 시 약간 밝게/어둡게 */
 }
 
-/* 읽기 전용 필드 스타일 (이메일 표시용) */
+/* 읽기 전용 (이메일) 스타일 */
 .custom-input.readonly {
     background-color: #eaeaea;
     color: #666;
     cursor: not-allowed;
+    border: 1px solid transparent;
 }
 
+/* 다크모드 읽기 전용 */
 body.dark-mode .custom-input.readonly {
-    background-color: #444;
-    color: #aaa;
+    background-color: #2a2a2a;
+    color: #888;
+    border: 1px solid #444;
+}
+
+
+/* ==============================
+   5. 에러 메시지 스타일
+   ============================== */
+.error-msg,
+.error-text {
+    color: #EA4335;       /* 구글 레드 */
+    font-size: 12px;      /* 작게 */
+    margin-top: 6px;      /* 입력창과 간격 */
+    margin-left: 2px;
+    text-align: left;
+    font-weight: 400;
+    display: none;        /* 기본 숨김 */
+}
+
+/* 성공 메시지 (파란색) */
+.success-msg {
+    color: #4285F4;       /* 구글 블루 */
+    font-size: 12px;
+    margin-top: 6px;
+    margin-left: 2px;
+    font-weight: 400;
+}
+
+/* 입력창 에러 상태 (빨간 테두리) */
+.input-error {
+    border: 1px solid #EA4335 !important;
+    background-color: rgba(234, 67, 53, 0.05) !important; /* 아주 연한 빨간 배경 */
+}
+
+/* 다크모드일 때 에러 배경색 조정 */
+body.dark-mode .input-error {
+    background-color: rgba(234, 67, 53, 0.1) !important;
 }
 
 /* ==============================
-   4. 에러 메시지 & 버튼
+   6. 버튼 스타일
    ============================== */
-.error-text {
-    font-size: 13px;
-    color: var(--error-color);
-    margin-top: -10px;
-    margin-bottom: 20px;
-    padding-left: 105px; /* 라벨 너비만큼 들여쓰기 */
-    text-align: left;
-}
-
 .btn-submit {
     width: 100%;
     padding: 15px;

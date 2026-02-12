@@ -21,30 +21,44 @@
         <h1 class="page-title" th:text="#{change.pw.title}">비밀번호 재설정</h1>
         <p class="change-desc" th:text="#{change.pw.desc}">새로운 비밀번호를 입력해 주세요.</p>
 
-        <form action="/updatePw" method="post" id="changePwForm" class="form-box">
+        <form th:action="@{/ChangeNewPW}" method="post" id="changePwForm" class="form-box">
 
             <div class="input-group">
                 <label class="input-label" th:text="#{change.label.email}">이메일</label>
-                <input type="text" class="custom-input readonly" th:value="${email}" disabled>
+                <div class="input-wrapper-col">
+                    <input type="text" class="custom-input readonly" th:value="${email}" disabled>
+                </div>
             </div>
 
             <input type="hidden" name="email" th:value="${email}">
 
             <div class="input-group">
                 <label class="input-label" th:text="#{change.label.new_pw}">새 비밀번호</label>
-                <input type="password" id="newPassword" name="newPassword" class="custom-input"
-                       th:placeholder="#{change.placeholder.new_pw}" oninput="checkMatch()">
+
+                <div class="input-wrapper-col">
+                    <input type="password" id="newPassword" name="newPassword" class="custom-input"
+                           th:placeholder="#{change.placeholder.new_pw}"
+                           oninput="clearError('newPassword'); checkMatch()">
+                    <p id="err-newPassword" class="error-msg" style="display: none;"></p>
+                </div>
             </div>
 
             <div class="input-group">
                 <label class="input-label" th:text="#{change.label.confirm_pw}">비밀번호 확인</label>
-                <input type="password" id="confirmPassword" class="custom-input"
-                       th:placeholder="#{change.placeholder.confirm_pw}" oninput="checkMatch()">
+
+                <div class="input-wrapper-col">
+                    <input type="password" id="confirmPassword" class="custom-input"
+                           th:placeholder="#{change.placeholder.confirm_pw}"
+                           oninput="clearError('confirmPassword'); checkMatch()">
+                    <p id="err-confirmPassword" class="error-msg" style="display: none;"></p>
+                </div>
             </div>
 
-            <p id="pw-error-msg" class="error-text" style="display: none;"></p>
+            <p id="pw-match-msg" class="error-text" style="display: none; margin-bottom: 15px; text-align: center;"></p>
 
             <button type="button" class="btn-submit" onclick="submitChange()" th:text="#{change.btn.submit}">변경하기</button>
+
+            <input type="hidden" id="msg-pw-empty" th:value="#{change.error.pw_empty}">
         </form>
 
     </div>

@@ -5,11 +5,10 @@ import lombok.RequiredArgsConstructor;
 import net.kumo.kumo.domain.dto.FindIdDTO;
 import net.kumo.kumo.domain.dto.JoinRecruiterDTO;
 import net.kumo.kumo.domain.dto.JoinSeekerDTO;
-import net.kumo.kumo.repository.UserRepository;
+import net.kumo.kumo.domain.dto.ChangeNewPWDTO;
 import net.kumo.kumo.service.LoginService;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -53,6 +52,8 @@ public class LoginController {
 		return "NonLoginView/FindPw";
 	}
 	
+	
+	//회원가입할때 닉네임 중복확인
 	@PostMapping("/api/check/nickname")
 	public ResponseEntity<Boolean> checkNickname(@RequestBody Map<String, String> request) {
 		String nickname = request.get("nickname");
@@ -62,13 +63,13 @@ public class LoginController {
 	}
 	
 	
-	
+	// 회원가입 할때 이메일 중복확인
 	@PostMapping("/api/check/email")
 	public ResponseEntity<Boolean> checkEmail(@RequestBody Map<String, String> request) {
 		String email = request.get("email");
-		// 존재하면 true, 없으면 false 반환
-		boolean exists = LoginService.existsByEmail(email);
-		return ResponseEntity.ok(exists);
+		
+		boolean exist = LoginService.existsByEmail(email);
+		return ResponseEntity.ok(exist);
 	}
 	
 	
@@ -221,6 +222,14 @@ public class LoginController {
 		return "NonLoginView/changePw";
 	}
 	
+	@PostMapping("ChangeNewPW")
+	public String NewPw(@RequestParam ChangeNewPWDTO ChangeNewPWDTO ){
+		log.info("새로받은 비밀번호 {}", ChangeNewPWDTO );
+		
+		LoginService.ChangeNewPW(ChangeNewPWDTO);
+		
+		return "redirect:/login";
+	}
 	
 	
 }

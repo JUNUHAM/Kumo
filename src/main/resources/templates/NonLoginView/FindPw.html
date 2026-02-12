@@ -38,7 +38,7 @@
                 <input type="text" id="name" name="name" class="custom-input"
                        th:placeholder="#{find.placeholder.name}" oninput="clearError('name')">
             </div>
-            <p id="err-name" class="error-msg">이름을 입력해 주세요.</p>
+            <p id="err-name" class="error-msg" th:text="#{find.error.name_empty}">이름을 입력해 주세요.</p>
 
 
             <div class="input-group">
@@ -47,7 +47,7 @@
                        th:placeholder="#{find.placeholder.contact}" maxlength="13"
                        oninput="autoHyphen(this); clearError('contact')">
             </div>
-            <p id="err-contact" class="error-msg">연락처를 입력해 주세요.</p>
+            <p id="err-contact" class="error-msg" th:text="#{find.error.contact_empty}">연락처를 입력해 주세요.</p>
 
 
             <div class="input-group">
@@ -59,7 +59,7 @@
                             onclick="sendMail()" th:text="#{find.btn.verify}">인증</button>
                 </div>
             </div>
-            <p id="err-email" class="error-msg">이메일을 입력해 주세요.</p>
+            <p id="err-email" class="error-msg" th:text="#{find.error.email_empty}">이메일을 입력해 주세요.</p>
 
 
             <div class="input-group" id="auth-box" style="display: none;">
@@ -70,16 +70,33 @@
                     <button type="button" class="btn-verify" onclick="checkCode()" th:text="#{find.btn.confirm}">확인</button>
                 </div>
             </div>
-            <p id="err-authCode" class="error-msg" style="display: none;">인증번호를 입력해 주세요.</p>
+            <p id="err-authCode" class="error-msg" style="display: none;" th:text="#{find.error.auth_code_empty}">인증번호를 입력해 주세요.</p>
 
 
             <div id="auth-success-msg" style="display: none; text-align: center; margin-bottom: 20px;">
                 <i class="fa-solid fa-check-circle" style="color: #7db4e6;"></i>
                 <span style="color: #7db4e6; font-weight: bold; font-size: 14px;" th:text="#{find.msg.auth_success}">인증이 완료되었습니다.</span>
             </div>
-            <p id="err-verify" class="error-msg" style="padding-left: 0; text-align: center;">이메일 인증을 완료해 주세요.</p>
+
+            <p id="err-verify" class="error-msg" style="padding-left: 0; text-align: center; display: none;"
+               th:text="#{find.error.auth_verify_needed}">이메일 인증을 완료해 주세요.</p>
 
             <button type="button" class="btn-submit" onclick="goToChangePw()" th:text="#{find.btn.submit_pw}">비밀번호 찾기</button>
+
+
+            <input type="hidden" id="msg-fail-default" th:value="#{find.msg.fail_default}">
+            <input type="hidden" id="msg-name-empty" th:value="#{find.error.name_empty}">
+            <input type="hidden" id="msg-contact-empty" th:value="#{find.error.contact_empty}">
+            <input type="hidden" id="msg-email-empty" th:value="#{find.error.email_empty}">
+            <input type="hidden" id="msg-email-invalid" th:value="#{find.error.email_invalid}">
+            <input type="hidden" id="msg-mail-send-fail" th:value="#{find.error.mail_send_fail}">
+            <input type="hidden" id="msg-auth-code-empty" th:value="#{find.error.auth_code_empty}">
+            <input type="hidden" id="msg-auth-code-mismatch" th:value="#{find.error.auth_code_mismatch}">
+            <input type="hidden" id="msg-auth-error" th:value="#{find.error.auth_error}">
+            <input type="hidden" id="msg-server-error" th:value="#{find.error.server_error}">
+
+            <input type="hidden" id="msg-btn-sending" th:value="#{find.btn.sending}">
+            <input type="hidden" id="msg-btn-complete" th:value="#{find.btn.complete}">
         </form>
 
     </div>
