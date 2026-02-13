@@ -39,7 +39,7 @@
                 </div>
 
                 <div class="header-salary-row">
-                    給料: <span th:text="${salary}">0</span>¥
+                    給料: <span th:text="${#numbers.formatInteger(salary, 3, 'COMMA')}">0</span>¥
                 </div>
             </div>
         </div>
