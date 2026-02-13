@@ -165,4 +165,15 @@ public class RecruiterController {
     public String ApplicantDetail(Model model) {
         return "recruiterView/applicantDetail";
     }
+
+    /**
+     * 회원정보 수정 컨트롤러
+     * 
+     * @param model
+     * @return
+     */
+    @GetMapping("ProfileEdit")
+    public String ProfileEdit(Model model) {
+        return "recruiterView/profileEdit";
+    }
 }

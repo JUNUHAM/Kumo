@@ -420,3 +420,99 @@ body.dark-mode .upload-container {
 body.dark-mode .upload-btn i {
   color: #7abaff !important;
 }
+
+/* ============================================================
+   [다크모드 교정] 선택된 날짜 원형 디자인 및 글자색 가독성 확보
+   ============================================================ */
+
+/* 1. 미니 캘린더 내의 모든 날짜 숫자 (링크 포함) */
+body.dark-mode #mini-calendar .fc-daygrid-day-number,
+body.dark-mode #mini-calendar .fc-daygrid-day-top a,
+body.dark-mode #mini-calendar .fc-daygrid-day-frame {
+  color: #ffffff !important;
+  text-decoration: none !important;
+  opacity: 1 !important;
+}
+
+/* 2. 요일 헤더 (일, 월, 화...) */
+body.dark-mode #mini-calendar .fc-col-header-cell-cushion {
+  color: #ffffff !important;
+}
+
+/* 3. 이전/다음 달의 희미한 날짜 (가독성을 위해 약간 흐리게) */
+body.dark-mode #mini-calendar .fc-day-other .fc-daygrid-day-number {
+  color: #555555 !important;
+}
+
+/* 1. 선택된 날짜 칸의 배경색을 제거 (칸 전체가 네모나게 변하는 것 방지) */
+html.dark-mode .selected-day {
+  background-color: transparent !important;
+}
+
+/* 2. 숫자 부분만 동그랗게 만들고 색상 입히기 */
+html.dark-mode .selected-day .fc-daygrid-day-number {
+  background-color: #7abaff !important; /* 사장님 시그니처 블루 */
+  color: #121212 !important; /* 글자색을 어둡게 해서 흰색 배경에서 잘 보이게 함 */
+
+  /* 동그라미 모양 만들기 */
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+
+  /* 숫자를 정중앙에 배치 */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 5px auto !important; /* 셀 안에서 가운데 정렬 */
+
+  /* 그림자 효과로 입체감 부여 */
+  box-shadow: 0 4px 10px rgba(122, 186, 255, 0.4) !important;
+}
+
+/* 3. 오늘 날짜(노란색)와 선택된 날짜가 겹칠 때의 우선순위 설정 */
+html.dark-mode .fc-day-today.selected-day .fc-daygrid-day-number {
+  background-color: #fcc419 !important; /* 오늘 날짜면 노란색 유지 */
+  color: #121212 !important;
+}
+
+/* 4. 마우스 올렸을 때(Hover) 살짝 밝아지는 효과 */
+html.dark-mode .fc-daygrid-day-number:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+
+/* [다크모드] profileEdit 페이지 보정 */
+html.dark-mode .profile-edit-full-bg {
+  background-color: #121212 !important;
+}
+
+html.dark-mode .edit-box {
+  background-color: #1e1e1e !important;
+  border: 1px solid #2d2d2d;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4) !important;
+}
+
+html.dark-mode .edit-title {
+  color: #ffffff !important;
+}
+
+html.dark-mode .input-label {
+  color: #bbbbbb !important;
+}
+
+html.dark-mode .custom-input {
+  background-color: #252525 !important;
+  border-color: #333333 !important;
+  color: #ffffff !important;
+}
+
+html.dark-mode .gray-input {
+  background-color: #1a1a1a !important;
+  color: #555555 !important;
+}
+
+html.dark-mode .btn-sub-action {
+  background-color: #2d2d2d !important;
+  border-color: #3d3d3d !important;
+  color: #aaaaaa !important;
+}

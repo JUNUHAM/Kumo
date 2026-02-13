@@ -11,7 +11,7 @@ body {
 .dashboard-wrapper {
   display: flex;
   width: 100%;
-  margin-top: 70px !important; /* 헤더 높이만큼 공간 확보 */
+  margin-top: 75px !important; /* 헤더 높이만큼 공간 확보 */
   transition: none !important;
 }
 
@@ -361,4 +361,16 @@ footer {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* 1. (크롬/사파리/엣지) 모든 요소의 스크롤바 투명하게 만들기 */
+*::-webkit-scrollbar {
+  display: none !important; /* 강제로 숨김 */
+  width: 0 !important; /* 혹시 몰라 너비도 0으로 */
+}
+
+/* 2. (파이어폭스/IE) 모든 요소의 스크롤바 숨기기 */
+* {
+  -ms-overflow-style: none !important; /* IE */
+  scrollbar-width: none !important; /* 파이어폭스 */
 }

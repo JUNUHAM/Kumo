@@ -28,21 +28,36 @@ public class GlobalControllerAdvice {
             UserEntity user = rs.getCurrentUser(email);
 
             if (user != null) {
-                // 1. 유저 객체 그대로 전달
+                // 1. 유저 객체 전달
                 model.addAttribute("user", user);
 
-                // 2. [fullName 가공] 엔티티 필드를 직접 합칩니다.
+                // 2. fullName 가공
                 String fullName = (user.getNameKanjiSei() != null ? user.getNameKanjiSei() : "")
                         + " "
                         + (user.getNameKanjiMei() != null ? user.getNameKanjiMei() : "");
                 model.addAttribute("fullName", fullName.trim());
 
-                // 3. [age 가공] birthDate가 있다면 현재 날짜 기준으로 계산합니다.
+                // 3. age 가공
                 if (user.getBirthDate() != null) {
                     int age = Period.between(user.getBirthDate(), LocalDate.now()).getYears();
                     model.addAttribute("age", age);
                 } else {
                     model.addAttribute("age", 0);
+                }
+
+                // ★★★ [추가된 부분] 생년월일 미리 잘라서 보내기 (에러 해결 핵심!) ★★★
+                if (user.getBirthDate() != null) {
+                    String birthStr = user.getBirthDate().toString().replace("-", ""); // 1990-01-01 -> 19900101
+                    if (birthStr.length() >= 8) {
+                        model.addAttribute("birthYear", birthStr.substring(0, 4));
+                        model.addAttribute("birthMonth", birthStr.substring(4, 6));
+                        model.addAttribute("birthDay", birthStr.substring(6, 8));
+                    }
+                } else {
+                    // 없으면 빈 문자열 보냄 (HTML에서 에러 안 나게)
+                    model.addAttribute("birthYear", "");
+                    model.addAttribute("birthMonth", "");
+                    model.addAttribute("birthDay", "");
                 }
             }
         } catch (Exception e) {
