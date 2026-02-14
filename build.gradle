@@ -52,6 +52,9 @@ dependencies {
 
     // .env 파일을 읽어오는 라이브러리
     implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+
+    //이메일 발송라이브러리
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 }
 tasks.named('test') {
     useJUnitPlatform()

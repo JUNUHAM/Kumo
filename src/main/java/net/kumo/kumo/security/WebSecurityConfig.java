@@ -1,5 +1,6 @@
 package net.kumo.kumo.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,7 +12,11 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class WebSecurityConfig {
+	
+	private final AjaxAuthenticationSuccessHandler successHandler;
+	private final AjaxAuthenticationFailureHandler failureHandler;
 	
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -26,21 +31,19 @@ public class WebSecurityConfig {
 						.requestMatchers("/css/**", "/js/**", "/images/**", "/error").permitAll()
 						
 						// (2) 로그인 없이 접근 가능한 페이지
+						.requestMatchers("/map/api/**").permitAll()
 						.requestMatchers("/", "/login", "/signup", "/join", "/join/**", "/info").permitAll()
-						.requestMatchers("/map/main", "/FindId", "/FindPw", "/findIdProc", "/nickname").permitAll()
+						.requestMatchers("/map_non_login_view", "/FindId", "/FindPw", "/findIdProc", "/nickname","/changePw","/map/main","/map/job-list-view").permitAll()
 						.requestMatchers("/Recruiter/**").permitAll() // 테스트용
 						
 						// ★★★ [여기 추가] AJAX 중복확인 API는 로그인 없이 접근 가능해야 함 ★★★
-						.requestMatchers("/api/check/**","/api/**").permitAll()
+						.requestMatchers("/api/check/**","/api/**","/api/mail/**").permitAll()
 						
 						// (3) 관리자 전용
-						// .requestMatchers("/admin/**").hasRole("ADMIN")
+						.requestMatchers("/admin/**").hasRole("ADMIN")
 						
 						// (4) 그 외 모든 요청은 인증 필요
-						// .anyRequest().authenticated()
-
-                        // 모든 요청 허용 (개발용)
-                        .anyRequest().permitAll()
+						.anyRequest().authenticated()
 				)
 				
 				// 3. 로그인 설정
@@ -49,6 +52,8 @@ public class WebSecurityConfig {
 						.loginProcessingUrl("/loginProc")
 						.usernameParameter("email")
 						.passwordParameter("password")
+						.successHandler(successHandler)
+						.failureHandler(failureHandler)
 						.defaultSuccessUrl("/", true)
 						.permitAll()
 				)
