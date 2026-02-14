@@ -3,20 +3,25 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <meta charset="UTF-8">
-    <title>KUMO - 지도 검색</title>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
-    <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
-
-    <script th:src="@{/js/geo/tokyo.js}"></script>
-    <script th:src="@{/js/geo/osaka.js}"></script>
-    <script th:src="@{/js/geo/osakaCity.js}"></script>
-
-    <script th:src="@{/js/mainView/main.js}"></script>
+	<meta charset="UTF-8">
+	<title>KUMO - 지도 검색</title>
+	<link rel="stylesheet" th:href="@{/css/NonLoginFragments/NonLoginHeader.css}">
+	<link rel="stylesheet" th:href="@{/css/mainView/main.css}">
+	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	
+	<script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+	<script th:src="@{/js/mapStyle/mapStyles.js}"></script>
+	<script th:src="@{/js/geo/osaka.js}"></script>
+	<script th:src="@{/js/geo/tokyo.js}"></script>
+	<script th:src="@{/js/geo/osakaCity.js}"></script>
+	<script th:src="@{/js/mainView/main.js}"></script>
 </head>
 <body>
-<div th:replace="~{NonLoginFragments/NonLoginHeader :: headerFragment}"></div>
+<div class="map-header-wrapper">
+	<div th:replace="~{NonLoginFragments/NonLoginHeader :: headerFragment}"></div>
+</div>
 
 <div class="map-container">
 	
@@ -27,7 +32,7 @@
 	</button>
 	
 	<div id="jobDetailCard" class="floating-card">
-		<button type="button" class="btn-close-card" onclick="closeJobCard()">×</button>
+		<button type="button" class="btn-close-card">×</button>
 		
 		<div class="card-header-section">
 			<div class="profile-icon">A</div>
