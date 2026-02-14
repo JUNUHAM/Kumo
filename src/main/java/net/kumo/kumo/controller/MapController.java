@@ -32,7 +32,7 @@ public class MapController {
 	 * 지도 메인페이지 연결
 	 * @return 메인 페이지
 	 */
-	@GetMapping("main")
+	@GetMapping("/main124343")
 	public String mainMap(Model model) {
 		log.debug("메인화면 연결");
 
