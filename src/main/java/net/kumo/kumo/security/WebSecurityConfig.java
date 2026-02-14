@@ -54,7 +54,6 @@ public class WebSecurityConfig {
 						.passwordParameter("password")
 						.successHandler(successHandler)
 						.failureHandler(failureHandler)
-						.defaultSuccessUrl("/", true)
 						.permitAll()
 				)
 				
