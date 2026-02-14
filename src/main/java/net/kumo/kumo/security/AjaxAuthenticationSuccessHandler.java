@@ -4,6 +4,7 @@ package net.kumo.kumo.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -43,10 +44,12 @@ public class AjaxAuthenticationSuccessHandler implements AuthenticationSuccessHa
 		String email = request.getParameter("email");
 		String clientIp = getClientIp(request);
 		String userAgent = request.getHeader("User-Agent"); // ★ 브라우저/기기 정보 (봇 탐지용)
+		String saveId = request.getParameter("saveId");
 
 		Integer resetLoginFailCount = 0;
 		String Encode = "UTF-8";
 		
+		// 실패횟수 초기화
 		Optional<UserEntity> UserOptional = userRepository.findByEmail(email);
 		UserEntity entity = UserOptional.get();
 		entity.setLoginFailCount(resetLoginFailCount);
@@ -63,6 +66,15 @@ public class AjaxAuthenticationSuccessHandler implements AuthenticationSuccessHa
 		loginHistoryRepository.save(loginHistoryEntity);
 		
 		
+		// 체크박스 쿠키 생성 및 설정하기
+		Cookie cookie = new Cookie("saveEmail",email);
+		if(saveId != null && saveId.equals("on")){
+			cookie.setMaxAge(60*60*24*30);
+		}else {
+			cookie.setMaxAge(0);
+		}
+		cookie.setPath("/");
+		response.addCookie(cookie);
 		
 		//JSON 으로보내자 안보내도 되긴한데
 		response.setStatus(HttpStatus.OK.value());
@@ -98,5 +110,7 @@ public class AjaxAuthenticationSuccessHandler implements AuthenticationSuccessHa
 		
 		return ip;
 	}
+	
+	
 	
 }

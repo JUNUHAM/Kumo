@@ -38,6 +38,7 @@ public class WebSecurityConfig {
 						
 						// ★★★ [여기 추가] AJAX 중복확인 API는 로그인 없이 접근 가능해야 함 ★★★
 						.requestMatchers("/api/check/**","/api/**","/api/mail/**").permitAll()
+						.requestMatchers("/api/notifications/**").authenticated()
 						
 						// (3) 관리자 전용
 						.requestMatchers("/admin/**").hasRole("ADMIN")
