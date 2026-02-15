@@ -5,16 +5,21 @@ import net.kumo.kumo.domain.entity.BaseEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-@NoRepositoryBean // 중요: 이 인터페이스로 인스턴스를 만들지 않음
+@NoRepositoryBean
 public interface BaseRepository<T extends BaseEntity> extends JpaRepository<T, Long> {
 
-    // 4개 테이블 모두에서 공통으로 쓸 쿼리 메소드 정의
-    // JPA Projection 을 통해서 필요한 컬럼 일부만 추출 (전체 정보는 FindById로 추출)
-    // 지도 상 맵 마커 표시할 때도 이 메소드를 사용해서 위치정보 추출
+    // (기존) 상세 조회용
+    Optional<T> findByDatanum(Long datanum);
     List<JobSummaryView> findByCompanyNameContaining(String name);
 
-    Optional<T> findByDatanum(Long datanum);
+    // ★ [추가] 통계용: 특정 날짜 이후 등록된 공고 개수 (신규 공고 카드용)
+    long countByCreatedAtAfter(LocalDateTime date);
+
+    // ★ [추가] 통계용: 특정 날짜 이후 등록된 공고 목록 (주간 차트용)
+    // -> BaseEntity에 createdAt이 있으므로 자식들도 자동 적용됨
+    List<T> findByCreatedAtAfter(LocalDateTime date);
 }
