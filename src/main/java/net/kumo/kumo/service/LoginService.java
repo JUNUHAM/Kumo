@@ -3,6 +3,7 @@ package net.kumo.kumo.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.kumo.kumo.domain.dto.ChangeNewPWDTO;
 import net.kumo.kumo.domain.dto.FindIdDTO;
 import net.kumo.kumo.domain.dto.JoinRecruiterDTO;
 import net.kumo.kumo.domain.dto.JoinSeekerDTO;
@@ -145,6 +146,23 @@ public class LoginService {
 		return exists;
 	}
 	
+	//이메일 연락처 이름 role 전부 맞을때 true,false 반환
+	public boolean  emailVerify(String name, String contact, String email, String role) {
+
+		Enum.UserRole userRole = Enum.UserRole.valueOf(role);
+
+		String cleanName = name.replace(" ", "").replace("　", ""); // 반각, 전각 공백 모두 제거
+
+
+		return userRepository.existsByEmailAndFullNameAndContactAndRole(
+				email,
+				cleanName,
+				contact,
+				userRole
+		);
+	}
+	
+	
 	
 	public String findId(FindIdDTO dto) {
 		log.info("LoginService.findId 호출됨: {}", dto);
@@ -166,9 +184,28 @@ public class LoginService {
 		
 		log.info("아이디 찾기 시도 -> 이름: {}, 연락처: {}, 역할: {}", cleanName, cleanContact, role);
 		
+		
+		
 		// 4. DB 조회 및 결과 반환 (없으면 null 반환)
 		return userRepository.findEmailByKanjiNameAndContact(cleanName, cleanContact, role)
 				.orElse(null);
 		
+	}
+	
+	@Transactional
+	public void ChangeNewPW(ChangeNewPWDTO ChangeNewPWDTO) {
+		
+		
+		// 이메일로 유저 엔티티 찾기
+		UserEntity entity = userRepository.findByEmail(ChangeNewPWDTO.getEmail()).orElseThrow(()->new IllegalArgumentException("존재하지않은 회원"));
+		
+		// 비밀번호 암호화
+		String encodedPassWord = passwordEncoder.encode(ChangeNewPWDTO.getPassword());
+		
+		// 엔티티 비밀번호 변경
+		entity.setPassword(encodedPassWord);
+		
+		
+	
 	}
 }

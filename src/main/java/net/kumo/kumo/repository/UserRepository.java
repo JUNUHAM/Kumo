@@ -23,7 +23,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 	boolean existsByEmail(String email);
 	
 	@Query("SELECT u.email FROM UserEntity u " +
-			"WHERE CONCAT(u.nameKanjiSei, u.nameKanjiMei) = :fullName " +
+			"WHERE CONCAT(IFNULL(u.nameKanjiSei, ''), IFNULL(u.nameKanjiMei, '')) = :fullName " +
 			"AND u.contact = :contact " +
 			"AND u.role = :role")
 	Optional<String> findEmailByKanjiNameAndContact(
@@ -31,5 +31,21 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 			@Param("contact") String contact,
 			@Param("role") Enum.UserRole role
 	);
+	
+	@Query("""
+    SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END
+    FROM UserEntity u
+    WHERE u.email = :email
+      AND CONCAT(IFNULL(u.nameKanjiSei, ''), IFNULL(u.nameKanjiMei, '')) = :fullName
+      AND u.contact = :contact
+      AND u.role = :role
+""")
+	boolean existsByEmailAndFullNameAndContactAndRole(
+			@Param("email") String email,
+			@Param("fullName") String fullName,
+			@Param("contact") String contact,
+			@Param("role") Enum.UserRole role
+	);
+	
 	
 }

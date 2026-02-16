@@ -2,7 +2,7 @@
    1. 기본 변수 (다크모드 대응)
    ============================== */
 :root {
-    --primary-color: #7db4e6;
+    --primary-color: #7db4e6; /* 쿠모 블루 */
     --bg-color: #fcfcfc;
     --text-main: #333333;
     --text-strong: #000000;
@@ -24,10 +24,36 @@ body.dark-mode {
     --border-color: #444444;
 }
 
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* ==============================
+   ★ [추가] 헤더 강제 다크모드 적용 (home.css 방식)
+   ============================== */
+/* 다크모드일 때 헤더 글씨와 아이콘을 무조건 흰색으로 변경 */
+body.dark-mode .non-login-header .nav-menu a,
+body.dark-mode .non-login-header .icon-btn {
+    color: #ffffff !important;
+}
+
 /* ==============================
    2. 레이아웃
    ============================== */
 .find-container {
+    flex: 1; /* 헤더/푸터 제외 영역 채우기 */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -35,7 +61,6 @@ body.dark-mode {
     width: 100%;
     padding: 60px 20px;
     background-color: var(--bg-color);
-    min-height: calc(100vh - 120px);
 }
 
 .find-box {
@@ -140,19 +165,32 @@ body.dark-mode {
 }
 .btn-submit:hover { opacity: 0.9; }
 
+/* 에러 메시지 텍스트 */
 .error-text {
-    color: var(--error-color);
-    font-size: 13px;
-    text-align: center;
+    font-size: 12px;
+    color: #EA4335; /* 빨간색 */
+    margin-top: -15px;
     margin-bottom: 15px;
-    font-weight: 500;
-    background-color: rgba(234, 67, 53, 0.1);
-    padding: 10px;
-    border-radius: 6px;
+    padding-left: 60px; /* 라벨 너비 + 여백만큼 들여쓰기 */
+    text-align: left;
+    display: none; /* 기본적으로 숨김 */
 }
 
+/* [수정] 에러 발생 시 입력창 스타일 */
+.input-error {
+    border: 1px solid #EA4335 !important; /* 빨간 테두리 유지 */
+
+
+    /* 수정 1: 배경색을 바꾸지 않음 (다크모드 배경색 유지) */
+    background-color: transparent !important;
+
+    /* 수정 2: (추천) 아주 연한 투명 빨강을 씌움 (다크/라이트 모드 둘 다 잘 보임) */
+    background-color: rgba(234, 67, 53, 0.1) !important;
+
+
+}
 /* ==============================
-   5. 결과 박스 (수정됨)
+   5. 결과 박스 (AJAX용 하단 노출)
    ============================== */
 .result-container {
     margin-top: 30px;
@@ -176,14 +214,14 @@ body.dark-mode {
     text-align: center;
 }
 
-/* 이메일 표시 박스 (복사 버튼 삭제, 중앙 정렬) */
+/* 이메일 표시 박스 (중앙 정렬) */
 .found-email-box {
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: rgba(125, 180, 230, 0.1);
     border: 1px dashed var(--primary-color);
-    padding: 20px; /* 높이감 약간 추가 */
+    padding: 20px;
     border-radius: 8px;
     margin-bottom: 20px;
     gap: 10px;
@@ -195,16 +233,16 @@ body.dark-mode {
     color: var(--text-strong);
 }
 
-/* ▼▼▼ 버튼 그룹 (로그인 + 비번찾기) ▼▼▼ */
+/* 버튼 그룹 (로그인 + 비번찾기) */
 .result-btn-group {
     display: flex;
-    gap: 10px; /* 버튼 사이 간격 */
+    gap: 10px;
     width: 100%;
 }
 
-/* 1) 로그인 하러 가기 (강조) */
+/* 1) 로그인 버튼 */
 .btn-go-login {
-    flex: 1; /* 1:1 비율 */
+    flex: 1;
     display: block;
     padding: 12px;
     background-color: var(--primary-color);
@@ -218,12 +256,12 @@ body.dark-mode {
 }
 .btn-go-login:hover { opacity: 0.9; }
 
-/* 2) 비밀번호 찾기 (보조) */
+/* 2) 비밀번호 찾기 버튼 */
 .btn-go-pw {
-    flex: 1; /* 1:1 비율 */
+    flex: 1;
     display: block;
     padding: 12px;
-    background-color: var(--card-bg); /* 배경색 변수 사용 */
+    background-color: var(--card-bg);
     border: 1px solid var(--border-color);
     color: var(--text-desc);
     text-align: center;
