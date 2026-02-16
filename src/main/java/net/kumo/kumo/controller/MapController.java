@@ -69,8 +69,7 @@ public class MapController {
             // 기본값은 false (구직자 모드)
             @RequestParam(defaultValue = "false") boolean isOwner,
 
-            Model model
-    ) {
+            Model model) {
         // 1. 서비스에서 상세 데이터 조회
         JobDetailDTO job = mapService.getJobDetail(id, source, lang);
 

@@ -9,6 +9,7 @@ import net.kumo.kumo.domain.dto.ChangeNewPWDTO;
 import net.kumo.kumo.service.LoginService;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -67,9 +68,9 @@ public class LoginController {
 	@PostMapping("/api/check/email")
 	public ResponseEntity<Boolean> checkEmail(@RequestBody Map<String, String> request) {
 		String email = request.get("email");
-		
-		boolean exist = LoginService.existsByEmail(email);
-		return ResponseEntity.ok(exist);
+		// 존재하면 true, 없으면 false 반환
+		boolean exists = LoginService.existsByEmail(email);
+		return ResponseEntity.ok(exists);
 	}
 	
 	
@@ -233,6 +234,3 @@ public class LoginController {
 	
 	
 }
-	
-	
-	

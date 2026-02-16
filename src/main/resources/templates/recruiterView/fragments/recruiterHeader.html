@@ -1,0 +1,186 @@
+<div th:fragment="headerFragment">
+  <script th:inline="javascript">
+      /* <![CDATA[ */
+
+    // ============================================================
+    // 0. 브라우저 스크롤 기억 삭제 (새로고침 시 맨 위로)
+    // ============================================================
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+
+    // ============================================================
+    // 1. 번역 데이터 가방 (달력 등 JS에서 사용)
+    // ============================================================
+    window.kumoMsgs = {
+      scheduleTitle: /*[[#{main.calendar.schedule_detail}]]*/ ' 일정',
+      noSchedule: /*[[#{main.calendar.no_schedule}]]*/ '일정이 없습니다.'
+    };
+
+    // ============================================================
+    // 2. [초기 설정] 페이지 로드 전 스타일 세팅
+    // ============================================================
+    (function() {
+      const theme = localStorage.getItem('theme');
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark-mode');
+        // [수정] 딜레이 원인이었던 transition을 제거했습니다!
+        // opacity: 0은 유지하여 레이아웃이 깨지는 찰나의 순간만 가립니다.
+        document.write(`
+          <style id="page-transition-style">
+            html { background-color: #121212 !important; }
+            body {
+              opacity: 0 !important;
+            }
+          </style>
+        `);
+      }
+    })();
+
+    // ============================================================
+    // 3. [로딩 완료] 화면 표시 및 설정
+    // ============================================================
+    document.addEventListener("DOMContentLoaded", function() {
+      const body = document.body;
+      const html = document.documentElement;
+      const theme = localStorage.getItem('theme');
+
+      // 다크모드라면 body에도 클래스 즉시 주입 (깜빡임 방지)
+      if (theme === 'dark') {
+          body.classList.add('dark-mode');
+      }
+
+      // 화면 즉시 표시 (애니메이션 없이 빠릿하게!)
+      requestAnimationFrame(() => {
+        window.scrollTo(0, 0); // 혹시 몰라 한 번 더
+
+        // 투명도 해제: transition이 없으므로 즉시 100%로 보입니다.
+        body.style.opacity = '1';
+
+        // 임시 스타일 태그 제거
+        setTimeout(() => {
+          const styleTag = document.getElementById('page-transition-style');
+          if (styleTag) styleTag.remove();
+        }, 50); // 제거 타이밍도 0.05초로 단축
+      });
+
+      // --- [드롭다운/팝업 공통 로직] ---
+      function setupMenu(btnId, menuId) {
+        const btn = document.getElementById(btnId);
+        const menu = document.getElementById(menuId);
+        if (btn && menu) {
+          btn.onclick = (e) => { e.stopPropagation(); menu.classList.toggle('show'); };
+          document.addEventListener('click', (e) => { if (!btn.contains(e.target)) menu.classList.remove('show'); });
+        }
+      }
+      setupMenu('langBtn', 'langMenu');
+      setupMenu('profileBtn', 'profilePopup');
+
+      // --- [다크모드 토글] ---
+      const toggleBtn = document.getElementById('darkModeBtn');
+      const icon = document.getElementById('darkModeIcon');
+
+      // 아이콘 초기화
+      if (theme === 'dark' && icon) icon.classList.replace('fa-sun', 'fa-moon');
+
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+          const isDark = body.classList.toggle('dark-mode');
+          html.classList.toggle('dark-mode');
+
+          localStorage.setItem('theme', isDark ? 'dark' : 'light');
+
+          if(icon) icon.classList.replace(isDark ? 'fa-sun' : 'fa-moon', isDark ? 'fa-moon' : 'fa-sun');
+
+          // 배경색 즉시 변경
+          html.style.backgroundColor = isDark ? '#121212' : '#ffffff';
+          body.style.transform = 'none';
+        });
+      }
+    });
+
+    function changeLang(lang) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('lang', lang);
+        window.location.href = url.toString();
+    }
+    /* ]]> */
+  </script>
+
+  <header class="custom-header">
+    <div class="header-left-section">
+      <a th:href="@{/Recruiter/Main}">
+        <img
+          th:src="@{/images/recruiter/recruiterLogo.png}"
+          alt="KUMO"
+          class="header-logo-img"
+        />
+      </a>
+    </div>
+
+    <ul class="header-right-section nav-menu">
+      <li class="icon-btn">
+        <i class="fa-regular fa-bell"></i>
+      </li>
+
+      <li class="icon-btn lang-container" id="langBtn">
+        <i class="fa-solid fa-globe"></i>
+        <div class="lang-dropdown" id="langMenu">
+          <a href="javascript:changeLang('ko')" class="lang-item">한국어</a>
+          <a href="javascript:changeLang('ja')" class="lang-item">日本語</a>
+        </div>
+      </li>
+
+      <li class="icon-btn" id="darkModeBtn">
+        <i class="fa-regular fa-sun" id="darkModeIcon"></i>
+      </li>
+
+      <li class="profile-container" id="profileBtn">
+        <div class="profile-circle">
+          <img
+            th:src="${user?.profileImage}"
+            alt="Profile"
+            class="avatar-img"
+            id="profilePreview"
+            th:if="${user?.profileImage != null}"
+          />
+          <i
+            class="bi bi-person-circle"
+            id="defaultIcon"
+            th:unless="${user?.profileImage != null}"
+          ></i>
+        </div>
+
+        <div class="profile-popup custom-profile-menu" id="profilePopup">
+          <div class="menu-pointer"></div>
+          <div class="p-3">
+            <span class="profile-user-name" th:text="${fullName}"
+              >사용자명</span
+            >
+            <div class="d-flex flex-column gap-2 mt-3">
+              <a
+                th:href="@{/Recruiter/MyAccount}"
+                class="btn btn-profile-edit text-white"
+                >내 프로필 편집</a
+              >
+              <a
+                th:href="@{/Recruiter/CompanyInfo}"
+                class="btn btn-company-edit text-white"
+                >회사 정보 편집</a
+              >
+              <form th:action="@{/logout}" method="post">
+                <button
+                  type="submit"
+                  class="btn btn-logout-custom w-100 text-white"
+                >
+                  로그아웃
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </header>
+</div>

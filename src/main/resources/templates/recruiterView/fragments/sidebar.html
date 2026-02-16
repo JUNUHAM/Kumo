@@ -1,84 +1,66 @@
-<!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" th:href="@{/css/recruiter/sidebar.css}" />
-  </head>
-  <body>
-    <aside th:fragment="sidebarFragment" class="sidebar-container">
-      <div class="sidebar-top">
-        <nav class="sidebar-nav">
-          <a
-            th:href="@{/Recruiter/Main}"
-            class="nav-item"
-            th:classappend="${currentMenu == 'home'} ? 'active'"
-          >
-            <i class="bi bi-house-door-fill"></i>
-            <span>Home</span>
-          </a>
+<aside th:fragment="sidebarFragment" class="sidebar-container">
+  <div class="sidebar-top">
+    <nav class="sidebar-nav">
+      <a
+        th:href="@{/Recruiter/Main}"
+        class="nav-item"
+        th:classappend="${currentMenu == 'home'} ? 'active'"
+      >
+        <i class="bi bi-house-door-fill"></i>
+        <span th:text="#{sidebar.menu.home}">Home</span>
+      </a>
 
-          <a
-            th:href="@{/Recruiter/ApplicantInfo}"
-            class="nav-item"
-            th:classappend="${currentMenu == 'applicants'} ? 'active'"
-          >
-            <i class="bi bi-person-fill"></i>
-            <span>지원자 관리</span>
-          </a>
+      <a
+        th:href="@{/Recruiter/ApplicantInfo}"
+        class="nav-item"
+        th:classappend="${currentMenu == 'applicants'} ? 'active'"
+      >
+        <i class="bi bi-person-fill"></i>
+        <span th:text="#{sidebar.menu.applicants}">지원자 관리</span>
+      </a>
 
-          <a
-            th:href="@{/Recruiter/JobManage}"
-            class="nav-item"
-            th:classappend="${currentMenu == 'jobManage'} ? 'active'"
-          >
-            <i class="bi bi-bar-chart-line-fill"></i>
-            <span>공고 관리</span>
-          </a>
+      <a
+        th:href="@{/Recruiter/JobManage}"
+        class="nav-item"
+        th:classappend="${currentMenu == 'jobManage'} ? 'active'"
+      >
+        <i class="bi bi-bar-chart-line-fill"></i>
+        <span th:text="#{sidebar.menu.jobs}">공고 관리</span>
+      </a>
 
-          <a
-            th:href="@{/Recruiter/Calendar}"
-            class="nav-item"
-            th:classappend="${currentMenu == 'calendar'} ? 'active'"
-          >
-            <i class="bi bi-calendar-event-fill"></i>
-            <span>캘린더</span>
-          </a>
+      <a
+        th:href="@{/Recruiter/Calendar}"
+        class="nav-item"
+        th:classappend="${currentMenu == 'calendar'} ? 'active'"
+      >
+        <i class="bi bi-calendar-event-fill"></i>
+        <span th:text="#{sidebar.menu.calendar}">캘린더</span>
+      </a>
 
-          <a
-            th:href="@{/Recruiter/CompanyInfo}"
-            class="nav-item"
-            th:classappend="${currentMenu == 'companyInfo'} ? 'active'"
-          >
-            <i class="bi bi-building-fill"></i>
-            <span>회사 정보</span>
-          </a>
+      <a
+        th:href="@{/Recruiter/CompanyInfo}"
+        class="nav-item"
+        th:classappend="${currentMenu == 'companyInfo'} ? 'active'"
+      >
+        <i class="bi bi-building-fill"></i>
+        <span th:text="#{sidebar.menu.company}">회사 정보</span>
+      </a>
 
-          <a
-            th:href="@{/Recruiter/Settings}"
-            class="nav-item"
-            th:classappend="${currentMenu == 'settings'} ? 'active'"
-          >
-            <i class="bi bi-gear-fill"></i>
-            <span>내 계정</span>
-          </a>
-        </nav>
-      </div>
+      <a
+        th:href="@{/Recruiter/Settings}"
+        class="nav-item"
+        th:classappend="${currentMenu == 'settings'} ? 'active'"
+      >
+        <i class="bi bi-gear-fill"></i>
+        <span th:text="#{sidebar.menu.settings}">내 계정</span>
+      </a>
+    </nav>
+  </div>
 
-      <div class="sidebar-bottom">
-        <a href="/logout" class="nav-item logout-btn">
-          <i class="bi bi-power"></i>
-          <span>LOGOUT</span>
-        </a>
-      </div>
-    </aside>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
-</html>
+  <div class="sidebar-bottom">
+    <a href="/logout" class="nav-item logout-btn">
+      <i class="bi bi-power"></i>
+      <span th:text="#{sidebar.menu.logout}">LOGOUT</span>
+    </a>
+  </div>
+</aside>
