@@ -29,7 +29,7 @@ public class LoginController {
 	@Value("${file.upload.dir}")
 	private String uploadDir;
 	
-	@Value("${kumo.google.maps.key}")
+	@Value("${kumo.google.maps.keys}")
 	private String googleMapsKey;
 	
 	
