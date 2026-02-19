@@ -79,18 +79,6 @@ public class RecruiterController {
     }
 
     /**
-     * 회사 정보 컨트롤러
-     * 
-     * @param model
-     * @return
-     */
-    @GetMapping("CompanyInfo")
-    public String CompanyInfo(Model model) {
-        model.addAttribute("currentMenu", "companyInfo"); // 사이드바 선택(회사 정보))
-        return "recruiterView/companyInfo";
-    }
-
-    /**
      * 내 계정(settings) 컨트롤러
      * 
      * @param model
@@ -196,4 +184,9 @@ public class RecruiterController {
         // 수정이 완료되면 다시 설정 페이지나 메인 화면으로 돌려보냅니다. (새로고침 방지용 redirect 필수!)
         return "redirect:/Recruiter/Settings";
     }
+
+    // ----------------------------------------------------------------
+    // ------------------------- 회사정보 구역 --------------------------
+    // ----------------------------------------------------------------
+
 }
