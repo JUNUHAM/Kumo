@@ -6,8 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.kumo.kumo.domain.dto.JobDetailDTO;
 import net.kumo.kumo.domain.dto.JobSummaryDTO;
 import net.kumo.kumo.domain.dto.ReportDTO;
-import net.kumo.kumo.domain.entity.UserEntity; // 실제 User 엔티티 경로 확인 필요
+import net.kumo.kumo.domain.entity.UserEntity;
 import net.kumo.kumo.service.MapService;
+import net.kumo.kumo.service.ScrapService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ public class MapController {
 	private String googleMapKey;
 	
     private final MapService mapService;
+	private final ScrapService scrapService; // 🌟 추가: 찜하기 여부 확인용
 
     // --- 화면 반환 (View) ---
 
@@ -68,10 +70,26 @@ public class MapController {
             // ★ [테스트용] URL 뒤에 &isOwner=true 를 붙이면 구인자 모드로 전환
             // 기본값은 false (구직자 모드)
             @RequestParam(defaultValue = "false") boolean isOwner,
+			HttpSession session, // 26.2.19 추가 <- 로그인 유저 확인용
 
             Model model) {
         // 1. 서비스에서 상세 데이터 조회
         JobDetailDTO job = mapService.getJobDetail(id, source, lang);
+	    
+	    // ==========================================
+	    // 🌟 [추가된 로직] 현재 유저의 스크랩(찜하기) 여부 확인
+	    // ==========================================
+	    boolean isScraped = false; // 기본값은 찜하지 않음
+	    Object sessionUser = session.getAttribute("loginUser");
+	    
+	    if (sessionUser instanceof UserEntity) {
+		    Long userId = ((UserEntity) sessionUser).getUserId();
+		    // ScrapService에 해당 유저가 이 공고(id)를 찜했는지 물어봄
+		    isScraped = scrapService.checkIsScraped(userId, id);
+	    }
+	    
+	    model.addAttribute("isScraped", isScraped); // 모델에 담아 HTML로 전송!
+	    // ==========================================
 
         // 2. 모델에 담기
         model.addAttribute("job", job);

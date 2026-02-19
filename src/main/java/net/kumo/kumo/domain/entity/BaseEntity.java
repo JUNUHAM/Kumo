@@ -3,6 +3,8 @@ package net.kumo.kumo.domain.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import net.kumo.kumo.domain.enums.JobStatus;
+
 import java.time.LocalDateTime;
 
 @MappedSuperclass
@@ -59,4 +61,12 @@ public abstract class BaseEntity {
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    /**
+     * [추가된 부분] 공고 상태 관리
+     * @Enumerated(EnumType.STRING): DB에 숫자가 아닌 "RECRUITING" 문자열로 저장됨
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private JobStatus status;
 }

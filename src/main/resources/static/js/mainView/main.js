@@ -13,7 +13,9 @@ const AppState = {
     isLocationMode: false,    // 내 주변 보기 모드 스위치
     debounceTimer: null,      // 디바운스 타이머
     currentXhr: null,          // 현재 진행 중인 AJAX 요청 (취소용)
-    lastBounds: null
+    lastBounds: null,
+    maskPolygon: null,          // 지도 경계선
+    ignoreIdle: false // 🌟 [NEW] 지도가 강제 이동 중일 때 자동 갱신을 막는 스위치
 };
 
 // ============================================================
@@ -33,13 +35,20 @@ $(document).ready(function() {
     // 지도 초기화 (Google Maps API 콜백으로 실행됨)
     window.initMap = MapManager.init;
 
-    // 내 위치 찾기 이벤트
-    $("#btn-my-location").on('click', function () {
-        MapManager.moveToCurrentLocation();
-    })
-
     $(".btn-close-card").on('click', function () {
         UIManager.closeJobCard();
+    })
+
+    $(".nav-item").on('click', function () {
+        // 1. UI 활성화 처리
+        $('.nav-item').removeClass('active');
+        $(this).addClass('active');
+
+        // 2. data-tab 속성 값 읽기
+        const tabName = $(this).data('tab');
+
+        // 3. 기능 실행
+        UIManager.switchTab(tabName);
     })
 });
 
@@ -80,6 +89,11 @@ const MapManager = {
         // 🌟 [복구] 이 부분(이벤트 리스너)이 빠져 있었습니다!
         // 지도가 멈출 때(idle)마다 실행한다는 명령이 없어서 동작을 안 했던 겁니다.
         map.addListener("idle", () => {
+
+            // 강제로 지도가 이동중 (jobRecent) 에는 idle이 실행되지 않도록 하기
+            if(AppState.ignoreIdle){
+                return;
+            }
 
             // 기존 타이머 취소 (디바운싱)
             clearTimeout(AppState.debounceTimer);
@@ -141,13 +155,13 @@ const MapManager = {
 
                 // 🌟 [핵심 수정] 이동이 끝난 직후(idle) 즉시 데이터 로딩
                 // 일반적인 idle 리스너는 0.5초 딜레이가 있지만, 여기서는 즉시 실행합니다.
-                google.maps.event.addListenerOnce(map, 'idle', function() {
+                google.maps.event.addListenerOnce(AppState.map, 'idle', function() {
 
                     // 전역 idle 리스너에 의해 중복 실행되는 것을 방지하기 위해 타이머 취소
                     clearTimeout(AppState.debounceTimer);
 
                     // 즉시 로딩 실행
-                    const bounds = map.getBounds();
+                    const bounds = AppState.map.getBounds();
 
                     // 🌟 [추가] 강제 로딩 시에도 현재 범위를 '마지막 범위'로 등록해둬야
                     // 이후에 자동 idle 이벤트가 중복 실행되는 것을 막을 수 있습니다.
@@ -173,11 +187,19 @@ const MapManager = {
         const osakaCityPaths = typeof osakaCityGeoJson !== 'undefined' ? Utils.getPathsFromGeoJson(osakaCityGeoJson) : [];
         const kansaiPaths = typeof osakaGeoJson !== 'undefined' ? Utils.getPathsFromGeoJson(osakaGeoJson, 1) : [];
 
-        new google.maps.Polygon({
+        // 다크모드 감지 함수
+        const isDark = document.body.classList.contains('dark-mode');
+        const borderStyle = MapManager.getBoundaryStyle(isDark);
+
+        AppState.maskPolygon = new google.maps.Polygon({
             paths: [worldCoords, ...tokyoPaths, ...osakaCityPaths, ...kansaiPaths],
-            strokeColor: "#FF0000", strokeOpacity: 0, strokeWeight: 0,
-            fillColor: "#000000", fillOpacity: 0.6,
-            map: AppState.map, clickable: false
+            strokeColor: borderStyle.strokeColor,
+            strokeOpacity: borderStyle.strokeOpacity,
+            strokeWeight: borderStyle.strokeWeight,
+            fillColor: "#000000",
+            fillOpacity: 0.6,
+            map: AppState.map,
+            clickable: false
         });
     },
 
@@ -209,7 +231,83 @@ const MapManager = {
         AppState.map.setOptions({ styles: newStyle });
 
         console.log(`🎨 지도 테마 변경: ${isDark ? 'Dark' : 'Light'}`);
+
+        if (AppState.maskPolygon) {
+            AppState.maskPolygon.setMap(null);
+        }
+
+        MapManager.drawMasking();
     },
+
+    // 🎨 [NEW] 모드에 따른 경계선 반환 함수
+    getBoundaryStyle: function (isDark) {
+        const boundaryColor = isDark ? '#FF6B6B' : '#fB0000';
+
+        return {
+            strokeColor : boundaryColor,
+            strokeOpacity: 1.0,
+            strokeWeight: 2
+        }
+    },
+
+
+    // 🌟 [NEW] 마커들이 모두 보이게 지도 카메라 자동 조절
+    fitBoundsToData: function(jobs) {
+        if (!jobs || jobs.length === 0 || !AppState.map) return;
+
+        // 1. 카메라가 비출 '영역(경계)' 객체 생성
+        const bounds = new google.maps.LatLngBounds();
+        let hasValidCoords = false;
+
+        // 2. 공고들의 좌표를 하나씩 영역에 추가 (영역이 점점 넓어짐)
+        jobs.forEach(job => {
+            if (job.lat && job.lng) {
+                bounds.extend(new google.maps.LatLng(job.lat, job.lng));
+                hasValidCoords = true;
+            }
+        });
+
+        // 3. 유효한 좌표가 있다면 지도를 해당 영역에 맞춤
+        if (hasValidCoords) {
+            AppState.ignoreIdle = true;
+
+            AppState.map.fitBounds(bounds);
+
+            // 2. 지도 이동이 완전히 끝났을 때(idle) 실행
+            google.maps.event.addListenerOnce(AppState.map, "idle", function() {
+                AppState.map.setZoom(20); // 최대 줌 레벨을 20로 제한
+
+                // 🌟 중요: 줌 조절까지 완전히 끝난 후에야 스위치를 끄고, 현재 영역을 저장함
+                // setTimeout을 아주 짧게 줘서 마지막 줌 조절 idle 이벤트까지 무시하도록 안전장치
+                setTimeout(() => {
+                    AppState.lastBounds = AppState.map.getBounds();
+                    AppState.ignoreIdle = false; // 이제부터 다시 자동 갱신
+
+                    // ========================================================
+                    // 🌟 [NEW] 사용자 편의성 극대화 (UX 업데이트)
+                    // ========================================================
+
+                    // 1) 배열의 첫 번째(가장 최근) 공고 카드를 자동으로 띄워줍니다.
+                    if (jobs[0]) {
+                        UIManager.openJobCard(jobs[0]);
+                    }
+
+                    // 2) 화면에 있는 마커들을 위아래로 통통 튀게 만듭니다. (BOUNCE)
+                    AppState.jobMarkers.forEach(marker => {
+                        // 구글 맵 기본 제공 애니메이션 적용
+                        marker.setAnimation(google.maps.Animation.BOUNCE);
+
+                        // 💡 UX 꿀팁: 계속 통통 튀면 눈이 피로할 수 있으니,
+                        // 2.5초(2500ms) 뒤에 알아서 멈추도록 센스를 발휘합니다.
+                        setTimeout(() => {
+                            marker.setAnimation(null);
+                        }, 2500);
+                    });
+
+                }, 100);
+            });
+        }
+    }
 };
 
 // ============================================================
@@ -277,6 +375,71 @@ const JobService = {
         MarkerManager.clearMarkers();
         UIManager.renderList(data);
         MarkerManager.renderMarkers(data);
+    },
+
+    // 🌟 [저장된 공고] DB에서 스크랩 내역 가져오기
+    loadSavedJobs: function() {
+        $.ajax({
+            url: '/api/scraps',
+            method: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                UIManager.renderList(data);
+                MarkerManager.renderMarkers(data);
+
+                // 👉 [추가] 마커를 다 찍었으면 그쪽으로 카메라 이동!
+                MapManager.fitBoundsToData(data);
+            },
+            error: function(err) {
+                console.error("찜한 목록 불러오기 실패:", err);
+                $('#listBody').html('<tr><td colspan="7" class="msg-box">목록을 불러오지 못했습니다.</td></tr>');
+            }
+        });
+    },
+
+    // 🌟 [최근 본 공고] 브라우저 로컬 스토리지에서 가져오기
+    loadRecentJobs: function() {
+        const recentJobsJson = localStorage.getItem('kumo_recent_jobs');
+        let recentJobs = [];
+
+        if (recentJobsJson) {
+            recentJobs = JSON.parse(recentJobsJson);
+        }
+
+        // ========================================================
+        // 🌟 [NEW] 배열에 데이터가 여러 개 있어도, 가장 최신(0번째) 딱 1개만 뽑아냅니다.
+        // ========================================================
+        const latestJob = recentJobs.length > 0 ? [recentJobs[0]] : [];
+
+        UIManager.renderList(latestJob);
+        MarkerManager.renderMarkers(latestJob);
+
+        // 👉 [추가] 최근 본 공고 쪽으로 카메라 이동!
+        MapManager.fitBoundsToData(latestJob);
+    },
+
+    addRecentJob: function(jobData) {
+        if (!jobData || !jobData.id) return;
+
+        // 1. 기존 데이터 꺼내오기 (없으면 빈 배열)
+        const recentStr = localStorage.getItem('kumo_recent_jobs');
+        let recentJobs = recentStr ? JSON.parse(recentStr) : [];
+
+        // 2. 중복 제거 (이미 본 공고를 또 눌렀다면, 예전 기록을 지우고 최신으로 올리기 위해)
+        recentJobs = recentJobs.filter(job => job.id !== jobData.id);
+
+        // 3. 배열의 맨 앞(최신)에 추가
+        recentJobs.unshift(jobData);
+
+        // 4. 최대 20개까지만 유지 (용량 낭비 방지)
+        if (recentJobs.length > 20) {
+            recentJobs = recentJobs.slice(0, 20); // 20개까지만 자르기
+        }
+
+        // 5. 다시 문자열로 바꿔서 로컬스토리지에 저장
+        localStorage.setItem('kumo_recent_jobs', JSON.stringify(recentJobs));
+
+        console.log(`💾 최근 본 공고 저장됨 (총 ${recentJobs.length}개)`);
     }
 };
 
@@ -357,6 +520,32 @@ const MarkerManager = {
 // ============================================================
 // [6] UI 관리자 (UI Manager - jQuery)
 const UIManager = {
+    // 🔄 [NEW] 하단 탭 전환 함수
+    // 🔄 [Refactored] 탭 기능 분기 처리
+    // 🔄 [Refactored] 탭 기능 분기 처리
+    switchTab: function(tabName) {
+        console.log(`탭 전환 기능 실행: ${tabName}`);
+
+        // (UI 변경 코드는 위쪽 이벤트 리스너로 이사 갔음! 삭제됨)
+
+        // 기능별 로직만 남음
+        if (tabName === 'nearby') {
+            AppState.isLocationMode = true;
+            MapManager.moveToCurrentLocation();
+        }
+        else if (tabName === 'saved') {
+            // TODO: 저장된 공고 불러오기
+            JobService.loadSavedJobs();
+        }
+        else if (tabName === 'recent') {
+            // TODO: 최근 본 공고 불러오기
+            JobService.loadRecentJobs();
+        }
+        else if (tabName === 'chat') {
+            location.href = '/chat/room';
+        }
+    },
+
     // 🌟 [핵심] job_list.html의 로직을 여기로 통합!
     renderList: function(jobs) {
         const $tbody = $('#listBody');
@@ -456,6 +645,8 @@ const UIManager = {
 
         $card.show();
         $('#bottomSheet').removeClass('active');
+
+        JobService.addRecentJob(job);
     },
 
     closeJobCard: function() {

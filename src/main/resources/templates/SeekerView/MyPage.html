@@ -1,11 +1,156 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>KUMO - 마이페이지</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/SeekerView/myPage.css}">
 </head>
 <body>
 
+<div th:replace="~{AuthenticatedFragments/AuthenticatedHeader :: headerFragment}"></div>
+
+<div class="mypage-container">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="active">
+                    <a th:href="@{/Seeker/MyPage}">
+                        <i class="fa-regular fa-user"></i>
+                        <span th:text="#{sidebar.account}">내 계정</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/Seeker/resume}">
+                        <i class="fa-regular fa-file-lines"></i>
+                        <span th:text="#{sidebar.resume}">내 이력서</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/Seeker/history}">
+                        <i class="fa-regular fa-bell"></i>
+                        <span th:text="#{sidebar.history}">지원 내역 확인</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/Seeker/settings}">
+                        <i class="fa-solid fa-gear"></i>
+                        <span th:text="#{sidebar.settings}">설정</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a th:href="@{/logout}" class="btn-logout">
+                <i class="fa-solid fa-power-off"></i>
+                <span th:text="#{btn.logout}">LOGOUT</span>
+            </a>
+        </div>
+    </aside>
+
+    <main class="content-area">
+        <div class="content-header">
+            <h2 th:text="#{mypage.header}">내 계정</h2>
+        </div>
+
+        <div class="profile-section">
+            <div class="profile-photo-area">
+                <div class="img-wrapper">
+                    <img th:src="${user.fileUrl ?: '/images/common/default_profile.png'}" id="currentProfileImg" alt="Profile">
+                </div>
+                <button type="button" class="btn-upload-photo" id="btnOpenModal" th:text="#{profile.upload.btn}">프로필 사진 업로드</button>
+            </div>
+
+            <div id="profileModal" class="modal-overlay">
+                <div class="modal-window">
+                    <div class="modal-header">
+                        <h3 th:text="#{modal.title}">프로필 사진 변경</h3>
+                        <span class="close-btn">&times;</span>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="preview-wrapper">
+                            <img th:src="${user.fileUrl ?: '/images/common/default_profile.png'}" id="modalPreview" alt="Profile">
+                        </div>
+                        <p class="guide-text" th:text="#{modal.guide}">JPG, PNG, GIF 파일만 업로드 가능합니다.</p>
+                        <div class="file-input-container">
+                            <input type="file" id="fileInput" accept="image/*" class="hidden-input">
+
+                            <label for="fileInput" class="custom-file-btn">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                                <span th:text="#{modal.file.select}">ファイルを選択</span>
+                            </label>
+
+                            <span id="fileName" class="file-name" th:text="#{modal.file.none}">ファイルが選択されていません</span>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn-cancel" th:text="#{btn.cancel}">취소</button>
+                        <button class="btn-save" id="btnSaveImage" th:text="#{btn.save}">저장하기</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-list">
+                <div class="info-row">
+                    <span class="label" th:text="#{label.name}">이름</span>
+                    <span class="value" th:text="${user.name}">홍길동</span>
+                </div>
+                <div class="info-row">
+                    <span class="label" th:text="#{label.birth}">생년월일</span>
+                    <span class="value" th:text="${user.birthDate}">2000 / 01 / 01</span>
+                </div>
+                <div class="info-row">
+                    <span class="label" th:text="#{label.nickname}">닉네임</span>
+                    <span class="value" th:text="${user.nickname}">닉네임</span>
+                </div>
+                <div class="info-row">
+                    <span class="label" th:text="#{label.email}">이메일</span>
+                    <span class="value" th:text="${user.email}">email@email.com</span>
+                </div>
+                <div class="info-row">
+                    <span class="label" th:text="#{label.address}">주소</span>
+                    <span class="value" th:text="${user.address}">주소 정보</span>
+                </div>
+                <div class="info-row">
+                    <span class="label" th:text="#{label.line}">LINE 연동</span>
+                    <label class="switch">
+                        <input type="checkbox" th:checked="${user.socialProvider != null and user.socialProvider.name() == 'LINE'}" onclick="return false;">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="info-row">
+                    <span class="label" th:text="#{label.google}">Google 연동</span>
+                    <label class="switch">
+                        <input type="checkbox" th:checked="${user.socialProvider != null and user.socialProvider.name() == 'GOOGLE'}" onclick="return false;">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a th:href="@{/delete-account}" class="btn-delete" th:text="#{btn.delete.account}">회원 탈퇴</a>
+                <a th:href="@{/edit-profile}" class="btn-edit" th:text="#{btn.edit.profile}">회원정보 수정</a>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"></div>
+
+<script th:src="@{/js/SeekerView/MyPage.js}"></script>
+<script th:inline="javascript">
+    const msg = {
+        selectPhoto: [[#{msg.select.photo}]],
+        uploadSuccess: [[#{msg.upload.success}]],
+        error: [[#{msg.error}]],
+        notService: [[#{msg.not.service}]],
+        fileNone: [[#{modal.file.none}]]
+    };
+</script>
 
 </body>
 </html>
