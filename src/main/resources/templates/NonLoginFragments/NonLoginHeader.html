@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
   <div th:fragment="headerFragment">
     <script th:inline="javascript">
@@ -65,34 +65,28 @@
     </script>
 
     <header class="non-login-header">
-      <a th:href="@{/}" class="logo">
-        <img
-          th:src="@{/images/NonLogin/seekerLogo.png}"
-          alt="KUMO"
-          style="height: 40px;"
-        />
-      </a>
+        <a th:href="@{/}" class="logo">
+            <img th:src="@{/images/NonLogin/seekerLogo.png}" alt="KUMO" style="height: 40px;">
+        </a>
+        <nav>
+            <ul class="nav-menu">
+                <li><a th:href="@{/info}" th:text="#{header.company}">회사 정보</a></li>
 
-      <nav>
-        <ul class="nav-menu">
-          <li>
-            <a th:href="@{/Info}" th:text="#{header.company}">회사 정보</a>
-          </li>
-          <li><a th:href="@{/login}" th:text="#{header.login}">로그인</a></li>
+                <li><a th:href="@{/login}" th:text="#{header.login}">로그인</a></li>
 
-          <li class="icon-btn lang-container" id="langBtn">
-            <i class="fa-solid fa-globe"></i>
-            <div class="lang-dropdown" id="langMenu">
-              <a href="javascript:changeLang('ko')" class="lang-item">한국어</a>
-              <a href="javascript:changeLang('ja')" class="lang-item">日本語</a>
-            </div>
-          </li>
+                <li class="icon-btn lang-container" id="langBtn">
+                    <i class="fa-solid fa-globe"></i>
+                    <div class="lang-dropdown" id="langMenu">
+                        <a href="javascript:changeLang('ko')" class="lang-item">한국어</a>
+                        <a href="javascript:changeLang('ja')" class="lang-item">日本語</a>
+                    </div>
+                </li>
 
-          <li class="icon-btn" id="darkModeBtn">
-            <i class="fa-regular fa-sun" id="darkModeIcon"></i>
-          </li>
-        </ul>
-      </nav>
+                <li class="icon-btn" id="darkModeBtn">
+                    <i class="fa-regular fa-sun" id="darkModeIcon"></i>
+                </li>
+            </ul>
+        </nav>
     </header>
   </div>
 </html>

@@ -144,4 +144,27 @@ public class UserEntity {
 	@UpdateTimestamp
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
+	
+	
+	// ... 기존 필드들 (id, email, password 등) ...
+	
+	// 1. 실패 횟수 저장 (기본값 0)
+	@Column(name = "login_fail_count", nullable = false)
+	private int loginFailCount = 0;
+	
+	// 2. 마지막 실패 시간 (null 가능)
+	@Column(name = "last_fail_at")
+	private LocalDateTime lastFailAt;
+	
+	// 로그인 실패 시 호출: 횟수 +1, 시간 갱신
+	public void increaseFailCount() {
+		this.loginFailCount++;
+		this.lastFailAt = LocalDateTime.now();
+	}
+	
+	// 로그인 성공 시 호출: 횟수 0으로 초기화
+	public void resetFailCount() {
+		this.loginFailCount = 0;
+		this.lastFailAt = null;}
+	
 }
