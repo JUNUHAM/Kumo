@@ -8,6 +8,27 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "users") // DB 테이블명
@@ -168,6 +189,11 @@ public class UserEntity {
 	// 로그인 성공 시 호출: 횟수 0으로 초기화
 	public void resetFailCount() {
 		this.loginFailCount = 0;
-		this.lastFailAt = null;}
-	
+		this.lastFailAt = null;
+	}
+
+	// 🌟 1:N 관계 설정: 사장님 한 명이 여러 회사를 가짐(Recruiter 회사 정보)
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<CompanyEntity> companies = new ArrayList<>();
+
 }

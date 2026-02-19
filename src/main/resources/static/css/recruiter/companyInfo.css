@@ -1,184 +1,199 @@
-/* 컨테이너 배경 및 폰트 */
+/* ============================================================
+   KUMO RECRUITER - 회사 정보 관리 최종 CSS (Toss 스타일)
+   ============================================================ */
+
+/* 1. 레이아웃 엔진 (푸터 겹침 방지) */
+.main-container {
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 100vh !important;
+  background-color: #f8faff; /* ProfileEdit 배경색 */
+}
+
+.content-body {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
 .company-mgmt-container {
-  padding: 20px;
+  padding: 40px 30px 100px 30px; /* 하단 푸터 여백 확보 */
   font-family: "Pretendard", sans-serif !important;
 }
 
-/* 탭 메뉴 디자인 (회사1, 회사2, +) */
+/* 2. 탭 메뉴 디자인 */
 .nav-pills-wrapper {
   display: flex;
   gap: 12px;
   align-items: center;
+  margin-bottom: 35px;
 }
 
 .nav-pill {
-  padding: 10px 24px;
-  border-radius: 50px;
-  border: 1px solid #edf2f7;
+  padding: 12px 26px;
+  border-radius: 16px;
+  border: 1px solid #eef0f2;
   background: #ffffff;
-  color: #718096;
-  font-weight: 600;
-  transition: all 0.3s ease;
+  color: #4e5968;
+  font-weight: 700;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .nav-pill.active {
   background: #7abaff;
-  color: white;
+  color: #ffffff;
   border-color: #7abaff;
-  box-shadow: 0 4px 14px rgba(122, 186, 255, 0.4);
+  box-shadow: 0 4px 14px rgba(122, 186, 255, 0.3);
 }
 
 .nav-pill-add {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: 2px dashed #cbd5e0;
-  background: transparent;
-  color: #a0aec0;
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  border: 2px dashed #eef0f2;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #8b95a1;
+  cursor: pointer;
   transition: all 0.2s;
 }
 
 .nav-pill-add:hover {
   border-color: #7abaff;
   color: #7abaff;
-  background: #f0f7ff;
+  background: #ffffff;
 }
 
-.nav-pill-link {
-  font-size: 0.8rem !important; /* [수정] 크기를 0.8rem으로 줄임 */
-  font-weight: 600;
-  color: #8b95a1 !important; /* [수정] 텍스트 색상을 부드러운 회색으로 변경 */
-  text-decoration: none; /* 밑줄 제거 */
-  transition: color 0.2s;
-}
-
-/* 정보 입력 카드 (이미지_3eea5d 감성) */
+/* 3. 정보 입력 카드 (Edit-Box 감성) */
 .info-glass-card {
-  background: white;
-  border-radius: 30px;
-  padding: 40px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
-  border: 1px solid rgba(240, 243, 248, 0.8);
+  background: #ffffff;
+  border-radius: 35px;
+  padding: 55px 60px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.02);
+  max-width: 900px;
 }
 
 .info-label {
   display: block;
-  font-weight: 700;
-  color: #2d3748;
-  margin-bottom: 10px;
-  font-size: 0.95rem;
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #333d4b;
+  margin-bottom: 12px;
 }
 
 .kumo-form-control {
   width: 100%;
-  padding: 14px 20px;
-  border-radius: 15px;
-  border: 1px solid #e2e8f0;
-  background: #fcfdfe;
+  padding: 15px 20px;
+  border-radius: 14px;
+  border: 1px solid #eef0f2;
+  background-color: #f8f9fa;
+  font-size: 15.5px;
+  color: #191f28;
+  height: 52px;
   transition: all 0.2s;
 }
 
 .kumo-form-control:focus {
   outline: none;
   border-color: #7abaff;
-  background: white;
+  background-color: #ffffff;
   box-shadow: 0 0 0 4px rgba(122, 186, 255, 0.1);
 }
 
-/* 주소 입력 그룹 컨테이너 */
-.kumo-input-group {
+.kumo-form-control[readonly] {
+  background-color: #f2f4f6 !important;
+  color: #8b95a1 !important;
+  border: 1px solid #f2f4f6 !important;
+  cursor: not-allowed;
+}
+
+/* 4. 주소 검색 영역 */
+.zipcode-group {
   display: flex;
-  position: relative;
-  width: 100%;
+  gap: 12px;
+  max-width: 400px;
+  margin-bottom: 12px;
 }
 
-/* 주소 입력창 (버튼 자리를 위해 오른쪽 패딩 확보) */
-.kumo-form-control.address-input {
-  border-radius: 15px !important; /* 전체 둥글게 유지 */
-  padding-right: 110px !important; /* 버튼이 들어올 공간 확보 */
-}
-
-/* 주소 찾기 버튼 (입력창 안쪽 오른쪽으로 고정) */
 .btn-address-search {
-  position: absolute;
-  right: 6px;
-  top: 6px;
-  bottom: 6px;
-  width: 90px;
-  background: #f0f3f8 !important; /* 이미지와 유사한 연한 회색 */
-  border: none;
-  border-radius: 10px !important; /* 입력창 곡률보다 살짝 작게 */
-  color: #4a5568;
+  height: 52px;
+  white-space: nowrap;
+  padding: 0 24px;
+  border-radius: 14px;
+  border: 1px solid #eef0f2;
+  background: #ffffff;
+  color: #4e5968;
   font-weight: 700;
-  font-size: 0.85rem;
-  transition: all 0.2s;
+  font-size: 14px;
   cursor: pointer;
-  z-index: 5;
+  transition: background 0.2s;
 }
 
 .btn-address-search:hover {
-  background: #7abaff !important; /* 호버 시 사장님의 시그니처 블루 */
-  color: white;
+  background: #f9fafb;
 }
 
+/* 5. 버튼 및 액션 */
 .form-actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: 45px;
 }
 
 .btn-save {
-  background: #7abaff;
-  color: white;
+  background-color: #7abaff;
+  color: #ffffff;
   border: none;
-  padding: 14px 40px;
-  border-radius: 15px;
-  font-weight: 700;
-  transition: transform 0.2s;
+  padding: 18px 50px;
+  border-radius: 16px;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    background-color 0.2s;
 }
 
 .btn-save:hover {
   transform: translateY(-2px);
+  background-color: #69a9ff;
 }
 
 .btn-delete {
   background: transparent;
-  color: #ff6b6b;
+  color: #f04452;
   border: none;
-  font-weight: 600;
-  text-decoration: none;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
-/* [긴급] 화면을 덮고 있는 모든 흐릿한 레이어 강제 제거 */
-.main-container,
-.content-body,
-.company-mgmt-container {
-  background-color: transparent !important; /* 배경색 중첩 제거 */
-  opacity: 1 !important; /* 투명도 강제 해제 */
-  filter: none !important; /* 블러 효과 제거 */
-  z-index: 1;
+/* 6. 푸터 고정 */
+footer {
+  flex-shrink: 0;
+  background: white;
+  border-top: 1px solid #eef0f2;
+  padding: 30px 0;
 }
 
-/* 컨텐츠가 명확히 보이도록 카드 배경색 고정 */
-.info-glass-card {
-  position: relative;
-  z-index: 10; /* 컨텐츠를 최상단으로 올림 */
-  background: #ffffff !important; /* 라이트모드 기준 */
-  opacity: 1 !important;
+/* 7. 다크모드 */
+html.dark-mode .main-container {
+  background-color: #121212 !important;
 }
-
-/* 다크모드일 때는 다시 어둡게 (이미 짠 코드와 충돌 방지) */
-body.dark-mode .info-glass-card {
-  background: #252526 !important;
+html.dark-mode .info-glass-card {
+  background-color: #1e1e1e !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
 }
-
-/* 화면을 가리는 투명 막이 있다면 삭제 */
-.modal-backdrop,
-[class*="backdrop"],
-[class*="overlay"] {
-  display: none !important;
+html.dark-mode .info-label {
+  color: #cccccc !important;
+}
+html.dark-mode .kumo-form-control {
+  background-color: #2c2c2c !important;
+  border-color: #444 !important;
+  color: #fff !important;
 }

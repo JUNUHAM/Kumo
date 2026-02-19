@@ -192,6 +192,7 @@ body.dark-mode .calendar-card,
 body.dark-mode .sidebar-card {
   background-color: #1e1e1e !important;
   border: 1px solid #2d2d2d !important;
+  border-left: 5px solid transparent !important; /* 왼쪽 바 자리를 비워둡니다 */
   color: #ffffff !important;
 }
 
@@ -215,7 +216,6 @@ body.dark-mode #calendar .fc-event {
   border-left: 4px solid #7abaff !important;
 }
 body.dark-mode #mini-calendar .fc-day-today .fc-daygrid-day-number {
-  background-color: #fcc419 !important;
   color: #121212 !important;
 }
 body.dark-mode .panel-placeholder {
@@ -242,37 +242,6 @@ body.dark-mode .btn-profile-upload {
   background: #333d4b !important;
   color: #ffffff !important;
   border: none !important;
-}
-
-/* 10. 공통 푸터 보정 */
-body.dark-mode footer,
-body.dark-mode .dashboard-footer {
-  border-top: 1px solid #2d2d2d !important;
-}
-body.dark-mode .footer-container {
-  color: #ffffff !important;
-}
-
-/* 처음 로딩 시에는 애니메이션을 차단합니다 */
-body.dark-mode,
-body.dark-mode .main-container,
-body.dark-mode .panel,
-body.dark-mode .sidebar-container,
-body.dark-mode .custom-header,
-body.dark-mode .non-login-header {
-  transition: none !important;
-}
-
-/* 페이지 로드가 완료된 후, 이 클래스가 붙었을 때만 부드럽게 바뀝니다 */
-body.preload-ready.dark-mode,
-body.preload-ready.dark-mode .main-container,
-body.preload-ready.dark-mode .panel,
-body.preload-ready.dark-mode .sidebar-container,
-body.preload-ready.dark-mode .custom-header,
-body.preload-ready.dark-mode .non-login-header {
-  transition:
-    background-color 0.3s ease-in-out,
-    color 0.3s ease-in-out !important;
 }
 
 /* ============================================================
@@ -444,41 +413,54 @@ body.dark-mode #mini-calendar .fc-day-other .fc-daygrid-day-number {
   color: #555555 !important;
 }
 
-/* 1. 선택된 날짜 칸의 배경색을 제거 (칸 전체가 네모나게 변하는 것 방지) */
-html.dark-mode .selected-day {
+/* ============================================================
+   [최종 보정] 본 캘린더(네모) vs 미니 캘린더(원형) 다크모드 구분
+   ============================================================ */
+
+/* [본 캘린더 #calendar] 오늘 날짜를 클릭했을 때도 파란 네모 배경이 나오도록 */
+html.dark-mode #calendar .selected-day,
+html.dark-mode #calendar .fc-day-today.selected-day {
+  background-color: rgba(122, 186, 255, 0.25) !important; /* 연한 파란색 네모 */
+}
+
+/* [미니 캘린더 #mini-calendar] 선택 시 칸 배경 제거 (원형 유지를 위해) */
+html.dark-mode #mini-calendar .selected-day {
   background-color: transparent !important;
 }
 
-/* 2. 숫자 부분만 동그랗게 만들고 색상 입히기 */
-html.dark-mode .selected-day .fc-daygrid-day-number {
-  background-color: #7abaff !important; /* 사장님 시그니처 블루 */
-  color: #121212 !important; /* 글자색을 어둡게 해서 흰색 배경에서 잘 보이게 함 */
+/* [공통] 숫자 부분 스타일링 */
+html.dark-mode .fc-daygrid-day-number {
+  transition: all 0.2s ease;
+}
 
-  /* 동그라미 모양 만들기 */
+/* [미니 캘린더] 숫자만 동그랗게 만들기 */
+html.dark-mode #mini-calendar .selected-day .fc-daygrid-day-number {
+  background-color: #7abaff !important; /* 시그니처 블루 원 */
+  color: #121212 !important;
   width: 32px !important;
   height: 32px !important;
   border-radius: 50% !important;
-
-  /* 숫자를 정중앙에 배치 */
   display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  margin: 5px auto !important; /* 셀 안에서 가운데 정렬 */
-
-  /* 그림자 효과로 입체감 부여 */
+  align-items: center;
+  justify-content: center;
+  margin: 5px auto !important;
   box-shadow: 0 4px 10px rgba(122, 186, 255, 0.4) !important;
 }
 
-/* 3. 오늘 날짜(노란색)와 선택된 날짜가 겹칠 때의 우선순위 설정 */
-html.dark-mode .fc-day-today.selected-day .fc-daygrid-day-number {
-  background-color: #fcc419 !important; /* 오늘 날짜면 노란색 유지 */
-  color: #121212 !important;
+/* [본 캘린더] 오늘 날짜가 선택되었을 때 (숫자는 노란색 유지, 배경은 파란 네모) */
+html.dark-mode #calendar .fc-day-today.selected-day .fc-daygrid-day-number {
+  background-color: transparent !important; /* 본 캘린더는 숫자 원형 배경 안 씀 */
+  color: #fcc419 !important; /* 오늘 날짜 상징인 노란색 유지 */
 }
 
-/* 4. 마우스 올렸을 때(Hover) 살짝 밝아지는 효과 */
-html.dark-mode .fc-daygrid-day-number:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
+/* [미니 캘린더] 오늘 날짜 선택 시 (노란색 원으로 강조) */
+html.dark-mode
+  #mini-calendar
+  .fc-day-today.selected-day
+  .fc-daygrid-day-number {
+  background-color: #fcc419 !important;
+  color: #121212 !important;
+  border-radius: 50% !important;
 }
 
 /* [다크모드] profileEdit 페이지 보정 */
@@ -515,4 +497,257 @@ html.dark-mode .btn-sub-action {
   background-color: #2d2d2d !important;
   border-color: #3d3d3d !important;
   color: #aaaaaa !important;
+}
+
+/* ============================================================
+   [최종 마스터] 본 캘린더(네모) vs 미니 캘린더(원형) 완벽 분리
+   ============================================================ */
+
+/* --- 1. 본 캘린더 (#calendar) : 무조건 네모칸 배경 --- */
+/* 오늘 날짜이든 일반 날짜이든 선택되면 연파랑 네모 배경 */
+html.dark-mode #calendar .selected-day,
+html.dark-mode #calendar .fc-day-today.selected-day {
+  background-color: rgba(122, 186, 255, 0.25) !important;
+}
+
+/* 본 캘린더 오늘 날짜 선택 시 숫자 색상 (노란색 유지) */
+html.dark-mode #calendar .fc-day-today.selected-day .fc-daygrid-day-number {
+  color: #fcc419 !important;
+}
+
+/* --- 2. 미니 캘린더 (#mini-calendar) : 무조건 숫자 원형 배경 --- */
+/* 미니 캘린더는 칸 배경을 투명하게 (네모 방지) */
+html.dark-mode #mini-calendar .selected-day {
+  background-color: transparent !important;
+}
+
+/* 미니 캘린더 숫자만 동그랗게 색상 입히기 */
+html.dark-mode #mini-calendar .selected-day .fc-daygrid-day-number {
+  background-color: #7abaff !important;
+  color: #121212 !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto !important;
+  box-shadow: 0 4px 10px rgba(122, 186, 255, 0.4) !important;
+}
+
+/* 미니 캘린더 오늘 날짜 선택 시 (노란색 원형) */
+html.dark-mode
+  #mini-calendar
+  .fc-day-today.selected-day
+  .fc-daygrid-day-number {
+  background-color: #fcc419 !important;
+  color: #121212 !important;
+}
+
+/* --- 3. 공통 보정 (네모 박스 잔상 제거) --- */
+html.dark-mode .fc-daygrid-day-top {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* ============================================================
+   [진짜 최종 마스터] 메인(네모) vs 미니(원형) 선택 효과 완벽 분리
+   ============================================================ */
+
+/* 1. 메인 캘린더 (#calendar) : 오늘 날짜 포함 무조건 '네모' 배경 */
+html.dark-mode #calendar .fc-daygrid-day.selected-day .fc-daygrid-day-frame {
+  background-color: rgba(
+    122,
+    186,
+    255,
+    0.3
+  ) !important; /* 시원한 연파랑 네모 */
+}
+
+/* 메인 캘린더 선택 시 숫자 원형 배경 절대 안 생기게 차단 */
+html.dark-mode #calendar .selected-day .fc-daygrid-day-number {
+  background-color: transparent !important;
+  color: #ffffff !important; /* 선택된 숫자 강조 */
+  box-shadow: none !important;
+  width: auto !important;
+  height: auto !important;
+  border-radius: 0 !important;
+}
+
+/* 메인 오늘 날짜가 선택됐을 때 숫자 색상 유지 (노란색) */
+html.dark-mode #calendar .fc-day-today.selected-day .fc-daygrid-day-number {
+  color: #fcc419 !important;
+}
+
+/* ------------------------------------------------------------ */
+
+/* 2. 미니 캘린더 (#mini-calendar) : 무조건 숫자 '원형' 배경 */
+/* 미니는 칸(네모) 배경을 아예 투명하게 박멸 */
+html.dark-mode #mini-calendar .selected-day .fc-daygrid-day-frame {
+  background-color: transparent !important;
+}
+
+/* 미니 캘린더 숫자만 동그랗게 색칠 */
+html.dark-mode #mini-calendar .selected-day .fc-daygrid-day-number {
+  background-color: #7abaff !important; /* 블루 원 */
+  color: #121212 !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  margin: 5px auto !important;
+  box-shadow: 0 4px 10px rgba(122, 186, 255, 0.4) !important;
+}
+
+/* 미니 오늘 날짜 선택 시 (노란색 원형으로 강조) */
+html.dark-mode
+  #mini-calendar
+  .fc-day-today.selected-day
+  .fc-daygrid-day-number {
+  background-color: #fcc419 !important;
+  color: #121212 !important;
+}
+
+/* ------------------------------------------------------------ */
+
+/* 3. 공통 보정 : 숫자 주변 지저분한 테두리/잔상 제거 */
+html.dark-mode .fc-daygrid-day-top,
+html.dark-mode .fc-daygrid-day-number {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* [최종] 오늘 날짜 칸 전체 배경 노란색으로 강제 고정 */
+
+/* 1. 본 캘린더 (#calendar) : 은은한 노란 사각형 배경 */
+html.dark-mode #calendar .fc-day-today {
+  background-color: rgba(252, 196, 25, 0.2) !important; /* 칸 전체 배경 */
+}
+
+/* 2. 미니 캘린더 (#mini-calendar) : 꽉 찬 노란 사각형 배경 */
+html.dark-mode #mini-calendar .fc-day-today {
+  background-color: transparent !important; /* 칸 전체 배경 */
+}
+
+/* 3. 오늘 날짜 숫자 가독성 (배경이 노란색이니 글자는 검게) */
+html.dark-mode #calendar .fc-day-today .fc-daygrid-day-number,
+html.dark-mode #mini-calendar .fc-day-today .fc-daygrid-day-number {
+  color: #7abaff !important; /* 글자색 검정 */
+  background-color: transparent !important; /* 숫자 주변 배경 제거 */
+  border-radius: 0 !important; /* 사각형 유지 */
+}
+
+/* [다크모드] 토요일/일요일 색상 강제 적용 */
+
+/* 토요일 (파란색) */
+html.dark-mode .fc-day-sat .fc-col-header-cell-cushion,
+html.dark-mode .fc-day-sat .fc-daygrid-day-number {
+  color: #4facfe !important;
+}
+
+/* 일요일 (빨간색) */
+html.dark-mode .fc-day-sun .fc-col-header-cell-cushion,
+html.dark-mode .fc-day-sun .fc-daygrid-day-number {
+  color: #ff6b6b !important;
+}
+
+/* ============================================================
+   [스케줄 모달] 다크모드 전용 보정 (어둡게 잘 깔리게)
+   ============================================================ */
+body.dark-mode .schedule-modal-content {
+  background-color: #1e1e1e !important; /* 다크 판넬 색상 */
+  color: #ffffff !important;
+}
+
+body.dark-mode .modal-title,
+body.dark-mode .modal-label {
+  color: #ffffff !important;
+}
+
+/* 다크모드 입력창 (더 어둡게) */
+body.dark-mode .kumo-modal-input,
+body.dark-mode .kumo-modal-textarea {
+  background-color: #252525 !important;
+  border: 1px solid #333d4b !important;
+  color: #ffffff !important;
+}
+
+/* 다크모드 취소 버튼 */
+body.dark-mode .btn-modal-cancel {
+  background-color: #2d2d2d !important;
+  border-color: #333d4b !important;
+  color: #aaaaaa !important;
+}
+
+/* 다크모드 닫기 버튼(X) 흰색으로 */
+body.dark-mode .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* ============================================================
+   [다크모드 모달] 날짜 레이아웃 및 가독성 최종 보정
+   ============================================================ */
+body.dark-mode .schedule-modal-content {
+  background-color: #222222 !important; /* 사진처럼 진한 다크그레이 */
+  border-radius: 25px !important;
+  color: #ffffff !important;
+}
+
+/* 날짜 줄바꿈 적용 */
+body.dark-mode .schedule-modal-content .col-9.d-flex {
+  flex-wrap: wrap !important;
+}
+
+/* 다크모드 입력창 (사진 image_1cbf0e 감성 재현) */
+body.dark-mode .kumo-modal-input,
+body.dark-mode .kumo-modal-textarea {
+  background-color: #2d2d2d !important;
+  border: 1px solid #3d3d3d !important;
+  color: #ffffff !important;
+}
+
+/* 색상 선택 도트 위치 보정 */
+body.dark-mode .color-picker-wrapper {
+  flex-wrap: wrap;
+  padding-top: 5px;
+}
+
+/* 닫기 버튼(X) 다크모드 전용 색상 */
+body.dark-mode .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%) !important;
+}
+
+/* [미니 캘린더] 오늘 날짜 노란 배경 사각형 박멸 & 노란 원형 고정 */
+
+/* 1. 칸 전체 배경은 투명하게 (사각형 제거) */
+html.dark-mode #mini-calendar .fc-day-today {
+  background-color: transparent !important;
+}
+
+/* 2. 숫자 뒤에 노란 원형 고정 (선택 시에도 유지되도록 우선순위 강화) */
+html.dark-mode #mini-calendar .fc-day-today .fc-daygrid-day-number {
+  background-color: #fcc419 !important; /* 꽉 찬 노란 원 */
+  color: #121212 !important; /* 배경이 노랑이니 글자는 검정 */
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 50% !important; /* 완벽한 원형 */
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  margin: 5px auto !important;
+  box-shadow: 0 2px 8px rgba(252, 196, 25, 0.4) !important; /* 은은한 광채 */
+  z-index: 10 !important; /* 다른 요소보다 위에 띄움 */
+}
+
+/* 3. 오늘 날짜가 선택(Selected)되더라도 파란색 대신 노란색 원 유지 */
+html.dark-mode
+  #mini-calendar
+  .fc-day-today.selected-day
+  .fc-daygrid-day-number {
+  background-color: #fcc419 !important;
+  color: #121212 !important;
 }
