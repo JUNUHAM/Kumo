@@ -41,7 +41,7 @@ public class AjaxAuthenticationFailureHandler implements AuthenticationFailureHa
 		
 		// 1. 기본 정보 수집
 		String email = request.getParameter("email");
-		String clientIp = request.getRemoteAddr(); // IP 주소
+		String clientIp = getClientIp(request); // IP 주소
 		String userAgent = request.getHeader("User-Agent"); // ★ 브라우저/기기 정보 (봇 탐지용)
 		Locale locale = localeResolver.resolveLocale(request);
 		
@@ -123,5 +123,28 @@ public class AjaxAuthenticationFailureHandler implements AuthenticationFailureHa
 		data.put("showCaptcha", showCaptcha);
 		
 		objectMapper.writeValue(response.getWriter(), data);
+	}
+	
+	// 클라이언트의 진짜 IP를 가져오는 메서드
+	private String getClientIp(HttpServletRequest request) {
+		String ip = request.getHeader("X-Forwarded-For");
+		
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("Proxy-Client-IP");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("WL-Proxy-Client-IP");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("HTTP_CLIENT_IP");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getRemoteAddr();
+		}
+		
+		return ip;
 	}
 }

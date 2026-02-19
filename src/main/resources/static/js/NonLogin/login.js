@@ -2,26 +2,27 @@
    KUMO 로그인 페이지 Logic (AJAX 통합)
    ========================================== */
 
-/**
- * SNS 로그인 버튼 클릭 시 알림창
- */
-function alertSns() {
-    if (typeof loginMessages !== 'undefined' && loginMessages.sns_alert) {
-        alert(loginMessages.sns_alert);
-    } else {
-        alert("서비스 준비 중입니다.");
-    }
-}
-
 document.addEventListener("DOMContentLoaded", function() {
+
+    // 1. [아이디 불러오기] 페이지 로드 시 로컬 스토리지 확인
+    // 기존에 cookie를 뒤지던 로직을 localStorage로 통일했습니다.
+    const savedEmail = localStorage.getItem("savedEmail");
+    const emailInput = document.querySelector('input[name="email"]');
+    const saveIdCheckbox = document.getElementById('saveId');
+
+    if (savedEmail && emailInput) {
+        emailInput.value = savedEmail;
+        if (saveIdCheckbox) {
+            saveIdCheckbox.checked = true;
+        }
+    }
 
     const loginForm = document.querySelector('form');
     const errorMsgBox = document.querySelector('.login-error-msg');
     const inputs = document.querySelectorAll('.custom-input');
-    // ★ 캡차 영역을 감싸는 div (HTML에 추가 필요)
     const captchaArea = document.getElementById('captchaArea');
 
-    // 1. [핵심] 로그인 폼 제출 시 비동기(AJAX) 처리
+    // 2. [로그인 제출] 비동기(AJAX) 처리
     if (loginForm) {
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -35,6 +36,17 @@ document.addEventListener("DOMContentLoaded", function() {
                 contentType: 'application/x-www-form-urlencoded',
 
                 success: function(response) {
+                    // ★ [아이디 저장 로직 녹여내기]
+                    // 오타 수정: querySelector.('.saveId') -> getElementById('saveId')
+                    const emailVal = emailInput.value;
+                    const isSaveChecked = saveIdCheckbox ? saveIdCheckbox.checked : false;
+
+                    if (isSaveChecked) {
+                        localStorage.setItem("savedEmail", emailVal);
+                    } else {
+                        localStorage.removeItem("savedEmail");
+                    }
+
                     // 성공 시 메인으로 이동
                     window.location.href = '/';
                 },
@@ -45,15 +57,13 @@ document.addEventListener("DOMContentLoaded", function() {
                     if (errorMsgBox) {
                         const errorText = errorMsgBox.querySelector('span');
                         if (response && response.message && errorText) {
-                            // 서버에서 보내준 다국어 메시지(KR/JP)를 그대로 출력
                             errorText.textContent = response.message;
                         }
                         errorMsgBox.style.display = 'flex';
 
-                        // ★ 캡차 노출 로직: 5회 이상 실패 시
+                        // 캡차 노출 로직
                         if (response && response.showCaptcha) {
                             if (captchaArea) {
-                                // 숨겨져 있던 캡차 영역을 보여줌
                                 captchaArea.style.display = 'block';
                                 console.warn("보안 인증(CAPTCHA)이 활성화되었습니다.");
                             }
@@ -71,7 +81,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // 2. 사용자가 입력을 시작하면 에러 메시지 즉시 숨기기
+    // 3. 입력 시작 시 에러 메시지 숨기기
     if (errorMsgBox) {
         inputs.forEach(input => {
             input.addEventListener('input', function() {
@@ -80,10 +90,21 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // 3. URL 파라미터 정리
+    // 4. URL 파라미터 정리
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('error')) {
         const newUrl = window.location.pathname;
         window.history.replaceState({}, document.title, newUrl);
     }
 });
+
+/**
+ * SNS 로그인 버튼 클릭 시 알림창
+ */
+function alertSns() {
+    if (typeof loginMessages !== 'undefined' && loginMessages.sns_alert) {
+        alert(loginMessages.sns_alert);
+    } else {
+        alert("서비스 준비 중입니다.");
+    }
+}
