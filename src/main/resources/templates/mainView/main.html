@@ -5,8 +5,14 @@
 <head>
 	<meta charset="UTF-8">
 	<title>KUMO - 지도 검색</title>
-	<link rel="stylesheet" th:href="@{/css/NonLoginFragments/NonLoginHeader.css}">
-	<link rel="stylesheet" th:href="@{/css/mainView/main.css}">
+
+    <link rel="stylesheet" th:href="@{/css/AuthenticatedFragments/AuthenticatedHeader.css}"
+          sec:authorize="isAuthenticated()">
+
+    <link rel="stylesheet" th:href="@{/css/NonLoginFragments/NonLoginHeader.css}"
+          sec:authorize="!isAuthenticated()">
+
+    <link rel="stylesheet" th:href="@{/css/mainView/main.css}">
 	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 	
@@ -19,9 +25,14 @@
 	<script th:src="@{/js/mainView/main.js}"></script>
 </head>
 <body>
-<div class="map-header-wrapper">
-	<div th:replace="~{NonLoginFragments/NonLoginHeader :: headerFragment}"></div>
-</div>
+<!--<div class="map-header-wrapper">-->
+    <div th:replace="~{NonLoginFragments/NonLoginHeader :: headerFragment}"
+         sec:authorize="!isAuthenticated()"></div>
+
+    <div th:replace="~{AuthenticatedFragments/AuthenticatedHeader :: headerFragment}"
+         sec:authorize="isAuthenticated()"></div>
+
+<!--</div>-->
 
 <div class="map-container">
 	
