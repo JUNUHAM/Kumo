@@ -304,50 +304,55 @@ html, body {
     background-color: #e0e0e0;
 }
 
+/* src/main/resources/static/css/mainView/main.css */
+
 /* ============================================================
    🌟 [NEW] 지도 페이지 전용 헤더 스타일 (relative 모드)
    ============================================================ */
 
-/* 1. 헤더를 감싸는 껍데기 */
+/* 1. 헤더 껍데기 기본 (라이트 모드) */
 .map-header-wrapper {
-    position: relative;  /* 지도랑 분리 (위쪽에 배치) */
+    position: relative;
     width: 100%;
     z-index: 1000;
-
-    /* [중요] 라이트 모드 기본 배경색 (이게 없으면 투명해서 이상할 수 있음) */
-    background-color: #f0f0f0;
-    transition: background-color 0.3s ease; /* 색깔 바뀔 때 부드럽게 */
+    background-color: #ffffff; /* 🌟 회색 라인 안 보이게 확실한 흰색 지정 */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* 지도와 헤더를 구분하는 살짝의 그림자 */
+    transition: background-color 0.3s ease;
 }
 
-/* 2. 내부 헤더 레이아웃 보정 */
-.map-header-wrapper .non-login-header {
+/* 내부 헤더 여백 초기화 */
+.map-header-wrapper .non-login-header,
+.map-header-wrapper .authenticated-header {
     width: 100% !important;
     box-sizing: border-box;
     margin: 0 !important;
 }
 
-/* 3. 지도 컨테이너 높이 계산 */
-/* 헤더가 relative로 공간을 차지하므로, 지도는 (전체 - 헤더높이) 만큼만 써야 스크롤이 안 생김 */
-/* 헤더 높이가 대략 60~80px 정도라고 가정하고 calc를 씁니다. */
+/* 지도 높이 계산 (헤더 높이만큼 빼줌, 헤더가 60px이라 가정) */
 .map-container {
     width: 100%;
-    height: calc(100vh - 80px); /* 🌟 전체 높이에서 헤더만큼 뺌 */
+    height: calc(100vh - 60px);
 }
-
 
 /* ============================================================
    🌟 [NEW] 다크모드 적용 (배경색 + 글자색)
    ============================================================ */
 
-/* 1. 껍데기 배경을 어둡게 변경 */
+/* 1. 다크모드 시 헤더 배경을 까맣게 변경 */
 body.dark-mode .map-header-wrapper {
-    background-color: #2d2d2d; /* 지도 다크모드 색이랑 맞춤 (진한 회색) */
-    border-bottom: 1px solid #444; /* (선택) 지도랑 구분선 */
+    background-color: #232323 !important; /* 홈 화면 다크모드 배경색과 통일 */
+    border-bottom: 1px solid #333; /* 다크모드에서 지도와 구분선 */
 }
 
-/* 2. 글자랑 아이콘을 흰색으로 변경 */
-body.dark-mode .map-header-wrapper .non-login-header .nav-menu a,
-body.dark-mode .map-header-wrapper .non-login-header .icon-btn {
+/* 2. 다크모드 시 글자 및 아이콘을 흰색으로 변경 */
+body.dark-mode .map-header-wrapper .nav-menu a,
+body.dark-mode .map-header-wrapper .icon-btn i {
     color: #ffffff !important;
     transition: color 0.3s ease;
 }
+
+/*!* 3. 로고 색상 반전 (검은 로고 -> 흰 로고) *!*/
+/*body.dark-mode .map-header-wrapper .logo img {*/
+/*    filter: brightness(0) invert(1);*/
+/*    transition: filter 0.3s ease;*/
+/*}*/

@@ -25,14 +25,13 @@
 	<script th:src="@{/js/mainView/main.js}"></script>
 </head>
 <body>
-<!--<div class="map-header-wrapper">-->
+<div class="map-header-wrapper">
     <div th:replace="~{NonLoginFragments/NonLoginHeader :: headerFragment}"
          sec:authorize="!isAuthenticated()"></div>
 
     <div th:replace="~{AuthenticatedFragments/AuthenticatedHeader :: headerFragment}"
          sec:authorize="isAuthenticated()"></div>
-
-<!--</div>-->
+</div>
 
 <div class="map-container">
 	
@@ -100,7 +99,6 @@
 		</div>
 	</div>
 </div>
-<div th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"></div>
 
 <script th:src="@{'https://maps.googleapis.com/maps/api/js?key=' + ${googleMapsKey} + '&callback=initMap&loading=async'}"
         async defer></script>
