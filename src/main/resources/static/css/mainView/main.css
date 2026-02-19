@@ -1,6 +1,19 @@
 @charset "UTF-8";
 
 /* =========================================
+   0. [핵심] 헤더 및 레이아웃 보호 (추가됨)
+   ========================================= */
+/* 헤더를 지도보다 최상위로 올림 */
+.authenticated-header, .non-login-header {
+    position: relative;
+    z-index: 9999 !important; /* 플로팅 카드(1200)보다 높게 */
+}
+
+.notify-dropdown, .lang-dropdown, .profile-dropdown {
+    z-index: 10000 !important;
+}
+
+/* =========================================
    1. 기본 설정 및 레이아웃
    ========================================= */
 html, body {
@@ -8,17 +21,17 @@ html, body {
     padding: 0;
     width: 100%;
     height: 100%;
-    overflow: hidden; /* 지도 화면에서 불필요한 스크롤 방지 */
+    overflow: hidden; /* 지도 화면 스크롤 방지 */
     font-family: 'Noto Sans KR', 'Noto Sans JP', sans-serif;
     background-color: #f0f0f0;
 }
 
 /* 지도와 UI를 감싸는 컨테이너 */
 .map-container {
-    position: relative; /* 자식 요소(플로팅 카드)의 기준점 */
+    position: relative;
     width: 100%;
-    /* 헤더 높이가 보통 60~80px 이므로, 꽉 찬 화면을 위해 계산 (필요시 조정) */
-    height: calc(100vh - 60px);
+    /* ★ 헤더 높이(약 80px)를 뺀 나머지 공간만 지도에 할당 */
+    height: calc(100vh - 80px);
     background-color: #e5e5e5;
 }
 
@@ -38,20 +51,18 @@ html, body {
     width: 320px;
     background: white;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* 부드러운 그림자 */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     padding: 20px;
-    z-index: 1200; /* 지도보다 위에 */
-    display: none; /* 기본 숨김 (JS로 제어) */
-    animation: slideIn 0.3s ease-out; /* 등장 애니메이션 */
+    z-index: 1200; /* 지도 요소 중엔 높지만 헤더보다는 낮아야 함 */
+    display: none;
+    animation: slideIn 0.3s ease-out;
 }
 
-/* 왼쪽에서 스르륵 나오는 애니메이션 */
 @keyframes slideIn {
     from { transform: translateX(-20px); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
 }
 
-/* 닫기 버튼 (X) */
 .btn-close-card {
     position: absolute;
     top: 10px;
@@ -63,7 +74,6 @@ html, body {
     cursor: pointer;
 }
 
-/* 카드 헤더 (프로필) */
 .card-header-section {
     display: flex;
     align-items: center;
@@ -73,7 +83,7 @@ html, body {
 .profile-icon {
     width: 40px;
     height: 40px;
-    background-color: #89CFF0; /* 하늘색 배경 */
+    background-color: #89CFF0;
     color: white;
     border-radius: 50%;
     display: flex;
@@ -92,7 +102,6 @@ html, body {
 .company-name { font-size: 14px; font-weight: bold; color: #333; }
 .manager-name { font-size: 12px; color: #666; margin-top: 2px; }
 
-/* 카드 이미지 */
 .card-image-wrapper {
     width: 100%;
     height: 160px;
@@ -108,12 +117,10 @@ html, body {
     object-fit: cover;
 }
 
-/* 카드 본문 */
 .card-body-section { margin-bottom: 20px; }
 .job-title { font-size: 18px; font-weight: bold; margin: 0 0 8px 0; color: #333; }
 .job-address, .job-phone { font-size: 13px; color: #555; margin: 4px 0; }
 
-/* 카드 버튼 영역 */
 .card-footer-section {
     display: flex;
     gap: 10px;
@@ -154,20 +161,19 @@ html, body {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 80vh; /* 화면 높이의 80% */
+    height: 80vh;
     background-color: white;
     border-radius: 20px 20px 0 0;
     box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
     transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-    transform: translateY(calc(100% - 60px)); /* 초기 상태: 손잡이만 보임 */
-    z-index: 200; /* 지도/카드보다 위에 */
+    transform: translateY(calc(100% - 60px));
+    z-index: 200; /* 헤더보다 훨씬 낮게 설정 */
 }
 
 .bottom-sheet.active {
-    transform: translateY(0); /* 활성화 시 올라옴 */
+    transform: translateY(0);
 }
 
-/* 손잡이 */
 .sheet-handle {
     height: 60px;
     width: 100%;
@@ -186,7 +192,6 @@ html, body {
     border-radius: 5px;
 }
 
-/* 내용물 영역 */
 .sheet-content {
     height: calc(100% - 60px);
     overflow-y: auto;
@@ -199,7 +204,7 @@ html, body {
    ========================================= */
 .table-wrapper {
     width: 100%;
-    overflow-x: auto; /* 모바일 대응: 가로 스크롤 */
+    overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     margin-top: 10px;
 }
@@ -207,7 +212,7 @@ html, body {
 .job-table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 600px; /* 테이블 최소 너비 */
+    min-width: 600px;
 }
 
 .job-table th {
@@ -232,13 +237,11 @@ html, body {
 
 .job-table tr:hover { background-color: #fbfbfb; }
 
-/* 리스트 텍스트 스타일 */
 .title-text { font-size: 15px; font-weight: 700; color: #333; margin-bottom: 4px; display: block; }
 .company-text { color: #1976d2; font-weight: 700; text-decoration: none; font-size: 13px; }
 .wage-text { color: #2196f3; font-weight: 700; font-size: 13px; }
 .addr-text { color: #333; font-size: 13px; }
 
-/* 뱃지 */
 .badge {
     display: inline-block;
     padding: 2px 6px;
@@ -250,13 +253,11 @@ html, body {
 .bg-blue { background: #e3f2fd; color: #1565c0; }
 .bg-yellow { background: #fff9c4; color: #f9a825; }
 
-/* 프로필 이미지 (리스트용) */
 .profile-wrap { display: flex; align-items: center; gap: 8px; }
 .profile-img { width: 32px; height: 32px; border-radius: 50%; background: #eee; object-fit: cover; }
 .profile-info div:first-child { font-size: 12px; font-weight: 500; }
 .profile-info div:last-child { font-size: 11px; color: #999; }
 
-/* 리스트 버튼 */
 .btn-wrap { display: flex; gap: 5px; }
 .btn {
     border: 1px solid #ddd;
@@ -273,81 +274,26 @@ html, body {
 }
 .btn-view:hover { background: #1e88e5; }
 
-/* 로딩/메시지 박스 */
 .msg-box { text-align: center; padding: 40px; color: #888; font-size: 14px; }
 
-/* 내 위치 찾기 버튼 */
 .btn-location {
     position: absolute;
-    bottom: 240px; /* 바텀시트 높이 고려해서 위치 조정 */
+    bottom: 240px;
     right: 20px;
     width: 50px;
     height: 50px;
     background-color: white;
     border: none;
-    border-radius: 50%; /* 동그랗게 */
+    border-radius: 50%;
     box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     cursor: pointer;
-    font-size: 20px; /* 이모지 크기 */
-    z-index: 100; /* 지도 위에 둥둥 */
+    font-size: 20px;
+    z-index: 100;
     transition: background 0.2s;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.btn-location:hover {
-    background-color: #f1f1f1;
-}
-
-.btn-location:active {
-    background-color: #e0e0e0;
-}
-
-/* ============================================================
-   🌟 [NEW] 지도 페이지 전용 헤더 스타일 (relative 모드)
-   ============================================================ */
-
-/* 1. 헤더를 감싸는 껍데기 */
-.map-header-wrapper {
-    position: relative;  /* 지도랑 분리 (위쪽에 배치) */
-    width: 100%;
-    z-index: 1000;
-
-    /* [중요] 라이트 모드 기본 배경색 (이게 없으면 투명해서 이상할 수 있음) */
-    background-color: #f0f0f0;
-    transition: background-color 0.3s ease; /* 색깔 바뀔 때 부드럽게 */
-}
-
-/* 2. 내부 헤더 레이아웃 보정 */
-.map-header-wrapper .non-login-header {
-    width: 100% !important;
-    box-sizing: border-box;
-    margin: 0 !important;
-}
-
-/* 3. 지도 컨테이너 높이 계산 */
-/* 헤더가 relative로 공간을 차지하므로, 지도는 (전체 - 헤더높이) 만큼만 써야 스크롤이 안 생김 */
-/* 헤더 높이가 대략 60~80px 정도라고 가정하고 calc를 씁니다. */
-.map-container {
-    width: 100%;
-    height: calc(100vh - 80px); /* 🌟 전체 높이에서 헤더만큼 뺌 */
-}
-
-
-/* ============================================================
-   🌟 [NEW] 다크모드 적용 (배경색 + 글자색)
-   ============================================================ */
-
-/* 1. 껍데기 배경을 어둡게 변경 */
-body.dark-mode .map-header-wrapper {
-    background-color: #2d2d2d; /* 지도 다크모드 색이랑 맞춤 (진한 회색) */
-    border-bottom: 1px solid #444; /* (선택) 지도랑 구분선 */
-}
-
-/* 2. 글자랑 아이콘을 흰색으로 변경 */
-body.dark-mode .map-header-wrapper .non-login-header .nav-menu a,
-body.dark-mode .map-header-wrapper .non-login-header .icon-btn {
-    color: #ffffff !important;
-    transition: color 0.3s ease;
-}
+.btn-location:hover { background-color: #f1f1f1; }
+.btn-location:active { background-color: #e0e0e0; }

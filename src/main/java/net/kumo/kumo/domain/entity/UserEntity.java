@@ -71,10 +71,11 @@ public class UserEntity {
 	@Column(length = 20, unique = true)
 	private String contact;
 	
-	@Column(name = "profile_image", length = 255)
-	@Builder.Default
-	private String profileImage = "/images/default_profile.png";
+	// 기존에 있던 String profileImage; 필드를 지우고 아래로 !
 	
+	@ToString.Exclude // 🔥 무한 루프 방지! (이걸 꼭 붙여주세요)
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private ProfileImageEntity profileImage;
 	
 	/* ==========================
 	   4. 주소 정보 (표시용)
@@ -127,10 +128,11 @@ public class UserEntity {
 	private boolean isActive = true;
 	
 	// 소셜 로그인용 (nullable)
-	@Column(name = "social_provider", length = 20)
-	private String socialProvider;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = true)
+	private Enum.SocialProvider socialProvider;
 	
-	@Column(name = "social_id", length = 100)
+	@Column(name = "social_id", length = 100 , nullable = true)
 	private String socialId;
 	
 	
@@ -150,6 +152,7 @@ public class UserEntity {
 	
 	// 1. 실패 횟수 저장 (기본값 0)
 	@Column(name = "login_fail_count", nullable = false)
+	@Builder.Default // 이거 추가!
 	private int loginFailCount = 0;
 	
 	// 2. 마지막 실패 시간 (null 가능)

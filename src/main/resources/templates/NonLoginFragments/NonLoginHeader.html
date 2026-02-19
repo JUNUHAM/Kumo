@@ -1,6 +1,10 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <div th:fragment="headerFragment">
+    <link rel="stylesheet" th:href="@{/css/NonLoginFragments/NonLoginHeader.css}"
+          sec:authorize="isAnonymous()">
+
     <script th:inline="javascript">
         /* <![CDATA[ */
         (function() {
