@@ -67,7 +67,6 @@
     </div>
 
     <div class="action-buttons">
-        <button class="btn btn-dark" th:text="${lang == 'ja' ? '✅ CSVダウンロード' : '✅ 선택 항목 CSV 다운로드'}">✅ 선택 항목 CSV 다운로드</button>
         <button class="btn btn-dark" onclick="deleteSelectedItems()" th:text="${lang == 'ja' ? '🗑️ 削除' : '🗑️ 삭제'}">🗑️ 삭제</button>
     </div>
 
@@ -103,14 +102,10 @@
 
                     <td class="col-title">
                         <a class="title-link"
-                           th:href="@{/job/detail(id=${post.id}, source=${post.source}, lang=${lang})}"
+                           th:href="@{/map/jobs/detail(id=${post.id}, source=${post.source}, lang=${lang})}"
                            target="_blank">
                             <span class="title-text" th:text="${post.title}" th:title="${post.title}">제목</span>
                         </a>
-                        <span class="sub-text"
-                              th:text="${#strings.contains(post.source, 'OSAKA') ? (lang == 'ja' ? '大阪' : '오사카') : (lang == 'ja' ? '東京' : '도쿄')}">
-                            지역
-                        </span>
                     </td>
 
                     <td class="col-cate" th:text="${post.position}">직무</td>

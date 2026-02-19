@@ -5,7 +5,7 @@
 
 // 1. 현재 언어 설정 가져오기 (URL 파라미터 기준)
 const urlParams = new URLSearchParams(window.location.search);
-const currentLang = urlParams.get('lang') === 'jp' ? 'jp' : 'kr';
+const currentLang = urlParams.get('lang') === 'ja' ? 'ja' : 'ko';
 
 // 2. 메시지 상수 정의
 const MESSAGES = {
