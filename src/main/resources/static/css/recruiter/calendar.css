@@ -45,10 +45,6 @@
   margin-right: 5px !important;
 }
 
-/* 4. [보너스] 메인 캘린더 날짜 칸 여백 조절 */
-#calendar .fc-daygrid-day-frame {
-  min-height: 120px !important; /* 칸을 시원하게 늘림 */
-}
 /* 1. 캘린더 메인 레이아웃 */
 .calendar-main-layout {
   display: flex;
@@ -301,16 +297,6 @@
   text-decoration: none !important;
 }
 
-/* 3. 날짜 칸: 수직 배치 및 높이 압축 */
-#mini-calendar .fc-daygrid-day-frame {
-  height: 38px !important;
-  padding: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
-}
-
 /* 4. 숫자 스타일 및 선택 효과 (파란 원) */
 #mini-calendar .fc-daygrid-day-number {
   font-size: 0.85rem !important;
@@ -356,22 +342,28 @@
   color: white !important;
 }
 
-/* 5. 일정 점(Dot) 가로 나열 및 위치 교정 */
-#mini-calendar .fc-daygrid-day-events {
-  display: flex !important;
-  flex-direction: row !important;
-  justify-content: center !important;
-  gap: 3px !important;
-  width: 100% !important;
-  min-height: 8px !important;
-  margin-top: -2px !important;
-}
+/* [미니 캘린더] 점(Dot) 가로 정렬 및 시인성 확보 */
+
 #mini-calendar .fc-daygrid-event-dot {
-  width: 5px !important;
-  height: 5px !important;
-  background-color: #7abaff !important;
-  border-radius: 50% !important;
+  display: block !important;
+  visibility: visible !important;
+  width: 6px !important;
+  height: 6px !important;
   border: none !important;
+  border-radius: 50% !important;
+}
+
+/* 3. 점을 감싸는 불필요한 배경/테두리 제거 */
+#mini-calendar .fc-daygrid-event {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+}
+
+/* 4. [잘림 방지] 요일 행에 원형이나 점이 잘리지 않게 보호 */
+#mini-calendar .fc-daygrid-day-frame {
+  overflow: visible !important;
 }
 
 /* 6. 상세 일정 카드(바) 확장 - [사장님 요청 사항] */
@@ -405,7 +397,13 @@
 .event-item-title {
   font-size: 0.95rem;
   font-weight: 700;
-  color: #333d4b;
+  color: #202030;
+}
+
+html.dark-mode .event-item-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
 }
 
 /* 7. 기타 레이아웃 정리 */
@@ -421,4 +419,282 @@
 }
 #mini-calendar .fc-scroller {
   overflow: hidden !important;
+}
+
+/* ===================================================
+   [긴급] 날짜 주변의 '작은 네모 박스' 완전 제거
+   =================================================== */
+
+/* 2. 날짜 클릭 시 나타나는 '칸 전체 배경' 연하게 (보정) */
+html.dark-mode #calendar .selected-day {
+  background-color: rgba(
+    122,
+    186,
+    255,
+    0.2
+  ) !important; /* 라이트모드와 유사한 투명도 */
+}
+
+/* 3. 선택된 날짜의 숫자만 뚜렷하게 표시 */
+html.dark-mode .selected-day .fc-daygrid-day-number {
+  color: #7abaff !important; /* 사장님의 시그니처 블루 */
+  font-weight: 800 !important;
+}
+
+/* 4. 오늘 날짜 노란색 원 배경이 있다면 그것도 투명화 (글자색만 유지) */
+html.dark-mode .fc-day-today .fc-daygrid-day-number {
+  background: transparent !important;
+  color: #fcc419 !important;
+}
+
+/* ===================================================
+   [KUMO RECRUITER] 캘린더 통합 디자인 v9.0
+   =================================================== */
+
+/* ---------------------------------------------------
+   1. 본 캘린더 (#calendar) : 네모칸 채우기 스타일
+--------------------------------------------------- */
+#calendar .fc-daygrid-day-frame {
+  min-height: 120px !important;
+}
+
+/* [본 캘린더] 날짜 숫자 위치 고정 (오른쪽 위) */
+#calendar .fc-daygrid-day-top {
+  display: flex-end !important;
+  justify-content: flex !important;
+  padding: 8px 12px !important;
+}
+
+/* [본 캘린더] 선택 시 칸 전체 배경색 (네모) */
+#calendar .selected-day {
+  background-color: rgba(122, 186, 255, 0.15) !important;
+  transition: background-color 0.2s ease;
+}
+
+/* [본 캘린더] 다크모드 대응 */
+html.dark-mode #calendar .selected-day {
+  background-color: rgba(122, 186, 255, 0.25) !important;
+}
+
+/* [본 캘린더] 숫자에 원형 효과 절대 안 들어가게 차단 */
+#calendar .fc-daygrid-day-number {
+  background: transparent !important;
+  border-radius: 0 !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+/* ============================================================
+   [미니 캘린더] 점(Dot) 소환 및 원형 잘림 해결 통합 마스터
+   ============================================================ */
+
+/* 1. 숫자가 칸을 다 차지하지 못하게 높이 제한 (공간 확보) */
+#mini-calendar .fc-daygrid-day-top {
+  height: 25px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* 2. FullCalendar가 숨겨버린 점들의 '집(Harness)'을 강제로 깨움 */
+#mini-calendar .fc-daygrid-event-harness {
+  display: inline-block !important; /* 가로로 나열 */
+  visibility: visible !important;
+  opacity: 1 !important;
+  margin: 0 1px !important;
+}
+
+/* 3. 점(Dot)들이 들어있는 바구니를 가로로 배치 */
+#mini-calendar .fc-daygrid-day-events {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  gap: 3px !important;
+  min-height: 10px !important;
+  overflow: visible !important; /* 점이 잘리지 않게 */
+  margin-top: -2px !important;
+}
+
+/* 4. 점(Dot) 자체를 확실하게 보이게 고정 */
+#mini-calendar .fc-daygrid-event-dot {
+  display: block !important;
+  visibility: visible !important;
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50% !important;
+  border: none !important;
+  z-index: 10 !important;
+}
+
+/* 5. 1일, 19일 등 윗줄 원형이 요일 행에 잘리는 문제 해결 */
+#mini-calendar .fc-daygrid-day-frame,
+#mini-calendar .fc-daygrid-day,
+#mini-calendar .fc-scrollgrid-sync-inner {
+  overflow: visible !important;
+}
+
+/* 6. 요일 헤더가 원형 위로 올라오지 못하게 순서 조정 */
+#mini-calendar .fc-col-header {
+  position: relative;
+  z-index: 1;
+}
+
+#mini-calendar .fc-daygrid-day-number {
+  position: relative;
+  z-index: 5 !important;
+}
+
+/* ---------------------------------------------------
+   4. 일정 막대 및 사이드바 카드 (기존 디자인 보존)
+--------------------------------------------------- */
+#calendar .fc-event {
+  border: none !important;
+  background-color: #f0f7ff !important;
+  border-left: 4px solid #7abaff !important;
+  border-radius: 8px !important;
+  padding: 4px 8px !important;
+  box-shadow: 0 2px 6px rgba(122, 186, 255, 0.15) !important;
+}
+
+.sidebar-card {
+  background: #ffffff;
+  border-left: 5px solid #7abaff;
+  border-radius: 15px;
+  padding: 16px 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+  margin-bottom: 12px;
+  transition: transform 0.2s ease;
+}
+
+html.dark-mode .sidebar-card {
+  background-color: #2a2a2a !important;
+  color: #ffffff !important;
+}
+
+/* ============================================================
+   [스케줄 모달] 라이트모드 전용 (두 번째 사진 완벽 재현)
+   ============================================================ */
+.schedule-modal-content {
+  background-color: #ffffff !important;
+  border-radius: 25px !important;
+  border: none !important;
+  padding: 20px !important;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 라벨 (주제, 날짜 등) */
+.modal-label {
+  color: #4e5968 !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+}
+
+/* 입력창 (Input, Textarea) */
+.kumo-modal-input,
+.kumo-modal-textarea {
+  background-color: #f9fafb !important;
+  border: 1px solid #e5e8eb !important;
+  border-radius: 12px !important;
+  color: #333d4b !important;
+  padding: 10px 15px !important;
+  width: 100% !important; /* 부모 col-9 안에서 꽉 차게 */
+}
+
+/* 색상 도트 */
+.color-dot {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.color-dot.active {
+  border: 3px solid #333d4b !important;
+  transform: scale(1.15);
+}
+
+/* 하단 버튼 */
+.btn-modal-cancel {
+  background: #ffffff;
+  color: #8b95a1;
+  border: 1px solid #e5e8eb;
+  border-radius: 12px;
+  padding: 10px 30px;
+  font-weight: 600;
+}
+.btn-modal-submit {
+  background: #7abaff;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 30px;
+  font-weight: 600;
+}
+
+/* ============================================================
+   [모달 레이아웃] 날짜/시간 줄바꿈 및 정렬 보정
+   ============================================================ */
+.schedule-modal-content .col-9.d-flex {
+  flex-wrap: wrap !important; /* 공간 부족시 아래로 넘기기 */
+  gap: 8px !important; /* 입력창 사이 간격 */
+}
+
+/* 날짜/시간 입력창 크기 최적화 (튀어나옴 방지) */
+.schedule-modal-content input[type="date"],
+.schedule-modal-content input[type="time"] {
+  flex: 1 1 auto !important; /* 가변 크기 적용 */
+  min-width: 100px !important;
+  max-width: 140px !important;
+}
+
+/* 모달 제목 및 닫기 버튼 위치 조정 */
+.schedule-modal-content .modal-header {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.schedule-modal-content .btn-close {
+  position: absolute;
+  right: 20px;
+  top: 25px;
+}
+
+/* [미니 캘린더] 사라진 점 강제 소환 및 가로 정렬 */
+
+/* 3. 점 스타일 고정 */
+#mini-calendar .fc-daygrid-event-dot {
+  display: block !important;
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50% !important;
+  border: none !important;
+}
+
+/* 4. 불필요한 텍스트나 여백 제거 */
+#mini-calendar .fc-event {
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+}
+#mini-calendar .fc-event-title,
+#mini-calendar .fc-event-time {
+  display: none !important; /* 글자는 절대 안 나오게 */
+}
+
+/* [본 캘린더] "..." 더보기 버튼 스타일 */
+.fc-daygrid-more-link {
+  color: #70729f !important; /* 라이트모드: 흰색 */
+  font-weight: 800 !important;
+  font-size: 1rem !important;
+  text-decoration: none !important;
+  padding-left: 4px !important;
+  /* 🌟 [추가] 클릭 불가능한 느낌 주기 */
+  cursor: default !important; /* 마우스 커서를 화살표로 고정 */
+  pointer-events: none !important; /* 클릭 이벤트 자체를 완전히 무시 */
+}
+
+/* 다크모드 대응 */
+html.dark-mode .fc-daygrid-more-link {
+  color: #a2a4f0 !important; /* 다크모드: 검은색 */
 }

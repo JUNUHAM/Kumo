@@ -1,112 +1,132 @@
 document.addEventListener("DOMContentLoaded", function () {
+  const currentLang = document.documentElement.lang || "ko"; // HTML lang 속성 참고
+
+  // 1. 메인 캘린더 영역 (페이지에 있을 때만 실행)
+  const calendarEl = document.getElementById("calendar");
+  if (calendarEl && typeof FullCalendar !== "undefined") {
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: "dayGridMonth",
+      headerToolbar: {
+        left: "prev,next today",
+        center: "title",
+        right: "dayGridMonth,timeGridWeek,listWeek",
+      },
+      locale: currentLang,
+      events: "/api/calendar/events",
+      dateClick: function (info) {
+        document
+          .querySelectorAll(".selected-day")
+          .forEach((el) => el.classList.remove("selected-day"));
+        info.dayEl.classList.add("selected-day");
+        updateScheduleDetail(info.dateStr, calendar);
+      },
+      eventClick: function (info) {
+        alert(
+          "일정: " +
+            info.event.title +
+            "\n내용: " +
+            (info.event.extendedProps.description || "내용 없음"),
+        );
+      },
+    });
+    calendar.render();
+  }
+
+  // 2. 미니 캘린더 영역 (사이드바 등에 있을 때만 실행)
   const miniEl = document.getElementById("mini-calendar");
-
   if (miniEl && typeof FullCalendar !== "undefined") {
-    // [수정] 한국 시간 기준으로 오늘 날짜 구하기 (밀림 방지)
     const now = new Date();
-    const todayStr =
-      now.getFullYear() +
-      "-" +
-      String(now.getMonth() + 1).padStart(2, "0") +
-      "-" +
-      String(now.getDate()).padStart(2, "0");
-
-    // 저장된 날짜 확인
-    const savedDate = localStorage.getItem("selectedDate");
-    const dateToSelect = savedDate || todayStr;
+    const todayStr = now.toISOString().split("T")[0];
+    const dateToSelect = localStorage.getItem("selectedDate") || todayStr;
 
     const miniCalendar = new FullCalendar.Calendar(miniEl, {
       initialView: "dayGridMonth",
-      locale: "ko",
+      locale: currentLang,
       headerToolbar: false,
       height: "auto",
-      contentHeight: "auto",
-      timeZone: "local",
+      events: "/api/calendar/events",
 
-      dayCellContent: (arg) => {
-        return { html: arg.date.getDate() };
-      },
+      // [최종] 점을 무조건 그리라고 강제하는 3대장
+      eventDisplay: "list-item",
+      dayMaxEvents: 3, // ⚠️ false로 두어야 공간 부족해도 점을 안 숨깁니다.
+      dayMaxEventRows: false,
 
-      dayCellDidMount: function (arg) {
-        const d = arg.date;
-        const cellDate =
-          d.getFullYear() +
-          "-" +
-          String(d.getMonth() + 1).padStart(2, "0") +
-          "-" +
-          String(d.getDate()).padStart(2, "0");
+      dayCellContent: (arg) => ({ html: arg.date.getDate() }),
 
-        if (cellDate === dateToSelect) {
-          arg.el.classList.add("selected-day");
+      // [최종] 점에 색깔 입히고 강제로 깨우기
+      eventDidMount: function (info) {
+        const dot = info.el.querySelector(".fc-daygrid-event-dot");
+        if (dot) {
+          dot.style.setProperty(
+            "background-color",
+            info.event.backgroundColor || info.event.color || "#7abaff",
+            "important",
+          );
+          dot.style.setProperty("display", "block", "important");
+          dot.style.setProperty("visibility", "visible", "important");
         }
       },
 
-      events: [
-        {
-          title: "면접(김철수)",
-          start: "2026-02-10T10:00:00",
-          allDay: false,
-          color: "#7abaff",
-        },
-        {
-          title: "회의",
-          start: "2026-02-14T14:00:00",
-          allDay: false,
-          color: "#92ccff",
-        },
-      ],
-
       dateClick: function (info) {
         localStorage.setItem("selectedDate", info.dateStr);
-        document.querySelectorAll(".selected-day").forEach((el) => {
-          el.classList.remove("selected-day");
-        });
+        document
+          .querySelectorAll(".selected-day")
+          .forEach((el) => el.classList.remove("selected-day"));
         info.dayEl.classList.add("selected-day");
         updateScheduleDetail(info.dateStr, miniCalendar);
       },
     });
-
     miniCalendar.render();
     updateScheduleDetail(dateToSelect, miniCalendar);
   }
 
+  // 3. 상세 일정 업데이트 함수 (공통 사용)
+  // 3. 상세 일정 업데이트 함수 (시간 표시 추가 버전)
   function updateScheduleDetail(dateStr, calendarApi) {
-    const titleEl = document.getElementById("selected-date-title");
+    const container = document.getElementById("event-list-container");
+    if (!container) return;
 
-    // [다국어 적용] HTML에서 넘겨준 kumoMsgs 객체 사용
+    const titleEl = document.getElementById("selected-date-title");
     const titleSuffix =
       typeof kumoMsgs !== "undefined" ? kumoMsgs.scheduleTitle : " 일정";
     if (titleEl) titleEl.innerText = dateStr + " " + titleSuffix;
 
     const events = calendarApi.getEvents().filter((e) => {
       const d = e.start;
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      return `${year}-${month}-${day}` === dateStr;
+      return d.toISOString().split("T")[0] === dateStr;
     });
 
-    const container = document.getElementById("event-list-container");
-    if (!container) return;
-
     container.innerHTML = "";
-
     if (events.length === 0) {
-      // [다국어 적용] 일정이 없을 때 메시지
       const emptyMsg =
         typeof kumoMsgs !== "undefined"
           ? kumoMsgs.noSchedule
           : "일정이 없습니다.";
-      container.innerHTML = `<div class="empty-state text-center p-3">
-                               <i class="bi bi-calendar-x d-block mb-2 fs-2 text-muted"></i>
-                               ${emptyMsg}
-                             </div>`;
+      container.innerHTML = `<div class="empty-state text-center p-3">${emptyMsg}</div>`;
     } else {
       events.forEach((e) => {
         const card = document.createElement("div");
         card.className = "sidebar-card";
-        card.style.borderLeft = `5px solid ${e.backgroundColor || "#7abaff"}`;
-        card.innerHTML = `<div class="fw-bold">${e.title}</div>`;
+
+        // [핵심] 다크모드 !important를 뚫고 색상을 박아넣는 로직
+        const eventColor = e.backgroundColor || e.color || "#7abaff";
+        card.style.setProperty("border-left-color", eventColor, "important");
+
+        const timeStr = e.start.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        });
+
+        // [완료] 한 줄 배치 + 화살표(>) 삭제 + 슬림한 높이
+        card.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 12px; width: 100%; padding: 2px 0;">
+            <div class="event-item-title" style="margin: 0; font-size: 0.9rem; font-weight: 700;">${e.title}</div>
+            <div class="event-item-time" style="font-size: 0.8rem; color: #8b95a1; white-space: nowrap;">
+                <i class="bi bi-clock me-1"></i>${timeStr}
+            </div>
+        </div>
+    `;
         container.appendChild(card);
       });
     }
