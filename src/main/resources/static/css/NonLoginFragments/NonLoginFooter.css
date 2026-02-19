@@ -16,11 +16,10 @@
     margin-top: auto;
 }
 
-/* 2. 푸터 내부 콘텐츠 박스 (중앙 정렬용) */
-.footer-container {
-    max-width: 1400px; /* 화면이 아무리 커져도 내용은 1400px까지만 퍼짐 */
-    margin: 0 auto;    /* 박스를 화면 가로 중앙에 배치 */
 
+/* 2. 푸터 내부 콘텐츠 박스 (양끝 정렬로 수정) */
+.footer-container {
+    width: 100%;       /* max-width 제한을 없애고 100%로 채움 */
     display: flex;     /* 내부 요소(Copyright, 링크들)를 가로로 배치 */
     justify-content: space-between; /* 요소들을 양 끝(좌/우)으로 쫙 벌림 */
     align-items: center;            /* 수직 기준 중앙 정렬 */
