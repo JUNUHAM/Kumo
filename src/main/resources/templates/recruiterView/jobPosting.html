@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>KUMO RECRUITER - 공고 등록</title>
+    <script th:src="@{/js/recruiter/main.js}"></script>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -11,15 +12,24 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
     />
-    <link rel="stylesheet" th:href="@{/css/recruiter/header.css}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" th:href="@{/css/recruiter/recruiterHeader.css}" />
+    <link
+      rel="stylesheet"
+      th:href="@{/css/NonLoginFragments/NonLoginFooter.css}"
+    />
     <link rel="stylesheet" th:href="@{/css/recruiter/sidebar.css}" />
     <link rel="stylesheet" th:href="@{/css/recruiter/main.css}" />
     <link rel="stylesheet" th:href="@{/css/recruiter/jobPosting.css}" />
     <link rel="stylesheet" th:href="@{/css/recruiter/companyInfo.css}" />
+    <link rel="stylesheet" th:href="@{/css/recruiter/dark-theme.css}" />
   </head>
   <body>
     <header
-      th:replace="~{recruiterView/fragments/header :: headerFragment}"
+      th:replace="~{recruiterView/fragments/recruiterHeader :: headerFragment}"
     ></header>
 
     <div class="dashboard-wrapper">
@@ -30,7 +40,7 @@
       <div class="main-container">
         <main class="content-body">
           <div class="posting-card">
-            <h2 class="posting-title">공고 등록</h2>
+            <h2 class="posting-title" th:text="#{post.title}">공고 등록</h2>
 
             <form
               action="/Recruiter/JobPost"
@@ -38,38 +48,49 @@
               enctype="multipart/form-data"
             >
               <div class="form-group mb-4">
-                <label class="form-label">제목</label>
+                <label class="form-label" th:text="#{post.label.subject}"
+                  >제목</label
+                >
                 <input
                   type="text"
                   name="title"
                   class="form-control kumo-input"
+                  th:placeholder="#{post.placeholder.subject}"
                   placeholder="구인글 제목을 입력해주세요."
                 />
               </div>
 
               <div class="row mb-4">
                 <div class="col-md-6">
-                  <label class="form-label">업무</label>
+                  <label class="form-label" th:text="#{post.label.task}"
+                    >업무</label
+                  >
                   <input
                     type="text"
                     name="position"
                     class="form-control kumo-input"
+                    th:placeholder="#{post.placeholder.task}"
                     placeholder="직책을 입력해주세요."
                   />
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label">업무 상세</label>
+                  <label class="form-label" th:text="#{post.label.task_detail}"
+                    >업무 상세</label
+                  >
                   <input
                     type="text"
                     name="positionDetail"
                     class="form-control kumo-input"
+                    th:placeholder="#{post.placeholder.task_detail}"
                     placeholder="상세 업무내용을 입력해주세요."
                   />
                 </div>
               </div>
 
               <div class="form-group mb-4">
-                <label class="form-label">마감일</label>
+                <label class="form-label" th:text="#{post.label.deadline}"
+                  >마감일</label
+                >
                 <div class="d-flex align-items-center gap-2 flex-nowrap">
                   <input
                     type="number"
@@ -98,22 +119,25 @@
                   <span
                     class="fw-bold text-nowrap"
                     style="color: #4a90e2; min-width: 40px;"
+                    th:text="#{post.label.until}"
                     >까지</span
                   >
                 </div>
               </div>
 
               <div class="form-group mb-4">
-                <label class="form-label">급여</label>
+                <label class="form-label" th:text="#{post.label.wage}"
+                  >급여</label
+                >
                 <div class="d-flex align-items-center gap-2">
                   <select
                     class="form-select kumo-input-sm"
                     style="width: 100px;"
                   >
-                    <option>시급</option>
-                    <option>일급</option>
-                    <option>월급</option>
-                    <option>연봉</option>
+                    <option th:text="#{post.wage.hourly}">시급</option>
+                    <option th:text="#{post.wage.daily}">일급</option>
+                    <option th:text="#{post.wage.monthly}">월급</option>
+                    <option th:text="#{post.wage.yearly}">연봉</option>
                   </select>
                   <div class="position-relative flex-grow-1">
                     <input
@@ -130,7 +154,9 @@
               </div>
 
               <div class="form-group mb-4">
-                <label class="form-label">사진 업로드</label>
+                <label class="form-label" th:text="#{post.label.photo}"
+                  >사진 업로드</label
+                >
                 <div class="upload-container">
                   <label for="file-upload" class="upload-btn">
                     <i class="bi bi-plus-circle-fill"></i>
@@ -139,7 +165,9 @@
                 </div>
               </div>
               <div class="form-group mb-4">
-                <label class="form-label">등록 회사 선택</label>
+                <label class="form-label" th:text="#{post.label.select_biz}"
+                  >등록 회사 선택</label
+                >
                 <div class="company-selection-wrapper">
                   <div class="nav-pills-wrapper" id="companySelectTabs">
                     <button
@@ -160,7 +188,8 @@
                       th:href="@{/Recruiter/CompanyInfo}"
                       class="nav-pill-link"
                     >
-                      <i class="bi bi-gear-fill me-1"></i> 회사 관리
+                      <i class="bi bi-gear-fill me-1"></i>
+                      <span th:text="#{biz.btn.manage_short}">회사 관리</span>
                     </a>
                   </div>
                   <input
@@ -170,22 +199,32 @@
                     value="1"
                   />
                 </div>
-                <p class="text-muted small mt-2">
+                <p
+                  class="text-muted small mt-2"
+                  th:text="#{post.guide.select_biz}"
+                >
                   공고에 표시될 회사를 선택해 주세요. 상세 정보는 회사 관리
                   메뉴에서 수정 가능합니다.
                 </p>
               </div>
               <div class="form-group mb-5">
-                <label class="form-label">상세정보</label>
+                <label class="form-label" th:text="#{post.label.detail}"
+                  >상세정보</label
+                >
                 <textarea
                   class="form-control kumo-input"
                   rows="6"
+                  th:placeholder="#{post.placeholder.detail}"
                   placeholder="상세 내용을 입력해주세요."
                 ></textarea>
               </div>
 
               <div class="text-center mb-5">
-                <button type="submit" class="btn btn-primary kumo-btn-submit">
+                <button
+                  type="submit"
+                  class="btn btn-primary kumo-btn-submit"
+                  th:text="#{post.btn.submit}"
+                >
                   등록
                 </button>
               </div>
@@ -193,7 +232,7 @@
           </div>
 
           <footer
-            th:replace="~{fragments/NonLoginFooter :: footerFragment}"
+            th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"
           ></footer>
         </main>
       </div>

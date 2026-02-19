@@ -152,3 +152,33 @@
   font-weight: 600;
   text-decoration: none;
 }
+
+/* [긴급] 화면을 덮고 있는 모든 흐릿한 레이어 강제 제거 */
+.main-container,
+.content-body,
+.company-mgmt-container {
+  background-color: transparent !important; /* 배경색 중첩 제거 */
+  opacity: 1 !important; /* 투명도 강제 해제 */
+  filter: none !important; /* 블러 효과 제거 */
+  z-index: 1;
+}
+
+/* 컨텐츠가 명확히 보이도록 카드 배경색 고정 */
+.info-glass-card {
+  position: relative;
+  z-index: 10; /* 컨텐츠를 최상단으로 올림 */
+  background: #ffffff !important; /* 라이트모드 기준 */
+  opacity: 1 !important;
+}
+
+/* 다크모드일 때는 다시 어둡게 (이미 짠 코드와 충돌 방지) */
+body.dark-mode .info-glass-card {
+  background: #252526 !important;
+}
+
+/* 화면을 가리는 투명 막이 있다면 삭제 */
+.modal-backdrop,
+[class*="backdrop"],
+[class*="overlay"] {
+  display: none !important;
+}

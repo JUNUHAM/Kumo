@@ -1,0 +1,257 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title th:text="#{profile.edit.title}">KUMO - 회원정보 수정</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link rel="stylesheet" th:href="@{/css/recruiter/recruiterHeader.css}" />
+    <link rel="stylesheet" th:href="@{/css/recruiter/sidebar.css}" />
+    <link rel="stylesheet" th:href="@{/css/recruiter/main.css}" />
+    <link rel="stylesheet" th:href="@{/css/recruiter/profileEdit.css}" />
+    <link rel="stylesheet" th:href="@{/css/recruiter/dark-theme.css}" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  </head>
+  <body>
+    <header
+      th:replace="~{recruiterView/fragments/recruiterHeader :: headerFragment}"
+    ></header>
+
+    <div class="dashboard-wrapper">
+      <div
+        th:replace="~{recruiterView/fragments/sidebar :: sidebarFragment}"
+      ></div>
+
+      <main class="main-container profile-edit-full-bg">
+        <div class="profile-edit-centered-wrapper">
+          <div class="edit-box">
+            <h1 class="edit-title" th:text="#{profile.edit.title}">
+              회원정보 수정
+            </h1>
+
+            <form
+              id="editForm"
+              th:action="@{/Recruiter/profileUpdate}"
+              method="post"
+            >
+              <div class="form-row">
+                <div class="form-col-vertical">
+                  <label class="input-label" th:text="#{profile.label.sei}"
+                    >성</label
+                  >
+                  <input
+                    type="text"
+                    th:value="${user?.nameKanjiSei}"
+                    class="custom-input gray-input"
+                    readonly
+                  />
+                </div>
+                <div class="form-col-vertical">
+                  <label class="input-label" th:text="#{profile.label.mei}"
+                    >이름</label
+                  >
+                  <input
+                    type="text"
+                    th:value="${user?.nameKanjiMei}"
+                    class="custom-input gray-input"
+                    readonly
+                  />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-col-vertical">
+                  <label class="input-label" th:text="#{profile.label.sei_kana}"
+                    >세이</label
+                  >
+                  <input
+                    type="text"
+                    th:value="${user?.nameKanaSei}"
+                    class="custom-input gray-input"
+                    readonly
+                  />
+                </div>
+                <div class="form-col-vertical">
+                  <label class="input-label" th:text="#{profile.label.mei_kana}"
+                    >메이</label
+                  >
+                  <input
+                    type="text"
+                    th:value="${user?.nameKanaMei}"
+                    class="custom-input gray-input"
+                    readonly
+                  />
+                </div>
+              </div>
+
+              <div class="input-group-vertical">
+                <label class="input-label" th:text="#{profile.label.email}"
+                  >이메일</label
+                >
+                <input
+                  type="email"
+                  th:value="${user?.email}"
+                  class="custom-input gray-input"
+                  readonly
+                />
+              </div>
+
+              <div class="form-row">
+                <div class="form-col-vertical" style="flex: 2;">
+                  <label class="input-label" th:text="#{profile.label.birth}"
+                    >생년월일</label
+                  >
+                  <div class="birth-row">
+                    <input
+                      type="text"
+                      th:value="${birthYear}"
+                      class="custom-input gray-input text-center"
+                      readonly
+                    />
+                    <input
+                      type="text"
+                      th:value="${birthMonth}"
+                      class="custom-input gray-input text-center"
+                      readonly
+                    />
+                    <input
+                      type="text"
+                      th:value="${birthDay}"
+                      class="custom-input gray-input text-center"
+                      readonly
+                    />
+                  </div>
+                </div>
+                <div class="form-col-vertical" style="flex: 1;">
+                  <label class="input-label" th:text="#{profile.label.gender}"
+                    >성별</label
+                  >
+                  <input
+                    type="text"
+                    th:value="${user?.gender != null ? (user.gender.name() == 'MALE' ? #messages.msg('profile.gender.male') : #messages.msg('profile.gender.female')) : ''}"
+                    class="custom-input gray-input text-center"
+                    readonly
+                  />
+                </div>
+              </div>
+
+              <hr class="edit-divider" />
+
+              <div class="input-group-vertical">
+                <label class="input-label" th:text="#{profile.label.nickname}"
+                  >닉네임</label
+                >
+                <div class="action-row">
+                  <input
+                    type="text"
+                    name="nickname"
+                    id="nickname"
+                    th:value="${user?.nickname}"
+                    class="custom-input"
+                  />
+                  <button
+                    type="button"
+                    class="btn-sub-action"
+                    onclick="checkNickname()"
+                    th:text="#{profile.btn.check_dup}"
+                  >
+                    중복확인
+                  </button>
+                </div>
+                <div id="error_nickname" class="error-msg"></div>
+              </div>
+
+              <div class="input-group-vertical">
+                <label class="input-label" th:text="#{profile.label.address}"
+                  >주소</label
+                >
+                <div class="action-row mb-2">
+                  <input
+                    type="text"
+                    name="zipCode"
+                    id="zipcode"
+                    th:value="${user?.zipCode}"
+                    class="custom-input"
+                    maxlength="7"
+                  />
+                  <button
+                    type="button"
+                    class="btn-sub-action"
+                    onclick="searchAddress()"
+                    th:text="#{profile.btn.find_addr}"
+                  >
+                    주소검색
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  name="addressMain"
+                  id="address_main"
+                  th:value="${user?.addressMain}"
+                  class="custom-input mb-2"
+                />
+                <input
+                  type="text"
+                  name="addressDetail"
+                  id="address_detail"
+                  th:value="${user?.addressDetail}"
+                  class="custom-input"
+                  th:placeholder="#{profile.placeholder.address_detail}"
+                />
+              </div>
+
+              <button
+                type="submit"
+                class="btn-submit-edit"
+                th:text="#{profile.btn.update}"
+              >
+                수정 완료
+              </button>
+              <p class="edit-footer-notice" th:text="#{profile.edit.notice}">
+                사업자 정보 수정이 필요할 시 공식 채널에 연락 부탁드립니다.
+              </p>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div
+      th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"
+    ></div>
+
+    <script th:inline="javascript">
+      const msgs = {
+          nickname_empty: [[#{profile.error.nickname.empty}]],
+          nickname_duplicate: [[#{profile.error.nickname.duplicate}]],
+          nickname_ok: [[#{profile.success.nickname.ok}]]
+      };
+
+      function checkNickname() {
+          const nickname = $('#nickname').val().trim();
+          if (!nickname) {
+              $('#error_nickname').text(msgs.nickname_empty).css('color', '#f04452');
+              return;
+          }
+          $.ajax({
+              url: '/api/check/nickname',
+              type: 'GET',
+              data: { nickname: nickname },
+              success: function(exists) {
+                  if (exists) $('#error_nickname').text(msgs.nickname_duplicate).css('color', '#f04452');
+                  else $('#error_nickname').text(msgs.nickname_ok).css('color', '#7abaff');
+              },
+              error: function() { console.error("통신 실패"); }
+          });
+      }
+
+      function searchAddress() { console.log("주소 검색 실행"); }
+    </script>
+  </body>
+</html>

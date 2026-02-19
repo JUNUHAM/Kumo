@@ -1,0 +1,329 @@
+/* =========================================
+   HEADER LAYOUT & FIXED POSITION
+   ========================================= */
+.recruiter-header {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  z-index: 9999;
+  background: white;
+  border-bottom: 1px solid #f0f0f0;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+  box-sizing: border-box;
+
+  /* [중요] 여기에 transition이 있다면 background-color만 적용하도록 제한하세요.
+     all이나 transform이 있으면 렉 걸린 것처럼 보입니다. */
+  transition: background-color 0.3s ease;
+}
+
+.custom-header {
+  position: fixed !important; /* 화면 상단 고정 (JS에서 transform 해제 필수) */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  z-index: 9999;
+  background: white;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between; /* 좌우 끝으로 배치 */
+  align-items: center; /* 세로 중앙 정렬 */
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 왼쪽 로고 영역 */
+.header-left-section {
+  width: 240px; /* 사이드바 너비와 일치 */
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0; /* 줄어들지 않음 */
+}
+
+.header-logo-img {
+  height: 45px;
+  width: auto;
+}
+
+/* 오른쪽 메뉴 영역 (여기가 문제였음 - Flex로 확실히 정렬) */
+.header-right-section {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  list-style: none; /* ul 기본 점 제거 */
+  margin: 0;
+  padding: 0 30px 0 0; /* 오른쪽 여백 30px */
+  gap: 20px; /* 아이콘 사이 간격 */
+  height: 100%;
+}
+
+/* 아이콘 버튼 공통 */
+.icon-btn {
+  cursor: pointer;
+  font-size: 20px;
+  color: #333;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 프로필 이미지 */
+.profile-container {
+  cursor: pointer;
+  position: relative;
+}
+
+.profile-circle {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+#defaultIcon {
+  font-size: 35px;
+  color: #ccc;
+}
+
+/* =========================================
+   POPUPS & DROPDOWNS (사장님 디자인 유지)
+   ========================================= */
+
+/* 언어 드롭다운 */
+.lang-dropdown {
+  position: absolute;
+  top: 40px;
+  right: -10px;
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: none;
+  flex-direction: column;
+  width: 100px;
+  z-index: 10001;
+}
+.lang-dropdown.show {
+  display: flex;
+}
+
+.lang-item {
+  padding: 10px;
+  text-decoration: none;
+  color: #333;
+  font-size: 14px;
+  text-align: center;
+}
+.lang-item:hover {
+  background: #f8f9fa;
+}
+
+/* 프로필 팝업 메뉴 */
+.custom-profile-menu {
+  position: absolute;
+  top: 55px; /* 헤더 아래로 */
+  right: 0;
+  width: 250px;
+  min-width: 220px;
+  background: white;
+  border-radius: 20px !important;
+  padding: 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  display: none; /* JS로 토글 */
+  z-index: 10002;
+  border: 1px solid #eee;
+  cursor: default;
+}
+.custom-profile-menu.show {
+  display: block;
+}
+
+/* 말풍선 꼬리 */
+.menu-pointer {
+  position: absolute;
+  top: -9px;
+  right: 15px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid #ffffff;
+}
+
+.profile-user-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: #33475b;
+  display: block;
+  margin-bottom: 10px;
+}
+
+/* 버튼 스타일 (사장님 지정 색상) */
+.custom-profile-menu .btn {
+  border-radius: 10px;
+  padding: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  color: white !important;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+}
+
+.btn-profile-edit,
+.btn-company-edit {
+  background-color: #8bbbe5 !important;
+}
+.btn-profile-edit:hover,
+.btn-company-edit:hover {
+  background-color: #7aaad4 !important;
+}
+
+.btn-logout-custom {
+  background-color: #f39695 !important;
+}
+.btn-logout-custom:hover {
+  background-color: #e28584 !important;
+}
+
+/* =========================================
+   NOTIFICATIONS (알림)
+   ========================================= */
+.notification-badge-dot {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  background-color: #ff8b7b;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.custom-notification-menu {
+  position: absolute;
+  top: 50px;
+  right: -80px;
+  width: 350px;
+  max-height: 500px;
+  background: white;
+  border-radius: 25px !important;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 10002;
+  display: none; /* JS 제어 필요 시 class toggle */
+}
+
+/* 알림 내부 스타일 */
+.notif-item {
+  margin-bottom: 20px;
+}
+.notif-item:last-child {
+  margin-bottom: 0;
+}
+
+.notif-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+.notif-header .label {
+  font-size: 12px;
+  color: #b0b0b0;
+  font-weight: 500;
+}
+
+.notif-body {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding-top: 5px;
+}
+.notif-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+.notif-text {
+  margin: 3px 0 0 0;
+  font-size: 13px;
+  color: #777;
+  line-height: 1.4;
+}
+
+.icon-success {
+  color: #5cb85c;
+  font-size: 22px;
+}
+.notif-item.success .notif-title {
+  color: #5cb85c;
+}
+.icon-warning {
+  color: #f0ad4e;
+  font-size: 22px;
+}
+.notif-item.warning .notif-title {
+  color: #f0ad4e;
+}
+
+.custom-notification-menu::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-notification-menu::-webkit-scrollbar-thumb {
+  background-color: #eee;
+  border-radius: 10px;
+}
+
+/* =========================================
+   DARK MODE OVERRIDES (맨 아래에 배치하여 우선순위 확보)
+   ========================================= */
+html.dark-mode body .custom-header {
+  background-color: #121212;
+  border-bottom: 1px solid #2d2d2d;
+}
+html.dark-mode body .icon-btn {
+  color: #fff;
+}
+html.dark-mode body .profile-user-name {
+  color: #e5e7eb;
+}
+
+/* 다크모드 팝업 배경 */
+html.dark-mode body .custom-notification-menu,
+html.dark-mode body .custom-profile-menu,
+html.dark-mode body .lang-dropdown {
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+}
+html.dark-mode body .lang-item {
+  color: #eee;
+}
+html.dark-mode body .lang-item:hover {
+  background: #333;
+}
+html.dark-mode body .menu-pointer {
+  border-bottom-color: #1e1e1e;
+}

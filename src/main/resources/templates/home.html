@@ -8,36 +8,47 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <link rel="stylesheet" th:href="@{/css/AuthenticatedFragments/AuthenticatedHeader.css}"
-          sec:authorize="isAuthenticated()">
+    <link
+      rel="stylesheet"
+      th:href="@{/css/NonLoginFragments/NonLoginHeader.css}"
+    />
+    <link
+      rel="stylesheet"
+      th:href="@{/css/AuthenticatedFragments/AuthenticatedHeader.css}"
+    />
+    <link
+      rel="stylesheet"
+      th:href="@{/css/NonLoginFragments/NonLoginFooter.css}"
+    />
+    <link rel="stylesheet" th:href="@{/css/NonLogin/home.css}" />
+  </head>
+  <body>
+    <div
+      sec:authorize="isAnonymous()"
+      th:replace="~{NonLoginFragments/NonLoginHeader :: headerFragment}"
+    ></div>
+    <div
+      sec:authorize="isAuthenticated()"
+      th:replace="~{AuthenticatedFragments/AuthenticatedHeader :: headerFragment}"
+    ></div>
 
-    <link rel="stylesheet" th:href="@{/css/NonLoginFragments/NonLoginHeader.css}"
-          sec:authorize="!isAuthenticated()">
-
-    <link rel="stylesheet" th:href="@{/css/NonLoginFragments/NonLoginFooter.css}">
-    <link rel="stylesheet" th:href="@{/css/NonLogin/home.css}">
-</head>
-<body>
-
-<div th:replace="~{NonLoginFragments/NonLoginHeader :: headerFragment}"
-     sec:authorize="!isAuthenticated()"></div>
-
-<div th:replace="~{AuthenticatedFragments/AuthenticatedHeader :: headerFragment}"
-     sec:authorize="isAuthenticated()"></div>
-
-<main class="home-container">
-    <div class="main-icon">
-        <img th:src="@{/images/NonLogin/cloud.png}" alt="구름 아이콘" class="cloud-img">
-    </div>
+    <main class="home-container">
+      <div class="main-icon">
+        <img
+          th:src="@{/images/NonLogin/cloud.png}"
+          alt="구름 아이콘"
+          class="cloud-img"
+        />
+      </div>
 
     <div class="text-group">
         <h1 th:utext="#{home.title}">일본 1위<br>구인구직 플랫폼</h1>
         <p th:text="#{home.subtitle}">일본 전국 일자리 찾기 지도</p>
     </div>
 
-    <div class="button-group">
+      <div class="button-group">
         <a th:href="@{/map/main}" class="card-btn primary">
-            <span class="btn-text" th:text="#{home.btn.job}">일자리 찾기</span>
+          <span class="btn-text" th:text="#{home.btn.job}">일자리 찾기</span>
         </a>
 
         <div class="card-btn secondary">
@@ -46,9 +57,8 @@
                 <small th:text="#{home.btn.dev}">(개발중)</small>
             </span>
         </div>
-    </div>
-
-</main>
+      </div>
+    </main>
 
 <div th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"></div>
 
