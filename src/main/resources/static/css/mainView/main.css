@@ -276,34 +276,6 @@ html, body {
 /* 로딩/메시지 박스 */
 .msg-box { text-align: center; padding: 40px; color: #888; font-size: 14px; }
 
-/* 내 위치 찾기 버튼 */
-.btn-location {
-    position: absolute;
-    bottom: 240px; /* 바텀시트 높이 고려해서 위치 조정 */
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    background-color: white;
-    border: none;
-    border-radius: 50%; /* 동그랗게 */
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-    cursor: pointer;
-    font-size: 20px; /* 이모지 크기 */
-    z-index: 100; /* 지도 위에 둥둥 */
-    transition: background 0.2s;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.btn-location:hover {
-    background-color: #f1f1f1;
-}
-
-.btn-location:active {
-    background-color: #e0e0e0;
-}
-
 /* src/main/resources/static/css/mainView/main.css */
 
 /* ============================================================
@@ -356,3 +328,141 @@ body.dark-mode .map-header-wrapper .icon-btn i {
 /*    filter: brightness(0) invert(1);*/
 /*    transition: filter 0.3s ease;*/
 /*}*/
+
+/* ============================================================
+   🌟 [NEW] 바텀 시트 담당자 정보 색상 강제 고정 (다크모드 무시)
+   ============================================================ */
+
+/* 1. 담당자 이름 (Admin 등) - 진한 회색/검은색 고정 */
+body.dark-mode .bottom-sheet .profile-info {
+    background-color: #eeeeee; !important;
+}
+
+body.dark-mode .bottom-sheet .profile-info div:first-child {
+    color: #000000 !important;
+}
+
+/* 2. 등록 날짜 - 연한 회색 고정 */
+body.dark-mode .bottom-sheet .profile-info div:last-child {
+    color: #999999 !important;
+}
+
+/* (보너스) 혹시 관리 버튼(찜, 상세)이나 다른 텍스트도 하얗게 날아간다면 아래 주석을 풀고 사용하세요 */
+/*
+body.dark-mode .bottom-sheet .addr-text,
+body.dark-mode .bottom-sheet .contact-text {
+    color: #333333 !important;
+}
+*/
+
+/* ============================================================
+   🌟 [NEW] 상단 검색바 & 하단 내비게이션 디자인
+   ============================================================ */
+
+/* 1. 상단 검색바 */
+.map-search-floating {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: 90%;
+    max-width: 480px;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 12px 20px;
+    border-radius: 50px; /* 완전 둥글게 */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+
+.search-bar .menu-icon { margin-right: 15px; color: #555; cursor: pointer; }
+.search-bar input {
+    border: none; outline: none; background: transparent;
+    flex: 1; font-size: 15px; color: #333;
+}
+.search-bar button {
+    background: none; border: none; cursor: pointer;
+    color: #4285F4; font-size: 18px;
+}
+
+/* 2. 하단 내비게이션 바 */
+.map-bottom-nav {
+    position: absolute;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    width: auto;
+}
+
+.nav-box {
+    display: flex;
+    background: white;
+    padding: 8px 10px;
+    border-radius: 40px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    gap: 10px;
+}
+
+.nav-item {
+    background: none;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 80px; /* 버튼 너비 균일하게 */
+    cursor: pointer;
+    color: #999;
+    transition: all 0.2s;
+}
+
+.nav-item .icon-box {
+    font-size: 20px;
+    margin-bottom: 4px;
+    position: relative; /* 뱃지 위치 기준 */
+}
+
+.nav-item span {
+    font-size: 11px;
+    font-weight: 500;
+}
+
+/* 활성화 상태 (Active) */
+.nav-item.active {
+    color: #4285F4; /* 브랜드 컬러 */
+}
+.nav-item.active .icon-box {
+    transform: translateY(-2px); /* 살짝 위로 튀어오르는 효과 */
+}
+
+/* 알림 뱃지 (채팅 N) */
+.badge-dot {
+    position: absolute;
+    top: -2px; right: -5px;
+    background: #ff4757;
+    color: white;
+    font-size: 9px;
+    font-weight: bold;
+    padding: 2px 4px;
+    border-radius: 50%;
+    border: 1px solid white;
+}
+
+/* --- 🌙 다크모드 지원 --- */
+body.dark-mode .search-bar,
+body.dark-mode .nav-box {
+    background: #262424;
+    border: 1px solid #444;
+}
+
+body.dark-mode .search-bar input { color: white; }
+body.dark-mode .search-bar .menu-icon { color: #aaa; }
+
+body.dark-mode .nav-item { color: #666; }
+body.dark-mode .nav-item.active { color: #76a9ff; } /* 다크모드에선 좀 더 밝은 파랑 */
