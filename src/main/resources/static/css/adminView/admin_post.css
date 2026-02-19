@@ -59,6 +59,8 @@ body {
 
 /* [텍스트/뱃지/버튼 스타일] */
 .title-text { font-size: 14px; font-weight: 600; color: #333; display: block; overflow: hidden; text-overflow: ellipsis; }
+
+/* 제목 아래의 서브 텍스트 */
 .sub-text { font-size: 11px; color: #adb5bd; font-weight: 400; display: block; margin-top: 2px; }
 
 .badge { display: inline-flex; justify-content: center; align-items: center; width: 80px; height: 32px; border-radius: 20px; font-size: 13px; font-weight: 700; color: white; }

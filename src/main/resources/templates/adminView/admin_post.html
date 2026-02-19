@@ -6,26 +6,59 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/adminView/admin_post.css}">
     <link rel="stylesheet" th:href="@{/css/adminView/admin_sidebar.css}">
-
+    <style>
+        /* 검색 폼 레이아웃 보정 */
+        .top-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center; /* 수직 중앙 정렬 */
+        }
+        /* 검색창 너비 유동적 조절 */
+        .search-box { flex: 2; }
+        .filter-select { flex: 0 0 auto; } /* 드롭다운 너비 자동 */
+        .btn-search {
+            height: 42px; /* 인풋창 높이와 맞춤 */
+            padding: 0 20px;
+            white-space: nowrap;
+        }
+    </style>
 </head>
 <body>
 
-<aside th:replace="~{adminView/admin_sidebar :: admin_sidebar('dashboard', ${lang})}"></aside>
+<aside th:replace="~{adminView/admin_sidebar :: admin_sidebar('post', ${lang})}"></aside>
 
 <main class="main-content">
-    <div class="top-controls">
+
+    <form action="/admin/post" method="get" class="top-controls">
+        <input type="hidden" name="lang" th:value="${lang}">
+
+        <select name="searchType" class="filter-select">
+            <option value="title" th:selected="${searchType == 'title'}"
+                    th:text="${lang == 'ja' ? 'タイトル' : '공고 제목'}">공고 제목</option>
+            <option value="region" th:selected="${searchType == 'region'}"
+                    th:text="${lang == 'ja' ? '地域' : '지역'}">지역</option>
+        </select>
+
         <div class="search-box">
             <span class="search-icon">🔍</span>
-            <input type="text" class="search-input" th:placeholder="${lang == 'ja' ? '検索' : 'Search'}">
+            <input type="text" name="keyword" class="search-input"
+                   th:value="${keyword}"
+                   th:placeholder="${lang == 'ja' ? '検索キーワードを入力' : '검색어를 입력하세요'}">
         </div>
-        <select class="filter-select">
-            <option th:text="${lang == 'ja' ? '地域' : '지역명'}">지역명</option>
-        </select>
-        <select class="filter-select">
-            <option th:text="${lang == 'ja' ? '状態' : 'Status'}">Status</option>
-        </select>
-    </div>
 
+        <select name="status" class="filter-select">
+            <option value="" th:selected="${status == null || status == ''}"
+                    th:text="${lang == 'ja' ? '全状態' : '전체 상태'}">전체 상태</option>
+            <option value="RECRUITING" th:selected="${status == 'RECRUITING'}"
+                    th:text="${lang == 'ja' ? '承認済み' : '승인됨'}">승인됨</option>
+            <option value="CLOSED" th:selected="${status == 'CLOSED'}"
+                    th:text="${lang == 'ja' ? '締め切り' : '마감됨'}">마감됨</option>
+        </select>
+
+        <button type="submit" class="btn btn-dark btn-search"
+                th:text="${lang == 'ja' ? '検索' : '검색'}">검색</button>
+    </form>
     <div class="tab-menu">
         <div id="tab-btn-all" class="tab-item active" onclick="switchTab('all')"
              th:text="${lang == 'ja' ? '全求人' : '전체 공고'}">전체 공고</div>
@@ -48,15 +81,19 @@
                     </th>
                     <th class="col-title" th:text="${lang == 'ja' ? '求人情報' : '공고 정보'}">공고 정보</th>
                     <th class="col-cate" th:text="${lang == 'ja' ? 'カテゴリ' : '카테고리'}">카테고리</th>
-                    <th class="col-date1" th:text="${lang == 'ja' ? '登録日' : '등록 일'}">등록 일</th>
-                    <th class="col-date2" th:text="${lang == 'ja' ? '締切日' : '마감 일'}">마감 일</th>
+                    <th class="col-date1" th:text="${lang == 'ja' ? '登録日' : '등록일'}">등록일</th>
+                    <th class="col-date2" th:text="${lang == 'ja' ? '地域' : '지역'}">지역</th>
                     <th class="col-status" th:text="${lang == 'ja' ? '状態' : '상태'}">상태</th>
                     <th class="col-manage" th:text="${lang == 'ja' ? '管理' : '관리'}">관리</th>
                 </tr>
                 </thead>
                 <tbody>
+
                 <tr th:if="${#lists.isEmpty(posts)}">
-                    <td colspan="7" th:text="${lang == 'ja' ? '登録された求人がありません。' : '등록된 공고가 없습니다.'}">등록된 공고가 없습니다.</td>
+                    <td colspan="7" style="padding: 50px 0; color: #999;"
+                        th:text="${lang == 'ja' ? '検索結果がありません。' : '검색 결과가 없습니다.'}">
+                        검색 결과가 없습니다.
+                    </td>
                 </tr>
 
                 <tr th:each="post : ${posts}">
@@ -70,17 +107,28 @@
                            target="_blank">
                             <span class="title-text" th:text="${post.title}" th:title="${post.title}">제목</span>
                         </a>
-                        <span class="sub-text" th:text="${post.source}">OSAKA</span>
+                        <span class="sub-text"
+                              th:text="${#strings.contains(post.source, 'OSAKA') ? (lang == 'ja' ? '大阪' : '오사카') : (lang == 'ja' ? '東京' : '도쿄')}">
+                            지역
+                        </span>
                     </td>
 
                     <td class="col-cate" th:text="${post.position}">직무</td>
 
                     <td th:text="${post.createdAt != null ? #temporals.format(post.createdAt, 'yyyy.MM.dd') : '-'}">날짜</td>
 
-                    <td th:text="${post.deadline != null ? post.deadline : '-'}">마감일</td>
+                    <td>
+                        <span th:text="${#strings.contains(post.source, 'OSAKA') ? (lang == 'ja' ? '大阪' : '오사카') : (lang == 'ja' ? '東京' : '도쿄')}">
+                            지역
+                        </span>
+                    </td>
 
                     <td>
-                        <span class="badge badge-green" th:text="${lang == 'ja' ? '承認済み' : '승인됨'}">승인됨</span>
+                        <span class="badge"
+                              th:classappend="${post.status == 'CLOSED' ? 'badge-red' : 'badge-green'}"
+                              th:text="${post.status == 'CLOSED' ? (lang == 'ja' ? '締め切り' : '마감됨') : (lang == 'ja' ? '承認済み' : '승인됨')}">
+                            상태
+                        </span>
                     </td>
 
                     <td>
@@ -103,9 +151,7 @@
             <table class="custom-table">
                 <thead>
                 <tr>
-                    <th class="col-check">
-                        <input type="checkbox" id="checkAllReports" onclick="toggleAll('reportIds', this.checked)">
-                    </th>
+                    <th class="col-check"><input type="checkbox" id="checkAllReports" onclick="toggleAll('reportIds', this.checked)"></th>
                     <th class="col-title" th:text="${lang == 'ja' ? '求人タイトル' : '공고 제목'}">공고 제목</th>
                     <th class="col-cate" th:text="${lang == 'ja' ? '申告者' : '신고자'}">신고자</th>
                     <th class="col-date1" th:text="${lang == 'ja' ? '登録日' : '등록일'}">등록일</th>
@@ -118,42 +164,24 @@
                 <tr th:if="${#lists.isEmpty(reports)}">
                     <td colspan="7" th:text="${lang == 'ja' ? '申告内訳がありません。' : '신고 내역이 없습니다.'}">신고 내역이 없습니다.</td>
                 </tr>
-
                 <tr th:each="report : ${reports}">
                     <td><input type="checkbox" name="reportIds" th:value="${report.reportId}"></td>
-
                     <td class="col-title">
-                        <a class="title-link"
-                           th:href="@{/job/detail(id=${report.targetPostId}, source=${report.targetSource}, lang=${lang})}"
-                           target="_blank">
-                            <span class="title-text" th:text="${report.targetPostTitle}" th:title="${report.targetPostTitle}">제목</span>
+                        <a class="title-link" th:href="@{/job/detail(id=${report.targetPostId}, source=${report.targetSource}, lang=${lang})}" target="_blank">
+                            <span class="title-text" th:text="${report.targetPostTitle}">제목</span>
                         </a>
                         <span class="sub-text" th:text="'ID: ' + ${report.targetPostId}">ID</span>
                     </td>
-
                     <td class="col-cate" th:text="${report.reporterEmail}">이메일</td>
-
                     <td th:text="${#temporals.format(report.createdAt, 'yyyy.MM.dd')}">날짜</td>
-
                     <td class="col-date2" th:text="${report.reasonCategory}">사유</td>
-
                     <td>
                         <span class="badge"
                               th:classappend="${report.status == 'PENDING' ? 'badge-grey' : (report.status == 'BLOCKED' ? 'badge-red' : 'badge-green')}"
-                              th:text="${report.status == 'PENDING' ? (lang == 'ja' ? '待機中' : '대기중') :
-                                        (report.status == 'BLOCKED' ? (lang == 'ja' ? '遮断済み' : '차단됨') : (lang == 'ja' ? '完了' : '처리완료'))}">
-                            상태
-                        </span>
+                              th:text="${report.status == 'PENDING' ? (lang == 'ja' ? '待機中' : '대기중') : (report.status == 'BLOCKED' ? (lang == 'ja' ? '遮断済み' : '차단됨') : (lang == 'ja' ? '完了' : '처리완료'))}">상태</span>
                     </td>
-
                     <td>
-                        <button class="btn-detail"
-                                type="button"
-                                th:data-desc="${report.description}"
-                                onclick="alert(this.getAttribute('data-desc'))"
-                                th:text="${lang == 'ja' ? '内容確認' : '내용 확인'}">
-                            내용 확인
-                        </button>
+                        <button class="btn-detail" type="button" th:data-desc="${report.description}" onclick="alert(this.getAttribute('data-desc'))" th:text="${lang == 'ja' ? '内容確認' : '내용 확인'}">내용 확인</button>
                     </td>
                 </tr>
                 </tbody>
@@ -166,6 +194,7 @@
     const currentLang = [[${lang}]] || 'ko';
 
     function changeLanguage(lang) {
+        // 검색 파라미터를 유지하면서 언어만 변경
         const url = new URL(window.location.href);
         url.searchParams.set('lang', lang);
         window.location.href = url.toString();
@@ -186,29 +215,19 @@
         const msg = currentLang === 'ja' ? "本当にこの求人を削除しますか？" : "정말 이 공고를 삭제하시겠습니까?";
         if(!confirm(msg)) return;
 
-        const ids = [source + "_" + id];
-
         fetch('/admin/post/delete', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ids: ids })
+            body: JSON.stringify({ ids: [source + "_" + id] })
         }).then(res => {
-            if (res.ok) {
-                alert(currentLang === 'ja' ? "削除されました。" : "삭제되었습니다.");
-                location.reload();
-            }
-            else {
-                alert(currentLang === 'ja' ? "削除に失敗しました。" : "삭제 실패");
-            }
+            if (res.ok) { location.reload(); }
+            else { alert(currentLang === 'ja' ? "削除に失敗しました。" : "삭제 실패"); }
         });
     }
 
     function deleteSelectedItems() {
         const isReportTab = document.getElementById('tab-content-report').classList.contains('active');
         const targetName = isReportTab ? 'reportIds' : 'postIds';
-        const itemLabel = isReportTab ? (currentLang === 'ja' ? '件の申告内訳' : '개의 신고 내역') : (currentLang === 'ja' ? '件の求人' : '개의 공고');
-        const apiUrl = isReportTab ? '/admin/report/delete' : '/admin/post/delete';
-
         const checkedBoxes = document.querySelectorAll(`input[name="${targetName}"]:checked`);
 
         if (checkedBoxes.length === 0) {
@@ -217,25 +236,15 @@
         }
 
         const ids = Array.from(checkedBoxes).map(cb => isReportTab ? parseInt(cb.value) : cb.value);
+        if (!confirm(currentLang === 'ja' ? "選択した項目を削除しますか？" : "선택한 항목을 삭제하시겠습니까?")) return;
 
-        const confirmMsg = currentLang === 'ja'
-            ? `選択した ${checkedBoxes.length}${itemLabel} を本当に削除しますか？`
-            : `선택한 ${checkedBoxes.length}${itemLabel}을(를) 정말 삭제하시겠습니까?`;
-
-        if (!confirm(confirmMsg)) { return; }
-
-        fetch(apiUrl, {
+        fetch(isReportTab ? '/admin/report/delete' : '/admin/post/delete', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ids: ids })
         }).then(res => {
-            if (res.ok) {
-                alert(currentLang === 'ja' ? "削除されました。" : "삭제되었습니다.");
-                location.reload();
-            }
-            else {
-                alert(currentLang === 'ja' ? "削除に失敗しました。" : "삭제 실패");
-            }
+            if (res.ok) { location.reload(); }
+            else { alert("Error"); }
         });
     }
 </script>

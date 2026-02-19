@@ -18,6 +18,7 @@ public class JobSummaryDTO {
     private Long id;
     private String source;
     private String title;
+    private String status;
 
     // ★ 필수 필드 확인
     private String position;
@@ -61,6 +62,13 @@ public class JobSummaryDTO {
         this.thumbnailUrl = entity.getImgUrls();
         this.contactPhone = entity.getContactPhone();
         this.address = entity.getAddress();
+
+        // DB에 status가 없거나(null), 아직 구현 안 된 경우 기본값 'RECRUITING' 적용
+        if (entity.getStatus() != null) {
+            this.status = entity.getStatus().name(); // Enum일 경우 .name()
+        } else {
+            this.status = "RECRUITING"; // ★ DB가 비어있으면 승인됨으로 간주
+        }
 
         if (entity.getWriteTime() != null) {
             this.writeTime = entity.getWriteTime();

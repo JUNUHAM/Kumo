@@ -44,16 +44,23 @@ public class AdminController {
      */
     @GetMapping("/post")
     public String postManagementPage(Model model,
-                                     @RequestParam(value = "lang", defaultValue = "ko") String lang) {
-        model.addAttribute("adminName", "Administrator");
-        model.addAttribute("lang", lang); // 뷰에서 언어 판단용
+                                     @RequestParam(value = "lang", defaultValue = "ko") String lang,
+                                     @RequestParam(value = "searchType", required = false) String searchType,
+                                     @RequestParam(value = "keyword", required = false) String keyword,
+                                     @RequestParam(value = "status", required = false) String status) {
 
-        // 서비스에 lang 전달 -> DTO 생성 시 제목/직무 등을 해당 언어로 변환
-        List<JobSummaryDTO> posts = adminService.getAllJobSummaries(lang);
+        // Service 호출 (필터 조건 추가)
+        List<JobSummaryDTO> posts = adminService.getAllJobSummaries(lang, searchType, keyword, status);
+
         model.addAttribute("posts", posts);
 
-        List<ReportDTO> reports = adminService.getAllReports(lang);
-        model.addAttribute("reports", reports);
+        // 필터 상태 유지용
+        model.addAttribute("searchType", searchType);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("status", status);
+
+        // 신고 목록 (기존 유지)
+        model.addAttribute("reports", adminService.getAllReports(lang));
 
         return "adminView/admin_post";
     }

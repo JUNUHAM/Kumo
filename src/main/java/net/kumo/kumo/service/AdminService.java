@@ -35,39 +35,50 @@ public class AdminService {
     // 1. 전체 공고 통합 조회 (Lang 적용)
     // =================================================================
     @Transactional(readOnly = true)
-    public List<JobSummaryDTO> getAllJobSummaries(String lang) {
+    public List<JobSummaryDTO> getAllJobSummaries(String lang, String searchType, String keyword, String status) {
         List<JobSummaryDTO> unifiedList = new ArrayList<>();
 
-        // 1. Osaka Geocoded
-        unifiedList.addAll(osakaGeoRepo.findAll().stream()
-                .map(e -> new JobSummaryDTO(e, lang, "OSAKA"))
-                .toList());
+        // 4개 리포지토리 데이터 통합
+        unifiedList.addAll(osakaGeoRepo.findAll().stream().map(e -> new JobSummaryDTO(e, lang, "OSAKA")).toList());
+        unifiedList.addAll(tokyoGeoRepo.findAll().stream().map(e -> new JobSummaryDTO(e, lang, "TOKYO")).toList());
+        unifiedList.addAll(osakaNoRepo.findAll().stream().map(e -> new JobSummaryDTO(e, lang, "OSAKA_NO")).toList());
+        unifiedList.addAll(tokyoNoRepo.findAll().stream().map(e -> new JobSummaryDTO(e, lang, "TOKYO_NO")).toList());
 
-        // 2. Tokyo Geocoded
-        unifiedList.addAll(tokyoGeoRepo.findAll().stream()
-                .map(e -> new JobSummaryDTO(e, lang, "TOKYO"))
-                .toList());
+        // 스트림 필터링 시작
+        return unifiedList.stream()
+                // 1. 상태 필터 (status)
+                .filter(dto -> {
+                    if (status == null || status.isBlank() || "ALL".equals(status)) return true;
+                    // DTO에 status 필드가 있다고 가정 (없으면 추가 필요, 아래 참조)
+                    return status.equals(dto.getStatus());
+                })
+                // 2. 검색어 필터 (keyword)
+                .filter(dto -> {
+                    if (keyword == null || keyword.isBlank()) return true;
+                    String k = keyword.toLowerCase();
 
-        // 3. Osaka No-Geocoded
-        unifiedList.addAll(osakaNoRepo.findAll().stream()
-                .map(e -> new JobSummaryDTO(e, lang, "OSAKA_NO"))
-                .toList());
+                    if ("region".equals(searchType)) {
+                        // 지역 검색: 사용자가 '오사카' 또는 'Osaka' 등을 입력했을 때 소스코드 확인
+                        boolean isOsaka = k.contains("오사카") || k.contains("osaka") || k.contains("大阪");
+                        boolean isTokyo = k.contains("도쿄") || k.contains("tokyo") || k.contains("東京");
 
-        // 4. Tokyo No-Geocoded
-        unifiedList.addAll(tokyoNoRepo.findAll().stream()
-                .map(e -> new JobSummaryDTO(e, lang, "TOKYO_NO"))
-                .toList());
-
-        // 5. 최신순 정렬
-        unifiedList.sort((a, b) -> {
-            String timeA = a.getWriteTime();
-            String timeB = b.getWriteTime();
-            if (timeB == null) return -1;
-            if (timeA == null) return 1;
-            return timeB.compareTo(timeA);
-        });
-
-        return unifiedList;
+                        if (isOsaka) return dto.getSource().contains("OSAKA");
+                        if (isTokyo) return dto.getSource().contains("TOKYO");
+                        return false; // 그 외 검색어는 매칭 안됨
+                    } else {
+                        // 제목 검색 (기본값)
+                        return dto.getTitle() != null && dto.getTitle().toLowerCase().contains(k);
+                    }
+                })
+                // 3. 최신순 정렬
+                .sorted((a, b) -> {
+                    String timeA = a.getWriteTime();
+                    String timeB = b.getWriteTime();
+                    if (timeB == null) return -1;
+                    if (timeA == null) return 1;
+                    return timeB.compareTo(timeA);
+                })
+                .collect(Collectors.toList());
     }
 
     // =================================================================
