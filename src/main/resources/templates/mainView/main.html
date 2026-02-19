@@ -20,22 +20,58 @@
 	<script th:src="@{/js/mainView/main.js}"></script>
 </head>
 <body>
-<div
-        sec:authorize="isAnonymous()"
-        th:replace="~{NonLoginFragments/NonLoginHeader :: headerFragment}"></div>
-<div
-        sec:authorize="isAuthenticated()"
-        th:replace="~{AuthenticatedFragments/AuthenticatedHeader :: headerFragment}"></div>
+<div class="map-header-wrapper">
+    <div th:replace="~{NonLoginFragments/NonLoginHeader :: headerFragment}"
+         sec:authorize="!isAuthenticated()"></div>
 
+    <div th:replace="~{AuthenticatedFragments/AuthenticatedHeader :: headerFragment}"
+         sec:authorize="isAuthenticated()"></div>
+</div>
 
 <div class="map-container">
 	
 	<div id="map"></div>
 	
-	<button id="btn-my-location" class="btn-location">
-		🎯
-	</button>
+	<div class="map-search-floating">
+		<div class="search-bar">
+			<i class="fa-solid fa-bars menu-icon"></i> <input type="text" id="keywordInput" placeholder="검색 내용을 입력하세요."
+			                                                  onkeyup="if(event.key === 'Enter') JobService.searchJobs()">
+			<button onclick="JobService.searchJobs()">
+				<i class="fa-solid fa-magnifying-glass"></i>
+			</button>
+		</div>
+	</div>
 	
+	<div class="map-bottom-nav">
+		<div class="nav-box">
+			<button class="nav-item active" data-tab="nearby">
+				<div class="icon-box"><i class="fa-solid fa-location-dot"></i></div>
+				<span th:text="#{nav.nearby}">주변 일자리</span>
+			</button>
+			
+			<th:block sec:authorize="isAuthenticated()">
+				<button class="nav-item" data-tab="saved">
+					<div class="icon-box"><i class="fa-regular fa-bookmark"></i></div>
+					<span th:text="#{nav.saved}">저장된 공고</span>
+				</button>
+			</th:block>
+			
+			<button class="nav-item" data-tab="recent">
+				<div class="icon-box"><i class="fa-regular fa-clock"></i></div>
+				<span th:text="#{nav.recent}">최근 본 공고</span>
+			</button>
+			
+			<th:block sec:authorize="isAuthenticated()">
+				<button class="nav-item" data-tab="chat">
+					<div class="icon-box">
+						<i class="fa-regular fa-comments"></i>
+						<span class="badge-dot" style="display:none;">N</span>
+					</div>
+					<span th:text="#{nav.chat}">채팅</span>
+				</button>
+			</th:block>
+		</div>
+	</div>
 	<div id="jobDetailCard" class="floating-card">
 		<button type="button" class="btn-close-card">×</button>
 		
@@ -94,7 +130,6 @@
 		</div>
 	</div>
 </div>
-
 
 <script th:src="@{'https://maps.googleapis.com/maps/api/js?key=' + ${googleMapsKey} + '&callback=initMap&loading=async'}"
         async defer></script>

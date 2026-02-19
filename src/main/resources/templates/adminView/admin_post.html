@@ -6,25 +6,78 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/adminView/admin_post.css}">
     <link rel="stylesheet" th:href="@{/css/adminView/admin_sidebar.css}">
+    <style>
+        /* 검색 폼 레이아웃 보정 */
+        .top-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .search-box { flex: 2; }
+        .filter-select { flex: 0 0 auto; }
+        .btn-search {
+            height: 42px;
+            padding: 0 20px;
+            white-space: nowrap;
+        }
 
+        /* [추가] 모달창용 CSS */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4); z-index: 2000;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: white; padding: 30px; border-radius: 12px;
+            width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .modal-content h3 { margin-top: 0; margin-bottom: 20px; color: #343a40; font-size: 18px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: #495057; }
+        .form-group select { width: 100%; height: 42px; border-radius: 6px; border: 1px solid #ced4da; padding: 0 10px; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; }
+
+        /* 모달 취소 버튼 등 보조 버튼 스타일 */
+        .btn-outline { background-color: white; color: #343a40; border: 1px solid #ddd; height: 42px; padding: 0 20px; border-radius: 8px; cursor: pointer; }
+        .btn-outline:hover { background-color: #f1f3f5; }
+    </style>
 </head>
 <body>
 
-<aside th:replace="~{adminView/admin_sidebar :: admin_sidebar('dashboard', ${lang})}"></aside>
+<aside th:replace="~{adminView/admin_sidebar :: admin_sidebar('post', ${lang})}"></aside>
 
 <main class="main-content">
-    <div class="top-controls">
+
+    <form action="/admin/post" method="get" class="top-controls">
+        <input type="hidden" name="lang" th:value="${lang}">
+
+        <select name="searchType" class="filter-select">
+            <option value="title" th:selected="${searchType == 'title'}"
+                    th:text="${lang == 'ja' ? 'タイトル' : '공고 제목'}">공고 제목</option>
+            <option value="region" th:selected="${searchType == 'region'}"
+                    th:text="${lang == 'ja' ? '地域' : '지역'}">지역</option>
+        </select>
+
         <div class="search-box">
             <span class="search-icon">🔍</span>
-            <input type="text" class="search-input" th:placeholder="${lang == 'ja' ? '検索' : 'Search'}">
+            <input type="text" name="keyword" class="search-input"
+                   th:value="${keyword}"
+                   th:placeholder="${lang == 'ja' ? '検索キーワードを入力' : '검색어를 입력하세요'}">
         </div>
-        <select class="filter-select">
-            <option th:text="${lang == 'ja' ? '地域' : '지역명'}">지역명</option>
+
+        <select name="status" class="filter-select">
+            <option value="" th:selected="${status == null || status == ''}"
+                    th:text="${lang == 'ja' ? '全状態' : '전체 상태'}">전체 상태</option>
+            <option value="RECRUITING" th:selected="${status == 'RECRUITING'}"
+                    th:text="${lang == 'ja' ? '承認済み' : '승인됨'}">승인됨</option>
+            <option value="CLOSED" th:selected="${status == 'CLOSED'}"
+                    th:text="${lang == 'ja' ? '締め切り' : '마감됨'}">마감됨</option>
         </select>
-        <select class="filter-select">
-            <option th:text="${lang == 'ja' ? '状態' : 'Status'}">Status</option>
-        </select>
-    </div>
+
+        <button type="submit" class="btn btn-dark btn-search"
+                th:text="${lang == 'ja' ? '検索' : '검색'}">검색</button>
+    </form>
 
     <div class="tab-menu">
         <div id="tab-btn-all" class="tab-item active" onclick="switchTab('all')"
@@ -34,7 +87,6 @@
     </div>
 
     <div class="action-buttons">
-        <button class="btn btn-dark" th:text="${lang == 'ja' ? '✅ CSVダウンロード' : '✅ 선택 항목 CSV 다운로드'}">✅ 선택 항목 CSV 다운로드</button>
         <button class="btn btn-dark" onclick="deleteSelectedItems()" th:text="${lang == 'ja' ? '🗑️ 削除' : '🗑️ 삭제'}">🗑️ 삭제</button>
     </div>
 
@@ -48,53 +100,92 @@
                     </th>
                     <th class="col-title" th:text="${lang == 'ja' ? '求人情報' : '공고 정보'}">공고 정보</th>
                     <th class="col-cate" th:text="${lang == 'ja' ? 'カテゴリ' : '카테고리'}">카테고리</th>
-                    <th class="col-date1" th:text="${lang == 'ja' ? '登録日' : '등록 일'}">등록 일</th>
-                    <th class="col-date2" th:text="${lang == 'ja' ? '締切日' : '마감 일'}">마감 일</th>
+                    <th class="col-date1" th:text="${lang == 'ja' ? '登録日' : '등록일'}">등록일</th>
+                    <th class="col-date2" th:text="${lang == 'ja' ? '地域' : '지역'}">지역</th>
                     <th class="col-status" th:text="${lang == 'ja' ? '状態' : '상태'}">상태</th>
                     <th class="col-manage" th:text="${lang == 'ja' ? '管理' : '관리'}">관리</th>
                 </tr>
                 </thead>
+
                 <tbody>
-                <tr th:if="${#lists.isEmpty(posts)}">
-                    <td colspan="7" th:text="${lang == 'ja' ? '登録された求人がありません。' : '등록된 공고가 없습니다.'}">등록된 공고가 없습니다.</td>
+                <tr th:if="${posts.totalElements == 0}">
+                    <td colspan="7" style="padding: 50px 0; color: #999; text-align: center;"
+                        th:text="${lang == 'ja' ? '検索結果がありません。' : '검색 결과가 없습니다.'}">
+                        검색 결과가 없습니다.
+                    </td>
                 </tr>
 
-                <tr th:each="post : ${posts}">
+                <tr th:each="post : ${posts.content}">
                     <td>
                         <input type="checkbox" name="postIds" th:value="${post.source + '_' + post.id}">
                     </td>
 
                     <td class="col-title">
                         <a class="title-link"
-                           th:href="@{/job/detail(id=${post.id}, source=${post.source}, lang=${lang})}"
+                           th:href="@{/map/jobs/detail(id=${post.id}, source=${post.source}, lang=${lang})}"
                            target="_blank">
                             <span class="title-text" th:text="${post.title}" th:title="${post.title}">제목</span>
                         </a>
-                        <span class="sub-text" th:text="${post.source}">OSAKA</span>
                     </td>
 
                     <td class="col-cate" th:text="${post.position}">직무</td>
 
                     <td th:text="${post.createdAt != null ? #temporals.format(post.createdAt, 'yyyy.MM.dd') : '-'}">날짜</td>
 
-                    <td th:text="${post.deadline != null ? post.deadline : '-'}">마감일</td>
-
                     <td>
-                        <span class="badge badge-green" th:text="${lang == 'ja' ? '承認済み' : '승인됨'}">승인됨</span>
+                        <span th:text="${#strings.contains(post.source, 'OSAKA') ? (lang == 'ja' ? '大阪' : '오사카') : (lang == 'ja' ? '東京' : '도쿄')}">
+                            지역
+                        </span>
                     </td>
 
                     <td>
-                        <a class="action-link edit"
-                           th:href="@{/job/detail(id=${post.id}, source=${post.source}, lang=${lang})}"
-                           th:text="${lang == 'ja' ? '修正' : '수정'}">수정</a>
+                        <span class="badge"
+                              th:classappend="${post.status == 'CLOSED' ? 'badge-red' : 'badge-green'}"
+                              th:text="${post.status == 'CLOSED' ? (lang == 'ja' ? '締め切り' : '마감됨') : (lang == 'ja' ? '承認済み' : '승인됨')}">
+                            상태
+                        </span>
+                    </td>
 
-                        <span class="action-link delete"
+                    <td>
+                        <span class="action-link edit" style="cursor: pointer;"
+                              th:onclick="openEditModal([[${post.source}]], [[${post.id}]], [[${post.status}]])"
+                              th:text="${lang == 'ja' ? '修正' : '수정'}">수정</span>
+
+                        <span class="action-link delete" style="cursor: pointer;"
                               th:onclick="deleteOnePost([[${post.source}]], [[${post.id}]])"
                               th:text="${lang == 'ja' ? '削除' : '삭제'}">삭제</span>
                     </td>
                 </tr>
                 </tbody>
             </table>
+
+            <div class="pagination-container" th:if="${posts.totalElements > 0}">
+                <ul class="pagination">
+
+                    <li th:classappend="${posts.first} ? 'disabled'">
+                        <a th:href="@{/admin/post(page=0, lang=${lang}, searchType=${searchType}, keyword=${keyword}, status=${status})}">&laquo;&laquo;</a>
+                    </li>
+
+                    <li th:classappend="${posts.first} ? 'disabled'">
+                        <a th:href="@{/admin/post(page=${posts.number - 1}, lang=${lang}, searchType=${searchType}, keyword=${keyword}, status=${status})}">&lsaquo;</a>
+                    </li>
+
+                    <li th:each="pageNum : ${#numbers.sequence(startPage, endPage)}"
+                        th:classappend="${pageNum == posts.number + 1} ? 'active'">
+                        <a th:href="@{/admin/post(page=${pageNum - 1}, lang=${lang}, searchType=${searchType}, keyword=${keyword}, status=${status})}"
+                           th:text="${pageNum}">1</a>
+                    </li>
+
+                    <li th:classappend="${posts.last} ? 'disabled'">
+                        <a th:href="@{/admin/post(page=${posts.number + 1}, lang=${lang}, searchType=${searchType}, keyword=${keyword}, status=${status})}">&rsaquo;</a>
+                    </li>
+
+                    <li th:classappend="${posts.last} ? 'disabled'">
+                        <a th:href="@{/admin/post(page=${totalPages - 1}, lang=${lang}, searchType=${searchType}, keyword=${keyword}, status=${status})}">&raquo;&raquo;</a>
+                    </li>
+
+                </ul>
+            </div>
         </div>
     </div>
 
@@ -103,9 +194,7 @@
             <table class="custom-table">
                 <thead>
                 <tr>
-                    <th class="col-check">
-                        <input type="checkbox" id="checkAllReports" onclick="toggleAll('reportIds', this.checked)">
-                    </th>
+                    <th class="col-check"><input type="checkbox" id="checkAllReports" onclick="toggleAll('reportIds', this.checked)"></th>
                     <th class="col-title" th:text="${lang == 'ja' ? '求人タイトル' : '공고 제목'}">공고 제목</th>
                     <th class="col-cate" th:text="${lang == 'ja' ? '申告者' : '신고자'}">신고자</th>
                     <th class="col-date1" th:text="${lang == 'ja' ? '登録日' : '등록일'}">등록일</th>
@@ -115,52 +204,121 @@
                 </tr>
                 </thead>
                 <tbody>
+
                 <tr th:if="${#lists.isEmpty(reports)}">
-                    <td colspan="7" th:text="${lang == 'ja' ? '申告内訳がありません。' : '신고 내역이 없습니다.'}">신고 내역이 없습니다.</td>
+                    <td colspan="7" style="text-align: center; padding: 50px; color: #999;" th:text="${lang == 'ja' ? '申告内訳がありません。' : '신고 내역이 없습니다.'}">신고 내역이 없습니다.</td>
                 </tr>
 
                 <tr th:each="report : ${reports}">
                     <td><input type="checkbox" name="reportIds" th:value="${report.reportId}"></td>
-
                     <td class="col-title">
-                        <a class="title-link"
-                           th:href="@{/job/detail(id=${report.targetPostId}, source=${report.targetSource}, lang=${lang})}"
-                           target="_blank">
-                            <span class="title-text" th:text="${report.targetPostTitle}" th:title="${report.targetPostTitle}">제목</span>
+                        <a class="title-link" th:href="@{/map/jobs/detail(id=${report.targetPostId}, source=${report.targetSource}, lang=${lang})}" target="_blank">
+                            <span class="title-text" th:text="${report.targetPostTitle}">제목</span>
                         </a>
-                        <span class="sub-text" th:text="'ID: ' + ${report.targetPostId}">ID</span>
                     </td>
-
                     <td class="col-cate" th:text="${report.reporterEmail}">이메일</td>
-
                     <td th:text="${#temporals.format(report.createdAt, 'yyyy.MM.dd')}">날짜</td>
-
                     <td class="col-date2" th:text="${report.reasonCategory}">사유</td>
-
                     <td>
                         <span class="badge"
                               th:classappend="${report.status == 'PENDING' ? 'badge-grey' : (report.status == 'BLOCKED' ? 'badge-red' : 'badge-green')}"
-                              th:text="${report.status == 'PENDING' ? (lang == 'ja' ? '待機中' : '대기중') :
-                                        (report.status == 'BLOCKED' ? (lang == 'ja' ? '遮断済み' : '차단됨') : (lang == 'ja' ? '完了' : '처리완료'))}">
-                            상태
-                        </span>
+                              th:text="${report.status == 'PENDING' ? (lang == 'ja' ? '待機中' : '대기중') : (report.status == 'BLOCKED' ? (lang == 'ja' ? '遮断済み' : '차단됨') : (lang == 'ja' ? '完了' : '처리완료'))}">상태</span>
                     </td>
-
                     <td>
-                        <button class="btn-detail"
-                                type="button"
-                                th:data-desc="${report.description}"
-                                onclick="alert(this.getAttribute('data-desc'))"
-                                th:text="${lang == 'ja' ? '内容確認' : '내용 확인'}">
-                            내용 확인
-                        </button>
+                        <button class="btn-detail" type="button"
+                                th:onclick="openReportModal([[${report.reportId}]], [[${report.reporterEmail}]], [[${report.reasonCategory}]], [[${report.description}]], [[${report.status}]])"
+                                th:text="${lang == 'ja' ? '内容確認' : '내용 확인'}">내용 확인</button>
                     </td>
                 </tr>
                 </tbody>
             </table>
+
+            <div class="pagination-container" th:if="${reports.totalElements > 0}">
+                <ul class="pagination">
+                    <li th:classappend="${reports.first} ? 'disabled'">
+                        <a th:href="@{/admin/post(reportPage=0, lang=${lang}, tab='report')}">&laquo;&laquo;</a>
+                    </li>
+                    <li th:classappend="${reports.first} ? 'disabled'">
+                        <a th:href="@{/admin/post(reportPage=${reports.number - 1}, lang=${lang}, tab='report')}">&lsaquo;</a>
+                    </li>
+                    <li th:each="pageNum : ${#numbers.sequence(reportStartPage, reportEndPage)}"
+                        th:classappend="${pageNum == reports.number + 1} ? 'active'">
+                        <a th:href="@{/admin/post(reportPage=${pageNum - 1}, lang=${lang}, tab='report')}"
+                           th:text="${pageNum}">1</a>
+                    </li>
+                    <li th:classappend="${reports.last} ? 'disabled'">
+                        <a th:href="@{/admin/post(reportPage=${reports.number + 1}, lang=${lang}, tab='report')}">&rsaquo;</a>
+                    </li>
+                    <li th:classappend="${reports.last} ? 'disabled'">
+                        <a th:href="@{/admin/post(reportPage=${reportTotalPages - 1}, lang=${lang}, tab='report')}">&raquo;&raquo;</a>
+                    </li>
+                </ul>
+            </div>
+
         </div>
     </div>
 </main>
+
+<div id="editPostModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <h3 th:text="${lang == 'ja' ? '求人状態の変更' : '공고 상태 변경'}">공고 상태 변경</h3>
+
+        <input type="hidden" id="editPostSource">
+        <input type="hidden" id="editPostId">
+
+        <div class="form-group">
+            <label th:text="${lang == 'ja' ? '状態 (承認/締め切り)' : '상태 설정 (승인/마감)'}">상태</label>
+            <select id="editPostStatus">
+                <option value="RECRUITING" th:text="${lang == 'ja' ? '承認済み (募集中)' : '승인됨 (모집중)'}">승인됨</option>
+                <option value="CLOSED" th:text="${lang == 'ja' ? '締め切り' : '마감됨'}">마감됨</option>
+            </select>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-outline" onclick="closeEditModal()" th:text="${lang == 'ja' ? 'キャンセル' : '취소'}">취소</button>
+            <button class="btn-dark" onclick="submitEdit()" th:text="${lang == 'ja' ? '確認' : '확인'}">확인</button>
+        </div>
+    </div>
+</div>
+
+<div id="reportModal" class="modal-overlay" style="display: none;">
+    <div class="report-modal-content">
+        <h3 th:text="${lang == 'ja' ? '申告内容の確認' : '신고 내용 확인'}">신고 내용 확인</h3>
+
+        <input type="hidden" id="reportIdVal">
+
+        <div class="report-info-group">
+            <span class="label" th:text="${lang == 'ja' ? '申告者' : '신고자 이메일'}">신고자 이메일</span>
+            <span class="value" id="reportEmailVal">user@email.com</span>
+        </div>
+
+        <div class="report-info-group">
+            <span class="label" th:text="${lang == 'ja' ? '申告カテゴリ' : '신고 카테고리'}">신고 카테고리</span>
+            <span class="value" id="reportCategoryVal">카테고리명</span>
+        </div>
+
+        <div class="form-group" style="margin-top: 20px;">
+            <label th:text="${lang == 'ja' ? '申告内容' : '신고 상세 내용'}">신고 상세 내용</label>
+            <div id="reportDescVal" class="report-desc-box">
+                여기에 신고 내용이 출력됩니다.
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label th:text="${lang == 'ja' ? '申告処理状態' : '신고 처리 상태'}">신고 처리 상태</label>
+            <select id="reportStatusSelect">
+                <option value="PENDING" th:text="${lang == 'ja' ? '待機中' : '대기중'}">대기중</option>
+                <option value="CLOSED" th:text="${lang == 'ja' ? '処理完了' : '처리완료'}">처리완료</option>
+                <option value="BLOCKED" th:text="${lang == 'ja' ? '遮断済み' : '차단됨'}">차단됨</option>
+            </select>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-outline" onclick="closeReportModal()" th:text="${lang == 'ja' ? '閉じる' : '닫기'}">닫기</button>
+            <button class="btn-dark" onclick="submitReportStatus()" th:text="${lang == 'ja' ? '保存' : '상태 저장'}">상태 저장</button>
+        </div>
+    </div>
+</div>
 
 <script th:inline="javascript">
     const currentLang = [[${lang}]] || 'ko';
@@ -182,33 +340,116 @@
         document.querySelectorAll(`input[name="${name}"]`).forEach(cb => cb.checked = isChecked);
     }
 
+    // ----------------------------------------------------
+    // 공고 수정 로직
+    // ----------------------------------------------------
+    function openEditModal(source, id, status) {
+        document.getElementById('editPostSource').value = source;
+        document.getElementById('editPostId').value = id;
+        document.getElementById('editPostStatus').value = status || 'RECRUITING';
+        document.getElementById('editPostModal').style.display = 'flex';
+    }
+
+    function closeEditModal() {
+        document.getElementById('editPostModal').style.display = 'none';
+    }
+
+    function submitEdit() {
+        const source = document.getElementById('editPostSource').value;
+        const id = document.getElementById('editPostId').value;
+        const status = document.getElementById('editPostStatus').value;
+
+        const msg = currentLang === 'ja' ? "修正しますか？" : "수정하시겠습니까?";
+        if(confirm(msg)) {
+            fetch('/admin/post/edit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ source: source, id: id, status: status })
+            }).then(res => {
+                if (res.ok) {
+                    alert(currentLang === 'ja' ? "修正が完了しました。" : "수정이 완료되었습니다.");
+                    location.reload();
+                } else {
+                    alert(currentLang === 'ja' ? "修正に失敗しました。" : "수정에 실패했습니다.");
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+                alert("Network Error");
+            });
+
+            closeEditModal();
+        }
+    }
+
+    // ----------------------------------------------------
+    // [추가] 신고 확인 및 상태 변경 로직
+    // ----------------------------------------------------
+    function openReportModal(id, email, category, desc, status) {
+        // 모달창에 값 채우기
+        document.getElementById('reportIdVal').value = id;
+        document.getElementById('reportEmailVal').innerText = email;
+        document.getElementById('reportCategoryVal').innerText = category;
+        document.getElementById('reportDescVal').innerText = desc;
+        document.getElementById('reportStatusSelect').value = status || 'PENDING';
+
+        // 모달 띄우기
+        document.getElementById('reportModal').style.display = 'flex';
+    }
+
+    function closeReportModal() {
+        document.getElementById('reportModal').style.display = 'none';
+    }
+
+    // [수정 완료] 신고 상태 수정 API 연동 및 불필요한 더미 코드 제거
+    function submitReportStatus() {
+        const reportId = document.getElementById('reportIdVal').value;
+        const newStatus = document.getElementById('reportStatusSelect').value;
+
+        const msg = currentLang === 'ja' ? "申告状態を変更しますか？" : "신고 상태를 변경하시겠습니까?";
+        if(confirm(msg)) {
+            fetch('/admin/report/edit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: reportId, status: newStatus })
+            }).then(res => {
+                if(res.ok) {
+                    alert(currentLang === 'ja' ? "処理が完了しました。" : "처리가 완료되었습니다.");
+                    // 처리 완료 후 신고 탭 상태를 유지하며 새로고침
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('tab', 'report');
+                    window.location.href = url.toString();
+                } else {
+                    alert(currentLang === 'ja' ? "処理に失敗しました。" : "처리에 실패했습니다.");
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+                alert("Network Error");
+            });
+
+            closeReportModal();
+        }
+    }
+
+    // ----------------------------------------------------
+    // 삭제 로직
+    // ----------------------------------------------------
     function deleteOnePost(source, id) {
         const msg = currentLang === 'ja' ? "本当にこの求人を削除しますか？" : "정말 이 공고를 삭제하시겠습니까?";
         if(!confirm(msg)) return;
 
-        const ids = [source + "_" + id];
-
         fetch('/admin/post/delete', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ids: ids })
+            body: JSON.stringify({ ids: [source + "_" + id] })
         }).then(res => {
-            if (res.ok) {
-                alert(currentLang === 'ja' ? "削除されました。" : "삭제되었습니다.");
-                location.reload();
-            }
-            else {
-                alert(currentLang === 'ja' ? "削除に失敗しました。" : "삭제 실패");
-            }
+            if (res.ok) { location.reload(); }
+            else { alert(currentLang === 'ja' ? "削除に失敗しました。" : "삭제 실패"); }
         });
     }
 
     function deleteSelectedItems() {
         const isReportTab = document.getElementById('tab-content-report').classList.contains('active');
         const targetName = isReportTab ? 'reportIds' : 'postIds';
-        const itemLabel = isReportTab ? (currentLang === 'ja' ? '件の申告内訳' : '개의 신고 내역') : (currentLang === 'ja' ? '件の求人' : '개의 공고');
-        const apiUrl = isReportTab ? '/admin/report/delete' : '/admin/post/delete';
-
         const checkedBoxes = document.querySelectorAll(`input[name="${targetName}"]:checked`);
 
         if (checkedBoxes.length === 0) {
@@ -217,25 +458,15 @@
         }
 
         const ids = Array.from(checkedBoxes).map(cb => isReportTab ? parseInt(cb.value) : cb.value);
+        if (!confirm(currentLang === 'ja' ? "選択した項目を削除しますか？" : "선택한 항목을 삭제하시겠습니까?")) return;
 
-        const confirmMsg = currentLang === 'ja'
-            ? `選択した ${checkedBoxes.length}${itemLabel} を本当に削除しますか？`
-            : `선택한 ${checkedBoxes.length}${itemLabel}을(를) 정말 삭제하시겠습니까?`;
-
-        if (!confirm(confirmMsg)) { return; }
-
-        fetch(apiUrl, {
+        fetch(isReportTab ? '/admin/report/delete' : '/admin/post/delete', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ids: ids })
         }).then(res => {
-            if (res.ok) {
-                alert(currentLang === 'ja' ? "削除されました。" : "삭제되었습니다.");
-                location.reload();
-            }
-            else {
-                alert(currentLang === 'ja' ? "削除に失敗しました。" : "삭제 실패");
-            }
+            if (res.ok) { location.reload(); }
+            else { alert("Error"); }
         });
     }
 </script>

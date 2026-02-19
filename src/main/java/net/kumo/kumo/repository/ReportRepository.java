@@ -26,10 +26,14 @@ public interface ReportRepository extends JpaRepository<ReportEntity, Long> {
     /**
      * [중복 신고 방지용]
      * 한 유저가 같은 게시글을 중복 신고했는지 체크
-     * * [수정] 메소드 이름과 실제 엔티티 필드명(userId)의 불일치를 해결하기 위해 JPQL 사용
-     * r.reporter.userId : ReportEntity -> UserEntity -> userId 필드 참조
      */
     @Query("SELECT COUNT(r) > 0 FROM ReportEntity r WHERE r.reporter.userId = :reporterId AND r.targetPostId = :targetPostId")
     boolean existsByReporterIdAndTargetPostId(@Param("reporterId") Long reporterId,
                                               @Param("targetPostId") Long targetPostId);
+
+    /**
+     * [추가] 공고 삭제 시 연관된 신고 내역 삭제용 메서드
+     * 외래키(FK)가 없으므로 서비스 단에서 공고 삭제 전 이 메서드를 호출하여 고아 데이터를 지웁니다.
+     */
+    void deleteByTargetSourceAndTargetPostId(String targetSource, Long targetPostId);
 }
