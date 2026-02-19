@@ -1,19 +1,33 @@
 package net.kumo.kumo.security;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class WebSecurityConfig {
+public class WebSecurityConfig implements WebMvcConfigurer {
+	
+	@Value("${file.upload.dir}")
+	private String uploadDir;
+	
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler("/uploads/**")
+				.addResourceLocations("file:///" + uploadDir);
+	}
+	
 	
 	private final AjaxAuthenticationSuccessHandler successHandler;
 	private final AjaxAuthenticationFailureHandler failureHandler;

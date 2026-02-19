@@ -27,4 +27,6 @@ public class Enum {
 		SECURITY,            // 계정 보안
 		REPORT_RESULT        // 신고 처리 결과
 	}
+	
+	public enum SocialProvider{ LINE, GOOGLE}
 }

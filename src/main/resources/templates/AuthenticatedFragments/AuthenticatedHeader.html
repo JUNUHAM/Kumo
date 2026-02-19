@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <div th:fragment="headerFragment">
 
     <header class="authenticated-header">
+        <link rel="stylesheet" th:href="@{/css/AuthenticatedFragments/AuthenticatedHeader.css}"
+              sec:authorize="isAuthenticated()">
 
         <a th:href="@{/}" class="logo">
             <img th:src="@{/images/NonLogin/seekerLogo.png}" alt="KUMO" style="height: 40px;">
@@ -56,7 +59,7 @@
                 </li>
 
                 <li class="profile-container" id="profileBtn">
-                    <img th:src="${user != null and user.profileImage != null ? user.profileImage : '/images/default_profile.png'}"
+                    <img th:src="${profileImageUrl ?: '/images/common/default_profile.png'}"
                          class="user-avatar" alt="Profile">
 
                     <div class="profile-dropdown" id="profileMenu">
@@ -65,7 +68,7 @@
                             <span class="user-email" th:text="${#authentication.name}">email@test.com</span>
                         </div>
                         <hr>
-                        <a th:href="@{/mypage}" class="profile-item">
+                        <a th:href="@{/Seeker/MyPage}" class="profile-item">
                             <i class="fa-regular fa-user"></i>
                             <span th:text="#{profile.mypage}">마이페이지</span>
                         </a>
