@@ -7,6 +7,22 @@
     <link rel="stylesheet" th:href="@{/css/adminView/admin_user.css}">
     <link rel="stylesheet" th:href="@{/css/adminView/admin_sidebar.css}">
 
+    <style>
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4); z-index: 2000;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: white; padding: 30px; border-radius: 12px;
+            width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .modal-content h3 { margin-top: 0; margin-bottom: 20px; color: #343a40; font-size: 18px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: #495057; }
+        .form-group select { width: 100%; height: 42px; border-radius: 6px; border: 1px solid #ced4da; padding: 0 10px; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; }
+    </style>
 </head>
 <body>
 
@@ -50,7 +66,7 @@
         </select>
 
         <select name="status" class="filter-select">
-            <option value="" th:text="${lang == 'ja' ? '全상태' : '모든 상태'}">Status</option>
+            <option value="" th:text="${lang == 'ja' ? '全状態' : '모든 상태'}">Status</option>
             <option value="ACTIVE" th:selected="${status == 'ACTIVE'}">Active</option>
             <option value="INACTIVE" th:selected="${status == 'INACTIVE'}">Inactive</option>
         </select>
@@ -62,13 +78,13 @@
         <table class="custom-table">
             <thead>
             <tr>
-                <th style="width: 40px;"><input type="checkbox" id="checkAll"></th>
-                <th th:text="${lang == 'ja' ? '会員情報' : '회원 정보'}">User Info</th>
-                <th th:text="${lang == 'ja' ? '権한' : '권한'}">Role</th>
-                <th th:text="${lang == 'ja' ? '状態' : '상태'}">Status</th>
-                <th th:text="${lang == 'ja' ? '加入日' : '가입일'}">Joined</th>
-                <th th:text="${lang == 'ja' ? '最終活動' : '최근 활동'}">Last Active</th>
-                <th th:text="${lang == 'ja' ? '管理' : '관리'}" style="text-align: right;">Action</th>
+                <th style="width: 40px; text-align: center;"><input type="checkbox" id="checkAll"></th>
+                <th style="text-align: left;" th:text="${lang == 'ja' ? '会員情報' : '회원 정보'}">User Info</th>
+                <th style="text-align: center;" th:text="${lang == 'ja' ? '権限' : '권한'}">Role</th>
+                <th style="text-align: center;" th:text="${lang == 'ja' ? '状態' : '상태'}">Status</th>
+                <th style="text-align: center;" th:text="${lang == 'ja' ? '加入日' : '가입일'}">Joined</th>
+                <th style="text-align: center;" th:text="${lang == 'ja' ? '最終活動' : '최근 로그인'}">Last Active</th>
+                <th style="text-align: center;" th:text="${lang == 'ja' ? '管理' : '관리'}">Action</th>
             </tr>
             </thead>
             <tbody>
@@ -80,7 +96,7 @@
             </tr>
 
             <tr th:each="u : ${users.content}">
-                <td><input type="checkbox" name="userIds" th:value="${u.id}"></td>
+                <td style="text-align: center;"><input type="checkbox" name="userIds" th:value="${u.id}"></td>
                 <td>
                     <div class="user-profile">
                         <img th:src="${u.profileImage}" class="avatar-img"
@@ -94,16 +110,18 @@
                         </div>
                     </div>
                 </td>
-                <td><span style="font-weight: 600; color: #555;" th:text="${u.role}">ROLE</span></td>
-                <td>
+                <td style="text-align: center;"><span style="font-weight: 600; color: #555;" th:text="${u.role}">ROLE</span></td>
+                <td style="text-align: center;">
                     <span class="badge"
                           th:classappend="${u.status == 'ACTIVE' ? 'badge-active' : 'badge-inactive'}"
                           th:text="${u.status}">STATUS</span>
                 </td>
-                <td th:text="${u.joinedAt}">Date</td>
-                <td th:text="${u.lastActive}">Date</td>
-                <td style="text-align: right;">
-                    <button class="btn-icon" title="Edit">✏️</button>
+                <td style="text-align: center;" th:text="${u.joinedAt}">Date</td>
+                <td style="text-align: center;" th:text="${u.lastActive}">Date</td>
+
+                <td style="text-align: center;">
+                    <button class="btn-icon" title="Edit"
+                            th:onclick="openEditModal([[${u.id}]], [[${u.role}]], [[${u.status}]])">✏️</button>
                     <button class="btn-icon" title="Delete" th:onclick="deleteUser([[${u.id}]])">🗑️</button>
                 </td>
             </tr>
@@ -135,43 +153,80 @@
 
 </main>
 
+<div id="editModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <h3 th:text="${lang == 'ja' ? '会員情報修正' : '회원 정보 수정'}">회원 정보 수정</h3>
+
+        <input type="hidden" id="editUserId">
+
+        <div class="form-group">
+            <label th:text="${lang == 'ja' ? '権限変更' : '권한 변경'}">권한 변경</label>
+            <select id="editRole">
+                <option value="SEEKER">Seeker</option>
+                <option value="RECRUITER">Recruiter</option>
+                <option value="ADMIN">Admin</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label th:text="${lang == 'ja' ? 'アカウント状態 (ロック設定)' : '계정 상태 (잠금 설정)'}">계정 상태</label>
+            <select id="editStatus">
+                <option value="ACTIVE" th:text="${lang == 'ja' ? '活性化' : '활성화'}">활성화</option>
+                <option value="INACTIVE" th:text="${lang == 'ja' ? 'ロック (非活性)' : '계정 잠금'}">계정 잠금</option>
+            </select>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-outline" onclick="closeEditModal()" th:text="${lang == 'ja' ? 'キャンセル' : '취소'}">취소</button>
+            <button class="btn-dark" onclick="submitEdit()" th:text="${lang == 'ja' ? '確認' : '확인'}">확인</button>
+        </div>
+    </div>
+</div>
+
 <script th:inline="javascript">
     const currentLang = [[${lang}]] || 'ko';
 
-    // [추가] 통계 데이터 비동기 호출 함수
+    // [추가] 사이드바 언어 변경 함수
+    function changeLanguage(lang) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('lang', lang);
+        // 검색 필터나 페이지네이션 파라미터를 유지한 채로 언어만 변경합니다.
+        window.location.href = url.toString();
+    }
+
+    // 통계 호출 함수
     async function fetchUserStats() {
         try {
-            // 아까 만든 RestController API 호출
             const response = await fetch('/admin/user/stats');
-            if (!response.ok) throw new Error('Network response was not ok');
-
+            if (!response.ok) throw new Error('Network error');
             const data = await response.json();
-            updateStatsUI(data);
+
+            document.getElementById('totalUsers').innerText = data.totalUsers.toLocaleString();
+            document.getElementById('newUsers').innerText = data.newUsers.toLocaleString();
+            document.getElementById('activeUsers').innerText = data.activeUsers.toLocaleString();
+            document.getElementById('inactiveUsers').innerText = data.inactiveUsers.toLocaleString();
         } catch (error) {
             console.error("통계 로딩 실패:", error);
-            // 에러 시 0으로 표기
-            document.getElementById('totalUsers').innerText = "0";
-            document.getElementById('newUsers').innerText = "0";
-            document.getElementById('activeUsers').innerText = "0";
-            document.getElementById('inactiveUsers').innerText = "0";
         }
     }
 
-    // [추가] UI 업데이트 함수
-    function updateStatsUI(data) {
-        // 숫자 3자리 콤마 포맷팅 (toLocaleString)
-        document.getElementById('totalUsers').innerText = data.totalUsers.toLocaleString();
-        document.getElementById('newUsers').innerText = data.newUsers.toLocaleString();
-        document.getElementById('activeUsers').innerText = data.activeUsers.toLocaleString();
-        document.getElementById('inactiveUsers').innerText = data.inactiveUsers.toLocaleString();
+    // [추가] 모달창 열기
+    function openEditModal(id, currentRole, currentStatus) {
+        document.getElementById('editUserId').value = id;
+        document.getElementById('editRole').value = currentRole;
+        document.getElementById('editStatus').value = currentStatus;
+        document.getElementById('editModal').style.display = 'flex';
     }
 
-    // 페이지 로드 완료 시 실행
+    // [추가] 모달창 닫기
+    function closeEditModal() {
+        document.getElementById('editModal').style.display = 'none';
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
-        // 1. 통계 가져오기
         fetchUserStats();
 
-        // 2. 체크박스 이벤트 등 기존 스크립트
+        // 체크박스 이벤트
         const checkAll = document.getElementById('checkAll');
         if(checkAll){
             checkAll.addEventListener('change', function() {
@@ -180,9 +235,67 @@
         }
     });
 
+    function submitEdit() {
+        const userId = document.getElementById('editUserId').value;
+        const newRole = document.getElementById('editRole').value;
+        const newStatus = document.getElementById('editStatus').value;
+
+        const msg = currentLang === 'ja' ? "修正しますか？" : "수정하시겠습니까?";
+        if(confirm(msg)) {
+            // 1. 서버로 보낼 데이터 묶기
+            const payload = {
+                userId: userId,
+                role: newRole,
+                status: newStatus
+            };
+
+            // 2. Fetch API로 POST 요청 전송
+            fetch('/admin/user/edit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+                .then(response => {
+                    if(response.ok) {
+                        alert(currentLang === 'ja' ? "修正が完了しました。" : "수정이 완료되었습니다.");
+                        closeEditModal();
+                        location.reload(); // 성공 시 페이지 새로고침하여 변경된 데이터 표시
+                    } else {
+                        alert(currentLang === 'ja' ? "修正に失敗しました。" : "수정에 실패했습니다.");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("Network Error");
+                });
+        }
+    }
+
+    // [수정 완료] 회원 삭제 함수 (서버로 삭제 요청)
     function deleteUser(id) {
         if(confirm(currentLang === 'ja' ? "本当に削除しますか？" : "정말 삭제하시겠습니까?")) {
-            alert("Delete API: " + id);
+
+            fetch('/admin/user/delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId: id })
+            })
+                .then(response => {
+                    if(response.ok) {
+                        alert(currentLang === 'ja' ? "削除されました。" : "삭제되었습니다.");
+                        location.reload(); // 성공 시 새로고침
+                    } else {
+                        alert(currentLang === 'ja' ? "削除に失敗しました。" : "삭제에 실패했습니다. (관련 데이터가 존재할 수 있습니다.)");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("Network Error");
+                });
         }
     }
 </script>

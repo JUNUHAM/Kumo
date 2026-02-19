@@ -10,6 +10,7 @@ import net.kumo.kumo.service.AdminService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -104,47 +105,145 @@ public class AdminController {
                                      @RequestParam(value = "searchType", required = false) String searchType,
                                      @RequestParam(value = "keyword", required = false) String keyword,
                                      @RequestParam(value = "status", required = false) String status,
-                                     // [추가] 페이지 번호 (0부터 시작), 페이지당 개수 (기본 10개)
                                      @RequestParam(value = "page", defaultValue = "0") int page,
-                                     @RequestParam(value = "size", defaultValue = "10") int size) {
+                                     @RequestParam(value = "size", defaultValue = "10") int size,
+                                     @RequestParam(value = "reportPage", defaultValue = "0") int reportPage,
+                                     @RequestParam(value = "reportSize", defaultValue = "10") int reportSize,
+                                     @RequestParam(value = "tab", defaultValue = "all") String tab) {
 
-        // 1. Pageable 객체 생성 (최신순 정렬은 Service에서 처리하므로 여기선 정보만 전달)
-        Pageable pageable = PageRequest.of(page, size);
+        int pageBlock = 5; // 보여줄 버튼 개수 (공통 사용)
 
-        // 2. Service 반환 타입을 List -> Page로 변경
-        Page<JobSummaryDTO> posts = adminService.getAllJobSummaries(lang, searchType, keyword, status, pageable);
-
+        // ============================
+        // 1. 공고 탭 처리 (posts)
+        // ============================
+        Pageable postPageable = PageRequest.of(page, size);
+        Page<JobSummaryDTO> posts = adminService.getAllJobSummaries(lang, searchType, keyword, status, postPageable);
         model.addAttribute("posts", posts);
 
-        // 필터 유지용 파라미터
-        model.addAttribute("lang", lang);
-        model.addAttribute("searchType", searchType);
-        model.addAttribute("keyword", keyword);
-        model.addAttribute("status", status);
+        int postTotalPages = posts.getTotalPages() == 0 ? 1 : posts.getTotalPages();
+        int postCurrent = posts.getNumber() + 1;
 
-        int totalPages = posts.getTotalPages();
-        if (totalPages == 0) totalPages = 1; // 0페이지 방지
+        // [수정된 계산 로직]
+        int startPage = Math.max(1, postCurrent - (pageBlock / 2));
+        int endPage = Math.min(postTotalPages, startPage + pageBlock - 1);
 
-        int pageBlock = 5; // 보여줄 버튼 개수 (5개로 설정)
-        int current = posts.getNumber() + 1; // 0-based -> 1-based
-
-        // 현재 페이지를 기준으로 시작 페이지 계산 (중앙 정렬 느낌)
-        int startPage = Math.max(1, current - (pageBlock / 2));
-        int endPage = Math.min(totalPages, startPage + pageBlock - 1);
-
-        // [보정] 마지막 페이지가 5개보다 적을 때, 앞쪽 페이지를 더 보여줘서 5개를 채움
-        if (endPage - startPage + 1 < pageBlock && totalPages >= pageBlock) {
-            startPage = endPage - pageBlock + 1;
+        // 만약 전체 페이지 수가 블록 크기(5)보다 작거나 같으면, 시작은 무조건 1, 끝은 무조건 전체 페이지 수로 맞춤
+        if (postTotalPages <= pageBlock) {
+            startPage = 1;
+            endPage = postTotalPages;
+        } else if (endPage - startPage + 1 < pageBlock) {
+            // 뒤쪽 페이지에 도달해서 남은 버튼이 5개 미만일 때 앞쪽 버튼을 땡겨오는 로직
+            startPage = Math.max(1, endPage - pageBlock + 1);
         }
 
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
-        model.addAttribute("totalPages", totalPages); // 맨 끝 버튼용
+        model.addAttribute("totalPages", postTotalPages);
 
-        // 신고 목록 (기존 유지)
-        model.addAttribute("reports", adminService.getAllReports(lang));
+
+        // ============================
+        // 2. 신고 탭 처리 (reports)
+        // ============================
+        Pageable reportPageable = PageRequest.of(reportPage, reportSize, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<ReportDTO> reports = adminService.getAllReports(lang, reportPageable);
+        model.addAttribute("reports", reports);
+
+        int reportTotalPages = reports.getTotalPages() == 0 ? 1 : reports.getTotalPages();
+        int reportCurrent = reports.getNumber() + 1;
+
+        // [수정된 계산 로직]
+        int reportStartPage = Math.max(1, reportCurrent - (pageBlock / 2));
+        int reportEndPage = Math.min(reportTotalPages, reportStartPage + pageBlock - 1);
+
+        // 만약 전체 페이지 수가 블록 크기(5)보다 작거나 같으면, 시작은 무조건 1, 끝은 무조건 전체 페이지 수로 맞춤
+        if (reportTotalPages <= pageBlock) {
+            reportStartPage = 1;
+            reportEndPage = reportTotalPages;
+        } else if (reportEndPage - reportStartPage + 1 < pageBlock) {
+            // 뒤쪽 페이지에 도달해서 남은 버튼이 5개 미만일 때 앞쪽 버튼을 땡겨오는 로직
+            reportStartPage = Math.max(1, reportEndPage - pageBlock + 1);
+        }
+
+        model.addAttribute("reportStartPage", reportStartPage);
+        model.addAttribute("reportEndPage", reportEndPage);
+        model.addAttribute("reportTotalPages", reportTotalPages);
+
+
+        // ============================
+        // 3. 상태 유지 파라미터 전달
+        // ============================
+        model.addAttribute("lang", lang);
+        model.addAttribute("searchType", searchType);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("status", status);
+        model.addAttribute("activeTab", tab); // 활성화된 탭 기억
 
         return "adminView/admin_post";
+    }
+
+    /**
+     * 회원 정보 수정 API (권한, 상태)
+     * URL: /admin/user/edit
+     */
+    @PostMapping("/user/edit")
+    @ResponseBody
+    public ResponseEntity<String> editUser(@RequestBody Map<String, String> payload) {
+        try {
+            Long userId = Long.valueOf(payload.get("userId"));
+            String role = payload.get("role");
+            String status = payload.get("status");
+
+            log.info("유저 수정 요청 - ID: {}, Role: {}, Status: {}", userId, role, status);
+            adminService.updateUserRoleAndStatus(userId, role, status);
+
+            return ResponseEntity.ok("Success");
+        } catch (Exception e) {
+            log.error("유저 수정 중 에러 발생: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("Fail");
+        }
+    }
+
+    /**
+     * 회원 삭제 API
+     * URL: /admin/user/delete
+     */
+    @PostMapping("/user/delete")
+    @ResponseBody
+    public ResponseEntity<String> deleteUser(@RequestBody Map<String, Long> payload) {
+        try {
+            Long userId = payload.get("userId");
+            log.info("유저 삭제 요청 - ID: {}", userId);
+
+            adminService.deleteUser(userId);
+            return ResponseEntity.ok("Deleted");
+        } catch (Exception e) {
+            log.error("유저 삭제 중 에러 발생: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("Fail");
+        }
+    }
+
+    /**
+     * 공고 상태 수정 API
+     * URL: /admin/post/edit
+     */
+    @PostMapping("/post/edit")
+    @ResponseBody
+    public ResponseEntity<String> editPost(@RequestBody Map<String, String> payload) {
+        try {
+            String source = payload.get("source");
+            Long id = Long.valueOf(payload.get("id"));
+            String status = payload.get("status");
+
+            log.info("공고 수정 요청 - Source: {}, ID: {}, Status: {}", source, id, status);
+
+            // 서비스 호출
+            adminService.updatePostStatus(source, id, status);
+
+            return ResponseEntity.ok("Success");
+        } catch (Exception e) {
+            log.error("공고 수정 중 에러 발생: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("Fail");
+        }
     }
 
     /**
@@ -175,5 +274,26 @@ public class AdminController {
         adminService.deleteReports(ids);
 
         return ResponseEntity.ok("Deleted successfully");
+    }
+
+    /**
+     * [새로 추가] 신고 상태 수정 API
+     * URL: /admin/report/edit
+     */
+    @PostMapping("/report/edit")
+    @ResponseBody
+    public ResponseEntity<String> editReport(@RequestBody Map<String, String> payload) {
+        try {
+            Long id = Long.valueOf(payload.get("id"));
+            String status = payload.get("status");
+
+            log.info("신고 상태 수정 요청 - ID: {}, Status: {}", id, status);
+            adminService.updateReportStatus(id, status);
+
+            return ResponseEntity.ok("Success");
+        } catch (Exception e) {
+            log.error("신고 상태 수정 중 에러 발생: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("Fail");
+        }
     }
 }
