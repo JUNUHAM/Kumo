@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.kumo.kumo.domain.dto.JoinRecruiterDTO;
 import net.kumo.kumo.service.RecruiterService;
 
 // 구인자 페이지 컨트롤러
@@ -172,8 +174,26 @@ public class RecruiterController {
      * @param model
      * @return
      */
-    @GetMapping("ProfileEdit")
+    @GetMapping("/ProfileEdit") // 습관적으로 앞에 슬래시(/)를 붙여주시면 라우팅 꼬임을 방지할 수 있습니다.
     public String ProfileEdit(Model model) {
         return "recruiterView/profileEdit";
+    }
+
+    /**
+     * 회원정보 수정 요청
+     * 
+     * @return
+     */
+    @PostMapping("/ProfileEdit")
+    public String ProfileEdit(@ModelAttribute JoinRecruiterDTO dto) {
+
+        // TODO: rs.updateProfile(...) 같은 서비스 로직을 호출해서 DB를 수정합니다.
+        log.info("회원정보 수정 요청 들어옴!");
+
+        log.info("dto 받아온거 :{}", dto);
+        rs.updateProfile(dto);
+
+        // 수정이 완료되면 다시 설정 페이지나 메인 화면으로 돌려보냅니다. (새로고침 방지용 redirect 필수!)
+        return "redirect:/Recruiter/Settings";
     }
 }
