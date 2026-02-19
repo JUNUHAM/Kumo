@@ -125,3 +125,50 @@ function applyForJob(btnElement) {
     // ... (기존 지원하기 로직 구현) ...
     alert("지원 기능은 준비 중입니다.");
 }
+
+// ==========================================
+// [기능 3] 즐겨찾기 (스크랩) 기능 구현
+// ==========================================
+
+function toggleScrap(btnElement) {
+    // 1. 로그인 체크
+    if (!isUserLoggedIn) {
+        if (confirm(MESSAGES.loginRequired)) {
+            location.href = '/login';
+        }
+        return;
+    }
+
+    // 2. jQuery 객체로 변환하여 데이터 및 SVG 태그 찾기
+    const $btn = $(btnElement);
+    const jobId = $btn.data('id');
+    const $svg = $btn.find('svg');
+
+    // 3. AJAX 통신
+    $.ajax({
+        url: '/api/scraps',            // 백엔드 API 주소 (필요시 /map/api/scraps 로 변경)
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ targetPostId: jobId }),
+        success: function(response) {
+            // 성공 시 백엔드에서 내려주는 결과(true/false)에 따라 즉시 색상 변경
+            if (response.isScraped) {
+                // 스크랩 됨 -> 파란색으로 칠하기
+                $svg.attr('fill', '#4285F4').attr('stroke', '#4285F4');
+            } else {
+                // 스크랩 취소됨 -> 원래 회색/투명으로 되돌리기
+                $svg.attr('fill', 'none').attr('stroke', '#999');
+            }
+        },
+        error: function(xhr) {
+            if (xhr.status === 401) {
+                // 세션 만료 등의 이유로 비로그인 취급 시
+                if (confirm(MESSAGES.loginRequired)) {
+                    location.href = '/login';
+                }
+            } else {
+                alert(currentLang === 'ja' ? '処理中にエラーが発生しました。' : '처리 중 오류가 발생했습니다.');
+            }
+        }
+    });
+}
