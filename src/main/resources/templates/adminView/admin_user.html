@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>KUMO Admin - Users</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/adminView/admin_user.css}">
+    <link rel="stylesheet" th:href="@{/css/adminView/admin_sidebar.css}">
+
+</head>
+<body>
+
+<aside th:replace="~{adminView/admin_sidebar :: admin_sidebar('users', ${lang})}"></aside>
+
+<main class="main-content">
+
+    <div class="stats-container">
+        <div class="stat-card">
+            <span class="stat-value" id="totalUsers">-</span>
+            <span class="stat-label" th:text="${lang == 'ja' ? '全会員' : '전체 회원'}">전체 회원</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value" id="newUsers">-</span>
+            <span class="stat-label" th:text="${lang == 'ja' ? '新規会員' : '신규 회원'}">신규 회원</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value" id="activeUsers" style="color: #0ca678;">-</span>
+            <span class="stat-label" th:text="${lang == 'ja' ? '活動中' : '활동 회원'}">활동 회원</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value" id="inactiveUsers" style="color: #868e96;">-</span>
+            <span class="stat-label" th:text="${lang == 'ja' ? '非活性' : '비활성 회원'}">비활성 회원</span>
+        </div>
+    </div>
+
+    <form action="/admin/user" method="get" class="top-controls">
+        <input type="hidden" name="lang" th:value="${lang}">
+
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" name="keyword" class="search-input" th:value="${keyword}"
+                   th:placeholder="${lang == 'ja' ? 'ニックネーム、名前で検索' : '닉네임, 이름으로 검색'}">
+        </div>
+
+        <select name="role" class="filter-select">
+            <option value="" th:text="${lang == 'ja' ? '全権限' : '모든 권한'}">Role</option>
+            <option value="SEEKER" th:selected="${role == 'SEEKER'}">Seeker</option>
+            <option value="RECRUITER" th:selected="${role == 'RECRUITER'}">Recruiter</option>
+            <option value="ADMIN" th:selected="${role == 'ADMIN'}">Admin</option>
+        </select>
+
+        <select name="status" class="filter-select">
+            <option value="" th:text="${lang == 'ja' ? '全상태' : '모든 상태'}">Status</option>
+            <option value="ACTIVE" th:selected="${status == 'ACTIVE'}">Active</option>
+            <option value="INACTIVE" th:selected="${status == 'INACTIVE'}">Inactive</option>
+        </select>
+
+        <button type="submit" class="btn-dark" th:text="${lang == 'ja' ? '検索' : '검색'}">Search</button>
+    </form>
+
+    <div class="table-container">
+        <table class="custom-table">
+            <thead>
+            <tr>
+                <th style="width: 40px;"><input type="checkbox" id="checkAll"></th>
+                <th th:text="${lang == 'ja' ? '会員情報' : '회원 정보'}">User Info</th>
+                <th th:text="${lang == 'ja' ? '権한' : '권한'}">Role</th>
+                <th th:text="${lang == 'ja' ? '状態' : '상태'}">Status</th>
+                <th th:text="${lang == 'ja' ? '加入日' : '가입일'}">Joined</th>
+                <th th:text="${lang == 'ja' ? '最終活動' : '최근 활동'}">Last Active</th>
+                <th th:text="${lang == 'ja' ? '管理' : '관리'}" style="text-align: right;">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr th:if="${users.totalElements == 0}">
+                <td colspan="7" style="text-align: center; padding: 50px; color: #999;">
+                    <span th:text="${lang == 'ja' ? '会員がいません。' : '회원이 없습니다.'}">No Data</span>
+                </td>
+            </tr>
+
+            <tr th:each="u : ${users.content}">
+                <td><input type="checkbox" name="userIds" th:value="${u.id}"></td>
+                <td>
+                    <div class="user-profile">
+                        <img th:src="${u.profileImage}" class="avatar-img"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="avatar-circle" style="display:none;"
+                             th:text="${#strings.substring(u.nickname, 0, 1)}">K</div>
+
+                        <div class="user-info">
+                            <span class="user-name" th:text="${u.nickname}">Nickname</span>
+                            <span class="user-email" th:text="${u.email}">Email</span>
+                        </div>
+                    </div>
+                </td>
+                <td><span style="font-weight: 600; color: #555;" th:text="${u.role}">ROLE</span></td>
+                <td>
+                    <span class="badge"
+                          th:classappend="${u.status == 'ACTIVE' ? 'badge-active' : 'badge-inactive'}"
+                          th:text="${u.status}">STATUS</span>
+                </td>
+                <td th:text="${u.joinedAt}">Date</td>
+                <td th:text="${u.lastActive}">Date</td>
+                <td style="text-align: right;">
+                    <button class="btn-icon" title="Edit">✏️</button>
+                    <button class="btn-icon" title="Delete" th:onclick="deleteUser([[${u.id}]])">🗑️</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="pagination-container" th:if="${users.totalElements > 0}">
+            <ul class="pagination">
+                <li th:classappend="${users.first} ? 'disabled'">
+                    <a th:href="@{/admin/user(page=0, lang=${lang}, keyword=${keyword}, role=${role}, status=${status})}">&laquo;&laquo;</a>
+                </li>
+                <li th:classappend="${users.first} ? 'disabled'">
+                    <a th:href="@{/admin/user(page=${users.number - 1}, lang=${lang}, keyword=${keyword}, role=${role}, status=${status})}">&lsaquo;</a>
+                </li>
+                <li th:each="pageNum : ${#numbers.sequence(startPage, endPage)}"
+                    th:classappend="${pageNum == users.number + 1} ? 'active'">
+                    <a th:href="@{/admin/user(page=${pageNum - 1}, lang=${lang}, keyword=${keyword}, role=${role}, status=${status})}"
+                       th:text="${pageNum}">1</a>
+                </li>
+                <li th:classappend="${users.last} ? 'disabled'">
+                    <a th:href="@{/admin/user(page=${users.number + 1}, lang=${lang}, keyword=${keyword}, role=${role}, status=${status})}">&rsaquo;</a>
+                </li>
+                <li th:classappend="${users.last} ? 'disabled'">
+                    <a th:href="@{/admin/user(page=${totalPages - 1}, lang=${lang}, keyword=${keyword}, role=${role}, status=${status})}">&raquo;&raquo;</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</main>
+
+<script th:inline="javascript">
+    const currentLang = [[${lang}]] || 'ko';
+
+    // [추가] 통계 데이터 비동기 호출 함수
+    async function fetchUserStats() {
+        try {
+            // 아까 만든 RestController API 호출
+            const response = await fetch('/admin/user/stats');
+            if (!response.ok) throw new Error('Network response was not ok');
+
+            const data = await response.json();
+            updateStatsUI(data);
+        } catch (error) {
+            console.error("통계 로딩 실패:", error);
+            // 에러 시 0으로 표기
+            document.getElementById('totalUsers').innerText = "0";
+            document.getElementById('newUsers').innerText = "0";
+            document.getElementById('activeUsers').innerText = "0";
+            document.getElementById('inactiveUsers').innerText = "0";
+        }
+    }
+
+    // [추가] UI 업데이트 함수
+    function updateStatsUI(data) {
+        // 숫자 3자리 콤마 포맷팅 (toLocaleString)
+        document.getElementById('totalUsers').innerText = data.totalUsers.toLocaleString();
+        document.getElementById('newUsers').innerText = data.newUsers.toLocaleString();
+        document.getElementById('activeUsers').innerText = data.activeUsers.toLocaleString();
+        document.getElementById('inactiveUsers').innerText = data.inactiveUsers.toLocaleString();
+    }
+
+    // 페이지 로드 완료 시 실행
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. 통계 가져오기
+        fetchUserStats();
+
+        // 2. 체크박스 이벤트 등 기존 스크립트
+        const checkAll = document.getElementById('checkAll');
+        if(checkAll){
+            checkAll.addEventListener('change', function() {
+                document.querySelectorAll('input[name="userIds"]').forEach(cb => cb.checked = this.checked);
+            });
+        }
+    });
+
+    function deleteUser(id) {
+        if(confirm(currentLang === 'ja' ? "本当に削除しますか？" : "정말 삭제하시겠습니까?")) {
+            alert("Delete API: " + id);
+        }
+    }
+</script>
+
+</body>
+</html>

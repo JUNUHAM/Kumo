@@ -5,8 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import net.kumo.kumo.domain.dto.AdminDashboardDTO;
 import net.kumo.kumo.domain.dto.JobSummaryDTO;
 import net.kumo.kumo.domain.dto.ReportDTO;
+import net.kumo.kumo.domain.dto.UserManageDTO;
 import net.kumo.kumo.domain.entity.*;
 import net.kumo.kumo.repository.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,46 +35,111 @@ public class AdminService {
     private final ReportRepository reportRepo;
     private final UserRepository userRepo;
 
-    // =================================================================
-    // 1. 전체 공고 통합 조회 (Lang 적용)
-    // =================================================================
+    // 전체 유저 가져오기 (DTO 사용)
     @Transactional(readOnly = true)
-    public List<JobSummaryDTO> getAllJobSummaries(String lang, String searchType, String keyword, String status) {
+    public Page<UserManageDTO> getAllUsers(String lang, String searchType, String keyword, String role, String status, Pageable pageable) {
+
+        // 1. 전체 유저 조회
+        List<UserEntity> allUsers = userRepo.findAll();
+
+        // 2. 스트림 필터링
+        List<UserManageDTO> filteredList = allUsers.stream()
+                .map(UserManageDTO::new)
+                // (1) 역할(Role) 필터
+                .filter(dto -> {
+                    if (role == null || role.isBlank()) return true;
+                    return role.equalsIgnoreCase(dto.getRole());
+                })
+                // (2) 상태(Status) 필터 (ACTIVE / INACTIVE)
+                .filter(dto -> {
+                    if (status == null || status.isBlank()) return true;
+                    return status.equalsIgnoreCase(dto.getStatus());
+                })
+                // (3) 검색어 필터
+                .filter(dto -> {
+                    if (keyword == null || keyword.isBlank()) return true;
+                    String k = keyword.toLowerCase();
+                    if ("email".equals(searchType)) {
+                        return dto.getEmail().toLowerCase().contains(k);
+                    } else {
+                        // 닉네임 또는 실명 검색
+                        return dto.getNickname().toLowerCase().contains(k) ||
+                                dto.getName().toLowerCase().contains(k);
+                    }
+                })
+                // (4) 정렬 (최신 가입순)
+                .sorted((a, b) -> b.getJoinedAt().compareTo(a.getJoinedAt()))
+                .collect(Collectors.toList());
+
+        // 3. 페이지네이션 처리
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), filteredList.size());
+
+        if (start > filteredList.size()) {
+            return new PageImpl<>(new ArrayList<>(), pageable, filteredList.size());
+        }
+
+        List<UserManageDTO> pagedContent = filteredList.subList(start, end);
+        return new PageImpl<>(pagedContent, pageable, filteredList.size());
+    }
+
+    // 유저 통계 가져오기
+    public Map<String, Object> getUserStats() {
+        Map<String, Object> stats = new HashMap<>();
+
+        // 1. 전체 회원 수
+        long total = userRepo.count();
+
+        // 2. 신규 회원 (최근 7일)
+        LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
+        long newUsers = userRepo.countByCreatedAtAfter(sevenDaysAgo);
+
+        // 3. 활동 중인 회원 (Active)
+        long active = userRepo.countByIsActiveTrue();
+
+        // 4. 비활성 회원
+        long inactive = total - active; // 간단하게 계산 가능
+
+        // ★ Map에 담기 (Key 이름은 프론트엔드 JS와 맞춰야 함)
+        stats.put("totalUsers", total);
+        stats.put("newUsers", newUsers);
+        stats.put("activeUsers", active);
+        stats.put("inactiveUsers", inactive);
+
+        return stats;
+    }
+
+    // 전체 공고 통합 조회 (Lang 적용)
+    @Transactional(readOnly = true)
+    public Page<JobSummaryDTO> getAllJobSummaries(String lang, String searchType, String keyword, String status, Pageable pageable) {
         List<JobSummaryDTO> unifiedList = new ArrayList<>();
 
-        // 4개 리포지토리 데이터 통합
+        // 1. 데이터 통합 (기존 코드)
         unifiedList.addAll(osakaGeoRepo.findAll().stream().map(e -> new JobSummaryDTO(e, lang, "OSAKA")).toList());
         unifiedList.addAll(tokyoGeoRepo.findAll().stream().map(e -> new JobSummaryDTO(e, lang, "TOKYO")).toList());
         unifiedList.addAll(osakaNoRepo.findAll().stream().map(e -> new JobSummaryDTO(e, lang, "OSAKA_NO")).toList());
         unifiedList.addAll(tokyoNoRepo.findAll().stream().map(e -> new JobSummaryDTO(e, lang, "TOKYO_NO")).toList());
 
-        // 스트림 필터링 시작
-        return unifiedList.stream()
-                // 1. 상태 필터 (status)
+        // 2. 필터링 및 정렬 (기존 코드)
+        List<JobSummaryDTO> filteredList = unifiedList.stream()
                 .filter(dto -> {
-                    if (status == null || status.isBlank() || "ALL".equals(status)) return true;
-                    // DTO에 status 필드가 있다고 가정 (없으면 추가 필요, 아래 참조)
-                    return status.equals(dto.getStatus());
+                    if (status == null || status.isBlank()) return true;
+                    String dtoStatus = dto.getStatus() != null ? dto.getStatus() : "RECRUITING";
+                    return status.equals(dtoStatus);
                 })
-                // 2. 검색어 필터 (keyword)
                 .filter(dto -> {
                     if (keyword == null || keyword.isBlank()) return true;
                     String k = keyword.toLowerCase();
-
                     if ("region".equals(searchType)) {
-                        // 지역 검색: 사용자가 '오사카' 또는 'Osaka' 등을 입력했을 때 소스코드 확인
                         boolean isOsaka = k.contains("오사카") || k.contains("osaka") || k.contains("大阪");
                         boolean isTokyo = k.contains("도쿄") || k.contains("tokyo") || k.contains("東京");
-
                         if (isOsaka) return dto.getSource().contains("OSAKA");
                         if (isTokyo) return dto.getSource().contains("TOKYO");
-                        return false; // 그 외 검색어는 매칭 안됨
+                        return false;
                     } else {
-                        // 제목 검색 (기본값)
                         return dto.getTitle() != null && dto.getTitle().toLowerCase().contains(k);
                     }
                 })
-                // 3. 최신순 정렬
                 .sorted((a, b) -> {
                     String timeA = a.getWriteTime();
                     String timeB = b.getWriteTime();
@@ -79,6 +148,20 @@ public class AdminService {
                     return timeB.compareTo(timeA);
                 })
                 .collect(Collectors.toList());
+
+        // 3. [추가] 페이지네이션 적용 (List -> Page 변환)
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), filteredList.size());
+
+        // 요청한 페이지가 전체 개수보다 크면 빈 리스트 반환
+        if (start > filteredList.size()) {
+            return new PageImpl<>(new ArrayList<>(), pageable, filteredList.size());
+        }
+
+        // 부분 리스트 생성
+        List<JobSummaryDTO> pagedContent = filteredList.subList(start, end);
+
+        return new PageImpl<>(pagedContent, pageable, filteredList.size());
     }
 
     // =================================================================

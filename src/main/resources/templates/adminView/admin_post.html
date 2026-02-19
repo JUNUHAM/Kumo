@@ -86,16 +86,16 @@
                     <th class="col-manage" th:text="${lang == 'ja' ? '管理' : '관리'}">관리</th>
                 </tr>
                 </thead>
-                <tbody>
 
-                <tr th:if="${#lists.isEmpty(posts)}">
+                <tbody>
+                <tr th:if="${posts.totalElements == 0}">
                     <td colspan="7" style="padding: 50px 0; color: #999;"
                         th:text="${lang == 'ja' ? '検索結果がありません。' : '검색 결과가 없습니다.'}">
                         검색 결과가 없습니다.
                     </td>
                 </tr>
 
-                <tr th:each="post : ${posts}">
+                <tr th:each="post : ${posts.content}">
                     <td>
                         <input type="checkbox" name="postIds" th:value="${post.source + '_' + post.id}">
                     </td>
@@ -138,6 +138,34 @@
                 </tr>
                 </tbody>
             </table>
+
+            <div class="pagination-container" th:if="${posts.totalElements > 0}">
+                <ul class="pagination">
+
+                    <li th:classappend="${posts.first} ? 'disabled'">
+                        <a th:href="@{/admin/post(page=0, lang=${lang}, searchType=${searchType}, keyword=${keyword}, status=${status})}">&laquo;&laquo;</a>
+                    </li>
+
+                    <li th:classappend="${posts.first} ? 'disabled'">
+                        <a th:href="@{/admin/post(page=${posts.number - 1}, lang=${lang}, searchType=${searchType}, keyword=${keyword}, status=${status})}">&lsaquo;</a>
+                    </li>
+
+                    <li th:each="pageNum : ${#numbers.sequence(startPage, endPage)}"
+                        th:classappend="${pageNum == posts.number + 1} ? 'active'">
+                        <a th:href="@{/admin/post(page=${pageNum - 1}, lang=${lang}, searchType=${searchType}, keyword=${keyword}, status=${status})}"
+                           th:text="${pageNum}">1</a>
+                    </li>
+
+                    <li th:classappend="${posts.last} ? 'disabled'">
+                        <a th:href="@{/admin/post(page=${posts.number + 1}, lang=${lang}, searchType=${searchType}, keyword=${keyword}, status=${status})}">&rsaquo;</a>
+                    </li>
+
+                    <li th:classappend="${posts.last} ? 'disabled'">
+                        <a th:href="@{/admin/post(page=${totalPages - 1}, lang=${lang}, searchType=${searchType}, keyword=${keyword}, status=${status})}">&raquo;&raquo;</a>
+                    </li>
+
+                </ul>
+            </div>
         </div>
     </div>
 

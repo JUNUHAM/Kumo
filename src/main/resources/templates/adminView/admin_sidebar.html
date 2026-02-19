@@ -10,11 +10,12 @@
             <span th:text="${lang == 'ja' ? 'ダッシュボード' : 'DashBoard'}">DashBoard</span>
         </a>
 
-        <li class="nav-item"
+        <a th:href="@{/admin/user(lang=${lang})}"
+           class="nav-item"
             th:classappend="${currentMenu == 'users'} ? 'active' : ''">
             <span class="nav-icon">👥</span>
             <span th:text="${lang == 'ja' ? '会員管理' : 'Users'}">Users</span>
-        </li>
+        </a>
 
         <a th:href="@{/admin/post(lang=${lang})}"
            class="nav-item"

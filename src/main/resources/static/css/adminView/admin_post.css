@@ -82,3 +82,60 @@ body {
 
 .tab-content { display: none; }
 .tab-content.active { display: block; }
+
+/* [페이지네이션] */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    padding: 30px 0; /* 여백 넉넉하게 */
+    border-top: 1px solid #f1f3f5;
+    margin-top: 20px;
+}
+
+.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 6px; /* 버튼 사이 간격 */
+}
+
+.pagination li a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px; /* 버튼 최소 너비 고정 (숫자 1과 10의 크기 차이 방지) */
+    height: 32px;
+    padding: 0 6px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    color: #495057;
+    text-decoration: none;
+    font-size: 14px;
+    background-color: white;
+    transition: 0.2s;
+    font-weight: 500;
+}
+
+.pagination li a:hover {
+    background-color: #f1f3f5;
+    border-color: #ced4da;
+    color: #212529;
+}
+
+/* 현재 페이지 */
+.pagination li.active a {
+    background-color: #3b5bdb; /* 메인 테마색 */
+    color: white;
+    border-color: #3b5bdb;
+    font-weight: 700;
+    cursor: default;
+}
+
+/* 비활성화 버튼 (회색 처리) */
+.pagination li.disabled a {
+    color: #adb5bd;
+    background-color: #f8f9fa;
+    border-color: #e9ecef;
+    pointer-events: none; /* 클릭 방지 */
+}
