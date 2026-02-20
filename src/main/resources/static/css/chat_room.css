@@ -323,3 +323,179 @@ textarea.input-field::placeholder {
     font-size: 24px;
     color: #3498db;
 }
+
+/* [상용구 메뉴] 배경 (어두운 처리) - 기존과 동일 */
+.template-menu-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+/* [상용구 메뉴] 박스 디자인 (수정됨) */
+.template-box {
+    width: 100%;
+    max-width: 600px;
+    background: white;
+    border-radius: 25px 25px 0 0;
+    /* 둥글게 */
+    /* padding을 제거하고 헤더와 리스트에 각각 줍니다 (꽉 찬 배경색을 위해) */
+    overflow: hidden;
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+    /* 그림자 추가로 입체감 */
+    animation: slideUp 0.3s ease-out;
+}
+
+/* [상용구 메뉴] 헤더 (수정됨: 글자색 검정) */
+.template-header {
+    background-color: #b3d7f5;
+    /* 배경: 파스텔 하늘색 */
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    font-size: 18px;
+    color: black;
+    /* ★ 수정: 글자색을 검은색으로 변경 */
+}
+
+/* 닫기 버튼 (X) */
+.template-header .close-btn {
+    font-size: 24px;
+    cursor: pointer;
+    color: black;
+    /* ★ 수정: X 버튼도 잘 보이게 검은색으로 */
+    transition: 0.2s;
+}
+
+/* 닫기 버튼 마우스 올렸을 때 */
+.template-header .close-btn:hover {
+    color: #fff;
+    /* 마우스 올리면 흰색으로 반전 (포인트) */
+}
+
+/* [상용구 메뉴] 버튼 리스트 영역 */
+.template-list {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background-color: #fff;
+    /* 리스트 배경은 흰색 */
+}
+
+/* 각 버튼 디자인 (색상 적용 #3498db) */
+.template-list button {
+    padding: 14px;
+    border: 2px solid #b3d7f5;
+    /* 테두리를 배경색과 맞춤 */
+    border-radius: 12px;
+    background: white;
+    color: #555;
+    /* 글자색은 너무 진하지 않은 회색 */
+    font-size: 16px;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* 버튼 마우스 오버 효과 (진한 파랑 #3498db) */
+.template-list button:hover {
+    background: #b3d7f5;
+    /* 배경이 부드러운 하늘색으로 */
+    border-color: #3498db;
+    /* 테두리는 진한 파란색으로 강조 */
+    color: #3498db;
+    /* 글자도 진한 파란색으로 */
+    transform: translateY(-2px);
+    /* 살짝 떠오르는 효과 */
+}
+
+/* 아래에서 위로 올라오는 애니메이션 (기존 동일) */
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* [메인 메뉴] 배경 */
+.main-menu-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9997;
+    /* 상용구 메뉴(9998)보다는 아래 */
+    align-items: flex-end;
+    /* 바닥에서 올라오게 */
+    justify-content: center;
+}
+
+/* [메인 메뉴] 하얀색 박스 (서랍) */
+.main-menu-box {
+    width: 100%;
+    background: #ffffff;
+    border-radius: 20px 20px 0 0;
+    padding: 30px 20px 50px 20px;
+    /* 아래 여백을 넉넉히 줌 */
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+    animation: slideUp 0.3s ease-out;
+}
+
+/* [그리드 레이아웃] 아이콘 4개씩 배치 */
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    /* 4열 배치 */
+    gap: 20px;
+    text-align: center;
+}
+
+/* 개별 메뉴 아이템 */
+.menu-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.menu-item:active {
+    transform: scale(0.95);
+    /* 클릭 시 살짝 눌리는 효과 */
+}
+
+/* 동그란 아이콘 배경 */
+.menu-icon-circle {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 24px;
+    /* 아이콘 크기 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* 메뉴 이름 텍스트 */
+.menu-name {
+    font-size: 13px;
+    color: #333;
+}

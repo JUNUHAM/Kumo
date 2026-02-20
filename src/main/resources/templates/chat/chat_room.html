@@ -83,7 +83,6 @@
 
     <div class="mobile-container">
         <div class="chat-header">
-            <i class="fa-solid fa-chevron-left header-back-btn" onclick="goBackToList()"></i>
 
             <div class="header-translate-btn">
                 <img th:src="@{/images/icons/chat_room_translate.svg}" class="translate-icon-img" alt="번역">
@@ -153,7 +152,7 @@
         </div>
 
         <div class="input-area">
-            <i class="fa-solid fa-plus btn-plus"></i>
+            <i class="fa-solid fa-plus btn-plus" onclick="openMainMenu()" style="cursor: pointer;"></i>
             <input type="file" id="fileInput" style="display: none;" accept="image/*" onchange="uploadImage()">
             <img th:src="@{/images/icons/chat_room_images.svg}" class="btn-img-upload" alt="사진첨부"
                 onclick="document.getElementById('fileInput').click()">
@@ -165,6 +164,58 @@
         <div id="imageModal" class="image-modal" onclick="closeImageModal()">
             <span class="close-modal-btn">&times;</span>
             <img class="modal-content-img" id="modalImage">
+        </div>
+
+        <div id="mainPlusMenu" class="main-menu-overlay" onclick="closeMainMenu()">
+            <div class="main-menu-box" onclick="event.stopPropagation()">
+                <div class="menu-grid">
+
+                    <div class="menu-item" onclick="openSubMenu('template')">
+                        <div class="menu-icon-circle" style="background-color: #fef01b;">
+                            <i class="fa-solid fa-comment-dots" style="color: #3b1e1e;"></i>
+                        </div>
+                        <span class="menu-name">자주 쓰는 메시지</span>
+                    </div>
+
+                    <div class="menu-item" onclick="alert('지도 기능은 준비 중입니다!')">
+                        <div class="menu-icon-circle" style="background-color: #e3f2fd;">
+                            <i class="fa-solid fa-location-dot" style="color: #2196f3;"></i>
+                        </div>
+                        <span class="menu-name">위치 공유</span>
+                    </div>
+
+                    <div class="menu-item" onclick="document.getElementById('fileInput').click(); closeMainMenu();">
+                        <div class="menu-icon-circle" style="background-color: #ffebee;">
+                            <i class="fa-solid fa-image" style="color: #f44336;"></i>
+                        </div>
+                        <span class="menu-name">앨범</span>
+                    </div>
+
+                    <div class="menu-item" onclick="alert('이력서 전송 기능')">
+                        <div class="menu-icon-circle" style="background-color: #e8f5e9;">
+                            <i class="fa-solid fa-address-card" style="color: #4caf50;"></i>
+                        </div>
+                        <span class="menu-name">문서</span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div id="templateMenu" class="template-menu-overlay" onclick="closeTemplateMenu()">
+            <div class="template-box" onclick="event.stopPropagation()">
+                <div class="template-header">
+                    <span>자주 쓰는 메시지</span>
+                    <span class="close-btn" onclick="closeTemplateMenu()">&times;</span>
+                </div>
+                <div class="template-list">
+                    <button onclick="insertText('안녕하세요, 면접 제안 드리고 싶습니다. :)')">📅 면접 제안</button>
+                    <button onclick="insertText('이력서를 추가로 요청드려도 될까요? :)')">📂 이력서 요청</button>
+                    <button onclick="insertText('합격 통보 드립니다. 축하합니다! :)')">🎉 합격 통보</button>
+                    <button onclick="insertText('네, 면접 일정 확인했습니다. :)')">✅ 일정 확인</button>
+                    <button onclick="insertText('도착했습니다. 기다리고 있어요. :)')">📍 도착 알림</button>
+                </div>
+            </div>
         </div>
 
         <script>
@@ -347,6 +398,55 @@
 
             function closeImageModal() {
                 document.getElementById("imageModal").style.display = "none";
+            }
+
+            // [메인 메뉴] 열기
+            function openMainMenu() {
+                document.getElementById('mainPlusMenu').style.display = 'flex';
+            }
+
+            // [메인 메뉴] 닫기
+            function closeMainMenu() {
+                document.getElementById('mainPlusMenu').style.display = 'none';
+            }
+
+            // [서브 메뉴 연결] 메인 메뉴 닫으면서 -> 원하는 기능 열기
+            function openSubMenu(type) {
+                closeMainMenu(); // 1차 메뉴 닫고
+
+                if (type === 'template') {
+                    openTemplateMenu(); // 아까 만든 '상용구' 메뉴 열기
+                }
+                // 나중에 여기에 'map' 등 추가 가능
+            }
+
+            // 1. 메뉴 열기
+            function openTemplateMenu() {
+                document.getElementById('templateMenu').style.display = 'flex';
+            }
+
+            // 2. 메뉴 닫기
+            function closeTemplateMenu() {
+                document.getElementById('templateMenu').style.display = 'none';
+            }
+
+            // 3. [수정됨] 텍스트 입력창에 글자 넣기
+            function insertText(text) {
+                // 지존용사님의 HTML ID인 'msgInput'을 찾도록 수정했습니다!
+                const inputField = document.getElementById('msgInput');
+
+                if (inputField) {
+                    inputField.value = text; // 글자 입력
+                    inputField.focus();      // 커서 깜빡임
+                    // (옵션) 높이 자동 조절 함수가 있다면 실행 (지존용사님 코드에 autoResize가 있어서 추가함)
+                    if (typeof autoResize === 'function') {
+                        autoResize(inputField);
+                    }
+                } else {
+                    alert("입력창(msgInput)을 찾을 수 없습니다!");
+                }
+
+                closeTemplateMenu(); // 메뉴 닫기
             }
         </script>
 </body>
