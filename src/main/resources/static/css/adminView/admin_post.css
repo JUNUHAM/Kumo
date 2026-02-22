@@ -1,0 +1,187 @@
+/* [기본 설정] */
+:root { --light-bg: #f8f9fa; }
+* { box-sizing: border-box; }
+
+body {
+    margin: 0; padding: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: var(--light-bg);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* [메인 컨텐츠] */
+.main-content {
+    flex: 1;
+    padding: 40px;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+}
+
+/* [상단 컨트롤] */
+.top-controls { display: flex; gap: 15px; margin-bottom: 20px; }
+.search-box { flex: 1; position: relative; }
+.search-input { width: 100%; padding: 12px 15px 12px 40px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+.search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #aaa; }
+.filter-select { padding: 12px 20px; border: 1px solid #ddd; border-radius: 8px; background: white; cursor: pointer; min-width: 120px; }
+
+/* [탭 메뉴] */
+.tab-menu { display: flex; border-bottom: 1px solid #ddd; margin-bottom: 20px; }
+.tab-item { padding: 15px 20px; font-size: 18px; font-weight: 700; color: #868e96; cursor: pointer; position: relative; }
+.tab-item:hover { color: #495057; }
+.tab-item.active { color: #3b5bdb; }
+.tab-item.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background-color: #3b5bdb; }
+
+/* [액션 버튼] */
+.action-buttons { margin-bottom: 20px; display: flex; gap: 10px; }
+.btn { padding: 10px 20px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; color: white; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
+/* 모달 취소 버튼 등 보조 버튼 스타일 */
+.btn-outline { background-color: white; color: #343a40; border: 1px solid #ddd; height: 42px; padding: 0 20px; border-radius: 8px; cursor: pointer; font-weight: 600;}
+.btn-outline:hover { background-color: #f1f3f5; }
+
+/* [추가] 모달 확인 버튼 스타일 (디자인 보정) */
+.btn-dark {
+    background-color: #343a40;
+    color: white;
+    border: none;
+    height: 42px;
+    padding: 0 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s ease-in-out;
+}
+.btn-dark:hover { background-color: #212529; }
+
+/* [테이블 스타일] */
+.table-container { width: 100%; background: white; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); overflow: hidden; }
+.custom-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+
+.custom-table th { background: #e9ecef; padding: 16px 10px; font-weight: 700; color: #495057; text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px; white-space: nowrap; }
+.custom-table td { height: 65px; padding: 0 10px; border-bottom: 1px solid #f1f3f5; text-align: center; color: #333; vertical-align: middle; font-size: 14px; font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.custom-table tr:hover { background-color: #f8f9fa; }
+
+/* [컬럼 너비] */
+.col-check { width: 5%; }
+.col-title { width: 35%; text-align: left !important; padding-left: 20px !important; }
+.col-cate { width: 12%; }
+.col-date1 { width: 12%; }
+.col-date2 { width: 12%; }
+.col-status { width: 10%; }
+.col-manage { width: 14%; }
+
+/* [텍스트/뱃지/버튼 스타일] */
+.title-text { font-size: 14px; font-weight: 600; color: #333; display: block; overflow: hidden; text-overflow: ellipsis; }
+
+/* 제목 아래의 서브 텍스트 */
+.sub-text { font-size: 11px; color: #adb5bd; font-weight: 400; display: block; margin-top: 2px; }
+
+.badge { display: inline-flex; justify-content: center; align-items: center; width: 80px; height: 32px; border-radius: 20px; font-size: 13px; font-weight: 700; color: white; }
+.badge-grey { background-color: #adb5bd; }
+.badge-green { background-color: #0ca678; }
+.badge-red { background-color: #fa5252; }
+
+.action-link { cursor: pointer; font-weight: 500; font-size: 14px; margin: 0 5px; transition: 0.2s; text-decoration: none; }
+.action-link.edit { color: #495057; }
+.action-link.edit:hover { color: #228be6; text-decoration: underline; }
+.action-link.delete { color: #fa5252; }
+.action-link.delete:hover { color: #c92a2a; text-decoration: underline; }
+
+.btn-detail { padding: 6px 12px; background-color: white; border: 1px solid #dee2e6; border-radius: 4px; color: #495057; font-size: 12px; cursor: pointer; transition: 0.2s; }
+.btn-detail:hover { background: #f1f3f5; color: #333; border-color: #ced4da; }
+
+.title-link { text-decoration: none; color: #333; transition: 0.2s; }
+.title-link:hover { color: #1c7ed6; text-decoration: underline; }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* [페이지네이션] */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    padding: 30px 0; /* 여백 넉넉하게 */
+    border-top: 1px solid #f1f3f5;
+    margin-top: 20px;
+}
+
+.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 6px; /* 버튼 사이 간격 */
+}
+
+.pagination li a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px; /* 버튼 최소 너비 고정 (숫자 1과 10의 크기 차이 방지) */
+    height: 32px;
+    padding: 0 6px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    color: #495057;
+    text-decoration: none;
+    font-size: 14px;
+    background-color: white;
+    transition: 0.2s;
+    font-weight: 500;
+}
+
+.pagination li a:hover {
+    background-color: #f1f3f5;
+    border-color: #ced4da;
+    color: #212529;
+}
+
+/* 현재 페이지 */
+.pagination li.active a {
+    background-color: #3b5bdb; /* 메인 테마색 */
+    color: white;
+    border-color: #3b5bdb;
+    font-weight: 700;
+    cursor: default;
+}
+
+/* 비활성화 버튼 (회색 처리) */
+.pagination li.disabled a {
+    color: #adb5bd;
+    background-color: #f8f9fa;
+    border-color: #e9ecef;
+    pointer-events: none; /* 클릭 방지 */
+}
+
+/* [신고 내용 확인 모달창 전용 CSS 추가] */
+.report-modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    width: 450px; /* 기존보다 약간 넓게 */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.report-modal-content h3 { margin-top: 0; margin-bottom: 25px; color: #343a40; font-size: 18px; border-bottom: 2px solid #f1f3f5; padding-bottom: 10px;}
+
+.report-info-group { margin-bottom: 15px; }
+.report-info-group span.label { display: inline-block; width: 100px; font-weight: 700; color: #495057; font-size: 14px; }
+.report-info-group span.value { color: #333; font-size: 14px; }
+
+.report-desc-box {
+    width: 100%;
+    height: 120px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    color: #495057;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-y: auto;
+    margin-top: 5px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+}

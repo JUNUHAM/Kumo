@@ -1,15 +1,16 @@
 package net.kumo.kumo.service;
 
-import net.kumo.kumo.domain.entity.BaseEntity;
-import net.kumo.kumo.repository.OsakaGeocodedRepository;
-import net.kumo.kumo.repository.TokyoGeocodedRepository;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
-import net.kumo.kumo.domain.dto.JobSummaryDTO;
 import net.kumo.kumo.domain.dto.JobDetailDTO;
+import net.kumo.kumo.domain.dto.JobSummaryDTO;
+import net.kumo.kumo.domain.dto.ReportDTO;
 import net.kumo.kumo.domain.dto.projection.JobSummaryView;
+import net.kumo.kumo.domain.entity.BaseEntity;
+import net.kumo.kumo.domain.entity.ReportEntity;
+import net.kumo.kumo.domain.entity.UserEntity;
 import net.kumo.kumo.repository.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,21 +24,19 @@ public class MapService {
     private final OsakaNoGeocodedRepository osakaNoRepo;
     private final TokyoNoGeocodedRepository tokyoNoRepo;
 
-    // ★ 반환 타입 변경: JobSummaryView -> JobSummaryDTO
-    // ★ 파라미터 추가: String lang
+    // 신고 관련 리포지토리
+    private final ReportRepository reportRepo;
+    private final UserRepository userRepo; // ★ [추가] 신고자(User) 조회를 위해 필요
+
+    // --- 1. 지도용 리스트 조회 ---
     @Transactional(readOnly = true)
     public List<JobSummaryDTO> getJobListInMap(Double minLat, Double maxLat, Double minLng, Double maxLng, String lang) {
-
-        // 오사카 리포에서 데이터 꺼냄
         List<JobSummaryView> osakaRaw = osakaRepo.findTop300ByLatBetweenAndLngBetween(minLat, maxLat, minLng, maxLng);
-        // 오사카 source 추가
         List<JobSummaryDTO> result = new ArrayList<>(osakaRaw.stream()
                 .map(view -> new JobSummaryDTO(view, lang, "OSAKA"))
                 .toList());
 
-        // 도쿄 리포에서 데이터 꺼냄
         List<JobSummaryView> tokyoRaw = tokyoRepo.findTop300ByLatBetweenAndLngBetween(minLat, maxLat, minLng, maxLng);
-        // 도쿄 source 추가
         result.addAll(tokyoRaw.stream()
                 .map(view -> new JobSummaryDTO(view, lang, "TOKYO"))
                 .toList());
@@ -45,19 +44,12 @@ public class MapService {
         return result;
     }
 
-    /**
-     * 공고 상세 정보를 조회
-     * * @param id     공고 ID (PK)
-     * @param source 데이터 출처 (허용 값: "OSAKA", "OSAKA_NO", "TOKYO", "TOKYO_NO")
-     * @param lang   언어 설정 ("kr" 또는 "jp")
-     * @return       상세 정보 DTO
-     * @throws IllegalArgumentException 해당 공고가 없거나 source 값이 잘못된 경우
-     */
+    // --- 2. 상세 페이지 조회 ---
     @Transactional(readOnly = true)
     public JobDetailDTO getJobDetail(Long id, String source, String lang) {
         BaseEntity entity = null;
 
-        // source 파라미터를 보고 어느 테이블에서 가져올지 결정
+        // 소스에 따라 적절한 리포지토리 선택
         if ("OSAKA".equalsIgnoreCase(source)) {
             entity = osakaRepo.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공고입니다."));
         } else if ("TOKYO".equalsIgnoreCase(source)) {
@@ -70,7 +62,28 @@ public class MapService {
             throw new IllegalArgumentException("잘못된 접근입니다 (Source 오류).");
         }
 
-        // 엔티티를 DTO로 변환해서 반환
-        return new JobDetailDTO(entity, lang);
+        // JobDetailDTO 생성자에 source도 함께 전달
+        return new JobDetailDTO(entity, lang, source);
+    }
+
+    // --- 3. [수정] 신고 등록 ---
+    @Transactional
+    public void createReport(ReportDTO dto) {
+        // 1. 신고자(User) 조회
+        // DTO에 있는 reporterId로 실제 유저 엔티티를 찾아야 연관관계를 맺을 수 있음
+        UserEntity reporter = userRepo.findById(dto.getReporterId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        // 2. 엔티티 변환 및 저장 (변경된 DB 구조 반영)
+        ReportEntity report = ReportEntity.builder()
+                .reporter(reporter)            // [변경] ID 대신 UserEntity 객체 주입
+                .targetPostId(dto.getTargetPostId())
+                .targetSource(dto.getTargetSource()) // [변경] 이제 별도 컬럼에 저장
+                .reasonCategory(dto.getReasonCategory())
+                .description(dto.getDescription())   // [변경] 순수 본문만 저장 (앞에 [OSAKA] 안 붙임)
+                .status("PENDING")             // 기본 상태
+                .build();
+
+        reportRepo.save(report);
     }
 }

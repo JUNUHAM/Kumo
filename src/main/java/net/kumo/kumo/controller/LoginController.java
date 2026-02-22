@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import net.kumo.kumo.domain.dto.FindIdDTO;
 import net.kumo.kumo.domain.dto.JoinRecruiterDTO;
 import net.kumo.kumo.domain.dto.JoinSeekerDTO;
-import net.kumo.kumo.repository.UserRepository;
+import net.kumo.kumo.domain.dto.ChangeNewPWDTO;
 import net.kumo.kumo.service.LoginService;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ public class LoginController {
 	@Value("${file.upload.dir}")
 	private String uploadDir;
 
-	@Value("${kumo.google.maps.key}")
+	@Value("${kumo.google.maps.keys}")
 	private String googleMapsKey;
 
 	@GetMapping("login")
@@ -52,22 +52,6 @@ public class LoginController {
 	@GetMapping("FindPw")
 	public String FindPw() {
 		return "NonLoginView/FindPw";
-	}
-
-	@PostMapping("/api/check/nickname")
-	public ResponseEntity<Boolean> checkNickname(@RequestBody Map<String, String> request) {
-		String nickname = request.get("nickname");
-		// 존재하면 true, 없으면 false 반환
-		boolean exists = LoginService.existsByNickname(nickname);
-		return ResponseEntity.ok(exists);
-	}
-
-	@PostMapping("/api/check/email")
-	public ResponseEntity<Boolean> checkEmail(@RequestBody Map<String, String> request) {
-		String email = request.get("email");
-		// 존재하면 true, 없으면 false 반환
-		boolean exists = LoginService.existsByEmail(email);
-		return ResponseEntity.ok(exists);
 	}
 
 	@GetMapping("/join/seeker")
@@ -160,59 +144,19 @@ public class LoginController {
 		return "NonLoginView/joinWait";
 	}
 
-	@PostMapping("/api/findId")
-	public ResponseEntity<Map<String, Object>> findIdProc(@RequestBody FindIdDTO findIdDTO) {
-		log.info("findId 요청 수신: {}", findIdDTO);
-		Map<String, Object> response = new HashMap<>();
-
-		// 1. 서비스 호출 (DB 조회)
-		// 서비스는 일치하는게 없으면 null을 리턴한다고 가정
-		String foundEmail = LoginService.findId(findIdDTO);
-
-		if (foundEmail != null) {
-			// 2. 이메일 마스킹 처리 (보안)
-			String maskedEmail = maskEmail(foundEmail);
-
-			// 3. 성공 응답 구성
-			response.put("status", "success");
-			response.put("email", maskedEmail);
-			response.put("message", "일치하는 정보를 찾았습니다.");
-		} else {
-			// 4. 실패 응답 구성
-			response.put("status", "fail");
-			response.put("message", "일치하는 회원 정보가 없습니다.");
-		}
-
-		return ResponseEntity.ok(response);
+	@PostMapping("/changePw")
+	public String changePw(@RequestParam("email") String email, Model model) {
+		model.addAttribute("email", email);
+		return "NonLoginView/changePw";
 	}
 
-	private String maskEmail(String email) {
-		if (email == null || !email.contains("@")) {
-			return email; // 방어 코드
-		}
+	@PostMapping("ChangeNewPW")
+	public String NewPw(@RequestParam ChangeNewPWDTO ChangeNewPWDTO) {
+		log.info("새로받은 비밀번호 {}", ChangeNewPWDTO);
 
-		String[] parts = email.split("@");
-		String id = parts[0];
-		String domain = parts[1];
-		int len = id.length();
+		LoginService.ChangeNewPW(ChangeNewPWDTO);
 
-		String maskedId;
-
-		if (len <= 2) {
-			// 2글자 이하: 앞 1글자만 노출 (ex: k*@gmail.com)
-			maskedId = id.charAt(0) + "*".repeat(len - 1);
-		} else if (len == 3) {
-			// 3글자: 앞뒤 1글자 노출 (ex: k*o@gmail.com)
-			maskedId = id.charAt(0) + "*" + id.charAt(2);
-		} else {
-			// 4글자 이상: 앞 3글자 + **** + 뒤 2글자 노출
-			// (ex: develop -> dev****op)
-			String head = id.substring(0, 3);
-			String tail = id.substring(len - 2);
-			maskedId = head + "****" + tail;
-		}
-
-		return maskedId + "@" + domain;
+		return "redirect:/login";
 	}
 
 }

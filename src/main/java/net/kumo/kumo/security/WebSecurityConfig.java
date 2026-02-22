@@ -1,17 +1,35 @@
 package net.kumo.kumo.security;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfig {
+@RequiredArgsConstructor
+public class WebSecurityConfig implements WebMvcConfigurer {
+
+	@Value("${file.upload.dir}")
+	private String uploadDir;
+
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler("/uploads/**")
+				.addResourceLocations("file:///" + uploadDir);
+	}
+
+	private final AjaxAuthenticationSuccessHandler successHandler;
+	private final AjaxAuthenticationFailureHandler failureHandler;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -26,22 +44,23 @@ public class WebSecurityConfig {
 						.requestMatchers("/css/**", "/js/**", "/images/**", "/error").permitAll()
 
 						// (2) 로그인 없이 접근 가능한 페이지
+						.requestMatchers("/map/api/**").permitAll()
 						.requestMatchers("/", "/login", "/signup", "/join", "/join/**", "/info").permitAll()
-						.requestMatchers("/map_non_login_view", "/FindId", "/FindPw", "/findIdProc", "/nickname")
+						.requestMatchers("/map_non_login_view", "/FindId", "/FindPw", "/findIdProc", "/nickname",
+								"/changePw", "/map/main", "/map/job-list-view")
 						.permitAll()
 						.requestMatchers("/Recruiter/**").permitAll() // 테스트용
 
 						// ★★★ [여기 추가] AJAX 중복확인 API는 로그인 없이 접근 가능해야 함 ★★★
-						.requestMatchers("/api/check/**", "/api/**").permitAll()
-
-						// 👇👇👇 [채팅 기능] 👇👇👇
-						.requestMatchers("/chat/**", "/ws-stomp/**").permitAll()
+						.requestMatchers("/api/check/**", "/api/**", "/api/mail/**").permitAll()
+						.requestMatchers("/api/notifications/**").authenticated()
 
 						// (3) 관리자 전용
-						.requestMatchers("/admin/**").hasRole("ADMIN")
+						// .requestMatchers("/admin/**").hasRole("ADMIN")
 
 						// (4) 그 외 모든 요청은 인증 필요
-						.anyRequest().authenticated())
+						// .anyRequest().authenticated()
+						.anyRequest().permitAll())
 
 				// 3. 로그인 설정
 				.formLogin((form) -> form
@@ -49,7 +68,8 @@ public class WebSecurityConfig {
 						.loginProcessingUrl("/loginProc")
 						.usernameParameter("email")
 						.passwordParameter("password")
-						.defaultSuccessUrl("/", true)
+						.successHandler(successHandler)
+						.failureHandler(failureHandler)
 						.permitAll())
 
 				// 4. 로그아웃 설정

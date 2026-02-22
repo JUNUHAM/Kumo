@@ -8,6 +8,27 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "users") // DB 테이블명
@@ -75,9 +96,11 @@ public class UserEntity {
 	@Column(length = 20, unique = true)
 	private String contact;
 
-	@Column(name = "profile_image", length = 255)
-	@Builder.Default
-	private String profileImage = "/images/default_profile.png";
+	// 기존에 있던 String profileImage; 필드를 지우고 아래로 !
+
+	@ToString.Exclude // 🔥 무한 루프 방지! (이걸 꼭 붙여주세요)
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private ProfileImageEntity profileImage;
 
 	/*
 	 * ==========================
@@ -136,10 +159,11 @@ public class UserEntity {
 	private boolean isActive = true;
 
 	// 소셜 로그인용 (nullable)
-	@Column(name = "social_provider", length = 20)
-	private String socialProvider;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = true)
+	private Enum.SocialProvider socialProvider;
 
-	@Column(name = "social_id", length = 100)
+	@Column(name = "social_id", length = 100, nullable = true)
 	private String socialId;
 
 	/*
@@ -154,4 +178,32 @@ public class UserEntity {
 	@UpdateTimestamp
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
+
+	// ... 기존 필드들 (id, email, password 등) ...
+
+	// 1. 실패 횟수 저장 (기본값 0)
+	@Column(name = "login_fail_count", nullable = false)
+	@Builder.Default // 이거 추가!
+	private int loginFailCount = 0;
+
+	// 2. 마지막 실패 시간 (null 가능)
+	@Column(name = "last_fail_at")
+	private LocalDateTime lastFailAt;
+
+	// 로그인 실패 시 호출: 횟수 +1, 시간 갱신
+	public void increaseFailCount() {
+		this.loginFailCount++;
+		this.lastFailAt = LocalDateTime.now();
+	}
+
+	// 로그인 성공 시 호출: 횟수 0으로 초기화
+	public void resetFailCount() {
+		this.loginFailCount = 0;
+		this.lastFailAt = null;
+	}
+
+	// 🌟 1:N 관계 설정: 사장님 한 명이 여러 회사를 가짐(Recruiter 회사 정보)
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<CompanyEntity> companies = new ArrayList<>();
+
 }

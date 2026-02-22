@@ -1,17 +1,20 @@
 package net.kumo.kumo.controller;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.kumo.kumo.domain.dto.JobDetailDTO;
 import net.kumo.kumo.domain.dto.JobSummaryDTO;
+import net.kumo.kumo.domain.dto.ReportDTO;
+import net.kumo.kumo.domain.entity.UserEntity;
+import net.kumo.kumo.service.MapService;
+import net.kumo.kumo.service.ScrapService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import net.kumo.kumo.service.MapService;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,7 +29,9 @@ public class MapController {
 	private String googleMapKey;
 	
     private final MapService mapService;
+	private final ScrapService scrapService; // 🌟 추가: 찜하기 여부 확인용
 
+    // --- 화면 반환 (View) ---
 
 	/**
 	 * 지도 메인페이지 연결
@@ -65,11 +70,26 @@ public class MapController {
             // ★ [테스트용] URL 뒤에 &isOwner=true 를 붙이면 구인자 모드로 전환
             // 기본값은 false (구직자 모드)
             @RequestParam(defaultValue = "false") boolean isOwner,
+			HttpSession session, // 26.2.19 추가 <- 로그인 유저 확인용
 
-            Model model
-    ) {
+            Model model) {
         // 1. 서비스에서 상세 데이터 조회
         JobDetailDTO job = mapService.getJobDetail(id, source, lang);
+	    
+	    // ==========================================
+	    // 🌟 [추가된 로직] 현재 유저의 스크랩(찜하기) 여부 확인
+	    // ==========================================
+	    boolean isScraped = false; // 기본값은 찜하지 않음
+	    Object sessionUser = session.getAttribute("loginUser");
+	    
+	    if (sessionUser instanceof UserEntity) {
+		    Long userId = ((UserEntity) sessionUser).getUserId();
+		    // ScrapService에 해당 유저가 이 공고(id)를 찜했는지 물어봄
+		    isScraped = scrapService.checkIsScraped(userId, id);
+	    }
+	    
+	    model.addAttribute("isScraped", isScraped); // 모델에 담아 HTML로 전송!
+	    // ==========================================
 
         // 2. 모델에 담기
         model.addAttribute("job", job);
@@ -84,6 +104,8 @@ public class MapController {
         return "mapView/job_detail";
     }
 
+    // --- 데이터 반환 (API) ---
+
     @GetMapping("/api/jobs")
     @ResponseBody
     public List<JobSummaryDTO> getJobListApi(
@@ -95,5 +117,35 @@ public class MapController {
     ) {
         // 서비스가 이미 정제된(JobResponse) 데이터를 줍니다.
         return mapService.getJobListInMap(minLat, maxLat, minLng, maxLng, lang);
+    }
+
+    /**
+     * [NEW] 신고 접수 API
+     * URL: /map/api/reports (주의: 클래스 매핑 "map" + 메소드 매핑 "/api/reports")
+     * 프론트엔드 fetch 주소 수정 필요: fetch('/map/api/reports', ...)
+     */
+    @PostMapping("/api/reports")
+    @ResponseBody
+    public ResponseEntity<String> submitReport(@RequestBody ReportDTO reportDTO, HttpSession session) {
+
+        // 1. 로그인 체크 (세션에 "loginUser"라는 이름으로 유저 객체가 있다고 가정)
+        // 실제 프로젝트의 세션 키값 확인 필요
+        Object sessionUser = session.getAttribute("loginUser");
+
+        if (sessionUser == null) {
+            // 401 Unauthorized 반환 -> 프론트에서 로그인 페이지로 이동 처리
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        // 2. 신고자 ID 설정 (User 엔티티 캐스팅)
+        if (sessionUser instanceof UserEntity) {
+            UserEntity user = (UserEntity) sessionUser;
+            reportDTO.setReporterId(user.getUserId()); // User 엔티티의 ID Getter 사용
+        }
+
+        // 3. 서비스 호출
+        mapService.createReport(reportDTO);
+
+        return ResponseEntity.ok("신고가 정상적으로 접수되었습니다.");
     }
 }

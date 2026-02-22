@@ -1,0 +1,201 @@
+/* ==============================
+   1. 기본 변수 (다크모드 대응)
+   ============================== */
+:root {
+    --primary-color: #7db4e6;
+    --bg-color: #fcfcfc;
+    --text-main: #333333;
+    --text-strong: #000000;
+    --text-desc: #888888;
+    --card-bg: #ffffff;
+    --input-bg: #f2f4f6;
+    --input-border: #e1e4e8;
+    --input-text: #333333;
+    --error-color: #EA4335;
+}
+
+body.dark-mode {
+    --bg-color: #1a1a1a;
+    --text-main: #e0e0e0;
+    --text-strong: #ffffff;
+    --text-desc: #a0a0a0;
+    --card-bg: #2d2d2d;
+    --input-bg: #333333;
+    --input-border: #444444;
+    --input-text: #ffffff;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0; padding: 0;
+    display: flex; flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* ==============================
+   ★ 헤더 강제 다크모드 적용 (필수)
+   ============================== */
+body.dark-mode .non-login-header .nav-menu a,
+body.dark-mode .non-login-header .icon-btn {
+    color: #ffffff !important;
+}
+
+/* ==============================
+   2. 레이아웃 (컨테이너)
+   ============================== */
+.change-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 60px 20px;
+}
+
+.change-box {
+    width: 100%;
+    max-width: 500px; /* 적절한 최대 너비 설정 */
+    display: flex;
+    flex-direction: column;
+}
+
+.page-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--text-strong);
+}
+
+.change-desc {
+    font-size: 14px;
+    color: var(--text-desc);
+    margin-bottom: 40px;
+}
+
+.form-box { width: 100%; }
+
+/* ==============================
+   3. 입력 그룹 및 구조 (수정됨)
+   ============================== */
+/* 라벨과 입력창+에러를 좌우로 배치 */
+.input-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* 에러 메시지가 떠도 라벨 위치 고정 */
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+/* 라벨 스타일 */
+.input-label {
+    width: 140px;           /* 라벨 너비 고정 */
+    color: var(--text-desc);
+    font-weight: 500;
+    font-size: 14px;
+    margin-top: 12px;       /* 입력창 텍스트와 높이 맞춤 */
+    flex-shrink: 0;         /* 줄어들지 않음 */
+}
+
+/* 입력창과 에러 메시지를 감싸는 수직 기둥 */
+.input-wrapper-col {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;           /* 남은 공간 꽉 채우기 */
+    width: 100%;
+}
+
+/* ==============================
+   4. 입력창 디자인 (다크모드 완벽 대응)
+   ============================== */
+.custom-input {
+    width: 100%;
+    height: 45px;
+    padding: 0 15px;
+    background-color: var(--input-bg);    /* 변수 사용 */
+    border: 1px solid var(--input-border); /* 변수 사용 */
+    border-radius: 5px;
+    color: var(--input-text);             /* 변수 사용 */
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.custom-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background-color: var(--card-bg); /* 포커스 시 약간 밝게/어둡게 */
+}
+
+/* 읽기 전용 (이메일) 스타일 */
+.custom-input.readonly {
+    background-color: #eaeaea;
+    color: #666;
+    cursor: not-allowed;
+    border: 1px solid transparent;
+}
+
+/* 다크모드 읽기 전용 */
+body.dark-mode .custom-input.readonly {
+    background-color: #2a2a2a;
+    color: #888;
+    border: 1px solid #444;
+}
+
+
+/* ==============================
+   5. 에러 메시지 스타일
+   ============================== */
+.error-msg,
+.error-text {
+    color: #EA4335;       /* 구글 레드 */
+    font-size: 12px;      /* 작게 */
+    margin-top: 6px;      /* 입력창과 간격 */
+    margin-left: 2px;
+    text-align: left;
+    font-weight: 400;
+    display: none;        /* 기본 숨김 */
+}
+
+/* 성공 메시지 (파란색) */
+.success-msg {
+    color: #4285F4;       /* 구글 블루 */
+    font-size: 12px;
+    margin-top: 6px;
+    margin-left: 2px;
+    font-weight: 400;
+}
+
+/* 입력창 에러 상태 (빨간 테두리) */
+.input-error {
+    border: 1px solid #EA4335 !important;
+    background-color: rgba(234, 67, 53, 0.05) !important; /* 아주 연한 빨간 배경 */
+}
+
+/* 다크모드일 때 에러 배경색 조정 */
+body.dark-mode .input-error {
+    background-color: rgba(234, 67, 53, 0.1) !important;
+}
+
+/* ==============================
+   6. 버튼 스타일
+   ============================== */
+.btn-submit {
+    width: 100%;
+    padding: 15px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: opacity 0.2s;
+}
+
+.btn-submit:hover { opacity: 0.9; }

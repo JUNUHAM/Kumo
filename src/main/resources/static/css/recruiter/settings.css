@@ -94,18 +94,27 @@
   cursor: pointer;
 }
 
+/* myAccount.css */
+
 .btn-submit {
+  /* [기존 스타일 유지] */
   background: none;
   border: none;
-  color: #2c3e50;
+  color: #487aed !important; /* 글자색 강제 고정 */
   font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
+
+  /* [a태그를 위한 추가] */
+  text-decoration: none; /* 평상시에는 밑줄 제거 */
+  display: inline-block; /* 클릭 영역 확보 */
 }
 
+/* 호버 시 스타일 */
 .btn-quit:hover,
 .btn-submit:hover {
-  text-decoration: underline;
+  text-decoration: underline !important; /* 호버할 때만 밑줄 슥! */
+  color: #85a4ec !important; /* 마우스 올리면 살짝 더 진하게 */
 }
 
 /* settings.css에 추가하세요 */

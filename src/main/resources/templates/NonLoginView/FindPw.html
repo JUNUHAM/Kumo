@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>KUMO - 비밀번호 찾기</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+    <link rel="stylesheet" th:href="@{/css/NonLogin/FindPw.css}">
+</head>
+<body>
+
+<div th:replace="~{NonLoginFragments/NonLoginHeader :: headerFragment}"></div>
+
+<main class="find-container">
+    <div class="find-box">
+
+        <h1 class="page-title" th:text="#{find.pw.title}">비밀번호 찾기</h1>
+
+        <div class="tab-group">
+            <button type="button" class="tab-btn active" onclick="selectRole('SEEKER')"
+                    th:text="#{find.tab.seeker}">구직자</button>
+            <button type="button" class="tab-btn" onclick="selectRole('RECRUITER')"
+                    th:text="#{find.tab.recruiter}">구인자</button>
+        </div>
+
+        <p class="find-desc" th:text="#{find.pw.desc}">회원정보에 등록된 연락처로 비밀번호를 찾을 수 있습니다.</p>
+
+        <form id="findPwForm" class="form-box">
+            <input type="hidden" id="roleInput" name="role" value="SEEKER">
+            <input type="hidden" id="isVerified" value="false">
+
+            <div class="input-group">
+                <label class="input-label" th:text="#{find.label.name}">이름</label>
+                <input type="text" id="name" name="name" class="custom-input"
+                       th:placeholder="#{find.placeholder.name}" oninput="clearError('name')">
+            </div>
+            <p id="err-name" class="error-msg" th:text="#{find.error.name_empty}">이름을 입력해 주세요.</p>
+
+
+            <div class="input-group">
+                <label class="input-label" th:text="#{find.label.contact}">연락처</label>
+                <input type="tel" id="contact" name="contact" class="custom-input"
+                       th:placeholder="#{find.placeholder.contact}" maxlength="13"
+                       oninput="autoHyphen(this); clearError('contact')">
+            </div>
+            <p id="err-contact" class="error-msg" th:text="#{find.error.contact_empty}">연락처를 입력해 주세요.</p>
+
+
+            <div class="input-group">
+                <label class="input-label" th:text="#{find.label.email}">이메일</label>
+                <div class="input-wrapper-row">
+                    <input type="email" id="email" name="email" class="custom-input"
+                           th:placeholder="#{find.placeholder.email}" oninput="clearError('email')">
+                    <button type="button" id="btn-email-send" class="btn-verify"
+                            onclick="sendMail()" th:text="#{find.btn.verify}">인증</button>
+                </div>
+            </div>
+            <p id="err-email" class="error-msg" th:text="#{find.error.email_empty}">이메일을 입력해 주세요.</p>
+
+
+            <div class="input-group" id="auth-box" style="display: none;">
+                <label class="input-label" th:text="#{find.label.auth_code}">인증번호</label>
+                <div class="input-wrapper-row">
+                    <input type="text" id="authCode" class="custom-input"
+                           th:placeholder="#{find.placeholder.auth_code}" oninput="clearError('authCode')">
+                    <button type="button" class="btn-verify" onclick="checkCode()" th:text="#{find.btn.confirm}">확인</button>
+                </div>
+            </div>
+            <p id="err-authCode" class="error-msg" style="display: none;" th:text="#{find.error.auth_code_empty}">인증번호를 입력해 주세요.</p>
+
+
+            <div id="auth-success-msg" style="display: none; text-align: center; margin-bottom: 20px;">
+                <i class="fa-solid fa-check-circle" style="color: #7db4e6;"></i>
+                <span style="color: #7db4e6; font-weight: bold; font-size: 14px;" th:text="#{find.msg.auth_success}">인증이 완료되었습니다.</span>
+            </div>
+
+            <p id="err-verify" class="error-msg" style="padding-left: 0; text-align: center; display: none;"
+               th:text="#{find.error.auth_verify_needed}">이메일 인증을 완료해 주세요.</p>
+
+            <button type="button" class="btn-submit" onclick="goToChangePw()" th:text="#{find.btn.submit_pw}">비밀번호 찾기</button>
+
+
+            <input type="hidden" id="msg-fail-default" th:value="#{find.msg.fail_default}">
+            <input type="hidden" id="msg-name-empty" th:value="#{find.error.name_empty}">
+            <input type="hidden" id="msg-contact-empty" th:value="#{find.error.contact_empty}">
+            <input type="hidden" id="msg-email-empty" th:value="#{find.error.email_empty}">
+            <input type="hidden" id="msg-email-invalid" th:value="#{find.error.email_invalid}">
+            <input type="hidden" id="msg-mail-send-fail" th:value="#{find.error.mail_send_fail}">
+            <input type="hidden" id="msg-auth-code-empty" th:value="#{find.error.auth_code_empty}">
+            <input type="hidden" id="msg-auth-code-mismatch" th:value="#{find.error.auth_code_mismatch}">
+            <input type="hidden" id="msg-auth-error" th:value="#{find.error.auth_error}">
+            <input type="hidden" id="msg-server-error" th:value="#{find.error.server_error}">
+
+            <input type="hidden" id="msg-btn-sending" th:value="#{find.btn.sending}">
+            <input type="hidden" id="msg-btn-complete" th:value="#{find.btn.complete}">
+        </form>
+
+    </div>
+</main>
+
+<div th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"></div>
+
+<script th:src="@{/js/NonLogin/FindPw.js}"></script>
+
+</body>
+</html>

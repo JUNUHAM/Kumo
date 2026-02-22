@@ -5,12 +5,14 @@ body {
   margin: 0;
   padding: 0;
   /* 바디 자체의 스크롤을 막아 대시보드 앱 느낌을 줍니다 */
-  overflow: hidden;
+  overflow: visible;
 }
 
 .dashboard-wrapper {
   display: flex;
   width: 100%;
+  margin-top: 75px !important; /* 헤더 높이만큼 공간 확보 */
+  transition: none !important;
 }
 
 /* 다른 부분은 그대로 유지하고 .main-container 부분만 교체하세요 */
@@ -24,13 +26,12 @@ body {
 
   /* [수정] 마진 대신 패딩을 사용해 우측 사이드바(340px) 공간을 비워둡니다. 
      이렇게 해야 흰색 박스 크기가 변하지 않고 우측 사이드바 아래로 안 들어갑니다. */
-  margin-right: 0 !important;
-  padding-right: 325px !important;
+  margin-right: 0;
+  padding-right: 325px;
 
   /* [수정] 너비를 계산식으로 억제하지 말고, 자연스럽게 100%를 쓰게 둡니다. */
-  width: 100% !important;
+  width: 100%;
 
-  padding-top: 65px;
   height: 100vh;
   background-color: #f8faff;
   display: flex;
@@ -38,22 +39,17 @@ body {
   box-sizing: border-box;
 
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: auto;
 }
 
 /* 내부 콘텐츠 영역도 함께 보호 */
 .content-body {
-  padding: 30px 40px;
+  padding: 20px 40px;
   flex: 1;
   display: flex;
   flex-direction: column;
   min-width: 920px; /* 패딩을 제외한 실질적 최소 너비 */
   overflow-y: auto;
-}
-
-/* 3. (필살기) 애니메이션이 진행되는 동안만 스크롤바를 완전히 제거 */
-.start-animation .content-body {
-  overflow: hidden !important;
 }
 
 /* 푸터가 우측 사이드바에 가려지지 않게 수정 */
@@ -179,24 +175,24 @@ footer {
 
 /* 공통 버튼 규격 */
 .btn-common-action {
-  height: 55px !important; /* 높이를 고정하면 크기 차이가 안 납니다 */
-  border-radius: 18px !important;
-  font-weight: 800 !important;
-  font-size: 1.1rem !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 100% !important;
-  border: none !important;
+  height: 55px; /* 높이를 고정하면 크기 차이가 안 납니다 */
+  border-radius: 18px;
+  font-weight: 800;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border: none;
 }
 
 .btn-sky-blue {
-  background-color: #7abaff !important;
-  color: white !important;
+  background-color: #7abaff;
+  color: white;
 }
 .btn-light-blue {
-  background-color: #92ccff !important;
-  color: white !important;
+  background-color: #92ccff;
+  color: white;
 }
 
 /* main.css */
@@ -338,14 +334,43 @@ footer {
 
 /* 내 공고 우측 '전체보기' 링크 */
 .panel-link {
-  font-size: 0.8rem !important; /* [수정] 크기를 0.8rem으로 줄임 */
+  font-size: 0.8rem; /* [수정] 크기를 0.8rem으로 줄임 */
   font-weight: 600;
-  color: #8b95a1 !important; /* [수정] 텍스트 색상을 부드러운 회색으로 변경 */
+  color: #8b95a1; /* [수정] 텍스트 색상을 부드러운 회색으로 변경 */
   text-decoration: none; /* 밑줄 제거 */
   transition: color 0.2s;
 }
 
 .panel-link:hover {
-  color: #7abaff !important; /* 호버 시에만 사장님 포인트 컬러(하늘색)로 변경 */
+  color: #7abaff; /* 호버 시에만 사장님 포인트 컬러(하늘색)로 변경 */
   text-decoration: underline; /* 호버 시에만 살짝 밑줄 */
+}
+
+/* 글로벌 스타일 또는 마스터 다크모드 CSS */
+.main-content {
+  /* 페이지 전환 시 투명도만 아주 살짝 조절 */
+  animation: snappyFade 0.15s ease-out;
+}
+
+@keyframes snappyFade {
+  from {
+    opacity: 0.8;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 1. (크롬/사파리/엣지) 모든 요소의 스크롤바 투명하게 만들기 */
+*::-webkit-scrollbar {
+  display: none !important; /* 강제로 숨김 */
+  width: 0 !important; /* 혹시 몰라 너비도 0으로 */
+}
+
+/* 2. (파이어폭스/IE) 모든 요소의 스크롤바 숨기기 */
+* {
+  -ms-overflow-style: none !important; /* IE */
+  scrollbar-width: none !important; /* 파이어폭스 */
 }
