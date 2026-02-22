@@ -1,24 +1,23 @@
 package net.kumo.kumo.domain.dto;
 
-import java.time.format.DateTimeFormatter;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.kumo.kumo.domain.entity.ProfileImageEntity;
 import net.kumo.kumo.domain.entity.UserEntity;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @NoArgsConstructor
 public class UserManageDTO {
-    private Long id; // user_id
+    private Long id;              // user_id
     private String email;
     private String nickname;
-    private String name; // 이름 (한자 성+이름)
-    private String role; // SEEKER, RECRUITER, ADMIN
-    private String status; // ACTIVE, INACTIVE (isActive 기반)
-    private ProfileImageEntity profileImage; // 프로필 이미지 경로
-    private String joinedAt; // 가입일
-    private String lastActive; // 마지막 활동 (updatedAt 사용)
+    private String name;          // 이름 (한자 성+이름)
+    private String role;          // SEEKER, RECRUITER, ADMIN
+    private String status;        // ACTIVE, INACTIVE (isActive 기반)
+    private ProfileImageEntity profileImage;  // 프로필 이미지 경로
+    private String joinedAt;      // 가입일
+    private String lastActive;    // 마지막 활동 (updatedAt 사용)
 
     public UserManageDTO(UserEntity user) {
         this.id = user.getUserId();
@@ -43,7 +42,8 @@ public class UserManageDTO {
         if (this.profileImage == null) {
             this.profileImage = new ProfileImageEntity(); // DTO라면 ProfileImageDTO()
             this.profileImage.setFileUrl("/uploads/default_profile.png");
-        } else if (this.profileImage.getFileUrl() == null || this.profileImage.getFileUrl().isEmpty()) {
+        }
+        else if (this.profileImage.getFileUrl() == null || this.profileImage.getFileUrl().isEmpty()) {
             this.profileImage.setFileUrl("/uploads/default_profile.png");
         }
 

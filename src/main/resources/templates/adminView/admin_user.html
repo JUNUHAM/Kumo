@@ -179,23 +179,14 @@
             </tr>
 
             <tr th:each="u : ${users.content}">
-              <td style="text-align: center;">
-                <input type="checkbox" name="userIds" th:value="${u.id}" />
-              </td>
-              <td>
-                <div class="user-profile">
-                  <img
-                    th:src="${u.profileImage}"
-                    class="avatar-img"
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                  />
-                  <div
-                    class="avatar-circle"
-                    style="display:none;"
-                    th:text="${#strings.substring(u.nickname, 0, 1)}"
-                  >
-                    K
-                  </div>
+                <td style="text-align: center;"><input type="checkbox" name="userIds" th:value="${u.id}"></td>
+                <td>
+                    <div class="user-profile">
+                        <img th:src="@{${u.profileImage?.fileUrl ?: '/uploads/default_profile.png'}}"
+                             class="avatar-img" alt="프로필 이미지"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="avatar-circle" style="display:none;"
+                             th:text="${#strings.substring(u.nickname, 0, 1)}">K</div>
 
                   <div class="user-info">
                     <span class="user-name" th:text="${u.nickname}"
