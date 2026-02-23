@@ -1,0 +1,315 @@
+@charset "UTF-8";
+
+/* 1. 기본 설정 (Reset & Font) */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+body {
+    background-color: #fff;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    align-items: center;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+ul {
+    list-style: none;
+}
+
+/* 2. 헤더 스타일 */
+header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background-color: #fff;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: 900;
+    color: #7db4e6;
+    letter-spacing: -1px;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+.nav-menu li {
+    cursor: pointer;
+}
+
+/* 3. 메인 컨테이너 */
+.container {
+    width: 100%;
+    max-width: 600px;
+    padding: 60px 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 페이지 타이틀 */
+.page-title {
+    margin-bottom: 40px;
+}
+
+.page-title h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #000;
+}
+
+.page-title p {
+    font-size: 14px;
+    color: #666;
+}
+
+/* 4. 폼 스타일 */
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #000;
+}
+
+/* 입력창 공통 스타일 */
+.custom-input {
+    width: 100%;
+    padding: 16px;
+    background-color: #f5f6f8;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #333;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.custom-input::placeholder {
+    color: #999;
+}
+
+.custom-input:focus {
+    background-color: #fff;
+    border-color: #7db4e6;
+    box-shadow: 0 0 0 2px rgba(125, 180, 230, 0.2);
+}
+
+/* 텍스트 색상이 파란색인 입력창 (파일첨부란 등) */
+.custom-input.text-blue {
+    color: #7db4e6;
+}
+
+/* 가로 배치 */
+.row-group {
+    display: flex;
+    gap: 10px;
+}
+
+.col-half {
+    flex: 1;
+}
+
+/* 버튼이 옆에 붙는 입력창 */
+.input-with-btn {
+    display: flex;
+    gap: 10px;
+}
+
+.input-with-btn input {
+    flex: 1;
+}
+
+/* 흰색 버튼 (찾기, 파일첨부) */
+.btn-check {
+    min-width: 100px;
+    padding: 0 15px;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-check:hover {
+    background-color: #f9f9f9;
+    border-color: #ccc;
+}
+
+/* 생년월일 + 성별 그룹 */
+.birth-gender-container {
+    display: flex;
+    gap: 10px;
+}
+
+.birth-group {
+    flex: 3;
+    display: flex;
+    gap: 5px;
+}
+
+.birth-select {
+    flex: 1;
+    padding: 16px 5px;
+    /* 패딩 조정 */
+    text-align: center;
+    background-color: #f5f6f8;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='gray' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 12px;
+}
+
+/* ✨ [기업회원 전용] 파일 업로드 & 미리보기 영역 ✨ */
+.file-preview-area {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+    padding: 20px;
+    background-color: #f8f9fc;
+    /* 아주 연한 파란빛 회색 */
+    border: 2px dashed #dbe6f7;
+    /* 점선 테두리 */
+    border-radius: 12px;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+/* 이미지 미리보기 박스 (케이크) */
+.preview-box {
+    width: 90px;
+    height: 90px;
+    border-radius: 10px;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    border: 1px solid #eee;
+}
+
+/* 추가 버튼 박스 (+) */
+.add-box {
+    width: 90px;
+    height: 90px;
+    border-radius: 10px;
+    background-color: #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: #999;
+    font-size: 30px;
+    /* 플러스 아이콘 크기 */
+    transition: 0.2s;
+}
+
+.add-box:hover {
+    background-color: #e0e0e0;
+}
+
+/* 5. 약관 동의 박스 */
+.terms-box {
+    background-color: #f5f6f8;
+    padding: 25px;
+    border-radius: 6px;
+    margin-top: 5px;
+}
+
+.term-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: #333;
+    line-height: 1.5;
+}
+
+.term-item:last-child {
+    margin-bottom: 0;
+}
+
+.term-item input[type="checkbox"] {
+    margin-right: 12px;
+    margin-top: 3px;
+    width: 18px;
+    height: 18px;
+    accent-color: #7db4e6;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.term-item.all-agree {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.term-desc {
+    display: block;
+    font-weight: 400;
+    font-size: 12px;
+    color: #666;
+    margin-top: 2px;
+}
+
+/* 6. 회원가입 버튼 */
+.btn-submit {
+    width: 100%;
+    padding: 18px;
+    margin-top: 30px;
+    background-color: #7db4e6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-submit:hover {
+    background-color: #6ca3d8;
+}
+
+/* 7. 푸터 */
+footer {
+    margin-top: auto;
+    padding: 40px;
+    font-size: 11px;
+    color: #999;
+    text-align: center;
+}

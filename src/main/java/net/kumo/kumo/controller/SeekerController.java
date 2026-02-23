@@ -1,6 +1,5 @@
 package net.kumo.kumo.controller;
 
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.kumo.kumo.domain.dto.SeekerMyPageDTO;
@@ -20,16 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Controller
 public class SeekerController {
-	private final SeekerService seekerService;
-	
-	@GetMapping("/MyPage")
-	public String SeekerMyPage(Model model, @AuthenticationPrincipal UserDetails userDetails){
-		SeekerMyPageDTO dto = seekerService.getDTO(userDetails.getUsername());
-		model.addAttribute("user",dto);
-		
-		return "SeekerView/MyPage";
-	}
-	
-	
-	
+    private final SeekerService seekerService;
+
+    @GetMapping("/MyPage")
+    public String SeekerMyPage(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        SeekerMyPageDTO dto = seekerService.getDTO(userDetails.getUsername());
+        model.addAttribute("user", dto);
+
+        return "SeekerView/MyPage";
+    }
+
 }

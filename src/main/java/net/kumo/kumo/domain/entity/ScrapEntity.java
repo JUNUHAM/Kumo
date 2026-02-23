@@ -13,17 +13,17 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @Builder
 public class ScrapEntity {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long scrapId;
-	
+
 	@Column(nullable = false)
 	private Long userId;
-	
+
 	@Column(nullable = false)
 	private Long jobPostId;
-	
+
 	@CreationTimestamp
 	@Column(name = "created_at", updatable = false)
 	private Timestamp createdAt;

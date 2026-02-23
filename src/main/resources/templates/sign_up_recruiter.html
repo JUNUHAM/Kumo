@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KUMO - 기업회원가입</title>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" th:href="@{/css/sign_up_recruiter.css}">
+</head>
+
+<body>
+
+    <header>
+        <a href="/" class="logo">
+            <img src="/images/recruiterLogo.png" alt="KUMO 로고" style="height: 40px; vertical-align: middle;">
+        </a>
+        <nav>
+            <ul class="nav-menu">
+                <li><a href="/company_info">회사 정보</a></li>
+                <li><a href="/login">로그인</a></li>
+                <li class="icon-btn"><img src="/images/icons/translate.svg"></li>
+                <li class="icon-btn"><img src="/images/icons/darkmode.svg"></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="page-title">
+            <h1>구인자 회원가입</h1>
+            <p>쿠모에 오신것을 환영합니다!</p>
+        </div>
+
+        <div class="row-group form-group">
+            <div class="col-half">
+                <label class="form-label">성</label>
+                <input type="text" class="custom-input" placeholder="scitmaster123">
+            </div>
+            <div class="col-half">
+                <label class="form-label">이름</label>
+                <input type="text" class="custom-input" placeholder="scitmaster123">
+            </div>
+        </div>
+
+        <div class="row-group form-group">
+            <div class="col-half">
+                <label class="form-label">セイ</label>
+                <input type="text" class="custom-input" placeholder="scitmaster123">
+            </div>
+            <div class="col-half">
+                <label class="form-label">メイ</label>
+                <input type="text" class="custom-input" placeholder="scitmaster123">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">닉네임</label>
+            <input type="text" class="custom-input" placeholder="타락한고양이43">
+        </div>
+
+        <div class="form-group">
+            <div class="row-group">
+                <div style="flex: 3;">
+                    <label class="form-label">생년월일</label>
+                    <div class="birth-gender-container">
+                        <div class="birth-group">
+                            <select class="birth-select">
+                                <option>YYYY</option>
+                            </select>
+                            <select class="birth-select">
+                                <option>MM</option>
+                            </select>
+                            <select class="birth-select">
+                                <option>DD</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="flex: 1;">
+                    <label class="form-label">성별</label>
+                    <button type="button" class="btn-check" style="width: 100%; height: 50px;">찾기</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">주소</label>
+            <input type="text" class="custom-input" placeholder="scitmaster123" style="margin-bottom: 10px;">
+            <input type="text" class="custom-input" placeholder="scitmaster123">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">이메일</label>
+            <input type="email" class="custom-input" placeholder="scitmaster123">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">비밀번호</label>
+            <input type="password" class="custom-input" placeholder="●●●●●●●●●●●●●●●">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">비밀번호 확인</label>
+            <input type="password" class="custom-input" placeholder="●●●●●●●●●●●●●●●">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">증빙서류</label>
+            <div class="input-with-btn">
+                <input type="text" class="custom-input text-blue" placeholder="123.jpg" value="123.jpg" readonly>
+                <button type="button" class="btn-check">파일 첨부</button>
+            </div>
+
+            <div class="file-preview-area">
+                <div class="preview-box"
+                    style="background-image: url('https://images.unsplash.com/photo-1565958011703-44f9829ba187?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80');">
+                </div>
+                <div class="add-box">
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">추천인</label>
+            <input type="text" class="custom-input" placeholder="scitmaster123">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">약관 동의</label>
+            <div class="terms-box">
+                <label class="term-item all-agree">
+                    <input type="checkbox" id="checkAll">
+                    <div>
+                        전체동의
+                        <span class="term-desc">선택항목 포함 모든 약관에 동의합니다.</span>
+                    </div>
+                </label>
+
+                <label class="term-item">
+                    <input type="checkbox" class="term-chk">
+                    (필수) 만 15세 이상입니다.
+                </label>
+
+                <label class="term-item">
+                    <input type="checkbox" class="term-chk">
+                    (필수) 서비스 이용약관동의
+                </label>
+
+                <label class="term-item">
+                    <input type="checkbox" class="term-chk">
+                    (선택) 알바몬 제트 이용약관 동의
+                </label>
+
+                <label class="term-item">
+                    <input type="checkbox" class="term-chk">
+                    (선택) 광고성 정보 이메일/SMS 수신 동의
+                </label>
+
+                <label class="term-item">
+                    <input type="checkbox" class="term-chk">
+                    <div>
+                        (선택) 개인정보수집 및 이용 동의 - 공고추천 혜택
+                        <span class="term-desc" style="margin-top:2px;">맞춤알바 등 다양한 혜택 알림 제공</span>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <button class="btn-submit">회원 가입</button>
+    </div>
+
+    <footer>
+        일본전국구인구직지도KUMO
+    </footer>
+
+    <script>
+        // 전체 동의 체크박스 로직
+        $("#checkAll").click(function () {
+            $(".term-chk").prop("checked", this.checked);
+        });
+
+        $(".term-chk").click(function () {
+            if ($(".term-chk:checked").length == $(".term-chk").length) {
+                $("#checkAll").prop("checked", true);
+            } else {
+                $("#checkAll").prop("checked", false);
+            }
+        });
+    </script>
+</body>
+
+</html>

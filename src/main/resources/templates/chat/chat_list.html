@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>KUMO - 채팅</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" th:href="@{/css/chat_list.css}">
+</head>
+
+<body>
+
+    <div class="mobile-container">
+
+        <div class="chat-header">
+            <i class="fa-solid fa-bars header-icon"></i>
+            <i class="fa-solid fa-magnifying-glass header-icon"></i>
+        </div>
+
+        <div class="tab-menu">
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <button class="tab-btn active">전체</button>
+                <button class="tab-btn">읽지않음</button>
+                <button class="tab-btn">읽음</button>
+            </div>
+        </div>
+
+        <div class="chat-list">
+
+            <div class="chat-item" onclick="enterRoom(1)">
+                <div class="avatar-wrapper">
+                    <img th:src="@{/images/dog_profile.jpg}" class="avatar-img" alt="프로필">
+                    <div class="status-dot"></div>
+                </div>
+                <div class="chat-content">
+                    <div class="chat-name-row">
+                        <span class="chat-name">ABC カンパニー</span>
+                        <i class="fa-solid fa-thumbtack pin-icon"></i>
+                    </div>
+                    <p class="chat-preview highlight-text">하나 궁금한게 있습니다</p>
+                </div>
+                <div class="chat-info">
+                    <span class="chat-time">3:40 PM</span>
+                    <div class="unread-badge">2</div>
+                </div>
+                <div style="padding-top: 5px; margin-left: 5px;">
+                    <i class="fa-solid fa-ellipsis-vertical menu-dots"></i>
+                </div>
+            </div>
+
+            <div class="chat-item">
+                <div class="avatar-wrapper">
+                    <div class="avatar-placeholder">70 x 70</div>
+                </div>
+                <div class="chat-content">
+                    <span class="chat-name">오사카 한식당</span>
+                    <p class="chat-preview">신청해주셔서 감사합니다. 유감이지만 저희 식당과 맞지 않...</p>
+                </div>
+                <div class="chat-info">
+                    <span class="chat-time">3:40 PM</span>
+                </div>
+            </div>
+
+            <div class="chat-item">
+                <div class="avatar-wrapper">
+                    <div class="avatar-placeholder">70 x 70</div>
+                </div>
+                <div class="chat-content">
+                    <span class="chat-name">오사카 호텔</span>
+                    <p class="chat-preview">채용 마감되었습니다.</p>
+                </div>
+                <div class="chat-info">
+                    <span class="chat-time">3:40 PM</span>
+                </div>
+            </div>
+
+            <div class="chat-item">
+                <div class="avatar-wrapper">
+                    <div class="avatar-placeholder">70 x 70</div>
+                    <div class="status-dot"></div>
+                </div>
+                <div class="chat-content">
+                    <span class="chat-name">윤병진</span>
+                    <p class="chat-preview">저기요</p>
+                </div>
+                <div class="chat-info">
+                    <span class="chat-time">3:40 PM</span>
+                </div>
+            </div>
+
+            <div class="chat-item">
+                <div class="avatar-wrapper">
+                    <div class="avatar-placeholder">70 x 70</div>
+                </div>
+                <div class="chat-content">
+                    <span class="chat-name">아시아 정보 시스템</span>
+                    <p class="chat-preview">21일 면접 보는걸로 하시죠</p>
+                </div>
+                <div class="chat-info">
+                    <span class="chat-time">3:40 PM</span>
+                </div>
+            </div>
+
+            <div class="chat-item">
+                <div class="avatar-wrapper">
+                    <div class="avatar-placeholder">70 x 70</div>
+                </div>
+                <div class="chat-content">
+                    <span class="chat-name">KS정보시스템</span>
+                    <p class="chat-preview">알겠습니다.</p>
+                </div>
+                <div class="chat-info">
+                    <span class="chat-time">3:40 PM</span>
+                </div>
+            </div>
+
+            <div class="chat-item">
+                <div class="avatar-wrapper">
+                    <img th:src="@{/images/dog_profile.jpg}" class="avatar-img">
+                    <div class="status-dot"></div>
+                </div>
+                <div class="chat-content">
+                    <span class="chat-name">鈴木</span>
+                    <p class="chat-preview">わかりました。</p>
+                </div>
+                <div class="chat-info">
+                    <span class="chat-time">3:40 PM</span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        function enterRoom(roomId) {
+            // 1. 현재 주소창(URL)에서 '?userId=xxx' 부분을 찾습니다.
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('userId');
+
+            // 2. userId가 있으면 채팅방 주소 뒤에 붙여서 이동합니다.
+            if (userId) {
+                location.href = '/chat/room/' + roomId + '?userId=' + userId;
+            } else {
+                // 테스트용: userId가 없으면 경고창을 띄웁니다.
+                alert("로그인 정보(userId)가 URL에 없습니다! (/chat/list?userId=test 로 접속해주세요)");
+            }
+        }
+    </script>
+
+</body>
+
+</html>

@@ -12,8 +12,7 @@ public interface TokyoGeocodedRepository extends BaseRepository<TokyoGeocodedEnt
 
     // ★ 지도 쿼리 (Projection 사용)
     List<JobSummaryView> findTop300ByLatBetweenAndLngBetween(
-            Double minLat, Double maxLat, Double minLng, Double maxLng
-    );
+            Double minLat, Double maxLat, Double minLng, Double maxLng);
 
     // ★ [추가] 도넛 차트용: 구(Ward)별 카운트 (도쿄는 컬럼명이 다름)
     @Query("SELECT t.wardCityJp, COUNT(t) FROM TokyoGeocodedEntity t GROUP BY t.wardCityJp HAVING t.wardCityJp IS NOT NULL")
