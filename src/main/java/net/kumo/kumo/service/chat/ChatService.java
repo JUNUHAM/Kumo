@@ -1,19 +1,19 @@
 package net.kumo.kumo.service.chat;
 
 import lombok.RequiredArgsConstructor;
-import net.kumo.kumo.domain.entity.ChatMessageEntity; // ★ 최신 Entity
-import net.kumo.kumo.domain.entity.ChatRoomEntity; // ★ 최신 Entity
-// import net.kumo.kumo.domain.entity.UserEntity;       // (필요 시 주석 해제)
-// import net.kumo.kumo.domain.entity.JobPostingEntity; // (필요 시 주석 해제)
+import net.kumo.kumo.domain.dto.ChatMessageDTO; // ★ Step 1에서 만든 DTO 추가
+import net.kumo.kumo.domain.entity.ChatMessageEntity;
+import net.kumo.kumo.domain.entity.ChatRoomEntity;
+import net.kumo.kumo.domain.entity.Enum.MessageType;
 import net.kumo.kumo.repository.chat.ChatMessageRepository;
 import net.kumo.kumo.repository.chat.ChatRoomRepository;
-// import net.kumo.kumo.repository.UserRepository;       // (User 찾는 일꾼)
-// import net.kumo.kumo.repository.JobPostingRepository; // (공고 찾는 일꾼)
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,79 +22,87 @@ public class ChatService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
-
-    // ★ 주의: 방을 만들거나 메시지를 저장하려면 '진짜 유저'와 '공고' 정보가 필요합니다.
-    // 만약 아래 Repository들이 없다면 잠시 주석 처리하거나, 추가로 만들어야 합니다.
+    // (필요 시 주석 해제하여 사용)
     // private final UserRepository userRepository;
     // private final JobPostingRepository jobPostingRepository;
 
     /**
      * 1. 방 만들기 (또는 찾기)
-     * - ★ 변경점: 구인공고 ID(jobPostId)가 필수로 추가되었습니다.
+     * - 내용 변함 없음: 현우님의 기존 로직 유지
      */
     public ChatRoomEntity createOrGetChatRoom(Long seekerId, Long recruiterId, Long jobPostId) {
-        // 1. 먼저 DB에서 둘의 방이 있는지 찾아봅니다.
         Optional<ChatRoomEntity> existingRoom = chatRoomRepository.findBySeeker_UserIdAndRecruiter_UserId(seekerId,
                 recruiterId);
 
-        // 2. 방이 있으면? -> 그 방을 바로 리턴!
         if (existingRoom.isPresent()) {
             return existingRoom.get();
         }
 
-        // 3. 방이 없으면? -> 새로 만들어야 하는데...
-        // ★ 팀원들의 Entity는 User 객체와 JobPosting 객체를 요구합니다.
-        // 현재 UserRepository 코드가 없으므로, 로직만 주석으로 남겨둡니다.
-
         /*
-         * [구현 가이드]
+         * [구현 가이드 - 기존 내용 유지]
          * UserEntity seeker = userRepository.findById(seekerId).orElseThrow();
-         * UserEntity recruiter = userRepository.findById(recruiterId).orElseThrow();
-         * JobPostingEntity jobPost =
-         * jobPostingRepository.findById(jobPostId).orElseThrow();
-         * 
-         * ChatRoomEntity newRoom = ChatRoomEntity.builder()
-         * .seeker(seeker)
-         * .recruiter(recruiter)
-         * .jobPosting(jobPost)
-         * .build();
-         * 
+         * ... (중략) ...
          * return chatRoomRepository.save(newRoom);
          */
 
-        // (임시) 일단 null 리턴 (UserRepository 생기면 위 주석 풀어서 완성하세요!)
         return null;
     }
 
     /**
-     * 2. 메시지 저장하기
-     * - 채팅을 칠 때마다 이 메서드가 호출되어 DB에 저장됩니다.
+     * 2. 메시지 저장하기 (정석 개편: DTO 기반)
+     * - 엔티티를 직접 받지 않고 DTO를 받아 변환 후 저장합니다.
      */
-    public ChatMessageEntity saveMessage(ChatMessageEntity message) {
-        return chatMessageRepository.save(message);
+    public ChatMessageDTO saveMessage(ChatMessageDTO dto) {
+        // 1. DTO -> Entity 변환을 위한 정보 조회
+        ChatRoomEntity room = getChatRoom(dto.getRoomId());
+
+        // ★ 주의: 실제 구현 시에는 userRepository에서 발신자 객체를 찾아야 합니다.
+        // ChatMessageEntity 생성 (기존 필드 구조 유지)
+        ChatMessageEntity entity = ChatMessageEntity.builder()
+                .room(room)
+                .messageType(MessageType.valueOf(dto.getMessageType()))
+                .content(dto.getContent())
+                .isRead(false)
+                .build();
+
+        ChatMessageEntity saved = chatMessageRepository.save(entity);
+
+        // 2. 저장된 Entity -> DTO로 다시 변환하여 반환 (포맷팅 포함)
+        return convertToDTO(saved);
     }
 
     /**
-     * 3. 대화 기록 가져오기
-     * - 채팅방에 처음 입장했을 때, 이전 대화를 불러옵니다.
-     * - ★ 변경점: 메서드 이름이 팀원 Entity 필드명(CreatedAt)에 맞게 바뀜
+     * 3. 대화 기록 가져오기 (정석 개편: List<DTO> 반환)
      */
     @Transactional(readOnly = true)
-    public List<ChatMessageEntity> getMessageHistory(Long roomId) {
-        return chatMessageRepository.findByRoom_IdOrderByCreatedAtAsc(roomId);
+    public List<ChatMessageDTO> getMessageHistory(Long roomId) {
+        return chatMessageRepository.findByRoom_IdOrderByCreatedAtAsc(roomId)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     /**
-     * 4. 내 채팅방 목록 가져오기 (구직자용)
+     * [정석 포인트] Entity를 DTO로 변환하는 내부 로직 (재사용)
      */
+    private ChatMessageDTO convertToDTO(ChatMessageEntity entity) {
+        return ChatMessageDTO.builder()
+                .roomId(entity.getRoom().getId())
+                .senderId(entity.getSender() != null ? entity.getSender().getUserId() : null)
+                .senderNickname(entity.getSender() != null ? entity.getSender().getNickname() : "알 수 없음")
+                .content(entity.getContent())
+                .messageType(entity.getMessageType().name())
+                .createdAt(entity.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm")))
+                .build();
+    }
+
+    // --- 아래 현우님의 기존 메서드들 (목록 조회 등) 내용 유지 ---
+
     @Transactional(readOnly = true)
     public List<ChatRoomEntity> getSeekerChatRooms(Long seekerId) {
         return chatRoomRepository.findBySeeker_UserId(seekerId);
     }
 
-    /**
-     * 5. 내 채팅방 목록 가져오기 (구인자용)
-     */
     @Transactional(readOnly = true)
     public List<ChatRoomEntity> getRecruiterChatRooms(Long recruiterId) {
         return chatRoomRepository.findByRecruiter_UserId(recruiterId);

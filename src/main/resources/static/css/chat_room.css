@@ -499,3 +499,21 @@ textarea.input-field::placeholder {
     font-size: 13px;
     color: #333;
 }
+
+/* [정석] dialog 기본 스타일 초기화 */
+.std-dialog-clear {
+    border: none;
+    background: transparent;
+    padding: 0;
+    width: 100%;
+    max-width: 480px;
+    /* 모바일 컨테이너 너비와 일치 */
+    margin: auto;
+    outline: none;
+    overflow: visible;
+}
+
+/* 브라우저 제공 배경 어둡게 처리 (기존 overlay 배경색과 일치시킴) */
+.std-dialog-clear::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+}

@@ -161,48 +161,41 @@
             <button class="btn-send" onclick="sendMessage()">전송</button>
         </div>
 
-        <div id="imageModal" class="image-modal" onclick="closeImageModal()">
-            <span class="close-modal-btn">&times;</span>
-            <img class="modal-content-img" id="modalImage">
-        </div>
+        <dialog id="imageModal" class="std-dialog-clear">
+            <div class="image-modal" style="display: flex; position: static;">
+                <span class="close-modal-btn" onclick="closeImageModal()">&times;</span>
+                <img class="modal-content-img" id="modalImage">
+            </div>
+        </dialog>
 
-        <div id="mainPlusMenu" class="main-menu-overlay" onclick="closeMainMenu()">
+        <dialog id="mainPlusMenu" class="std-dialog-clear" style="margin-bottom: 0;">
             <div class="main-menu-box" onclick="event.stopPropagation()">
                 <div class="menu-grid">
-
                     <div class="menu-item" onclick="openSubMenu('template')">
-                        <div class="menu-icon-circle" style="background-color: #fef01b;">
-                            <i class="fa-solid fa-comment-dots" style="color: #3b1e1e;"></i>
-                        </div>
+                        <div class="menu-icon-circle" style="background-color: #fef01b;"><i
+                                class="fa-solid fa-comment-dots" style="color: #3b1e1e;"></i></div>
                         <span class="menu-name">자주 쓰는 메시지</span>
                     </div>
-
                     <div class="menu-item" onclick="alert('지도 기능은 준비 중입니다!')">
-                        <div class="menu-icon-circle" style="background-color: #e3f2fd;">
-                            <i class="fa-solid fa-location-dot" style="color: #2196f3;"></i>
-                        </div>
+                        <div class="menu-icon-circle" style="background-color: #e3f2fd;"><i
+                                class="fa-solid fa-location-dot" style="color: #2196f3;"></i></div>
                         <span class="menu-name">위치 공유</span>
                     </div>
-
                     <div class="menu-item" onclick="document.getElementById('fileInput').click(); closeMainMenu();">
-                        <div class="menu-icon-circle" style="background-color: #ffebee;">
-                            <i class="fa-solid fa-image" style="color: #f44336;"></i>
-                        </div>
+                        <div class="menu-icon-circle" style="background-color: #ffebee;"><i class="fa-solid fa-image"
+                                style="color: #f44336;"></i></div>
                         <span class="menu-name">앨범</span>
                     </div>
-
                     <div class="menu-item" onclick="alert('이력서 전송 기능')">
-                        <div class="menu-icon-circle" style="background-color: #e8f5e9;">
-                            <i class="fa-solid fa-address-card" style="color: #4caf50;"></i>
-                        </div>
+                        <div class="menu-icon-circle" style="background-color: #e8f5e9;"><i
+                                class="fa-solid fa-address-card" style="color: #4caf50;"></i></div>
                         <span class="menu-name">문서</span>
                     </div>
-
                 </div>
             </div>
-        </div>
+        </dialog>
 
-        <div id="templateMenu" class="template-menu-overlay" onclick="closeTemplateMenu()">
+        <dialog id="templateMenu" class="std-dialog-clear" style="margin-bottom: 0;">
             <div class="template-box" onclick="event.stopPropagation()">
                 <div class="template-header">
                     <span>자주 쓰는 메시지</span>
@@ -216,7 +209,7 @@
                     <button onclick="insertText('도착했습니다. 기다리고 있어요. :)')">📍 도착 알림</button>
                 </div>
             </div>
-        </div>
+        </dialog>
 
         <script>
             var stompClient = null;
@@ -448,6 +441,30 @@
 
                 closeTemplateMenu(); // 메뉴 닫기
             }
+
+            // [정석] 모달 제어 변수 및 함수
+            const modalImg = document.getElementById("imageModal");
+            const modalMain = document.getElementById("mainPlusMenu");
+            const modalTemp = document.getElementById("templateMenu");
+
+            function openImageModal(src) {
+                document.getElementById("modalImage").src = src;
+                modalImg.showModal(); // 정석: showModal() 호출
+            }
+            function closeImageModal() { modalImg.close(); }
+
+            function openMainMenu() { modalMain.showModal(); }
+            function closeMainMenu() { modalMain.close(); }
+
+            function openTemplateMenu() { modalTemp.showModal(); }
+            function closeTemplateMenu() { modalTemp.close(); }
+
+            // [정석 포인트] 배경 클릭 시 자동으로 닫히는 기능 추가
+            [modalImg, modalMain, modalTemp].forEach(m => {
+                m.addEventListener('click', (e) => {
+                    if (e.target.nodeName === 'DIALOG') m.close();
+                });
+            });
         </script>
 </body>
 
