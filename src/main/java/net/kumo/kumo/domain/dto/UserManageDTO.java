@@ -2,7 +2,9 @@ package net.kumo.kumo.domain.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import net.kumo.kumo.domain.entity.ProfileImageEntity;
 import net.kumo.kumo.domain.entity.UserEntity;
+
 import java.time.format.DateTimeFormatter;
 
 @Getter
@@ -14,7 +16,7 @@ public class UserManageDTO {
     private String name; // 이름 (한자 성+이름)
     private String role; // SEEKER, RECRUITER, ADMIN
     private String status; // ACTIVE, INACTIVE (isActive 기반)
-    private String profileImage; // 프로필 이미지 경로
+    private ProfileImageEntity profileImage; // 프로필 이미지 경로
     private String joinedAt; // 가입일
     private String lastActive; // 마지막 활동 (updatedAt 사용)
 
@@ -38,8 +40,12 @@ public class UserManageDTO {
 
         // 프로필 이미지 (없으면 기본값)
         this.profileImage = user.getProfileImage();
-        if (this.profileImage == null || this.profileImage.isBlank()) {
-            this.profileImage = "/images/default_profile.png";
+        if (this.profileImage == null) {
+            this.profileImage = new ProfileImageEntity(); // DTO라면 ProfileImageDTO()
+            this.profileImage.setFileUrl("/uploads/default_profile.png");
+        }
+        else if (this.profileImage.getFileUrl() == null || this.profileImage.getFileUrl().isEmpty()) {
+            this.profileImage.setFileUrl("/uploads/default_profile.png");
         }
 
         // 날짜 포맷팅

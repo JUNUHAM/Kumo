@@ -30,6 +30,7 @@
 </head>
 <body>
 
+<!-- TODO: 다크모드 적용 해야함 현재 헤더 클릭시 다크모드 변환이 안됨 26.2.19 -->
 <div class="map-header-wrapper">
 	<div th:replace="~{NonLoginFragments/NonLoginHeader :: headerFragment}"
 	     sec:authorize="!isAuthenticated()"></div>
