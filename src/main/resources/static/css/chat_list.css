@@ -1,0 +1,237 @@
+@charset "UTF-8";
+
+/* --- 1. 기본 설정 --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+body {
+    background-color: #fff;
+    /* 배경 흰색 */
+    display: flex;
+    justify-content: center;
+    /* 가로 중앙 정렬 */
+    min-height: 100vh;
+    color: #333;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+ul {
+    list-style: none;
+}
+
+button {
+    outline: none;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+/* --- 2. 모바일 컨테이너 (앱 화면 비율) --- */
+.mobile-container {
+    width: 480px;
+    /* ★ 디자인 비율에 맞춘 고정 너비 */
+    min-height: 100vh;
+    background-color: #fff;
+    padding: 20px 20px;
+    /* 화면 중앙에 시선을 집중시키기 위한 미세한 그림자 (선택사항) */
+    /* box-shadow: 0 0 20px rgba(0,0,0,0.05); */
+}
+
+/* --- 3. 헤더 (햄버거 + 검색) --- */
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 30px;
+    padding: 0 5px;
+}
+
+.header-icon {
+    font-size: 24px;
+    color: #8abfff;
+    /* 디자인의 연한 파랑 */
+    cursor: pointer;
+}
+
+/* --- 4. 탭 메뉴 (전체/읽지않음/읽음) --- */
+.tab-menu {
+    display: flex;
+    justify-content: space-between;
+    /* 탭 간격 균등 배분 시도, 혹은 gap 사용 */
+    gap: 10px;
+    margin-bottom: 30px;
+    padding: 0 5px;
+}
+
+/* 탭 버튼 스타일 */
+.tab-btn {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.tab-btn.active {
+    background-color: #8abfff;
+    /* 활성화 파란색 */
+    color: #fff;
+    border-radius: 20px;
+    /* 알약 모양 */
+    padding: 8px 25px;
+    /* 활성화 시 좌우 여백 더 넓게 */
+    box-shadow: 0 4px 10px rgba(138, 191, 255, 0.4);
+}
+
+/* --- 5. 채팅 리스트 --- */
+.chat-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    /* 리스트 간격 */
+}
+
+.chat-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 10px 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border-radius: 12px;
+}
+
+.chat-item:hover {
+    background-color: #f9f9f9;
+}
+
+/* 프로필 이미지 */
+.avatar-wrapper {
+    position: relative;
+    margin-right: 15px;
+    flex-shrink: 0;
+    /* 이미지 찌그러짐 방지 */
+}
+
+.avatar-img,
+.avatar-placeholder {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    background-color: #d3d3d3;
+    /* 회색 */
+    color: #888;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+}
+
+/* 온라인 상태 점 (초록색) */
+.status-dot {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 14px;
+    height: 14px;
+    background-color: #4cd964;
+    border: 2px solid #fff;
+    border-radius: 50%;
+}
+
+/* 중앙 텍스트 */
+.chat-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 5px;
+    overflow: hidden;
+    /* 텍스트 넘침 방지 */
+}
+
+.chat-name-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.chat-name {
+    font-size: 17px;
+    font-weight: 700;
+    color: #333;
+}
+
+.pin-icon {
+    font-size: 13px;
+    color: #333;
+    transform: rotate(45deg);
+}
+
+.chat-preview {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.4;
+    white-space: nowrap;
+    /* 한 줄로 표시 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* 말줄임표 (...) */
+    margin-right: 10px;
+}
+
+.highlight-text {
+    color: #4a8df6;
+}
+
+/* 파란색 텍스트 (하나 궁금한게...) */
+
+/* 우측 정보 (시간, 배지) */
+.chat-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    min-width: 60px;
+    padding-top: 5px;
+}
+
+.chat-time {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.unread-badge {
+    width: 20px;
+    height: 20px;
+    background-color: #2f80ed;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.menu-dots {
+    color: #8abfff;
+    font-size: 18px;
+    margin-bottom: 5px;
+    /* 시간 대신 점이 있는 경우 위치 조정 */
+}

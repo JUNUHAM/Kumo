@@ -10,7 +10,7 @@ import net.kumo.kumo.domain.entity.UserEntity;
 @Getter
 @NoArgsConstructor
 public class UserManageDTO {
-    private Long id; // user_id(이거반영안해도딤)
+    private Long id; // user_id
     private String email;
     private String nickname;
     private String name; // 이름 (한자 성+이름)

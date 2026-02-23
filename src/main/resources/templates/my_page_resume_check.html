@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>KUMO - 지원 내역 확인</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" th:href="@{/css/my_page_resume_check.css}">
+</head>
+
+<body>
+
+    <nav class="sidebar">
+        <a href="/" class="logo">
+            <img src="/images/mainLogo.png" alt="KUMO">
+        </a>
+
+        <ul class="menu-list">
+            <li>
+                <a href="/seeker/mypage" class="menu-item">
+                    <div class="menu-icon-box"><img th:src="@{/images/dog_profile.jpg}" class="menu-img" alt="프로필">
+                    </div>
+                    내 계정
+                </a>
+            </li>
+            <li>
+                <a href="/seeker/resume" class="menu-item">
+                    <div class="menu-icon-box"><i class="fa-regular fa-file-lines"></i></div>
+                    내 이력서
+                </a>
+            </li>
+            <li>
+                <a href="/seeker/resume/check" class="menu-item active">
+                    <div class="menu-icon-box"><i class="fa-solid fa-bell"></i></div>
+                    지원 내역 확인
+                </a>
+            </li>
+        </ul>
+        <div class="logout-btn">
+            <i class="fa-solid fa-power-off"></i> LOGOUT
+        </div>
+    </nav>
+
+    <main class="main-content">
+
+        <div class="header-right">
+            <div class="icon-bell">
+                <i class="fa-regular fa-bell"></i><span class="noti-dot"></span>
+            </div>
+            <img th:src="@{/images/dog_profile.jpg}" class="header-profile-img" alt="프로필">
+        </div>
+
+        <h2 class="page-title">지원 내역 확인</h2>
+
+        <div class="list-container">
+            <table class="resume-table">
+                <colgroup>
+                    <col width="22%">
+                    <col width="12%">
+                    <col width="10%">
+                    <col width="18%">
+                    <col width="18%">
+                    <col width="12%">
+                    <col width="8%">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>기업명 / 제목</th>
+                        <th>근무지</th>
+                        <th>급여</th>
+                        <th>연락처</th>
+                        <th>작성자</th>
+                        <th>지원일</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="col-company">ABCカンパニー</td>
+                        <td class="col-location">난바역</td>
+                        <td>
+                            <div class="salary-box"><span class="salary-type">시급</span><span
+                                    class="salary-amount">1,500円</span></div>
+                        </td>
+                        <td class="col-email">taro.yamada@yamada-inc.com</td>
+                        <td>
+                            <div class="author-box">
+                                <img th:src="@{/images/dog_profile.jpg}" class="author-img">
+                                <div class="author-info"><span class="author-name">홍길동</span><span
+                                        class="author-desc">IT엔지니어 모십니다.</span></div>
+                            </div>
+                        </td>
+                        <td class="col-date">2026년 1월 23일</td>
+                        <td><button class="status-btn btn-blue">모집중</button></td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-company">오사카 한식당 / 식당 사이트 운영</td>
+                        <td class="col-location">신이마미야역</td>
+                        <td>
+                            <div class="salary-box"><span class="salary-type">월급</span><span
+                                    class="salary-amount">240円</span></div>
+                        </td>
+                        <td class="col-email">hanako.tanaka@tanaka-inc.com</td>
+                        <td>
+                            <div class="author-box">
+                                <img th:src="@{/images/dog_profile.jpg}" class="author-img">
+                                <div class="author-info"><span class="author-name">야마다 하나코</span><span
+                                        class="author-desc">4조 3교대 일 쉬워요~</span></div>
+                            </div>
+                        </td>
+                        <td class="col-date">2025년 12월 31일</td>
+                        <td><button class="status-btn btn-blue">모집중</button></td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-company">오사카 호텔</td>
+                        <td class="col-location">우메다역</td>
+                        <td>
+                            <div class="salary-box"><span class="salary-type">일급</span><span
+                                    class="salary-amount">1,200円</span></div>
+                        </td>
+                        <td class="col-email">hanako.shimizu@shimizu-inc.com</td>
+                        <td>
+                            <div class="author-box">
+                                <img th:src="@{/images/dog_profile.jpg}" class="author-img">
+                                <div class="author-info"><span class="author-name">도요토미</span><span
+                                        class="author-desc">일용직 급구</span></div>
+                            </div>
+                        </td>
+                        <td class="col-date">2025년 12월 4일</td>
+                        <td><button class="status-btn btn-blue">모집중</button></td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-company">비즈니스 호텔</td>
+                        <td class="col-location">난바역</td>
+                        <td>
+                            <div class="salary-box"><span class="salary-type">시급</span><span
+                                    class="salary-amount">1,020円</span></div>
+                        </td>
+                        <td class="col-email">hanako.shimizu@shimizu-inc.com</td>
+                        <td>
+                            <div class="author-box">
+                                <img th:src="@{/images/dog_profile.jpg}" class="author-img">
+                                <div class="author-info"><span class="author-name">코이즈미</span><span
+                                        class="author-desc">당신의 커리어 믿고 맡겨 주십쇼 line: sinjiro</span></div>
+                            </div>
+                        </td>
+                        <td class="col-date">위와 비슷한 느낌으로</td>
+                        <td><button class="status-btn btn-blue">모집중</button></td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-company">(주)사토철강</td>
+                        <td class="col-location">도부츠엔마에역</td>
+                        <td>
+                            <div class="salary-box"><span class="salary-type">시급</span><span
+                                    class="salary-amount">1,020円</span></div>
+                        </td>
+                        <td class="col-email">tanakada@sato-inc.com</td>
+                        <td>
+                            <div class="author-box">
+                                <img th:src="@{/images/dog_profile.jpg}" class="author-img">
+                                <div class="author-info"><span class="author-name">오구리 슌</span><span
+                                        class="author-desc">같이 일하실 분</span></div>
+                            </div>
+                        </td>
+                        <td class="col-date">1년 전</td>
+                        <td><button class="status-btn btn-blue">모집중</button></td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-company">모토무라 규동</td>
+                        <td class="col-location">덴마바시역</td>
+                        <td>
+                            <div class="salary-box"><span class="salary-type">시급</span><span
+                                    class="salary-amount">1,020円</span></div>
+                        </td>
+                        <td class="col-email">tanakada@sato-inc.com</td>
+                        <td>
+                            <div class="author-box">
+                                <img th:src="@{/images/dog_profile.jpg}" class="author-img">
+                                <div class="author-info"><span class="author-name">아야노 고</span><span
+                                        class="author-desc">같이 열심히 해봐요</span></div>
+                            </div>
+                        </td>
+                        <td class="col-date">1년 전</td>
+                        <td><button class="status-btn btn-blue">모집중</button></td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-company">규카츠 혼모노</td>
+                        <td class="col-location">쓰루하시역</td>
+                        <td>
+                            <div class="salary-box"><span class="salary-type">시급</span><span
+                                    class="salary-amount">1,020円</span></div>
+                        </td>
+                        <td class="col-email">tanakada@sato-inc.com</td>
+                        <td>
+                            <div class="author-box">
+                                <img th:src="@{/images/dog_profile.jpg}" class="author-img">
+                                <div class="author-info"><span class="author-name">홍길동</span><span class="author-desc">집
+                                        가까우신 분 환영</span></div>
+                            </div>
+                        </td>
+                        <td class="col-date">1년 전</td>
+                        <td><button class="status-btn btn-grey">마감</button></td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-company">파라다이스 오코노미야끼</td>
+                        <td class="col-location">니시쿠조역</td>
+                        <td>
+                            <div class="salary-box"><span class="salary-type">시급</span><span
+                                    class="salary-amount">1,020円</span></div>
+                        </td>
+                        <td class="col-email">tanakada@sato-inc.com</td>
+                        <td>
+                            <div class="author-box">
+                                <img th:src="@{/images/dog_profile.jpg}" class="author-img">
+                                <div class="author-info"><span class="author-name">기무라 타쿠야</span><span
+                                        class="author-desc">식대 줘요</span></div>
+                            </div>
+                        </td>
+                        <td class="col-date">1년 전</td>
+                        <td><button class="status-btn btn-grey">마감</button></td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-company">스키야</td>
+                        <td class="col-location">덴노지역</td>
+                        <td>
+                            <div class="salary-box"><span class="salary-type">시급</span><span
+                                    class="salary-amount">1,020円</span></div>
+                        </td>
+                        <td class="col-email">tanakada@sato-inc.com</td>
+                        <td>
+                            <div class="author-box">
+                                <img th:src="@{/images/dog_profile.jpg}" class="author-img">
+                                <div class="author-info"><span class="author-name">호시노 겐</span><span
+                                        class="author-desc">천천히 같이 걸어가실 분</span></div>
+                            </div>
+                        </td>
+                        <td class="col-date">1년 전</td>
+                        <td><button class="status-btn btn-grey">마감</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <footer class="footer">
+            <div class="footer-links">
+                <a href="#">ABOUT</a><a href="#">BLOG</a><a href="#">SCHOOLS</a><a href="#">APPS</a>
+                <a href="#">STORE</a><a href="#">EFFICACY</a><a href="#">HELP</a>
+            </div>
+            <div class="footer-links">
+                <a href="#">GUIDELINES</a><a href="#">CAREERS</a><a href="#">INVESTORS</a>
+                <a href="#">TERMS</a><a href="#">PRIVACY</a>
+            </div>
+        </footer>
+
+    </main>
+</body>
+
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KUMO - 로그인</title>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+</head>
+
+<body>
+
+    <header>
+        <a href="/" class="logo">
+            <img th:src="@{/images/seekerLogo.png}" alt="KUMO 로고" style="height: 40px; vertical-align: middle;">
+        </a>
+        <nav>
+            <ul class="nav-menu">
+                <li><a href="/company_info">회사 정보</a></li>
+                <li><a href="#">로그인</a></li>
+                <li class="icon-btn"><img src="/images/icons/translate.svg"></li>
+                <li class="icon-btn"><img src="/images/icons/darkmode.svg"></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="login-container">
+        <div class="login-header">
+            <h1>로그인</h1>
+            <p>회원에게는 더 다양한 혜택이 제공됩니다.</p>
+        </div>
+
+        <div class="input-group">
+            <label class="input-label">아이디</label>
+            <input type="text" id="userId" class="custom-input" placeholder="아이디를 입력해주세요" value="coexsexking123">
+        </div>
+
+        <div class="input-group">
+            <label class="input-label">
+                비밀번호
+                <a href="#" class="forgot-pw">비밀번호를 잊으셨나요?</a>
+            </label>
+            <input type="password" id="userPw" class="custom-input" placeholder="비밀번호를 입력해주세요" value="●●●●●●●●">
+        </div>
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="saveId">
+            <label for="saveId">이메일 저장</label>
+        </div>
+
+        <button class="btn-login" id="loginBtn">로그인</button>
+
+        <button class="social-btn btn-google">
+            <img src="/images/google.png" alt="구글 로고" style="width: 20px; height: 20px; margin-right: 5px;">
+            Google로 연결
+        </button>
+        <button class="social-btn btn-line">
+            <img src="/images/line.png" alt="구글 로고" style="width: 20px; height: 20px; margin-right: 5px;">
+            Google로 연결
+        </button>
+
+        <div class="signup-link">
+            회원이 아니신가요? <a href="/signup">회원가입</a>
+        </div>
+    </div>
+
+    <footer>
+        일본전국구인구직지도KUMO
+    </footer>
+
+    <script>
+        $(document).ready(function () {
+            // 1. 저장된 아이디 불러오기 (로컬 스토리지 사용)
+            var savedId = localStorage.getItem("savedUserId");
+            if (savedId) {
+                $("#userId").val(savedId);
+                $("#saveId").prop("checked", true);
+            }
+
+            // 2. 로그인 버튼 클릭 시 (AJAX 통신)
+            $("#loginBtn").click(function () {
+                var id = $("#userId").val();
+                var pw = $("#userPw").val();
+                var isSave = $("#saveId").is(":checked");
+
+                // 유효성 검사
+                if (id == "") { alert("아이디를 입력해주세요."); return; }
+                if (pw == "") { alert("비밀번호를 입력해주세요."); return; }
+
+                // 아이디 저장 로직 (프론트엔드 처리)
+                if (isSave) {
+                    localStorage.setItem("savedUserId", id);
+                } else {
+                    localStorage.removeItem("savedUserId");
+                }
+
+                // AJAX 전송 (백엔드 연결 시 주석 해제하여 사용)
+                /*
+                $.ajax({
+                    url: "/api/login",  // LoginController 주소
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({ userId: id, password: pw }),
+                    success: function(response) {
+                        alert("로그인 성공!");
+                        window.location.href = "/"; // 메인으로 이동
+                    },
+                    error: function(err) {
+                        alert("로그인 실패: 아이디 또는 비밀번호를 확인해주세요.");
+                    }
+                });
+                */
+
+                // (테스트용) 일단 성공했다고 가정하고 알림 띄움
+                console.log("로그인 시도:", id, pw);
+                alert("디자인 확인용: 로그인 버튼이 클릭되었습니다.\n(AJAX 코드는 주석 처리되어 있습니다)");
+            });
+        });
+    </script>
+</body>
+
+</html>

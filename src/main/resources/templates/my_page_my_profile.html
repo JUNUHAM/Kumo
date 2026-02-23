@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>KUMO - 내 계정</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" th:href="@{/css/my_page_my_profile.css}">
+</head>
+<body>
+
+    <nav class="sidebar">
+        <a href="/" class="logo">
+            <img src="/images/mainLogo.png" alt="KUMO 로고" style="height: 40px; vertical-align: middle;">
+        </a>
+
+        <ul class="menu-list">
+            
+            <li>
+                <a href="/seeker/mypage" class="menu-item active">
+                    <div class="menu-icon-box">
+                         <img src="/images/dog_profile.jpg" class="menu-img" alt="프로필">
+                    </div>
+                    내 계정
+                </a>
+            </li>
+
+            <li>
+                <a href="#" class="menu-item">
+                    <div class="menu-icon-box">
+                        <i class="fa-regular fa-file-lines"></i>
+                    </div>
+                    내 이력서
+                </a>
+            </li>
+
+            <li>
+                <a href="#" class="menu-item">
+                    <div class="menu-icon-box">
+                        <i class="fa-solid fa-bell"></i>
+                    </div>
+                    지원 내역 확인
+                </a>
+            </li>
+        </ul>
+
+        <a href="/logout" class="logout-btn">
+            <i class="fa-solid fa-power-off logout-icon"></i> LOGOUT
+        </a>
+    </nav>
+
+
+    <main class="main-content">
+        
+        <div class="page-header">
+            <h2 class="page-title">내 계정</h2>
+            
+            <div class="header-right">
+                <div class="icon-bell">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="notification-dot"></span>
+                </div>
+                <img src="/images/dog_profile.jpg" class="header-profile-img" alt="프로필">
+            </div>
+        </div>
+
+        <div class="profile-form">
+
+            <div class="form-row">
+                <span class="form-label">프로필 사진</span>
+                <div class="profile-img-area">
+                    <img src="/images/dog_profile.jpg" class="big-profile-img" alt="큰 프로필">
+                    <button class="btn-upload">프로필 사진 업로드</button>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <span class="form-label">이름</span>
+                <span class="form-value">JisuMOM</span>
+            </div>
+
+            <div class="form-row">
+                <span class="form-label">생년월일</span>
+                <span class="form-value">1000 / 01 / 01 &nbsp; ( 만 40세 )</span>
+            </div>
+
+            <div class="form-row">
+                <span class="form-label">닉네임</span>
+                <span class="form-value">타락한윤병진83</span>
+            </div>
+
+            <div class="form-row">
+                <span class="form-label">이메일</span>
+                <span class="form-value">hello@designdrops.io</span>
+            </div>
+
+            <div class="form-row">
+                <span class="form-label">주소</span>
+                <span class="form-value">
+                    오사카특별시 오사카부 오사카시 오사카<br>
+                    101호
+                </span>
+            </div>
+
+            <div class="form-row" style="align-items: center;">
+                <span class="form-label">LINE 연동</span>
+                <label class="toggle-switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="form-row" style="align-items: center;">
+                <span class="form-label">Google 연동</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="bottom-actions">
+                <button class="btn-withdraw">회원 탈퇴</button>
+                <button class="btn-edit">회원정보 수정</button>
+            </div>
+
+        </div>
+        </main>
+
+</body>
+</html>

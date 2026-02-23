@@ -42,5 +42,5 @@ out/
 ### .gemini.md ###
 gemini.md
 
-### .Ds_Store ###
+#.DS_Store
 .DS_Store
