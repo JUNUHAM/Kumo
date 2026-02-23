@@ -14,15 +14,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
 	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-	
+
     <script th:inline="javascript">
         /* <![CDATA[ */
-        // 1. 로그인 여부 (세션에 'loginUser'가 있으면 true)
-        const isUserLoggedIn = [[${session.loginUser != null}]];
-
-        // 2. 현재 언어 설정 (URL 파라미터가 없을 경우를 대비해 서버 값도 사용 가능)
-        // 여기서는 JS 파일이 URL 파라미터를 우선하도록 두되, 필요시 아래 변수 사용
-        // const currentLang = [[${lang}]];
+        // [수정] Spring Security를 이용한 로그인 여부 판별
+        const isUserLoggedIn = [[${#authorization.expression('isAuthenticated()')}]];
         /* ]]> */
     </script>
 
