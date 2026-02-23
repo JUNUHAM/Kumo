@@ -253,7 +253,7 @@
         let endStr = info.event.end ? formatDateTime(info.event.end) : startStr;
 
         const data = {
-          id: info.event.id,
+          scheduleId: info.event.id,
           title: info.event.title,
           description: info.event.extendedProps.description || "",
           start: startStr,

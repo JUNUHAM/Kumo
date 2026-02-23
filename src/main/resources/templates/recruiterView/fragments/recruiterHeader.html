@@ -134,59 +134,54 @@
          ============================================================ -->
     <script th:inline="javascript">
       /* <![CDATA[ */
-      (function() {
+        (function () {
           if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
-          // 깜빡임 방지 (즉시 실행)
-          document.write('<style id="prevent-load-transition">body { transition: none !important; }</style>');
           const theme = localStorage.getItem('theme');
           if (theme === 'dark') {
-              const root = document.documentElement;
-              root.classList.add('dark-mode');
-              root.style.cssText = 'background-color: #121212 !important; color: #FFFFFF !important;';
-              document.write(
-                  '<style id="page-transition-style">' +
-                  '  html, body { background-color: #121212 !important; opacity: 0 !important; visibility: hidden !important; }' +
+            const root = document.documentElement;
+            root.classList.add('dark-mode');
 
-                  '  .authenticated-header, .custom-header {' +
-                  '    background-color: #121212 !important;' +
-                  '    border-bottom-color: #2d2d2d !important;' +
-                  '    opacity: 0 !important;' +
-                  '    visibility: hidden !important;' +
-                  '  }' +
+            // 🌟 [개선] 헤더는 살리고 나머지만 숨기는 스타일 주입
+            document.write(
+              '<style id="anti-flicker-css">' +
+              '  *:not(.no-prevent-transition) { transition: none !important; }' +
+              '  html, body { background-color: #121212 !important; color: #FFFFFF !important; margin: 0; padding: 0; }' +
 
-                  '  .sidebar-container {' +
-                  '    background-color: #1e1e1e !important;' +
-                  '    border-right-color: #333 !important;' +
-                  '  }' +
+              // 🌟 [포인트] body 바로 밑의 자식들 중 헤더가 아닌 것들을 숨깁니다.
+              // 만약 헤더가 div 등으로 감싸져 있다면 그 div에도 클래스를 주어야 안 숨겨집니다.
+              '  body > *:not(header):not(.authenticated-header):not(.custom-header):not(script):not(style) { ' +
+              '    opacity: 0 !important; visibility: hidden !important; ' +
+              '  }' +
 
-                  '  .nav-item { color: #555 !important; }' +
-                  '  .nav-item span { color: #ccc !important; }' +
+              '  .authenticated-header, .custom-header {' +
+              '    background-color: #121212 !important;' +
+              '    border-bottom: 1px solid #2d2d2d !important;' +
+              '    display: flex !important;' +
+              '    opacity: 1 !important; visibility: visible !important;' +
+              '  }' +
+              '  .authenticated-header *, .custom-header * { color: #FFFFFF !important; border-color: #2d2d2d !important; }' +
+              '</style>'
+            );
 
-                  '  .nav-item.active {' +
-                  '    background-color: #2a3441 !important;' +
-                  '    color: #7db4e6 !important;' +
-                  '    border-left-color: #7db4e6 !important;' +
-                  '  }' +
-                  '  .nav-item.active span { color: #7db4e6 !important; }' +
-
-                  '  .logout-btn {' +
-                  '    background-color: #2d1f1f !important;' +
-                  '    color: #ff6b6b !important;' +
-                  '    border-left-color: #ff6b6b !important;' +
-                  '  }' +
-                  '  .logout-btn span { color: #ff6b6b !important; }' +
-                  '</style>'
-              );
+            // 🌟 [추가] 망토를 벗기는 '타이머' (DOM이 로드되면 0.05초 뒤에 숨김 해제)
+            window.addEventListener('DOMContentLoaded', function () {
+              setTimeout(function () {
+                const flickerStyle = document.getElementById('anti-flicker-css');
+                if (flickerStyle) {
+                  // 부드럽게 나타나게 하고 싶다면 스타일을 지우기 전에 opacity를 1로 줄 수도 있습니다.
+                  flickerStyle.remove();
+                }
+              }, 50); // 0.05초의 찰나 뒤에 본문을 보여줍니다.
+            });
           }
 
-          // 달력 등 JS에서 사용하는 번역 데이터
           window.kumoMsgs = {
-              scheduleTitle: /*[[#{main.calendar.schedule_detail}]]*/ ' 일정',
-              noSchedule: /*[[#{main.calendar.no_schedule}]]*/ '일정이 없습니다.'
+            scheduleTitle: /*[[#{main.calendar.schedule_detail}]]*/ ' 일정',
+            noSchedule: /*[[#{main.calendar.no_schedule}]]*/ '일정이 없습니다.'
           };
-      })();
-      /* ]]> */
+        })();
+        /* ]]> */
     </script>
 
     <!-- 나머지 헤더 로직은 외부 JS로 분리 -->

@@ -291,3 +291,9 @@ window.timeAgo = function (dateString) {
   if (diff < 86400) return Math.floor(diff / 3600) + i18n.hr;
   return Math.floor(diff / 86400) + i18n.day;
 };
+
+// 페이지 로딩이 다 끝나면, 애니메이션 차단벽을 치워줍니다!
+window.addEventListener('load', () => {
+    const preventTransition = document.getElementById('prevent-load-transition');
+    if (preventTransition) preventTransition.remove();
+});
