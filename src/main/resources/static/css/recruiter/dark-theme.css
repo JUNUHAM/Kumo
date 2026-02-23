@@ -751,3 +751,36 @@ html.dark-mode
   background-color: #fcc419 !important;
   color: #121212 !important;
 }
+
+/* =========================================
+   🌙 SweetAlert2 다크모드 커스텀
+   ========================================= */
+/* 다크모드일 때 알림창 배경과 글자색 변경 */
+body.dark-mode .swal2-popup,
+body[data-theme='dark'] .swal2-popup {
+  background-color: #2b2b2b !important;
+  /* 어두운 배경색 (사장님 테마에 맞게 수정 가능) */
+  color: #ffffff !important;
+  /* 흰색 글자 */
+  border: 1px solid #444 !important;
+  /* 테두리 살짝 추가 */
+}
+
+/* 제목 글자색 */
+body.dark-mode .swal2-title,
+body[data-theme='dark'] .swal2-title {
+  color: #ffffff !important;
+}
+
+/* 본문 글자색 */
+body.dark-mode .swal2-html-container,
+body[data-theme='dark'] .swal2-html-container {
+  color: #cccccc !important;
+}
+
+/* 취소 버튼 조금 더 어둡게 */
+body.dark-mode .swal2-cancel,
+body[data-theme='dark'] .swal2-cancel {
+  background-color: #555555 !important;
+  color: #ffffff !important;
+}

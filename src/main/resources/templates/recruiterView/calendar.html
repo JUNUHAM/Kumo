@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <title>KUMO RECRUITER - 일정 관리</title>
     <script th:src="@{/js/recruiter/recruiterHeader.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -203,19 +204,16 @@
                 </div>
               </div>
 
-              <div class="d-flex gap-3 justify-content-center">
-                <button
-                  type="button"
-                  class="btn-modal-cancel"
-                  data-bs-dismiss="modal"
-                >
+              <div class="d-flex gap-3 justify-content-center w-100">
+                <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
                   취소
                 </button>
-                <button
-                  type="button"
-                  class="btn-modal-submit"
-                  onclick="saveSchedule()"
-                >
+              
+                <button type="button" class="btn btn-danger" id="btnDelete" onclick="deleteSchedule()" style="display: none;">
+                  삭제
+                </button>
+              
+                <button type="button" class="btn-modal-submit" onclick="saveSchedule()">
                   스케줄 등록
                 </button>
               </div>
@@ -227,202 +225,271 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.10/index.global.min.js"></script>
     <script th:inline="javascript">
-                              /* <![CDATA[ */
+     /* <![CDATA[ */
       let mainCal;
       let editingEventId = null;
 
       // [UTC 오차 해결] 한국 시간을 기준으로 YYYY-MM-DD 문자열을 만드는 함수
       function getLocalDateString(date) {
-          const year = date.getFullYear();
-          const month = String(date.getMonth() + 1).padStart(2, '0');
-          const day = String(date.getDate()).padStart(2, '0');
-          return `${year}-${month}-${day}`;
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
       }
 
-      // 🌟 [하나로 통합된 로드 이벤트]
-      window.addEventListener('load', function() {
-          const mainEl = document.getElementById('calendar');
-          const dropZone = document.getElementById('deleteDropZone'); // 드래그 삭제 영역
-          const currentLang = /*[[${#locale.language}]]*/ 'ko';
+      // 🌟 [깔끔하게 정리됨] 조용히 서버에 저장하는 함수
+      function silentUpdate(info) {
+        function formatDateTime(d) {
+          if (!d) return null;
+          const y = d.getFullYear();
+          const m = String(d.getMonth() + 1).padStart(2, '0');
+          const day = String(d.getDate()).padStart(2, '0');
+          const h = String(d.getHours()).padStart(2, '0');
+          const min = String(d.getMinutes()).padStart(2, '0');
+          return `${y}-${m}-${day}T${h}:${min}:00`;
+        }
 
-          if (mainEl && typeof FullCalendar !== "undefined") {
-              mainCal = new FullCalendar.Calendar(mainEl, {
-                  initialView: 'dayGridMonth',
-                  locale: currentLang,
-                  headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth' },
-                  events: '/api/calendar/events',
+        let startStr = formatDateTime(info.event.start);
+        let endStr = info.event.end ? formatDateTime(info.event.end) : startStr;
 
-                  // 사장님 요청: 최대 2개만, 나머지는 [...]
-                  dayMaxEvents: 2,
-                  moreLinkContent: '...',
+        const data = {
+          id: info.event.id,
+          title: info.event.title,
+          description: info.event.extendedProps.description || "",
+          start: startStr,
+          end: endStr,
+          color: info.event.backgroundColor || info.event.color || "#7abaff"
+        };
 
-                  // 🌟 드래그 삭제를 위한 설정
-                  editable: true,
-                  eventDragStart: function() {
-                      if(dropZone) dropZone.classList.add('drag-over');
-                  },
-                  eventDragStop: function(info) {
-                      if(!dropZone) return;
-                      const rect = dropZone.getBoundingClientRect();
-                      const x = info.jsEvent.clientX;
-                      const y = info.jsEvent.clientY;
-
-                      // 마우스가 삭제 영역 위에 있는지 확인
-                      if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
-                          if (confirm(`'${info.event.title}' 일정을 삭제하시겠습니까?`)) {
-                              deleteScheduleById(info.event.id);
-                          }
-                      }
-                      dropZone.classList.remove('drag-over');
-                  },
-
-                  // 날짜/이벤트/점 세개 클릭 시 공통 처리
-                  dateClick: function(info) { handleDateSelection(info.dateStr, info.dayEl); },
-                  eventClick: function(info) {
-                      const dateStr = getLocalDateString(info.event.start);
-                      handleDateSelection(dateStr, info.el.closest('.fc-daygrid-day'));
-                      info.jsEvent.preventDefault();
-                  },
-                  moreLinkClick: function(info) {
-                      const dateStr = getLocalDateString(info.date);
-                      handleDateSelection(dateStr, info.el.closest('.fc-daygrid-day'));
-                      return false;
-                  }
-              });
-              mainCal.render();
+        $.ajax({
+          url: '/api/calendar/update', // 👉 백엔드에 이 주소가 꼭 있어야 합니다!
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(data),
+          success: function () {
+            // 조용히 우측 리스트만 새로고침!
+            updateAll(getLocalDateString(info.event.start), mainCal);
+          },
+          error: function (err) {
+            console.error(err);
+            Swal.fire('오류', '일정 이동에 실패했습니다. 서버를 확인해주세요.', 'error');
+            info.revert(); // 실패 시 원래 자리로
           }
+        });
+      }
+
+      // 🌟 [핵심] 캘린더 로드 및 설정
+      window.addEventListener('load', function () {
+        const mainEl = document.getElementById('calendar');
+        const dropZone = document.getElementById('deleteDropZone');
+        const currentLang = /*[[${#locale.language}]]*/ 'ko';
+
+        if (mainEl && typeof FullCalendar !== "undefined") {
+          mainCal = new FullCalendar.Calendar(mainEl, {
+            initialView: 'dayGridMonth',
+            locale: currentLang,
+            headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth' },
+            events: '/api/calendar/events',
+            dayMaxEvents: 2,
+            moreLinkContent: '...',
+
+            editable: true,
+
+            // 조용히 이동 & 늘리기
+            eventDrop: function (info) { silentUpdate(info); },
+            eventResize: function (info) { silentUpdate(info); },
+
+            // 드래그 시작 시 휴지통 활성화
+            eventDragStart: function () {
+              if (dropZone) dropZone.classList.add('drag-over');
+            },
+
+            // 🌟 [중복 제거됨] 마우스를 놓았을 때 휴지통 확인!
+            eventDragStop: function (info) {
+              if (!dropZone) return;
+              const rect = dropZone.getBoundingClientRect();
+              const x = info.jsEvent.clientX;
+              const y = info.jsEvent.clientY;
+
+              if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+                Swal.fire({
+                  title: '일정 삭제',
+                  text: `'${info.event.title}' 일정을 삭제하시겠습니까?`,
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonColor: '#dc3545',
+                  cancelButtonColor: '#6c757d',
+                  confirmButtonText: '네, 삭제할게요!',
+                  cancelButtonText: '취소'
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    deleteScheduleById(info.event.id);
+                  }
+                });
+              }
+              dropZone.classList.remove('drag-over');
+            },
+
+            dateClick: function (info) { handleDateSelection(info.dateStr, info.dayEl); },
+            eventClick: function (info) {
+              openEditModal(info.event);
+              info.jsEvent.preventDefault();
+            },
+            moreLinkClick: function (info) {
+              const dateStr = getLocalDateString(info.date);
+              handleDateSelection(dateStr, info.el.closest('.fc-daygrid-day'));
+              return false;
+            }
+          });
+          mainCal.render();
+        }
       });
 
-      // 🌟 [핵심] 날짜 선택 시 처리 로직
+      // 날짜 선택 
       function handleDateSelection(dateStr, dayEl) {
-          document.querySelectorAll('.fc-daygrid-day').forEach(el => el.classList.remove('selected-day'));
-          if (dayEl) dayEl.classList.add('selected-day');
+        document.querySelectorAll('.fc-daygrid-day').forEach(el => el.classList.remove('selected-day'));
+        if (dayEl) dayEl.classList.add('selected-day');
 
-          const dateInput = document.getElementById('scheduleDate');
-          if (dateInput) dateInput.value = dateStr;
-
-          updateAll(dateStr, mainCal);
+        const dateInput = document.getElementById('scheduleDate');
+        if (dateInput) dateInput.value = dateStr;
+        updateAll(dateStr, mainCal);
       }
 
-      // 신규 등록 준비
+      // 신규 등록 모달 세팅
       function prepareNewSchedule() {
-          editingEventId = null;
-          const selectedDate = $('#scheduleDate').val();
-          $('#scheduleForm')[0].reset();
-          if(selectedDate) $('#scheduleDate').val(selectedDate);
-          $('#btnDelete').hide();
-          $('.btn-modal-submit').text('스케줄 등록');
-          $('.modal-title').text('스케줄 등록');
+        editingEventId = null;
+        const selectedDate = $('#scheduleDate').val();
+        $('#scheduleForm')[0].reset();
+        $('#scheduleDate').val(selectedDate ? selectedDate : getLocalDateString(new Date()));
+        $('#btnDelete').hide();
+        $('.btn-modal-submit').text('스케줄 등록');
+        $('.modal-title').text('스케줄 등록');
       }
 
-      // 수정 모달 열기
+      // 수정 모달 세팅
       function openEditModal(event) {
-          editingEventId = event.id;
-          $('#scheduleTitle').val(event.title);
-          $('#scheduleDescription').val(event.extendedProps.description || "");
+        editingEventId = event.id;
+        $('#scheduleTitle').val(event.title);
+        $('#scheduleDescription').val(event.extendedProps.description || "");
 
-          const start = event.start;
-          const dateStr = getLocalDateString(start);
-          const timeStr = String(start.getHours()).padStart(2, '0') + ":" + String(start.getMinutes()).padStart(2, '0');
+        const start = event.start;
+        const dateStr = getLocalDateString(start);
+        const timeStr = String(start.getHours()).padStart(2, '0') + ":" + String(start.getMinutes()).padStart(2, '0');
 
-          $('#scheduleDate').val(dateStr);
-          $('#startTime').val(timeStr);
+        $('#scheduleDate').val(dateStr);
+        $('#startTime').val(timeStr);
 
-          $('#btnDelete').show();
-          $('.btn-modal-submit').text('수정 완료');
-          $('.modal-title').text('스케줄 수정');
+        $('#btnDelete').show();
+        $('.btn-modal-submit').text('수정 완료');
+        $('.modal-title').text('스케줄 수정');
 
-          const eventColor = event.backgroundColor || event.color;
-          $('.color-dot').removeClass('active');
-          $(`.color-dot[data-color="${eventColor}"]`).addClass('active');
+        const eventColor = event.backgroundColor || event.color || "#7abaff";
+        $('.color-dot').removeClass('active');
+        $(`.color-dot[data-color="${eventColor}"]`).addClass('active');
 
-          $('#scheduleModal').modal('show');
+        $('#scheduleModal').modal('show');
       }
 
-      // 저장
+      // 저장 및 수정 
       function saveSchedule() {
-          const title = $('#scheduleTitle').val();
-          const date = $('#scheduleDate').val();
-          if (!title || !date) { alert("주제와 날짜를 확인해 주세요!"); return; }
+        const title = $('#scheduleTitle').val();
+        const date = $('#scheduleDate').val();
+        if (!title || !date) { alert("주제와 날짜를 확인해 주세요!"); return; }
 
-          const data = {
-              id: editingEventId,
-              title: title,
-              description: $('#scheduleDescription').val(),
-              start: date + "T" + ($('#startTime').val() || "09:00") + ":00",
-              end: date + "T" + ($('#endTime').val() || "10:00") + ":00",
-              color: $('.color-dot.active').data('color') || "#7abaff"
-          };
+        const data = {
+          id: editingEventId,
+          title: title,
+          description: $('#scheduleDescription').val(),
+          start: date + "T" + ($('#startTime').val() || "09:00") + ":00",
+          end: date + "T" + ($('#endTime').val() || "10:00") + ":00",
+          color: $('.color-dot.active').data('color') || "#7abaff"
+        };
 
-          $.ajax({
-              url: editingEventId ? '/api/calendar/update' : '/api/calendar/save',
-              type: 'POST',
-              contentType: 'application/json',
-              data: JSON.stringify(data),
-              success: function() {
-                  $('#scheduleModal').modal('hide');
-                  mainCal.refetchEvents();
-                  alert("처리되었습니다.");
-              }
-          });
+        $.ajax({
+          url: editingEventId ? '/api/calendar/update' : '/api/calendar/save',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(data),
+          success: function () {
+            $('#scheduleModal').modal('hide');
+            mainCal.refetchEvents();
+            updateAll(date, mainCal);
+            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: '저장되었습니다.', showConfirmButton: false, timer: 1500 });
+          },
+          error: function () {
+            Swal.fire('오류', '저장에 실패했습니다.', 'error');
+          }
+        });
       }
 
-      // 일반 삭제 버튼 함수
+      // 모달 안에서 삭제
       function deleteSchedule() {
-          if (!editingEventId || !confirm("정말 삭제하시겠습니까?")) return;
-          deleteScheduleById(editingEventId);
+        if (!editingEventId) return;
+        Swal.fire({
+          title: '정말 삭제하시겠습니까?',
+          text: "삭제한 일정은 복구할 수 없습니다.",
+          icon: 'error',
+          showCancelButton: true,
+          confirmButtonColor: '#dc3545',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: '삭제',
+          cancelButtonText: '취소'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            deleteScheduleById(editingEventId);
+          }
+        });
       }
 
-      // 드래그/일반 공통 삭제 처리
+      // 실제 서버 삭제
       function deleteScheduleById(id) {
-          if(!id) return;
-          $.ajax({
-              url: '/api/calendar/delete/' + id,
-              type: 'DELETE',
-              success: function() {
-                  $('#scheduleModal').modal('hide');
-                  mainCal.refetchEvents();
-                  alert("삭제되었습니다.");
-              },
-              error: function() { alert("삭제 실패!"); }
-          });
+        if (!id) return;
+        $.ajax({
+          url: '/api/calendar/delete/' + id,
+          type: 'DELETE',
+          success: function () {
+            $('#scheduleModal').modal('hide');
+            mainCal.refetchEvents();
+            updateAll($('#scheduleDate').val() || getLocalDateString(new Date()), mainCal);
+            Swal.fire({ title: '삭제 완료!', text: '일정이 깔끔하게 지워졌습니다.', icon: 'success', confirmButtonColor: '#7abaff' });
+          },
+          error: function () {
+            Swal.fire('오류', '삭제 실패! 서버 에러를 확인하세요.', 'error');
+          }
+        });
       }
 
-      // 사이드바 업데이트
-      window.updateAll = function(date, calApi) {
-          const container = document.getElementById('event-list-container');
-          const titleEl = document.getElementById('selected-date-title');
-          if (titleEl) titleEl.innerText = date + " 일정";
+      // 우측 사이드바 렌더링
+      window.updateAll = function (date, calApi) {
+        const container = document.getElementById('event-list-container');
+        const titleEl = document.getElementById('selected-date-title');
+        if (titleEl) titleEl.innerText = date + " 일정";
 
-          let evs = calApi.getEvents().filter(e => {
-              return getLocalDateString(e.start) === date;
-          });
+        let evs = calApi.getEvents().filter(e => getLocalDateString(e.start) === date);
+        evs.sort((a, b) => a.start - b.start);
+        container.innerHTML = evs.length ? '' : `<div class="empty-state">일정이 없습니다.</div>`;
 
-          evs.sort((a, b) => a.start - b.start);
-          container.innerHTML = evs.length ? '' : `<div class="empty-state">일정이 없습니다.</div>`;
+        evs.forEach(e => {
+          const card = document.createElement("div");
+          card.className = "sidebar-card";
+          card.style.setProperty("border-left-color", e.backgroundColor || e.color || "#7abaff", "important");
+          card.style.cursor = "pointer";
+          card.onclick = () => openEditModal(e);
 
-          evs.forEach(e => {
-              const card = document.createElement("div");
-              card.className = "sidebar-card";
-              card.style.setProperty("border-left-color", e.backgroundColor || e.color || "#7abaff", "important");
-              card.style.cursor = "pointer";
-              card.onclick = () => openEditModal(e);
-
-              const hours = String(e.start.getHours()).padStart(2, '0');
-              const minutes = String(e.start.getMinutes()).padStart(2, '0');
-              card.innerHTML = `
-                  <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
-                      <div class="event-item-title" style="margin: 0; font-size: 0.9rem; font-weight: 700;">${e.title}</div>
-                      <div class="small text-muted"><i class="bi bi-clock me-1"></i>${hours}:${minutes}</div>
-                  </div>`;
-              container.appendChild(card);
-          });
+          const hours = String(e.start.getHours()).padStart(2, '0');
+          const minutes = String(e.start.getMinutes()).padStart(2, '0');
+          card.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
+            <div class="event-item-title" style="margin: 0; font-size: 0.9rem; font-weight: 700;">${e.title}</div>
+            <div class="small text-muted"><i class="bi bi-clock me-1"></i>${hours}:${minutes}</div>
+        </div>`;
+          container.appendChild(card);
+        });
       };
 
-      // 색상 선택 이벤트
-      $(document).on('click', '.color-dot', function() {
-          $('.color-dot').removeClass('active');
-          $(this).addClass('active');
+      $(document).on('click', '.color-dot', function () {
+        $('.color-dot').removeClass('active');
+        $(this).addClass('active');
       });
       /* ]]> */
     </script>

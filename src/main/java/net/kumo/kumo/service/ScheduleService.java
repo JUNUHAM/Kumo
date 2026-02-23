@@ -51,8 +51,8 @@ public class ScheduleService {
     /**
      * 일정 삭제
      */
-    public void deleteSchedule(Long scheduleId) {
-        scheduleRepository.deleteById(scheduleId);
+    public void deleteSchedule(Long id) {
+        scheduleRepository.deleteById(id);
     }
 
     /**

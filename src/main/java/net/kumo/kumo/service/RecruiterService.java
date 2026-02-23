@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.kumo.kumo.domain.dto.JoinRecruiterDTO;
 import net.kumo.kumo.domain.entity.ProfileImageEntity;
 import net.kumo.kumo.domain.entity.UserEntity;
+import net.kumo.kumo.repository.ScheduleRepository;
 import net.kumo.kumo.repository.UserRepository;
 
 @Service
@@ -17,6 +18,7 @@ import net.kumo.kumo.repository.UserRepository;
 public class RecruiterService {
 
     private final UserRepository userRepository;
+    private final ScheduleRepository scheduleRepository;
 
     /**
      * 유저 정보 불러오기
@@ -74,6 +76,10 @@ public class RecruiterService {
 
         // 🌟 [최종 검문소] DB에 저장되기 직전, user 객체에 위도/경도가 잘 꽂혀있는지 확인!
         log.info("👉 DB 저장 직전 Entity 상태: 위도={}, 경도={}", user.getLatitude(), user.getLongitude());
+    }
+
+    public void deleteSchedule(Long id) {
+        scheduleRepository.deleteById(id);
     }
 
 }

@@ -596,3 +596,46 @@ html.dark-mode .selected-day .fc-daygrid-day-number {
   border-style: solid;
   transform: scale(1.02);
 }
+
+/* =========================================
+   🎨 SweetAlert2 (알림창) 디자인 커스텀
+   ========================================= */
+
+/* 1. 창을 좀 더 작고 둥글게 */
+.swal2-popup {
+  width: 380px !important;
+  padding: 20px !important;
+  border-radius: 24px !important;
+}
+
+.swal2-title {
+  font-size: 1.6rem !important;
+}
+
+.swal2-html-container {
+  font-size: 1rem !important;
+}
+
+/* 🌟 2. 버튼 모양만 둥글고 예쁘게 세팅 (색상은 JS에서 결정!) */
+.swal2-confirm,
+.swal2-cancel {
+  border-radius: 12px !important;
+  padding: 10px 24px !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* OK 버튼에 마우스 올렸을 때 (살짝 진해지는 효과) */
+.swal2-confirm:hover {
+  /* 원래 색상보다 살짝만 어두운 색을 넣어주시면 자연스럽습니다 */
+  background-color: #5a9aee !important;
+  border-color: #5a9aee !important;
+}
+
+/* (선택사항) 취소 버튼도 짝을 맞춰 둥글게 */
+.swal2-cancel {
+  border-radius: 12px !important;
+  padding: 10px 24px !important;
+  font-weight: 600 !important;
+}
