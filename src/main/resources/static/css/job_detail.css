@@ -318,3 +318,96 @@ body {
     margin: 0 auto;    /* 가운데 정렬 */
     padding: 0 20px;   /* 좌우 여백 */
 }
+
+/* ============================================================
+   🌙 [다크모드 UI 스타일 - 공고 상세 페이지]
+   body에 'dark-mode' 클래스가 있을 때 하위 요소들의 색상을 덮어씁니다.
+============================================================ */
+
+/* 1. 전체 배경 및 기본 텍스트 */
+body.dark-mode {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+/* 2. 헤더 구분선 (하얗게 남는 부분 덮어쓰기) */
+body.dark-mode .detail-header-wrapper,
+body.dark-mode .map-header-wrapper {
+    background-color: #1e1e1e !important;
+    border-bottom: 1px solid #333;
+}
+
+/* 3. 본문 텍스트 영역 */
+body.dark-mode .job-title { color: #ffffff; }
+body.dark-mode .job-meta { color: #aaaaaa; }
+
+/* 4. 정보 그리드 (테이블 느낌의 라벨/값) */
+body.dark-mode .info-label { color: #999999; }
+body.dark-mode .info-value { color: #e0e0e0; }
+
+/* 기존 선 색상이 어떻게 되어있는지에 따라 border 색상 변경 (job_detail.css 기본 디자인 기준) */
+body.dark-mode .info-grid { border-top-color: #444; border-bottom-color: #333; }
+body.dark-mode .info-item { border-bottom-color: #333; }
+
+/* 5. 상세 정보 섹션 */
+body.dark-mode .section-title { color: #ffffff; border-bottom-color: #333; }
+body.dark-mode .description-text { color: #cccccc; }
+
+/* 지도 정보가 없을 때 안내 텍스트 박스 */
+body.dark-mode .map-section {
+    color: #888888 !important;
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+}
+
+/* 6. 하단 고정 바 (Bottom Bar) */
+body.dark-mode .fixed-bottom-bar {
+    background-color: #1e1e1e;
+    border-top: 1px solid #333;
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.5); /* 그림자 진하게 */
+}
+
+/* 구인 신청 버튼 (Primary Button) */
+body.dark-mode .btn-apply {
+    background-color: #4a90e2; /* 다크모드에 어울리는 딥블루 */
+    color: #ffffff;
+}
+body.dark-mode .btn-apply:hover { background-color: #357abd; }
+
+/* 찜하기, 신고, 뒤로가기 아이콘 버튼 */
+body.dark-mode .btn-icon {
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+}
+body.dark-mode .btn-icon:hover { background-color: #333333; }
+
+/* 7. 신고하기 모달 (Modal) */
+body.dark-mode .modal-window {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    border: 1px solid #444;
+}
+body.dark-mode .modal-header { border-bottom: 1px solid #333; }
+body.dark-mode .modal-header h3 { color: #ffffff; }
+body.dark-mode .modal-footer { border-top: 1px solid #333; }
+
+/* 모달 내부 입력창 (Input, Select, Textarea) */
+body.dark-mode .modal-input,
+body.dark-mode .modal-select,
+body.dark-mode .modal-textarea {
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    border: 1px solid #555;
+}
+body.dark-mode .modal-input:focus,
+body.dark-mode .modal-select:focus,
+body.dark-mode .modal-textarea:focus {
+    border-color: #4a90e2; /* 포커스 시 파란색 테두리 */
+    outline: none;
+}
+
+/* 🌟 상세 페이지 중앙 하얀색 메인 박스를 다크모드로 변경 */
+body.dark-mode .container {
+    background-color: #1e1e1e; /* 어두운 회색 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); /* 그림자도 자연스럽게 */
+}

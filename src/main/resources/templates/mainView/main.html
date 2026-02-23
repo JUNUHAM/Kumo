@@ -35,8 +35,8 @@
 	<div class="map-search-floating">
 		<div class="search-bar">
 			<select id="regionSelect" onchange="MapManager.changeRegion(this.value)">
-				<option value="tokyo" th:text="${lang == 'ja' ? '東京' : '도쿄'}">도쿄</option>
-				<option value="osaka" th:text="${lang == 'ja' ? '大阪' : '오사카'}">오사카</option>
+				<option value="tokyo" th:text="#{map.region.tokyo}">도쿄</option>
+				<option value="osaka" th:text="#{map.region.osaka}">오사카</option>
 			</select>
 			<div class="divider"></div>
 			
@@ -137,35 +137,33 @@
 	</div>
 </div>
 <script th:inline="javascript">
-	/* <![CDATA[ */
 	const MapMessages = {
-		loading: [[#{js.map.msg.loading}]],
-	loadFail: [[#{js.map.msg.load_fail}]],
-	emptyJob: [[#{js.map.msg.empty_job}]],
-	savedFail: [[#{js.map.msg.saved_fail}]],
-	fbTitle: [[#{js.map.fallback.title}]],
-	fbCompany: [[#{js.map.fallback.company}]],
-	fbWage: [[#{js.map.fallback.wage}]],
-	fbManager: [[#{js.map.fallback.manager}]],
-	fbTime: [[#{js.map.fallback.time}]],
-	badgeRecruit: [[#{js.map.badge.recruit}]],
-	badgeUrgent: [[#{js.map.badge.urgent}]],
-	btnSave: [[#{js.map.btn.save}]],
-	btnSaveCard: [[#{js.map.btn.save_card}]],
-	btnDetail: [[#{js.map.btn.detail}]],
-	btnDetailCard: [[#{js.map.btn.detail_card}]],
-	labelAddress: [[#{js.map.label.address}]],
-	table: [
-		[[#{js.map.table.title}]],
-	[[#{js.map.table.company}]],
-	[[#{js.map.table.location}]],
-	[[#{js.map.table.wage}]],
-	[[#{js.map.table.contact}]],
-	[[#{js.map.table.manager}]],
-	[[#{js.map.table.manage}]]
-	]
+		loading: /*[[#{js.map.msg.loading}]]*/ '데이터 로딩 중...',
+		loadFail: /*[[#{js.map.msg.load_fail}]]*/ '로딩 실패',
+		emptyJob: /*[[#{js.map.msg.empty_job}]]*/ '공고 없음',
+		savedFail: /*[[#{js.map.msg.saved_fail}]]*/ '불러오기 실패',
+		fbTitle: /*[[#{js.map.fallback.title}]]*/ '제목 없음',
+		fbCompany: /*[[#{js.map.fallback.company}]]*/ '회사명 미정',
+		fbWage: /*[[#{js.map.fallback.wage}]]*/ '협의',
+		fbManager: /*[[#{js.map.fallback.manager}]]*/ '담당자',
+		fbTime: /*[[#{js.map.fallback.time}]]*/ '방금 전',
+		badgeRecruit: /*[[#{js.map.badge.recruit}]]*/ '구인중',
+		badgeUrgent: /*[[#{js.map.badge.urgent}]]*/ '급구',
+		btnSave: /*[[#{js.map.btn.save}]]*/ '찜',
+		btnSaveCard: /*[[#{js.map.btn.save_card}]]*/ '찜하기',
+		btnDetail: /*[[#{js.map.btn.detail}]]*/ '상세',
+		btnDetailCard: /*[[#{js.map.btn.detail_card}]]*/ '자세히 보기',
+		labelAddress: /*[[#{js.map.label.address}]]*/ '주소: ',
+		table: [
+			/*[[#{js.map.table.title}]]*/ '제목',
+			/*[[#{js.map.table.company}]]*/ '상호명',
+			/*[[#{js.map.table.location}]]*/ '근무지',
+			/*[[#{js.map.table.wage}]]*/ '급여',
+			/*[[#{js.map.table.contact}]]*/ '연락처',
+			/*[[#{js.map.table.manager}]]*/ '담당자',
+			/*[[#{js.map.table.manage}]]*/ '관리'
+		]
 	};
-	/* ]]> */
 </script>
 
 <script th:src="@{'https://maps.googleapis.com/maps/api/js?key=' + ${googleMapsKey} + '&callback=initMap&loading=async'}"

@@ -376,7 +376,7 @@ const JobService = {
             error: function(xhr, status, error) {
                 if (status !== 'abort') {
                     console.error("AJAX Error:", error);
-                    $('#listBody').html('<tr><td colspan="7" class="msg-box">데이터 로딩 실패</td></tr>');
+                    $('#listBody').html(`<tr><td colspan="7" class="msg-box">${MapMessages.loadFail}</td></tr>`);
                 }
             }
         });
@@ -429,7 +429,7 @@ const JobService = {
             },
             error: function(err) {
                 console.error("찜한 목록 불러오기 실패:", err);
-                $('#listBody').html('<tr><td colspan="7" class="msg-box">목록을 불러오지 못했습니다.</td></tr>');
+                $('#listBody').html(`<tr><td colspan="7" class="msg-box">${MapMessages.savedFail}</td></tr>`);
             }
         });
     },
@@ -586,45 +586,32 @@ const UIManager = {
     // 🌟 [핵심] job_list.html의 로직을 여기로 통합!
     renderList: function(jobs) {
         const $tbody = $('#listBody');
-        // URL에서 lang 파라미터 가져오기 (없으면 'kr')
-        const urlParams = new URLSearchParams(window.location.search);
-        const lang = urlParams.get('lang') === 'ja' ? 'ja' : 'kr'; // ja 대신 jp로 통일 권장
+        const currentLang = new URLSearchParams(window.location.search).get('lang') === 'ja' ? 'ja' : 'kr';
 
-        // 1. 데이터가 없을 때 처리
         if (!jobs || jobs.length === 0) {
-            const emptyMsg = lang === 'ja' ? '現在、この地域には求人がありません。' : '현재 이 지역에 공고가 없습니다.';
-            $tbody.html(`<tr><td colspan="7" class="msg-box">${emptyMsg}</td></tr>`);
+            $tbody.html(`<tr><td colspan="7" class="msg-box">${MapMessages.emptyJob}</td></tr>`);
             return;
         }
 
         let html = '';
         jobs.forEach(job => {
-            // DTO에서 이미 언어 처리가 끝난 상태로 옴 (title, companyName 등)
-            const title = job.title || (lang === 'ja' ? 'タイトルなし' : '제목 없음');
-            const company = job.companyName || (lang === 'ja' ? '会社名未定' : '회사명 미정');
-            const wage = job.wage || (lang === 'ja' ? '協議' : '협의');
+            // 🌟 삼항 연산자 제거 및 MapMessages 적용
+            const title = job.title || MapMessages.fbTitle;
+            const company = job.companyName || MapMessages.fbCompany;
+            const wage = job.wage || MapMessages.fbWage;
             const address = job.address || '-';
-
-            // 썸네일 & 날짜 등
             const thumb = job.thumbnailUrl || 'https://placehold.co/40';
-            const dateStr = job.writeTime || (lang === 'ja' ? 'ついさっき' : '방금 전');
+            const dateStr = job.writeTime || MapMessages.fbTime;
             const contact = job.contactPhone || '-';
 
-            // 상세 페이지 URL
-            const detailUrl = `/map/jobs/detail?id=${job.id}&source=${job.source}&lang=${lang}`;
-
-            // 뱃지 텍스트
-            const badgeRecruit = lang === 'ja' ? '募集中' : '구인중';
-            const badgeUrgent = lang === 'ja' ? '急募' : '급구';
-            const btnSave = lang === 'ja' ? '保存' : '찜';
-            const btnDetail = lang === 'ja' ? '詳細' : '상세';
+            const detailUrl = `/map/jobs/detail?id=${job.id}&source=${job.source}&lang=${currentLang}`;
 
             html += `
             <tr>
                 <td>
                     <span class="title-text">${title}</span>
-                    <span class="badge bg-blue">${badgeRecruit}</span>
-                    <span class="badge bg-yellow">${badgeUrgent}</span>
+                    <span class="badge bg-blue">${MapMessages.badgeRecruit}</span>
+                    <span class="badge bg-yellow">${MapMessages.badgeUrgent}</span>
                 </td>
                 <td><a href="#" class="company-text">${company}</a></td>
                 <td><span class="addr-text">${address}</span></td>
@@ -641,9 +628,9 @@ const UIManager = {
                 </td>
                 <td>
                      <div class="btn-wrap">
-                        <button class="btn">${btnSave}</button>
+                        <button class="btn">${MapMessages.btnSave}</button>
                         <button class="btn btn-view" onclick="location.href='${detailUrl}'">
-                            ${btnDetail}
+                            ${MapMessages.btnDetail}
                         </button>
                      </div>
                 </td>
@@ -651,26 +638,24 @@ const UIManager = {
         });
 
         $tbody.html(html);
-
-        // 🌟 테이블 헤더도 언어에 맞게 변경
-        UIManager.updateTableHeader(lang);
+        UIManager.updateTableHeader();
     },
 
     openJobCard: function(job) {
-        // ... (기존 openJobCard 코드 유지) ...
-        // 단, 여기도 lang 체크해서 버튼 텍스트 등을 바꿔주면 좋습니다.
-        const lang = new URLSearchParams(window.location.search).get('lang') || 'kr';
-        // ...
-
-        // (기존 코드 그대로 두셔도 무방합니다)
+        const currentLang = new URLSearchParams(window.location.search).get('lang') === 'ja' ? 'ja' : 'kr';
+        const detailUrl = `/map/jobs/detail?id=${job.id}&source=${job.source}&lang=${currentLang}`;
         const $card = $('#jobDetailCard');
-        const detailUrl = `/map/jobs/detail?id=${job.id}&source=${job.source}&lang=${lang}`;
 
-        $('#card-company').text(job.companyName || '회사명 미정');
-        $('#card-manager').text(job.manager || '담당자');
+        // 🌟 삼항 연산자 싹 지우고 MapMessages 적용!
+        $('#card-company').text(job.companyName || MapMessages.fbCompany);
+        $('#card-manager').text(job.manager || MapMessages.fbManager);
         $('#card-title').text(job.title);
-        $('#card-address').text(job.address);
+
+        $('.job-address').html(`${MapMessages.labelAddress} <span id="card-address">${job.address || '-'}</span>`);
         $('#card-phone').text(job.contactPhone || '-');
+
+        $('#jobDetailCard .btn-outline').text(MapMessages.btnSaveCard);
+        $('#btn-detail').text(MapMessages.btnDetailCard);
 
         const $img = $('#card-img');
         $img.attr('src', job.thumbnailUrl || 'https://placehold.co/300');
@@ -690,24 +675,13 @@ const UIManager = {
         $('#jobDetailCard').hide();
     },
 
-    // 테이블 헤더 언어 변경 함수
-    updateTableHeader: function(lang) {
-        if (lang === 'ja') {
-            const headers = $('#tableHeader th');
-            const jpHeaders = ['タイトル', '会社名', '勤務地', '給与', '連絡先', '担当者', '管理'];
-
-            // jQuery each를 써서 안전하게 변경
-            headers.each(function(index) {
-                if(jpHeaders[index]) $(this).text(jpHeaders[index]);
-            });
-        } else {
-            // 한국어 (기본값) 복구
-            const headers = $('#tableHeader th');
-            const krHeaders = ['제목', '상호명', '근무지', '급여', '연락처', '담당자', '관리'];
-            headers.each(function(index) {
-                if(krHeaders[index]) $(this).text(krHeaders[index]);
-            });
-        }
+    // 🌟 테이블 헤더 언어 변경 함수도 엄청나게 짧아집니다!
+    updateTableHeader: function() {
+        const headers = $('#tableHeader th');
+        // HTML에서 선언한 MapMessages.table 배열을 그대로 입혀줍니다.
+        headers.each(function(index) {
+            if(MapMessages.table[index]) $(this).text(MapMessages.table[index]);
+        });
     }
 };
 
