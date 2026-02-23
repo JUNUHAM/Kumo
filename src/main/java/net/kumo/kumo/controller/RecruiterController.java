@@ -143,7 +143,7 @@ public class RecruiterController {
     }
 
     /**
-     * 공고 등록 컨트롤러
+     * 공고 등록 컨트롤러!
      * 
      * @param model
      * @return
