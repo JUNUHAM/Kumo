@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.kumo.kumo.domain.entity.ProfileImageEntity;
 import net.kumo.kumo.domain.entity.UserEntity;
+
 import java.time.format.DateTimeFormatter;
 
 @Getter
@@ -15,7 +16,7 @@ public class UserManageDTO {
     private String name; // 이름 (한자 성+이름)
     private String role; // SEEKER, RECRUITER, ADMIN
     private String status; // ACTIVE, INACTIVE (isActive 기반)
-    private ProfileImageEntity profileImage; // 프로필 이미지 객체
+    private ProfileImageEntity profileImage; // 프로필 이미지 경로
     private String joinedAt; // 가입일
     private String lastActive; // 마지막 활동 (updatedAt 사용)
 
@@ -39,13 +40,10 @@ public class UserManageDTO {
 
         // [수술 부위: 프로필 이미지 처리 로직 이식]
         this.profileImage = user.getProfileImage();
-
         if (this.profileImage == null) {
-            // 이미지가 아예 없는 경우 새 객체를 생성하고 기본 경로 설정
-            this.profileImage = new ProfileImageEntity();
+            this.profileImage = new ProfileImageEntity(); // DTO라면 ProfileImageDTO()
             this.profileImage.setFileUrl("/uploads/default_profile.png");
         } else if (this.profileImage.getFileUrl() == null || this.profileImage.getFileUrl().isEmpty()) {
-            // 객체는 있지만 URL이 비어있는 경우 기본 경로 설정
             this.profileImage.setFileUrl("/uploads/default_profile.png");
         }
 

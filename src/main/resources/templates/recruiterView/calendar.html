@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>KUMO RECRUITER - 일정 관리</title>
+    <script th:src="@{/js/recruiter/recruiterHeader.js}"></script>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -78,12 +79,12 @@
                   스케줄 등록
                 </button>
 
-                <button
-                  class="btn btn-common-action btn-light-blue w-100 position-relative shadow-sm"
-                  th:text="#{cal.btn.edit}"
+                <div
+                  id="deleteDropZone"
+                  class="delete-drop-zone w-100 shadow-sm mt-2"
                 >
-                  수정
-                </button>
+                  <i class="bi bi-trash3 me-1"></i> 여기로 끌어서 삭제
+                </div>
               </div>
             </aside>
           </div>
@@ -226,11 +227,11 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.10/index.global.min.js"></script>
     <script th:inline="javascript">
-                  /* <![CDATA[ */
+                              /* <![CDATA[ */
       let mainCal;
       let editingEventId = null;
 
-      // 🌟 [해결: UTC 오차] 한국 시간을 기준으로 YYYY-MM-DD 문자열을 만드는 함수
+      // [UTC 오차 해결] 한국 시간을 기준으로 YYYY-MM-DD 문자열을 만드는 함수
       function getLocalDateString(date) {
           const year = date.getFullYear();
           const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -238,9 +239,10 @@
           return `${year}-${month}-${day}`;
       }
 
-      // 1. 페이지 로드 시 캘린더 초기화
+      // 🌟 [하나로 통합된 로드 이벤트]
       window.addEventListener('load', function() {
           const mainEl = document.getElementById('calendar');
+          const dropZone = document.getElementById('deleteDropZone'); // 드래그 삭제 영역
           const currentLang = /*[[${#locale.language}]]*/ 'ko';
 
           if (mainEl && typeof FullCalendar !== "undefined") {
@@ -250,11 +252,31 @@
                   headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth' },
                   events: '/api/calendar/events',
 
-                  // 🌟 사장님 요청: 최대 2개만, 나머지는 [...]
+                  // 사장님 요청: 최대 2개만, 나머지는 [...]
                   dayMaxEvents: 2,
                   moreLinkContent: '...',
 
-                  // 🌟 [해결] 날짜/이벤트/점 세개 클릭 시 모두 동일하게 날짜 선택 처리
+                  // 🌟 드래그 삭제를 위한 설정
+                  editable: true,
+                  eventDragStart: function() {
+                      if(dropZone) dropZone.classList.add('drag-over');
+                  },
+                  eventDragStop: function(info) {
+                      if(!dropZone) return;
+                      const rect = dropZone.getBoundingClientRect();
+                      const x = info.jsEvent.clientX;
+                      const y = info.jsEvent.clientY;
+
+                      // 마우스가 삭제 영역 위에 있는지 확인
+                      if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+                          if (confirm(`'${info.event.title}' 일정을 삭제하시겠습니까?`)) {
+                              deleteScheduleById(info.event.id);
+                          }
+                      }
+                      dropZone.classList.remove('drag-over');
+                  },
+
+                  // 날짜/이벤트/점 세개 클릭 시 공통 처리
                   dateClick: function(info) { handleDateSelection(info.dateStr, info.dayEl); },
                   eventClick: function(info) {
                       const dateStr = getLocalDateString(info.event.start);
@@ -264,39 +286,36 @@
                   moreLinkClick: function(info) {
                       const dateStr = getLocalDateString(info.date);
                       handleDateSelection(dateStr, info.el.closest('.fc-daygrid-day'));
-                      return false; // 기본 팝업 방지
+                      return false;
                   }
               });
               mainCal.render();
           }
       });
 
-      // 🌟 [핵심] 날짜 선택 시 처리 로직 (공통)
+      // 🌟 [핵심] 날짜 선택 시 처리 로직
       function handleDateSelection(dateStr, dayEl) {
           document.querySelectorAll('.fc-daygrid-day').forEach(el => el.classList.remove('selected-day'));
           if (dayEl) dayEl.classList.add('selected-day');
 
-          // 선택한 날짜를 인풋에 자동 입력 (image_1fd01c 관련 로직)
           const dateInput = document.getElementById('scheduleDate');
           if (dateInput) dateInput.value = dateStr;
 
           updateAll(dateStr, mainCal);
       }
 
-      // 2. 신규 등록 준비 (날짜 자동 유지)
+      // 신규 등록 준비
       function prepareNewSchedule() {
           editingEventId = null;
-          const selectedDate = $('#scheduleDate').val(); // 현재 선택된 날짜 백업
-
+          const selectedDate = $('#scheduleDate').val();
           $('#scheduleForm')[0].reset();
-          if(selectedDate) $('#scheduleDate').val(selectedDate); // 백업한 날짜 복구
-
+          if(selectedDate) $('#scheduleDate').val(selectedDate);
           $('#btnDelete').hide();
           $('.btn-modal-submit').text('스케줄 등록');
           $('.modal-title').text('스케줄 등록');
       }
 
-      // 3. 수정 모달 열기 (사이드바 카드 클릭 시)
+      // 수정 모달 열기
       function openEditModal(event) {
           editingEventId = event.id;
           $('#scheduleTitle').val(event.title);
@@ -320,7 +339,7 @@
           $('#scheduleModal').modal('show');
       }
 
-      // 4. 저장 (등록/수정 통합) - [해결: ReferenceError 방지를 위해 전역 배치]
+      // 저장
       function saveSchedule() {
           const title = $('#scheduleTitle').val();
           const date = $('#scheduleDate').val();
@@ -344,16 +363,21 @@
                   $('#scheduleModal').modal('hide');
                   mainCal.refetchEvents();
                   alert("처리되었습니다.");
-              },
-              error: function() { alert("저장에 실패했습니다."); }
+              }
           });
       }
 
-      // 5. 삭제 함수
+      // 일반 삭제 버튼 함수
       function deleteSchedule() {
           if (!editingEventId || !confirm("정말 삭제하시겠습니까?")) return;
+          deleteScheduleById(editingEventId);
+      }
+
+      // 드래그/일반 공통 삭제 처리
+      function deleteScheduleById(id) {
+          if(!id) return;
           $.ajax({
-              url: '/api/calendar/delete/' + editingEventId,
+              url: '/api/calendar/delete/' + id,
               type: 'DELETE',
               success: function() {
                   $('#scheduleModal').modal('hide');
@@ -364,14 +388,13 @@
           });
       }
 
-      // 6. 사이드바 업데이트 (시간순 정렬)
+      // 사이드바 업데이트
       window.updateAll = function(date, calApi) {
           const container = document.getElementById('event-list-container');
           const titleEl = document.getElementById('selected-date-title');
           if (titleEl) titleEl.innerText = date + " 일정";
 
           let evs = calApi.getEvents().filter(e => {
-              // [해결] 유령 일정 방지를 위해 로컬 날짜 비교 (image_1fe5e8 해결)
               return getLocalDateString(e.start) === date;
           });
 
@@ -396,7 +419,7 @@
           });
       };
 
-      // 7. 색상 선택 이벤트 (jQuery)
+      // 색상 선택 이벤트
       $(document).on('click', '.color-dot', function() {
           $('.color-dot').removeClass('active');
           $(this).addClass('active');
