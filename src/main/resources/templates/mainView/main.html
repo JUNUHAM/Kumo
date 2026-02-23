@@ -34,8 +34,15 @@
 	
 	<div class="map-search-floating">
 		<div class="search-bar">
-			<i class="fa-solid fa-bars menu-icon"></i> <input type="text" id="keywordInput" placeholder="검색 내용을 입력하세요."
-			                                                  onkeyup="if(event.key === 'Enter') JobService.searchJobs()">
+			<select id="regionSelect" onchange="MapManager.changeRegion(this.value)">
+				<option value="tokyo" th:text="${lang == 'ja' ? '東京' : '도쿄'}">도쿄</option>
+				<option value="osaka" th:text="${lang == 'ja' ? '大阪' : '오사카'}">오사카</option>
+			</select>
+			<div class="divider"></div>
+			
+			<i class="fa-solid fa-bars menu-icon"></i>
+			<input type="text" id="keywordInput" placeholder="검색 내용을 입력하세요."
+			       onkeyup="if(event.key === 'Enter') JobService.searchJobs()">
 			<button onclick="JobService.searchJobs()">
 				<i class="fa-solid fa-magnifying-glass"></i>
 			</button>
@@ -76,7 +83,6 @@
 		<button type="button" class="btn-close-card">×</button>
 		
 		<div class="card-header-section">
-			<div class="profile-icon">A</div>
 			<div class="profile-info">
 				<div id="card-company" class="company-name">ABC Company</div>
 				<div id="card-manager" class="manager-name">田中 部長</div>
@@ -130,6 +136,37 @@
 		</div>
 	</div>
 </div>
+<script th:inline="javascript">
+	/* <![CDATA[ */
+	const MapMessages = {
+		loading: [[#{js.map.msg.loading}]],
+	loadFail: [[#{js.map.msg.load_fail}]],
+	emptyJob: [[#{js.map.msg.empty_job}]],
+	savedFail: [[#{js.map.msg.saved_fail}]],
+	fbTitle: [[#{js.map.fallback.title}]],
+	fbCompany: [[#{js.map.fallback.company}]],
+	fbWage: [[#{js.map.fallback.wage}]],
+	fbManager: [[#{js.map.fallback.manager}]],
+	fbTime: [[#{js.map.fallback.time}]],
+	badgeRecruit: [[#{js.map.badge.recruit}]],
+	badgeUrgent: [[#{js.map.badge.urgent}]],
+	btnSave: [[#{js.map.btn.save}]],
+	btnSaveCard: [[#{js.map.btn.save_card}]],
+	btnDetail: [[#{js.map.btn.detail}]],
+	btnDetailCard: [[#{js.map.btn.detail_card}]],
+	labelAddress: [[#{js.map.label.address}]],
+	table: [
+		[[#{js.map.table.title}]],
+	[[#{js.map.table.company}]],
+	[[#{js.map.table.location}]],
+	[[#{js.map.table.wage}]],
+	[[#{js.map.table.contact}]],
+	[[#{js.map.table.manager}]],
+	[[#{js.map.table.manage}]]
+	]
+	};
+	/* ]]> */
+</script>
 
 <script th:src="@{'https://maps.googleapis.com/maps/api/js?key=' + ${googleMapsKey} + '&callback=initMap&loading=async'}"
         async defer></script>

@@ -73,7 +73,8 @@ const MapManager = {
             zoom: 10,
             disableDefaultUI: true,
             styles: initialStyle,
-            gestureHandling: 'greedy'
+            gestureHandling: 'greedy',
+            maxZoom: 14
         });
 
         MapManager.drawMasking();
@@ -307,7 +308,42 @@ const MapManager = {
                 }, 100);
             });
         }
-    }
+    },
+
+    // 🌟 [NEW] 지역 변경 함수
+    changeRegion: function(regionCode) {
+        if (!AppState.map) return;
+
+        // 1. 지도가 휙 이동하는 동안 쓸데없는 API 요청이 가지 않도록 스위치 ON
+        AppState.ignoreIdle = true;
+
+        // 2. 지역별 좌표 설정
+        let targetPos;
+        let targetZoom = 10; // 기본 줌 레벨
+
+        if (regionCode === 'tokyo') {
+            targetPos = { lat: 35.6895, lng: 139.6921 };
+            targetZoom = 18;
+        } else if (regionCode === 'osaka') {
+            targetPos = { lat: 34.6938, lng: 135.5019 };
+            targetZoom = 18; // 오사카는 11 정도가 보기 좋을 수 있습니다.
+        }
+
+        // 3. 지도 카메라 부드럽게 이동 (panTo)
+        AppState.map.panTo(targetPos);
+        AppState.map.setZoom(targetZoom);
+
+        // 4. 이동이 완료된 후 새로운 지역의 데이터를 불러오도록 타이머 세팅
+        setTimeout(() => {
+            AppState.ignoreIdle = false; // 스위치 OFF (이제 다시 자동 갱신됨)
+
+            // 현재 화면 범위 저장 및 데이터 요청
+            const bounds = AppState.map.getBounds();
+            AppState.lastBounds = bounds;
+            JobService.loadJobs(bounds);
+
+        }, 800); // 0.8초 후 (지도가 부드럽게 날아가는 시간 대기)
+    },
 };
 
 // ============================================================
@@ -317,7 +353,8 @@ const JobService = {
     loadJobs: function(bounds) {
         if (!AppState.map) return;
 
-        $('#listBody').html('<tr><td colspan="7" class="msg-box">데이터 로딩 중...</td></tr>');
+        // 🌟 삼항 연산자 대신 MapMessages 사용
+        $('#listBody').html(`<tr><td colspan="7" class="msg-box">${MapMessages.loading}</td></tr>`);
 
         // 파라미터 준비
         const params = JobService.prepareParams(bounds);
@@ -592,7 +629,7 @@ const UIManager = {
                 <td><a href="#" class="company-text">${company}</a></td>
                 <td><span class="addr-text">${address}</span></td>
                 <td><span class="wage-text">${wage}</span></td>
-                <td style="color:#666; font-size:12px;">${contact}</td>
+                <td><span class="contact-text">${contact}</span></td>
                 <td>
                     <div class="profile-wrap">
                         <img src="${thumb}" class="profile-img" onerror="this.src='https://placehold.co/40?text=No+Img'">
