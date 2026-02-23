@@ -52,13 +52,20 @@ public class AdminController {
                                      @RequestParam(value = "status", required = false) String status,
                                      @RequestParam(value = "page", defaultValue = "0") int page,
                                      @RequestParam(value = "size", defaultValue = "10") int size) {
-
+		
+		
+		
+		log.info("{},{},{},{},{},{},{}",lang,searchType,keyword,role,status,page,size);
+		
         Pageable pageable = PageRequest.of(page, size);
         Page<UserManageDTO> users = adminService.getAllUsers(lang, searchType, keyword, role, status, pageable);
-
+		
+		log.info("users : {}",users);
+		
         model.addAttribute("users", users);
         model.addAttribute("lang", lang);
-
+		
+		
         // 필터값 유지
         model.addAttribute("searchType", searchType);
         model.addAttribute("keyword", keyword);

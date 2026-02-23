@@ -3,11 +3,10 @@ package net.kumo.kumo.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.kumo.kumo.domain.dto.ProfileImageUploadDTO;
 import net.kumo.kumo.domain.dto.SeekerMyPageDTO;
 import net.kumo.kumo.domain.entity.ProfileImageEntity;
-import net.kumo.kumo.domain.entity.ProfileImageRepository;
 import net.kumo.kumo.domain.entity.UserEntity;
+import net.kumo.kumo.repository.ProfileImageRepository;
 import net.kumo.kumo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
 import java.util.UUID;
 
 

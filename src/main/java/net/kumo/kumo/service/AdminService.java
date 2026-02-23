@@ -43,7 +43,9 @@ public class AdminService {
 
         // 1. 전체 유저 조회
         List<UserEntity> allUsers = userRepo.findAll();
-
+		log.info("유저 전체 조회 : {}",allUsers);
+		
+		
         // 2. 스트림 필터링
         List<UserManageDTO> filteredList = allUsers.stream()
                 .map(UserManageDTO::new)
