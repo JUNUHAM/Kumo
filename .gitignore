@@ -41,3 +41,9 @@ out/
 
 ### .gemini.md ###
 gemini.md
+
+# 1. 글로벌(전역) gitignore 파일을 생성하고 .DS_Store를 추가합니다.
+echo .DS_Store >> ~/.gitignore_global
+
+# 2. Git에게 방금 만든 글로벌 파일을 항상 참조하라고 명령합니다.
+git config --global core.excludesfile ~/.gitignore_globalㄴ
