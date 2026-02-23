@@ -784,3 +784,36 @@ body[data-theme='dark'] .swal2-cancel {
   background-color: #555555 !important;
   color: #ffffff !important;
 }
+
+/* [KUMO 최적화] 스크롤 끊김 및 체이닝 방지 */
+
+/* 1. HTML과 Body는 스크롤 우물을 만들지 않도록 설정 */
+html,
+body {
+  height: auto !important;
+  overflow-x: hidden !important;
+  overflow-y: visible !important;
+  /* 전체 페이지 스크롤 허용 */
+}
+
+/* 2. 중간 컨테이너들이 스크롤을 가로채지 못하게 방어 */
+.dashboard-wrapper,
+.main-container,
+.content-body,
+.settings-container {
+  height: auto !important;
+  /* 높이를 100vh로 가두지 마세요 */
+  min-height: calc(100vh - 80px);
+  /* 최소 높이만 확보 */
+  overflow: visible !important;
+  /* 내부 스크롤바 생성 방지 */
+}
+
+/* 3. 스크롤 체이닝 강제 해결 (브라우저에게 명령) */
+.settings-form-wrapper {
+  overscroll-behavior: none;
+  /* 이 박스 끝에 닿아도 멈칫거리지 않게 설정 */
+}
+
+/* 4. [선택] 만약 특정 부분에서만 스크롤이 필요하다면 */
+/* 굳이 내부 스크롤이 필요 없는 페이지라면 위 설정만으로 충분합니다. */

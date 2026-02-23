@@ -84,18 +84,7 @@
 
           <li class="profile-container" id="profileBtn">
             <div class="profile-circle">
-              <img
-                th:src="${user?.profileImage}"
-                alt="Profile"
-                class="user-avatar"
-                id="profilePreview"
-                th:if="${user?.profileImage != null}"
-              />
-              <i
-                class="bi bi-person-circle"
-                id="defaultIcon"
-                th:unless="${user?.profileImage != null}"
-              ></i>
+              <img th:src="${profileImageUrl ?: '/images/common/default_profile.png'}" class="user-avatar" alt="Profile" >
             </div>
 
             <div class="profile-dropdown" id="profileMenu">

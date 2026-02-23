@@ -639,3 +639,20 @@ html.dark-mode .selected-day .fc-daygrid-day-number {
   padding: 10px 24px !important;
   font-weight: 600 !important;
 }
+
+/* 미니 캘린더 버튼과 제목을 사이드바 크기에 맞게 작게 조절 */
+#mini-calendar .fc-header-toolbar {
+    margin-bottom: 5px !important;
+    font-size: 0.8rem;
+}
+
+#mini-calendar .fc-button {
+    padding: 2px 4px !important; /* 버튼 작게 */
+    background: transparent !important;
+    border: none !important;
+    color: #8b95a1 !important;
+}
+
+#mini-calendar .fc-toolbar-title {
+    font-size: 0.9rem !important; /* 제목 작게 */
+}

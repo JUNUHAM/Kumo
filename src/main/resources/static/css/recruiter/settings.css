@@ -1,161 +1,191 @@
-/* settings.css */
+/* [Recruiter Settings] Seeker MyPage 디자인 통합 스타일 */
 
 .settings-container {
-  max-width: 800px; /* 너무 퍼지지 않게 너비 제한 */
+  max-width: 1000px;
   margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.content-header {
+  margin-bottom: 50px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 20px;
 }
 
 .settings-title {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: #2c3e50;
-  margin-bottom: 40px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #333;
 }
 
-.settings-form-wrapper {
-  padding-left: 50px; /* 시안처럼 왼쪽 여백 확보 */
-}
-
-/* 프로필 이미지 스타일 */
-.profile-image-box {
+/* 프로필 사진 섹션 */
+.profile-photo-area {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 15px;
+  align-items: center;
+  /* Seeker처럼 중앙 정렬 느낌 */
+  margin: 0 auto 50px auto !important;
+    /* 🌟 왼쪽 여백 빼고 상하좌우 중앙으로! */
+  gap: 20px;
+  margin-bottom: 50px;
+  width: fit-content;
+  padding-left: 50px;
+  /* 라벨 정렬과 맞추기 위한 여백 */
+}
+
+.img-wrapper {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #f8f9fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #eee;
 }
 
 .profile-img-lg {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  background-color: #f0f3f8;
 }
 
-.btn-profile-upload {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 8px 15px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #7abaff;
+.default-icon {
+  font-size: 80px;
+  color: #dee2e6;
+}
+
+.btn-upload-photo {
+  padding: 8px 18px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  color: #00aaff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
   transition: all 0.2s;
 }
-.btn-profile-upload:hover {
-  background: #f8faff;
+
+.btn-upload-photo:hover {
+  background-color: #f9f9f9;
+  border-color: #00aaff;
 }
 
-/* 정보 행 스타일 */
+/* 정보 리스트 (Seeker 스타일 행) */
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 35px;
+  padding-left: 80px;
+  /* Seeker 특유의 왼쪽 여백 */
+}
+
 .info-row {
   display: flex;
-  padding: 20px 0;
-  align-items: flex-start;
+  align-items: center;
 }
 
-.info-label {
-  width: 150px; /* 라벨 너비 고정 */
-  font-size: 0.95rem;
+.label {
+  width: 140px;
+  /* 라벨 너비 고정 */
+  font-size: 13px;
   font-weight: 700;
-  color: #33475b;
+  color: #333;
 }
 
-.info-value {
-  font-size: 0.95rem;
-  color: #4a5568;
+.value {
+  flex: 1;
+  font-size: 15px;
+  color: #444;
   font-weight: 500;
 }
 
-/* 토글 스위치 커스텀 */
-.custom-switch .form-check-input {
-  width: 3rem;
-  height: 1.5rem;
-  cursor: pointer;
-}
-.custom-switch .form-check-input:checked {
-  background-color: #7abaff;
-  border-color: #7abaff;
+.age-suffix {
+  color: #999;
+  font-size: 13px;
+  margin-left: 10px;
 }
 
-/* 하단 버튼 영역 */
-.settings-footer-actions {
-  margin-top: 50px;
-  margin-bottom: 20px;
+/* iOS 스타일 토글 스위치 (Seeker 코드 이식) */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #e0e0e0;
+  transition: .4s;
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+input:checked+.slider {
+  background-color: #2fb6ff;
+}
+
+input:checked+.slider:before {
+  transform: translateX(20px);
+}
+
+/* 하단 액션 버튼 */
+.action-buttons {
   display: flex;
+  justify-content: center;
+    /* 🌟 버튼들을 가로 중앙으로 */
   gap: 40px;
+  margin-top: 70px;
+  margin-left: 0px;
+  /* 라벨 너비만큼 밀어 정렬 */
 }
 
 .btn-quit {
+  color: #ff5252;
+  font-size: 13px;
+  font-weight: 700;
   background: none;
   border: none;
-  color: #ff6b6b;
-  font-weight: 700;
-  font-size: 0.9rem;
   cursor: pointer;
 }
 
-/* myAccount.css */
-
-.btn-submit {
-  /* [기존 스타일 유지] */
-  background: none;
-  border: none;
-  color: #487aed !important; /* 글자색 강제 고정 */
+.btn-edit {
+  color: #3d3d66;
+  font-size: 13px;
   font-weight: 700;
-  font-size: 0.9rem;
-  cursor: pointer;
-
-  /* [a태그를 위한 추가] */
-  text-decoration: none; /* 평상시에는 밑줄 제거 */
-  display: inline-block; /* 클릭 영역 확보 */
+  text-decoration: none;
 }
 
-/* 호버 시 스타일 */
 .btn-quit:hover,
-.btn-submit:hover {
-  text-decoration: underline !important; /* 호버할 때만 밑줄 슥! */
-  color: #85a4ec !important; /* 마우스 올리면 살짝 더 진하게 */
-}
-
-/* settings.css에 추가하세요 */
-
-.profile-image-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-}
-
-/* 기본 아이콘 박스 디자인 */
-.default-profile-icon {
-  width: 120px;
-  height: 120px;
-  background-color: #f2f4f6; /* 부드러운 회색 배경 */
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #adb5bd; /* 아이콘 컬러 */
-}
-
-/* 부트스트랩 아이콘 크기 조절 */
-.default-profile-icon i {
-  font-size: 80px; /* 아이콘을 큼직하게 */
-  line-height: 1;
-}
-
-.btn-profile-upload {
-  background-color: white;
-  border: 1px solid #e5e8eb;
-  border-radius: 10px;
-  padding: 8px 16px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #4e5968;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.btn-profile-upload:hover {
-  background-color: #f9fafb;
+.btn-edit:hover {
+  text-decoration: underline;
 }

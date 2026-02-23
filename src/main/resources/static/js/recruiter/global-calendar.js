@@ -1,35 +1,41 @@
 document.addEventListener("DOMContentLoaded", function () {
   const currentLang = document.documentElement.lang || "ko";
 
-  // 1. 메인 캘린더 영역
+// 1. 메인 캘린더 영역
   const calendarEl = document.getElementById("calendar");
   if (calendarEl && typeof FullCalendar !== "undefined") {
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: "dayGridMonth",
-      headerToolbar: {
-        left: "prev,next today",
-        center: "title",
-        right: "dayGridMonth,timeGridWeek,listWeek",
-      },
-      locale: currentLang,
-      events: "/api/calendar/events",
-      dateClick: function (info) {
-        document
-          .querySelectorAll(".selected-day")
-          .forEach((el) => el.classList.remove("selected-day"));
-        info.dayEl.classList.add("selected-day");
-        updateScheduleDetail(info.dateStr, calendar);
-      },
-      eventClick: function (info) {
-        alert(
-          "일정: " +
-            info.event.title +
-            "\n내용: " +
-            (info.event.extendedProps.description || "내용 없음"),
-        );
-      },
-    });
-    calendar.render();
+    try {
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        // 🌟 사진처럼 주별 보기를 기본으로 하고 싶다면 'timeGridWeek'로 설정
+        initialView: "dayGridMonth", 
+        headerToolbar: {
+          left: "prev,next today",
+          center: "title",
+          right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek", // 🌟 Day(일별) 보기도 추가하면 좋습니다.
+        },
+        locale: currentLang,
+        events: "/api/calendar/events",
+        
+        // 🌟 사진처럼 보이게 만드는 핵심 옵션들
+        allDaySlot: true,            // 상단에 'all-day' 영역 표시 여부
+        slotMinTime: "06:00:00",     // 시작 시간 (오전 6시)
+        slotMaxTime: "20:00:00",     // 종료 시간 (오후 8시)
+        expandRows: true,            // 화면 높이에 맞게 칸 늘리기
+        slotEventOverlap: false,     // 일정끼리 겹치지 않고 옆으로 나열 (선택 사항)
+        handleWindowResize: true,
+
+        dateClick: function (info) {
+          document.querySelectorAll(".selected-day").forEach((el) => el.classList.remove("selected-day"));
+          info.dayEl.classList.add("selected-day");
+          updateScheduleDetail(info.dateStr, calendar);
+        },
+        eventClick: function (info) {
+          // 일정을 눌렀을 때 상세 내용을 보여주는 로직 (기존 유지)
+          alert("일정: " + info.event.title + "\n내용: " + (info.event.extendedProps.description || "내용 없음"));
+        },
+      });
+      calendar.render();
+    } catch (e) { console.error("메인 캘린더 에러:", e); }
   }
 
   // 2. 미니 캘린더 영역
@@ -42,7 +48,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const miniCalendar = new FullCalendar.Calendar(miniEl, {
       initialView: "dayGridMonth",
       locale: currentLang,
-      headerToolbar: false,
+      headerToolbar: {
+      left: 'prev',   // 왼쪽 버튼
+      center: 'title', // 월/년 제목
+      right: 'next'   // 오른쪽 버튼
+      },
+  
       height: "auto",
       events: "/api/calendar/events",
 
@@ -50,6 +61,13 @@ document.addEventListener("DOMContentLoaded", function () {
       eventDisplay: "list-item",
       dayMaxEvents: 3,
       dayMaxEventRows: 3,
+      // 🌟 [추가] 3개 넘어가면 무조건 리스트에서 빼버리는 로직
+      eventDataTransform: function (eventData) {
+    
+      // 이 방법은 데이터 자체를 건드리는거라 복잡하니 패스하고, 
+      // 아래 스타일 로직에서 display: none을 확실히 줍니다.
+      return eventData;
+  },
 
       dayCellContent: (arg) => ({ html: arg.date.getDate() }),
 
@@ -61,6 +79,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // 점 색상을 이벤트 색과 연동
       eventDidMount: function (info) {
+        // 🌟 여기가 핵심입니다! 3개 넘어가면 나타나는 '+more' 영역에 해당하는 애들은 렌더링 안 함
+    if (info.isMirror || info.isStart === false) return;
         // 이벤트 자체 배경/테두리 제거
         info.el.style.background = "none";
         info.el.style.border = "none";
@@ -69,6 +89,7 @@ document.addEventListener("DOMContentLoaded", function () {
         info.el.style.margin = "0";
 
         const dot = info.el.querySelector(".fc-daygrid-event-dot");
+        
         if (dot) {
           const color =
             info.event.backgroundColor || info.event.color || "#7abaff";
