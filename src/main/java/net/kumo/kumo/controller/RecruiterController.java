@@ -2,6 +2,7 @@ package net.kumo.kumo.controller;
 
 import java.io.File;
 import java.security.Principal;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -18,7 +19,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.kumo.kumo.domain.dto.JobPostFormDTO;
 import net.kumo.kumo.domain.dto.JoinRecruiterDTO;
+import net.kumo.kumo.domain.entity.CompanyEntity;
+import net.kumo.kumo.domain.entity.UserEntity;
+import net.kumo.kumo.repository.UserRepository;
+import net.kumo.kumo.service.JobPostingService;
 import net.kumo.kumo.service.RecruiterService;
 
 // 구인자 페이지 컨트롤러
@@ -28,7 +34,9 @@ import net.kumo.kumo.service.RecruiterService;
 @Controller
 public class RecruiterController {
 
+    private final UserRepository ur;
     private final RecruiterService rs;
+    private final JobPostingService js;
 
     /**
      * 홈 메뉴 컨트롤러
@@ -135,14 +143,26 @@ public class RecruiterController {
     }
 
     /**
-     * 공고 등록 컨트롤러
+     * 공고 등록 컨트롤러!
      * 
      * @param model
      * @return
      */
-    @GetMapping("JobPosting")
-    public String JobPosting(Model model) {
-        return "recruiterView/jobPosting";
+    // 예시: RecruiterController.java 내부
+    @GetMapping("/JobPosting")
+    public String showJobPostForm(Model model, Principal principal) {
+        // 1. 로그인한 사장님의 이메일(또는 ID)로 유저 정보를 찾습니다.
+        String userEmail = principal.getName();
+        UserEntity user = ur.findByEmail(userEmail).orElseThrow();
+
+        // 2. 사장님이 등록해둔 회사 목록을 가져옵니다.
+        // (UserEntity 안에 List<CompanyEntity> companies 가 있다고 가정)
+        List<CompanyEntity> myCompanies = user.getCompanies();
+
+        // 3. 화면(HTML)으로 회사 목록을 넘겨줍니다! 이름은 "companies"로 합니다.
+        model.addAttribute("companies", myCompanies);
+
+        return "recruiterView/jobPosting"; // HTML 파일명
     }
 
     /**
@@ -183,6 +203,20 @@ public class RecruiterController {
 
         // 수정이 완료되면 다시 설정 페이지나 메인 화면으로 돌려보냅니다. (새로고침 방지용 redirect 필수!)
         return "redirect:/Recruiter/Settings";
+    }
+
+    // 🌟 [추가] 폼에서 날아온 데이터를 DB에 저장하는 POST 요청
+    @PostMapping("/JobPosting")
+    public String registerJobPost(@ModelAttribute JobPostFormDTO formDTO, Principal principal) {
+
+        // 1. 현재 로그인한 사장님 이메일(ID) 가져오기
+        String userEmail = principal.getName();
+
+        // 2. 서비스로 데이터 넘겨서 DB에 저장하기
+        js.saveJobPost(formDTO, userEmail);
+
+        // 3. 저장이 끝나면 어디로 갈지? (예: 공고 목록 페이지나 메인으로 이동)
+        return "redirect:/Recruiter/Main";
     }
 
     // ----------------------------------------------------------------

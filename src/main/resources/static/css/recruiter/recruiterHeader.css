@@ -1,329 +1,530 @@
-/* =========================================
-   HEADER LAYOUT & FIXED POSITION
-   ========================================= */
-.recruiter-header {
-  position: fixed !important;
+/* ==============================
+   1. 헤더 기본 레이아웃
+   ============================== */
+.authenticated-header,
+.custom-header {
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 70px;
+  min-height: 70px;
   z-index: 9999;
-  background: white;
-  border-bottom: 1px solid #f0f0f0;
-
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0;
+  padding: 0 40px;
   box-sizing: border-box;
-
-  /* [중요] 여기에 transition이 있다면 background-color만 적용하도록 제한하세요.
-     all이나 transform이 있으면 렉 걸린 것처럼 보입니다. */
-  transition: background-color 0.3s ease;
-}
-
-.custom-header {
-  position: fixed !important; /* 화면 상단 고정 (JS에서 transform 해제 필수) */
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 70px;
-  z-index: 9999;
-  background: white;
+  background-color: white;
   border-bottom: 1px solid #f0f0f0;
-  display: flex;
-  justify-content: space-between; /* 좌우 끝으로 배치 */
-  align-items: center; /* 세로 중앙 정렬 */
-  padding: 0;
-  box-sizing: border-box;
+  transition: background-color 0.3s ease;
+  overflow: visible;
 }
 
-/* 왼쪽 로고 영역 */
+/* 로고 */
+.logo,
 .header-left-section {
-  width: 240px; /* 사이드바 너비와 일치 */
-  height: 100%;
   display: flex;
-  justify-content: center;
   align-items: center;
-  flex-shrink: 0; /* 줄어들지 않음 */
+  text-decoration: none;
+  flex-shrink: 0;
 }
 
+.logo img,
 .header-logo-img {
-  height: 45px;
+  height: 40px;
   width: auto;
 }
 
-/* 오른쪽 메뉴 영역 (여기가 문제였음 - Flex로 확실히 정렬) */
+/* 네비게이션 - 헤더 범위로 한정 (사이드바 .sidebar-nav와 충돌 방지) */
+.authenticated-header nav,
+.custom-header nav {
+  display: flex;
+  align-items: center;
+}
+
+.authenticated-header .nav-menu,
+.custom-header .nav-menu,
 .header-right-section {
   display: flex;
+  gap: 15px;
   align-items: center;
-  justify-content: flex-end;
-  list-style: none; /* ul 기본 점 제거 */
+  list-style: none;
   margin: 0;
-  padding: 0 30px 0 0; /* 오른쪽 여백 30px */
-  gap: 20px; /* 아이콘 사이 간격 */
-  height: 100%;
+  padding: 0;
 }
 
-/* 아이콘 버튼 공통 */
+/* 헤더 내부 링크만 대상으로 한정 */
+.authenticated-header .nav-menu a,
+.custom-header .nav-menu a {
+  text-decoration: none;
+  color: var(--text-main, #333);
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+.authenticated-header .nav-menu a:hover,
+.custom-header .nav-menu a:hover {
+  color: #7db4e6;
+}
+
+/* ==============================
+   2. 아이콘 버튼 및 컨테이너
+   ============================== */
+.notification-container,
+.lang-container,
+.profile-container,
 .icon-btn {
-  cursor: pointer;
-  font-size: 20px;
-  color: #333;
   position: relative;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-}
-
-/* 프로필 이미지 */
-.profile-container {
-  cursor: pointer;
-  position: relative;
-}
-
-.profile-circle {
   width: 40px;
   height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--text-main, #333);
+  transition: color 0.3s;
+}
+.icon-btn:hover {
+  color: #7db4e6;
 }
 
+/* ==============================
+   3. 프로필 사진
+   ============================== */
+.user-avatar,
 .avatar-img {
-  width: 40px;
-  height: 40px;
+  width: 38px !important;
+  height: 38px !important;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid #eee;
+  flex-shrink: 0;
+  transition: border-color 0.3s;
+}
+.profile-container:hover .user-avatar,
+.profile-container:hover .avatar-img {
+  border-color: #7db4e6;
 }
 
+/* 기본 아이콘 (이미지 없을 때) */
+.profile-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+}
 #defaultIcon {
   font-size: 35px;
   color: #ccc;
 }
 
-/* =========================================
-   POPUPS & DROPDOWNS (사장님 디자인 유지)
-   ========================================= */
-
-/* 언어 드롭다운 */
-.lang-dropdown {
-  position: absolute;
-  top: 40px;
-  right: -10px;
-  background: white;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  display: none;
-  flex-direction: column;
-  width: 100px;
-  z-index: 10001;
-}
-.lang-dropdown.show {
-  display: flex;
-}
-
-.lang-item {
-  padding: 10px;
-  text-decoration: none;
-  color: #333;
-  font-size: 14px;
-  text-align: center;
-}
-.lang-item:hover {
-  background: #f8f9fa;
-}
-
-/* 프로필 팝업 메뉴 */
-.custom-profile-menu {
-  position: absolute;
-  top: 55px; /* 헤더 아래로 */
-  right: 0;
-  width: 250px;
-  min-width: 220px;
-  background: white;
-  border-radius: 20px !important;
-  padding: 0;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  display: none; /* JS로 토글 */
-  z-index: 10002;
-  border: 1px solid #eee;
-  cursor: default;
-}
-.custom-profile-menu.show {
-  display: block;
-}
-
-/* 말풍선 꼬리 */
-.menu-pointer {
-  position: absolute;
-  top: -9px;
-  right: 15px;
-  width: 0;
-  height: 0;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-bottom: 10px solid #ffffff;
-}
-
-.profile-user-name {
-  font-size: 20px;
-  font-weight: 800;
-  color: #33475b;
-  display: block;
-  margin-bottom: 10px;
-}
-
-/* 버튼 스타일 (사장님 지정 색상) */
-.custom-profile-menu .btn {
-  border-radius: 10px;
-  padding: 10px;
-  font-weight: 600;
-  font-size: 14px;
-  border: none;
-  color: white !important;
-  text-align: center;
-  text-decoration: none;
-  display: block;
-}
-
-.btn-profile-edit,
-.btn-company-edit {
-  background-color: #8bbbe5 !important;
-}
-.btn-profile-edit:hover,
-.btn-company-edit:hover {
-  background-color: #7aaad4 !important;
-}
-
-.btn-logout-custom {
-  background-color: #f39695 !important;
-}
-.btn-logout-custom:hover {
-  background-color: #e28584 !important;
-}
-
-/* =========================================
-   NOTIFICATIONS (알림)
-   ========================================= */
-.notification-badge-dot {
+/* ==============================
+   4. 알림 뱃지
+   ============================== */
+.notify-badge {
   position: absolute;
   top: 0;
   right: 0;
-  width: 8px;
-  height: 8px;
-  background-color: #ff8b7b;
+  background-color: #ff4757;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  min-width: 16px;
+  height: 16px;
   border-radius: 50%;
-  border: 2px solid white;
+  border: 2px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+  z-index: 10;
 }
 
-.custom-notification-menu {
+/* ==============================
+   5. 드롭다운 공통 스타일
+   ============================== */
+.notify-dropdown,
+.lang-dropdown,
+.profile-dropdown {
+  display: none;
   position: absolute;
-  top: 50px;
-  right: -80px;
-  width: 350px;
-  max-height: 500px;
-  background: white;
-  border-radius: 25px !important;
-  padding: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  overflow-y: auto;
-  overflow-x: hidden;
-  z-index: 10002;
-  display: none; /* JS 제어 필요 시 class toggle */
+  top: 45px;
+  background-color: white;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  z-index: 2000;
+  overflow: hidden;
 }
 
-/* 알림 내부 스타일 */
-.notif-item {
-  margin-bottom: 20px;
-}
-.notif-item:last-child {
-  margin-bottom: 0;
+.notify-dropdown.show,
+.lang-dropdown.show,
+.profile-dropdown.show {
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.2s ease;
 }
 
-.notif-header {
+/* 언어 드롭다운 */
+.lang-dropdown {
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  min-width: 100px;
+  padding: 5px;
+}
+
+/* 알림 드롭다운 */
+.notify-dropdown {
+  left: 50%;
+  transform: translateX(-50%);
+  width: 320px;
+}
+
+/* 프로필 드롭다운 */
+.profile-dropdown {
+  right: 0;
+  left: auto;
+  min-width: 200px;
+}
+
+/* ==============================
+   6. 드롭다운 내부 아이템
+   ============================== */
+.lang-item {
+  padding: 10px 15px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.lang-item:hover {
+  background-color: #f5f7fa;
+  color: #7db4e6;
+}
+
+/* 알림 헤더 */
+.notify-header {
+  padding: 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
   border-bottom: 1px solid #eee;
-  padding-bottom: 5px;
 }
-.notif-header .label {
-  font-size: 12px;
-  color: #b0b0b0;
-  font-weight: 500;
+.notify-header span {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
 }
-
-.notif-body {
+.header-buttons {
   display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  padding-top: 5px;
+  gap: 8px;
+  font-size: 11px;
 }
-.notif-title {
+.header-btn {
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+}
+.header-btn:hover {
+  color: #333;
+}
+.divider {
+  color: #ddd;
+}
+
+/* 알림 바디 */
+.notify-body {
+  max-height: 320px;
+  overflow-y: auto;
+  background: #fff;
+  transition: max-height 0.4s ease-in-out;
+}
+.notify-body.expanded {
+  max-height: 600px !important;
+}
+
+/* 알림 없음 */
+.notify-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #bbb;
+  gap: 10px;
+}
+.notify-empty i {
+  font-size: 32px;
+  color: #e0e0e0;
+}
+.notify-empty p {
   margin: 0;
-  font-size: 16px;
-  font-weight: 700;
-}
-.notif-text {
-  margin: 3px 0 0 0;
   font-size: 13px;
-  color: #777;
-  line-height: 1.4;
 }
 
-.icon-success {
-  color: #5cb85c;
-  font-size: 22px;
+/* 알림 아이템 */
+.notify-item {
+  display: flex;
+  padding: 15px;
+  border-bottom: 1px solid #f9f9f9;
+  position: relative;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  align-items: flex-start;
 }
-.notif-item.success .notif-title {
-  color: #5cb85c;
+.notify-item:hover {
+  background-color: #f8f9fa;
 }
-.icon-warning {
-  color: #f0ad4e;
-  font-size: 22px;
-}
-.notif-item.warning .notif-title {
-  color: #f0ad4e;
+.notify-item.unread {
+  background-color: #f0f7ff;
 }
 
-.custom-notification-menu::-webkit-scrollbar {
+.notify-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #f1f3f5;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.notify-content {
+  flex: 1;
+}
+.notify-text {
+  margin: 0;
+  font-size: 13px;
+  color: #333;
+  line-height: 1.5;
+}
+.notify-time {
+  font-size: 11px;
+  color: #aaa;
+  margin-top: 4px;
+  display: block;
+}
+
+.delete-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 12px;
+  color: #ccc;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.notify-item:hover .delete-btn {
+  opacity: 1;
+}
+.delete-btn:hover {
+  color: #ff4757;
+}
+
+/* 알림 푸터 (더 보기) */
+.notify-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background-color: #fcfcfc;
+  border-top: 1px solid #eee;
+  color: #666;
+  font-size: 13px;
+  cursor: pointer;
+  gap: 5px;
+}
+.notify-footer:hover {
+  background-color: #f5f7fa;
+  color: #7db4e6;
+}
+
+/* 스크롤바 */
+.notify-body::-webkit-scrollbar {
   width: 6px;
 }
-.custom-notification-menu::-webkit-scrollbar-thumb {
+.notify-body::-webkit-scrollbar-thumb {
   background-color: #eee;
   border-radius: 10px;
 }
 
-/* =========================================
-   DARK MODE OVERRIDES (맨 아래에 배치하여 우선순위 확보)
-   ========================================= */
-html.dark-mode body .custom-header {
+/* 프로필 드롭다운 내부 */
+.profile-info {
+  padding: 15px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+}
+.user-name {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+.user-email {
+  font-size: 11px;
+  color: #888;
+  margin-top: 4px;
+}
+
+.profile-item {
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #333;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+.profile-item:hover {
+  background-color: #f5f7fa;
+  color: #7db4e6;
+}
+.profile-item.logout {
+  color: #ff6b6b;
+}
+.profile-item.logout:hover {
+  background-color: #fff5f5;
+  color: #ff4757;
+}
+
+.profile-dropdown hr {
+  margin: 5px 0;
+  border: none;
+  border-top: 1px solid #eee;
+}
+
+/* ==============================
+   7. 다크모드 대응
+   ============================== */
+body.dark-mode .authenticated-header,
+body.dark-mode .custom-header {
   background-color: #121212;
   border-bottom: 1px solid #2d2d2d;
 }
-html.dark-mode body .icon-btn {
-  color: #fff;
+
+body.dark-mode .nav-menu a,
+body.dark-mode .icon-btn {
+  color: #e0e0e0;
 }
-html.dark-mode body .profile-user-name {
-  color: #e5e7eb;
+body.dark-mode .icon-btn:hover {
+  color: #7db4e6;
 }
 
-/* 다크모드 팝업 배경 */
-html.dark-mode body .custom-notification-menu,
-html.dark-mode body .custom-profile-menu,
-html.dark-mode body .lang-dropdown {
-  background-color: #1e1e1e;
-  border: 1px solid #333;
+body.dark-mode .notify-dropdown,
+body.dark-mode .lang-dropdown,
+body.dark-mode .profile-dropdown {
+  background-color: #2d2d2d;
+  border-color: #444;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
 }
-html.dark-mode body .lang-item {
-  color: #eee;
+
+body.dark-mode .notify-header span,
+body.dark-mode .user-name {
+  color: #ffffff !important;
 }
-html.dark-mode body .lang-item:hover {
-  background: #333;
+
+body.dark-mode .notify-text,
+body.dark-mode .notify-time,
+body.dark-mode .lang-item,
+body.dark-mode .profile-item,
+body.dark-mode .notify-item {
+  color: #e0e0e0 !important;
 }
-html.dark-mode body .menu-pointer {
-  border-bottom-color: #1e1e1e;
+
+body.dark-mode .notify-text strong {
+  color: #ffffff !important;
+}
+
+body.dark-mode .profile-info,
+body.dark-mode .notify-header,
+body.dark-mode .notify-footer,
+body.dark-mode .notify-body {
+  background-color: #383838;
+  border-color: #444;
+}
+
+body.dark-mode .notify-item.unread {
+  background-color: #2a3441;
+}
+body.dark-mode .notify-item:hover {
+  background-color: #454545;
+}
+
+body.dark-mode .lang-item:hover,
+body.dark-mode .profile-item:hover {
+  background-color: #454545;
+  color: #7db4e6 !important;
+}
+
+body.dark-mode .profile-item.logout {
+  color: #ff6b6b !important;
+}
+body.dark-mode .profile-item.logout:hover {
+  background-color: #3d2525 !important;
+}
+
+body.dark-mode .notify-badge {
+  border-color: #121212;
+}
+
+body.dark-mode .notify-body::-webkit-scrollbar-thumb {
+  background-color: #555;
+}
+
+body.dark-mode .header-btn {
+  color: #aaa;
+}
+body.dark-mode .header-btn:hover {
+  color: #fff;
+}
+
+body.dark-mode .profile-dropdown hr {
+  border-color: #444;
+}
+
+/* ==============================
+   8. 애니메이션
+   ============================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInCenter {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -5px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.notify-dropdown.show,
+.lang-dropdown.show {
+  animation: fadeInCenter 0.2s ease;
 }

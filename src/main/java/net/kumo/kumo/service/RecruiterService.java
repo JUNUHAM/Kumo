@@ -1,12 +1,12 @@
 package net.kumo.kumo.service;
 
-import net.kumo.kumo.domain.entity.ProfileImageEntity;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.kumo.kumo.domain.dto.JoinRecruiterDTO;
+import net.kumo.kumo.domain.entity.ProfileImageEntity;
 import net.kumo.kumo.domain.entity.UserEntity;
 import net.kumo.kumo.repository.UserRepository;
 
@@ -39,10 +39,8 @@ public class RecruiterService {
         // 1. 이메일로 유저 정보를 가져옵니다.
         UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("해당 이메일을 가진 유저를 찾을 수 없습니다: " + email));
-		
-		ProfileImageEntity profileImageEntity = ProfileImageEntity.builder().
-				fileUrl(imagePath).
-				build();
+
+        ProfileImageEntity profileImageEntity = ProfileImageEntity.builder().fileUrl(imagePath).build();
 
         // 2. 새로운 이미지 경로를 세팅합니다. (엔티티의 setter 사용)
         user.setProfileImage(profileImageEntity);

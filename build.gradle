@@ -32,7 +32,17 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     // DB
+    // Web + MVC (정석)
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // View
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // DB
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // Security
     runtimeOnly 'com.mysql:mysql-connector-j'
 
     // Security
@@ -40,7 +50,12 @@ dependencies {
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 
     // Dev
+
+    // Dev
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok'
@@ -52,6 +67,13 @@ dependencies {
 
     // .env 파일을 읽어오는 라이브러리
     implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+
+    // Test (정석)
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    // 채팅 기능 websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
     //이메일 발송라이브러리
     implementation 'org.springframework.boot:spring-boot-starter-mail'
