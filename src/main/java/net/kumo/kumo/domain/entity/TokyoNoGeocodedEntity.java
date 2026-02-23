@@ -12,10 +12,10 @@ import org.hibernate.annotations.Formula;
 @Setter
 public class TokyoNoGeocodedEntity extends BaseEntity {
 
-    // BaseEntity 와의 상속 관계 설정, 중복 코드 제거
-    @Formula("NULL")
-    private Double lat;
+	// BaseEntity 와의 상속 관계 설정, 중복 코드 제거
+	@Formula("NULL")
+	private Double lat;
 
-    @Formula("NULL")
-    private Double lng;
+	@Formula("NULL")
+	private Double lng;
 }

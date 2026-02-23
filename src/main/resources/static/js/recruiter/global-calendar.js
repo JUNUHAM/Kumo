@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const currentLang = document.documentElement.lang || "ko"; // HTML lang 속성 참고
+  const currentLang = document.documentElement.lang || "ko";
 
-  // 1. 메인 캘린더 영역 (페이지에 있을 때만 실행)
+  // 1. 메인 캘린더 영역
   const calendarEl = document.getElementById("calendar");
   if (calendarEl && typeof FullCalendar !== "undefined") {
     const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
     calendar.render();
   }
 
-  // 2. 미니 캘린더 영역 (사이드바 등에 있을 때만 실행)
+  // 2. 미니 캘린더 영역
   const miniEl = document.getElementById("mini-calendar");
   if (miniEl && typeof FullCalendar !== "undefined") {
     const now = new Date();
@@ -46,24 +46,41 @@ document.addEventListener("DOMContentLoaded", function () {
       height: "auto",
       events: "/api/calendar/events",
 
-      // [최종] 점을 무조건 그리라고 강제하는 3대장
+      // 점으로 표시, 최대 3개
       eventDisplay: "list-item",
-      dayMaxEvents: 3, // ⚠️ false로 두어야 공간 부족해도 점을 안 숨깁니다.
-      dayMaxEventRows: false,
+      dayMaxEvents: 3,
+      dayMaxEventRows: 3,
 
       dayCellContent: (arg) => ({ html: arg.date.getDate() }),
 
-      // [최종] 점에 색깔 입히고 강제로 깨우기
+      // "+more" 링크 완전 숨김
+      moreLinkContent: () => ({ html: "" }),
+      moreLinkDidMount: (info) => {
+        info.el.style.display = "none";
+      },
+
+      // 점 색상을 이벤트 색과 연동
       eventDidMount: function (info) {
+        // 이벤트 자체 배경/테두리 제거
+        info.el.style.background = "none";
+        info.el.style.border = "none";
+        info.el.style.boxShadow = "none";
+        info.el.style.padding = "0";
+        info.el.style.margin = "0";
+
         const dot = info.el.querySelector(".fc-daygrid-event-dot");
         if (dot) {
-          dot.style.setProperty(
-            "background-color",
-            info.event.backgroundColor || info.event.color || "#7abaff",
-            "important",
-          );
+          const color =
+            info.event.backgroundColor || info.event.color || "#7abaff";
+          dot.style.setProperty("background-color", color, "important");
+          dot.style.setProperty("border-color", color, "important");
+          dot.style.setProperty("width", "6px", "important");
+          dot.style.setProperty("height", "6px", "important");
+          dot.style.setProperty("border-radius", "50%", "important");
+          dot.style.setProperty("border", "none", "important");
           dot.style.setProperty("display", "block", "important");
           dot.style.setProperty("visibility", "visible", "important");
+          dot.style.setProperty("flex-shrink", "0", "important");
         }
       },
 
@@ -80,8 +97,7 @@ document.addEventListener("DOMContentLoaded", function () {
     updateScheduleDetail(dateToSelect, miniCalendar);
   }
 
-  // 3. 상세 일정 업데이트 함수 (공통 사용)
-  // 3. 상세 일정 업데이트 함수 (시간 표시 추가 버전)
+  // 3. 상세 일정 업데이트 함수
   function updateScheduleDetail(dateStr, calendarApi) {
     const container = document.getElementById("event-list-container");
     if (!container) return;
@@ -91,9 +107,17 @@ document.addEventListener("DOMContentLoaded", function () {
       typeof kumoMsgs !== "undefined" ? kumoMsgs.scheduleTitle : " 일정";
     if (titleEl) titleEl.innerText = dateStr + " " + titleSuffix;
 
+    // ★ 시차 오류 수정: toISOString()은 UTC 기준이라 한국(UTC+9)에서 날짜가 밀림
+    //    → 로컬 시간 기준으로 YYYY-MM-DD 문자열 생성
+    function getLocalDateStr(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
     const events = calendarApi.getEvents().filter((e) => {
-      const d = e.start;
-      return d.toISOString().split("T")[0] === dateStr;
+      return getLocalDateStr(e.start) === dateStr;
     });
 
     container.innerHTML = "";
@@ -108,7 +132,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const card = document.createElement("div");
         card.className = "sidebar-card";
 
-        // [핵심] 다크모드 !important를 뚫고 색상을 박아넣는 로직
         const eventColor = e.backgroundColor || e.color || "#7abaff";
         card.style.setProperty("border-left-color", eventColor, "important");
 
@@ -118,15 +141,13 @@ document.addEventListener("DOMContentLoaded", function () {
           hour12: false,
         });
 
-        // [완료] 한 줄 배치 + 화살표(>) 삭제 + 슬림한 높이
         card.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 12px; width: 100%; padding: 2px 0;">
+          <div style="display: flex; align-items: center; gap: 12px; width: 100%; padding: 2px 0;">
             <div class="event-item-title" style="margin: 0; font-size: 0.9rem; font-weight: 700;">${e.title}</div>
             <div class="event-item-time" style="font-size: 0.8rem; color: #8b95a1; white-space: nowrap;">
-                <i class="bi bi-clock me-1"></i>${timeStr}
+              <i class="bi bi-clock me-1"></i>${timeStr}
             </div>
-        </div>
-    `;
+          </div>`;
         container.appendChild(card);
       });
     }
