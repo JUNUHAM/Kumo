@@ -38,10 +38,10 @@ public class ScheduleEntity {
     @Column(columnDefinition = "TEXT")
     private String description; // 상세정보
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "start_at")
     private LocalDateTime startAt; // 시작 일시
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "end_at")
     private LocalDateTime endAt; // 종료 일시
 
     @Column(name = "color_code")

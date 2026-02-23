@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <title>KUMO RECRUITER - 공고 등록</title>
     <script th:src="@{/js/recruiter/main.js}"></script>
+    <script th:src="@{/js/recruiter/recruiterHeader.js}"></script>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -43,9 +44,10 @@
             <h2 class="posting-title" th:text="#{post.title}">공고 등록</h2>
 
             <form
-              action="/Recruiter/JobPost"
+              action="/Recruiter/JobPosting"
               method="post"
               enctype="multipart/form-data"
+              id="jobPostForm"
             >
               <div class="form-group mb-4">
                 <label class="form-label" th:text="#{post.label.subject}"
@@ -55,8 +57,8 @@
                   type="text"
                   name="title"
                   class="form-control kumo-input"
-                  th:placeholder="#{post.placeholder.subject}"
                   placeholder="구인글 제목을 입력해주세요."
+                  required
                 />
               </div>
 
@@ -69,7 +71,6 @@
                     type="text"
                     name="position"
                     class="form-control kumo-input"
-                    th:placeholder="#{post.placeholder.task}"
                     placeholder="직책을 입력해주세요."
                   />
                 </div>
@@ -81,7 +82,6 @@
                     type="text"
                     name="positionDetail"
                     class="form-control kumo-input"
-                    th:placeholder="#{post.placeholder.task_detail}"
                     placeholder="상세 업무내용을 입력해주세요."
                   />
                 </div>
@@ -94,27 +94,30 @@
                 <div class="d-flex align-items-center gap-2 flex-nowrap">
                   <input
                     type="number"
+                    id="dl-year"
                     class="form-control kumo-input-sm"
                     style="width: 85px;"
-                    placeholder="1899"
+                    placeholder="YYYY"
                   />
                   <input
                     type="number"
+                    id="dl-month"
                     class="form-control kumo-input-sm"
                     style="width: 65px;"
-                    placeholder="05"
+                    placeholder="MM"
                   />
                   <input
                     type="number"
+                    id="dl-day"
                     class="form-control kumo-input-sm"
                     style="width: 65px;"
-                    placeholder="05"
+                    placeholder="DD"
                   />
                   <input
-                    type="text"
+                    type="time"
+                    id="dl-time"
                     class="form-control kumo-input-sm"
-                    style="width: 90px;"
-                    placeholder="18:00"
+                    style="width: 110px;"
                   />
                   <span
                     class="fw-bold text-nowrap"
@@ -123,6 +126,7 @@
                     >까지</span
                   >
                 </div>
+                <input type="hidden" name="deadline" id="hiddenDeadline" />
               </div>
 
               <div class="form-group mb-4">
@@ -131,17 +135,27 @@
                 >
                 <div class="d-flex align-items-center gap-2">
                   <select
+                    name="salaryType"
                     class="form-select kumo-input-sm"
                     style="width: 100px;"
                   >
-                    <option th:text="#{post.wage.hourly}">시급</option>
-                    <option th:text="#{post.wage.daily}">일급</option>
-                    <option th:text="#{post.wage.monthly}">월급</option>
-                    <option th:text="#{post.wage.yearly}">연봉</option>
+                    <option value="HOURLY" th:text="#{post.wage.hourly}">
+                      시급
+                    </option>
+                    <option value="DAILY" th:text="#{post.wage.daily}">
+                      일급
+                    </option>
+                    <option value="MONTHLY" th:text="#{post.wage.monthly}">
+                      월급
+                    </option>
+                    <option value="SALARY" th:text="#{post.wage.yearly}">
+                      연봉
+                    </option>
                   </select>
                   <div class="position-relative flex-grow-1">
                     <input
-                      type="text"
+                      type="number"
+                      name="salaryAmount"
                       class="form-control kumo-input"
                       style="padding-right: 40px;"
                     />
@@ -160,10 +174,18 @@
                 <div class="upload-container">
                   <label for="file-upload" class="upload-btn">
                     <i class="bi bi-plus-circle-fill"></i>
-                    <input type="file" id="file-upload" hidden multiple />
+                    <input
+                      type="file"
+                      id="file-upload"
+                      name="images"
+                      hidden
+                      multiple
+                      accept="image/*"
+                    />
                   </label>
                 </div>
               </div>
+
               <div class="form-group mb-4">
                 <label class="form-label" th:text="#{post.label.select_biz}"
                   >등록 회사 선택</label
@@ -171,19 +193,16 @@
                 <div class="company-selection-wrapper">
                   <div class="nav-pills-wrapper" id="companySelectTabs">
                     <button
-                      type="button"
-                      class="nav-pill active"
-                      onclick="selectCompanyForPost(1)"
-                    >
-                      KUMO 소프트
-                    </button>
-                    <button
+                      th:each="company, stat : ${companies}"
                       type="button"
                       class="nav-pill"
-                      onclick="selectCompanyForPost(2)"
+                      th:classappend="${stat.first} ? 'active' : ''"
+                      th:onclick="|selectCompanyForPost(${company.companyId}, this)|"
+                      th:text="${company.bizName}"
                     >
-                      네오 재팬
+                      회사이름 (자동으로 바뀜)
                     </button>
+
                     <a
                       th:href="@{/Recruiter/CompanyInfo}"
                       class="nav-pill-link"
@@ -192,29 +211,24 @@
                       <span th:text="#{biz.btn.manage_short}">회사 관리</span>
                     </a>
                   </div>
+
                   <input
                     type="hidden"
                     name="companyId"
                     id="selectedCompanyId"
-                    value="1"
+                    th:value="${not #lists.isEmpty(companies)} ? ${companies[0].companyId} : ''"
                   />
                 </div>
-                <p
-                  class="text-muted small mt-2"
-                  th:text="#{post.guide.select_biz}"
-                >
-                  공고에 표시될 회사를 선택해 주세요. 상세 정보는 회사 관리
-                  메뉴에서 수정 가능합니다.
-                </p>
               </div>
+
               <div class="form-group mb-5">
                 <label class="form-label" th:text="#{post.label.detail}"
                   >상세정보</label
                 >
                 <textarea
+                  name="description"
                   class="form-control kumo-input"
                   rows="6"
-                  th:placeholder="#{post.placeholder.detail}"
                   placeholder="상세 내용을 입력해주세요."
                 ></textarea>
               </div>
@@ -230,12 +244,38 @@
               </div>
             </form>
           </div>
-
           <footer
             th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"
           ></footer>
         </main>
       </div>
     </div>
+    <script th:inline="javascript">
+                  document.getElementById('jobPostForm').addEventListener('submit', function(e) {
+                    const y = document.getElementById('dl-year').value;
+                    const m = document.getElementById('dl-month').value.padStart(2, '0');
+                    const d = document.getElementById('dl-day').value.padStart(2, '0');
+
+                    // 연, 월, 일이 모두 입력되었을 때만 합쳐서 hidden input에 넣음 (포맷: YYYY-MM-DD)
+                    if(y && m && d) {
+                      document.getElementById('hiddenDeadline').value = `${y}-${m}-${d}`;
+                    }
+                  });
+
+                    // 🌟 회사 선택 시 실행되는 함수
+      function selectCompanyForPost(companyId, btnElement) {
+          // 1. 숨겨진 input 태그의 값을 클릭한 회사의 ID로 변경
+          document.getElementById('selectedCompanyId').value = companyId;
+
+          // 2. 모든 버튼의 파란색(active)을 뺌
+          const tabs = document.getElementById('companySelectTabs').querySelectorAll('.nav-pill');
+          tabs.forEach(tab => tab.classList.remove('active'));
+
+          // 3. 방금 클릭한 버튼만 파란색으로 칠함
+          if(btnElement) {
+              btnElement.classList.add('active');
+          }
+      }
+    </script>
   </body>
 </html>
