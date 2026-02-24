@@ -77,12 +77,20 @@ body {
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.03);
     border: 1px solid #eee;
-    overflow: hidden; /* 둥근 모서리 유지 */
+
+    /* [핵심 추가] 두 탭의 높이를 동일하게 고정하고 내부 스크롤 생성 */
+    min-height: 600px; /* 화면 덜컹거림 방지 (원하는 높이로 조절 가능) */
+    max-height: 600px;
+    overflow-y: auto;  /* 데이터가 이 높이를 넘치면 내부에 스크롤바 생성 */
+
+    /* Flexbox를 사용하여 내부 요소 배치 */
+    display: flex;
+    flex-direction: column;
 }
 .custom-table { width: 100%; border-collapse: collapse; }
 .custom-table th { background-color: #f8f9fa; color: #495057; font-weight: 700; padding: 16px; text-align: left; border-bottom: 1px solid #dee2e6; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
 .custom-table td { padding: 16px; border-bottom: 1px solid #f1f3f5; color: #343a40; font-size: 14px; vertical-align: middle; }
-.custom-table tr:hover { background-color: #f8f9fa; } /* 마우스 오버 효과 */
+.custom-table tr:hover { background-color: #f8f9fa; }
 
 /* 프로필 */
 .user-profile { display: flex; align-items: center; gap: 12px; }
@@ -110,3 +118,33 @@ body {
 .pagination li.active a { background-color: #343a40; color: white; border-color: #343a40; font-weight: 700; }
 .pagination li.disabled a { color: #ced4da; pointer-events: none; background: #f8f9fa; border-color: #eee; }
 .pagination li a:hover:not(.active) { background-color: #f1f3f5; border-color: #ced4da; }
+
+/* --- [추가] 탭 메뉴 스타일 --- */
+.tab-menu {
+    display: flex;
+    border-bottom: 1px solid #dee2e6;
+    margin-bottom: 25px;
+    gap: 20px;
+}
+.tab-item {
+    padding: 10px 5px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #adb5bd;
+    cursor: pointer;
+    position: relative;
+    transition: 0.2s;
+}
+.tab-item:hover { color: #495057; }
+.tab-item.active { color: #343a40; }
+.tab-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #343a40;
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
