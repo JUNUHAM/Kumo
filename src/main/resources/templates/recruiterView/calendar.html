@@ -76,15 +76,15 @@
                   data-bs-toggle="modal"
                   data-bs-target="#scheduleModal"
                   onclick="prepareNewSchedule()"
-                >
-                  스케줄 등록
+                ><span th:text="#{cal.btn.add_schedule}">스케줄 등록</span>
                 </button>
 
                 <div
                   id="deleteDropZone"
                   class="delete-drop-zone w-100 shadow-sm mt-2"
                 >
-                  <i class="bi bi-trash3 me-1"></i> 여기로 끌어서 삭제
+                  <i class="bi bi-trash3 me-1"></i> 
+                  <span th:text="#{cal.drag.delete_area}">여기로 끌어서 삭제</span>
                 </div>
               </div>
             </aside>
@@ -96,11 +96,13 @@
       </div>
     </div>
 
+
+    <!-- 모달 섹션 -->
     <div class="modal fade" id="scheduleModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content schedule-modal-content">
           <div class="modal-header border-0">
-            <h5 class="modal-title w-100 text-center fw-bold">스케줄 등록</h5>
+            <h5 class="modal-title w-100 text-center fw-bold" th:text="#{cal.modal.title_add}">스케줄 등록</h5>
             <button
               type="button"
               class="btn-close"
@@ -111,20 +113,20 @@
           <div class="modal-body p-4">
             <form id="scheduleForm">
               <div class="row mb-4 align-items-center">
-                <label class="col-3 modal-label">주제</label>
+                <label class="col-3 modal-label" th:text="#{cal.modal.label.subject}">주제</label>
                 <div class="col-9">
                   <input
                     type="text"
                     id="scheduleTitle"
                     class="kumo-modal-input"
-                    placeholder="홍길동과 면접"
+                    th:placeholder="#{cal.modal.placeholder.subject}"
                     required
                   />
                 </div>
               </div>
 
               <div class="row mb-4 align-items-center">
-                <label class="col-3 modal-label">날짜</label>
+                <label class="col-3 modal-label" th:text="#{cal.modal.label.date}">날짜</label>
                 <div class="col-9 d-flex gap-2 align-items-center">
                   <input
                     type="date"
@@ -152,19 +154,19 @@
               </div>
 
               <div class="row mb-4">
-                <label class="col-3 modal-label mt-2">상세정보</label>
+                <label class="col-3 modal-label mt-2" th:text="#{cal.modal.label.detail}">상세정보</label>
                 <div class="col-9">
                   <textarea
                     id="scheduleDescription"
                     class="kumo-modal-textarea"
                     rows="4"
-                    placeholder="상세 내용을 입력하세요."
+                    th:placeholder="#{cal.modal.placeholder.detail}"
                   ></textarea>
                 </div>
               </div>
 
               <div class="row mb-5 align-items-center">
-                <label class="col-3 modal-label">색상</label>
+                <label class="col-3 modal-label" th:text="#{cal.modal.label.color}">색상</label>
                 <div class="col-9 d-flex gap-3 color-picker-wrapper">
                   <div
                     class="color-dot active"
@@ -206,15 +208,15 @@
 
               <div class="d-flex gap-3 justify-content-center w-100">
                 <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
-                  취소
+                  <span th:text="#{cal.btn.cancel}">취소</span>
                 </button>
               
                 <button type="button" class="btn btn-danger" id="btnDelete" onclick="deleteSchedule()" style="display: none;">
-                  삭제
+                  <span th:text="#{cal.btn.delete}">삭제</span>
                 </button>
               
                 <button type="button" class="btn-modal-submit" onclick="saveSchedule()">
-                  스케줄 등록
+                  <span th:text="#{cal.modal.title_add}">스케줄 등록</span>
                 </button>
               </div>
             </form>
@@ -228,6 +230,14 @@
      /* <![CDATA[ */
       let mainCal;
       let editingEventId = null;
+
+      // 번역용 객체
+      const calMsg = {
+          titleAdd: [[#{ cal.modal.title_add }]],      // "스케줄 등록"
+          titleEdit: [[#{ cal.modal.title_edit }]],    // "스케줄 수정"
+          btnSubmitEdit: [[#{ cal.btn.submit_edit }]], // "수정 완료"
+          errorTimeRange: [[#{ cal.error.time_range }]] // "종료 시간은 시작 시간보다 늦어야 합니다."
+        };
 
       // [UTC 오차 해결] 한국 시간을 기준으로 YYYY-MM-DD 문자열을 만드는 함수
       function getLocalDateString(date) {
@@ -343,6 +353,16 @@
           });
           mainCal.render();
         }
+        // 🌟 [추가] 실시간 시간 유효성 체크 로직 (여기에 들어갑니다!)
+        $('#endTime, #startTime').on('change', function () {
+          const start = $('#startTime').val();
+          const end = $('#endTime').val();
+          if (start && end && start >= end) {
+            $('#startTime, #endTime').addClass('is-invalid');
+          } else {
+            $('#startTime, #endTime').removeClass('is-invalid');
+          }
+        });
       });
 
       // 날짜 선택 
@@ -362,8 +382,10 @@
         $('#scheduleForm')[0].reset();
         $('#scheduleDate').val(selectedDate ? selectedDate : getLocalDateString(new Date()));
         $('#btnDelete').hide();
-        $('.btn-modal-submit').text('스케줄 등록');
-        $('.modal-title').text('스케줄 등록');
+        // 🌟 신규 등록 모달을 준비할 때 (prepareNewSchedule 함수 내부)
+        $('.btn-modal-submit').text(calMsg.titleAdd);  // "스케줄 등록"으로 변경됨
+        $('.modal-title').text(calMsg.titleAdd);
+
       }
 
       // 수정 모달 세팅
@@ -380,8 +402,9 @@
         $('#startTime').val(timeStr);
 
         $('#btnDelete').show();
-        $('.btn-modal-submit').text('수정 완료');
-        $('.modal-title').text('스케줄 수정');
+                // 🌟 수정 모달을 열 때 (openEditModal 함수 내부)
+        $('.btn-modal-submit').text(calMsg.btnSubmitEdit); // "수정 완료"로 변경됨
+        $('.modal-title').text(calMsg.titleEdit);    
 
         const eventColor = event.backgroundColor || event.color || "#7abaff";
         $('.color-dot').removeClass('active');
@@ -394,7 +417,22 @@
       function saveSchedule() {
         const title = $('#scheduleTitle').val();
         const date = $('#scheduleDate').val();
+        const startVal = $('#startTime').val(); // 예: "09:00"
+        const endVal = $('#endTime').val();     // 예: "10:00"
+
         if (!title || !date) { alert("주제와 날짜를 확인해 주세요!"); return; }
+
+        // 🌟 [핵심] 시간 역전 방지 로직
+        // input type="time"은 문자열 비교만으로도 선후 관계 파악이 가능합니다.
+        if (startVal >= endVal) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Oops!',
+            text: calMsg.errorTimeRange,
+            confirmButtonColor: '#7abaff'
+          });
+          return; // 저장 로직 중단
+        }
 
         const data = {
           id: editingEventId,

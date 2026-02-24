@@ -79,31 +79,37 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // 점 색상을 이벤트 색과 연동
       eventDidMount: function (info) {
-        // 🌟 여기가 핵심입니다! 3개 넘어가면 나타나는 '+more' 영역에 해당하는 애들은 렌더링 안 함
-    if (info.isMirror || info.isStart === false) return;
-        // 이벤트 자체 배경/테두리 제거
-        info.el.style.background = "none";
-        info.el.style.border = "none";
-        info.el.style.boxShadow = "none";
-        info.el.style.padding = "0";
-        info.el.style.margin = "0";
+    info.el.style.background = "none";
+    info.el.style.border = "none";
+    info.el.style.boxShadow = "none";
+    info.el.style.padding = "0";
+    info.el.style.margin = "0";
 
-        const dot = info.el.querySelector(".fc-daygrid-event-dot");
-        
-        if (dot) {
-          const color =
-            info.event.backgroundColor || info.event.color || "#ff6b6b";
-          dot.style.setProperty("background-color", color, "important");
-          dot.style.setProperty("border-color", color, "important");
-          dot.style.setProperty("width", "6px", "important");
-          dot.style.setProperty("height", "6px", "important");
-          dot.style.setProperty("border-radius", "50%", "important");
-          dot.style.setProperty("border", "none", "important");
-          dot.style.setProperty("display", "block", "important");
-          dot.style.setProperty("visibility", "visible", "important");
-          dot.style.setProperty("flex-shrink", "0", "important");
+    // ★ 해당 날짜의 점 개수 카운트해서 3개 초과면 숨김
+    const dayEl = info.el.closest(".fc-daygrid-day");
+    if (dayEl) {
+        const allDots = dayEl.querySelectorAll(".fc-daygrid-event-harness");
+        const index = Array.from(allDots).indexOf(info.el.closest(".fc-daygrid-event-harness"));
+        if (index >= 3) {
+            info.el.closest(".fc-daygrid-event-harness").style.display = "none";
+            return; // 이후 dot 스타일 적용 안 함
         }
-      },
+    }
+
+    const dot = info.el.querySelector(".fc-daygrid-event-dot");
+    if (dot) {
+        const color = info.event.backgroundColor || info.event.color || "#ff6b6b";
+        dot.style.setProperty("background-color", color, "important");
+        dot.style.setProperty("border-color", color, "important");
+        dot.style.setProperty("width", "6px", "important");
+        dot.style.setProperty("height", "6px", "important");
+        dot.style.setProperty("border-radius", "50%", "important");
+        dot.style.setProperty("border", "none", "important");
+        dot.style.setProperty("display", "block", "important");
+        dot.style.setProperty("visibility", "visible", "important");
+        dot.style.setProperty("flex-shrink", "0", "important");
+    }
+},
 
       dateClick: function (info) {
         localStorage.setItem("selectedDate", info.dateStr);
