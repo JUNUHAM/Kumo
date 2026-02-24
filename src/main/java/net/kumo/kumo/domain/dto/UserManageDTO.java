@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import net.kumo.kumo.domain.entity.ProfileImageEntity;
 import net.kumo.kumo.domain.entity.UserEntity;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
@@ -18,6 +20,7 @@ public class UserManageDTO {
     private ProfileImageEntity profileImage;  // 프로필 이미지 경로
     private String joinedAt;      // 가입일
     private String lastActive;    // 마지막 활동 (updatedAt 사용)
+    private List<String> evidenceUrls;      // 증빙서류 URL 리스트
 
     public UserManageDTO(UserEntity user) {
         this.id = user.getUserId();
@@ -61,6 +64,16 @@ public class UserManageDTO {
             this.lastActive = user.getUpdatedAt().format(formatter);
         } else {
             this.lastActive = "-";
+        }
+
+        // 🌟 양방향 매핑 덕분에 이렇게 한 방에 처리 가능!
+        if (user.getEvidenceFiles() != null && !user.getEvidenceFiles().isEmpty()) {
+            this.evidenceUrls = user.getEvidenceFiles().stream()
+                    // 파일 타입이 "EVIDENCE"인 것만 필터링 (선택 사항)
+                    .filter(file -> "EVIDENCE".equals(file.getFileType()))
+                    // 설정해둔 WebMvcConfig 경로 패턴에 맞게 URL 생성
+                    .map(file -> "/images/uploadFile/" + file.getFileName())
+                    .collect(Collectors.toList());
         }
     }
 }
