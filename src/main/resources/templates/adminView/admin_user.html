@@ -8,6 +8,7 @@
     <link rel="stylesheet" th:href="@{/css/adminView/admin_sidebar.css}">
 
     <style>
+        /* 모달창 스타일 유지 */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.4); z-index: 2000;
@@ -49,106 +50,172 @@
         </div>
     </div>
 
-    <form action="/admin/user" method="get" class="top-controls">
-        <input type="hidden" name="lang" th:value="${lang}">
+    <div class="tab-menu">
+        <div id="tab-btn-all" class="tab-item active" onclick="switchTab('all')"
+             th:text="${lang == 'ja' ? '全会員管理' : '전체 회원 관리'}">전체 회원 관리</div>
+        <div id="tab-btn-approval" class="tab-item" onclick="switchTab('approval')"
+             th:text="${lang == 'ja' ? '求人者承認' : '구인자 가입 승인'}">구인자 가입 승인</div>
+    </div>
 
-        <div class="search-box">
-            <span class="search-icon">🔍</span>
-            <input type="text" name="keyword" class="search-input" th:value="${keyword}"
-                   th:placeholder="${lang == 'ja' ? 'ニックネーム、名前で検索' : '닉네임, 이름으로 검색'}">
-        </div>
+    <div id="tab-content-all" class="tab-content active">
+        <form action="/admin/user" method="get" class="top-controls">
+            <input type="hidden" name="lang" th:value="${lang}">
+            <input type="hidden" name="tab" value="all">
 
-        <select name="role" class="filter-select">
-            <option value="" th:text="${lang == 'ja' ? '全権限' : '모든 권한'}">Role</option>
-            <option value="SEEKER" th:selected="${role == 'SEEKER'}">Seeker</option>
-            <option value="RECRUITER" th:selected="${role == 'RECRUITER'}">Recruiter</option>
-            <option value="ADMIN" th:selected="${role == 'ADMIN'}">Admin</option>
-        </select>
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" name="keyword" class="search-input" th:value="${keyword}"
+                       th:placeholder="${lang == 'ja' ? 'ニックネーム、名前で検索' : '닉네임, 이름으로 검색'}">
+            </div>
 
-        <select name="status" class="filter-select">
-            <option value="" th:text="${lang == 'ja' ? '全状態' : '모든 상태'}">Status</option>
-            <option value="ACTIVE" th:selected="${status == 'ACTIVE'}">Active</option>
-            <option value="INACTIVE" th:selected="${status == 'INACTIVE'}">Inactive</option>
-        </select>
+            <select name="role" class="filter-select">
+                <option value="" th:text="${lang == 'ja' ? '全権限' : '모든 권한'}">Role</option>
+                <option value="SEEKER" th:selected="${role == 'SEEKER'}">Seeker</option>
+                <option value="RECRUITER" th:selected="${role == 'RECRUITER'}">Recruiter</option>
+                <option value="ADMIN" th:selected="${role == 'ADMIN'}">Admin</option>
+            </select>
 
-        <button type="submit" class="btn-dark" th:text="${lang == 'ja' ? '検索' : '검색'}">Search</button>
-    </form>
+            <select name="status" class="filter-select">
+                <option value="" th:text="${lang == 'ja' ? '全状態' : '모든 상태'}">Status</option>
+                <option value="ACTIVE" th:selected="${status == 'ACTIVE'}">Active</option>
+                <option value="INACTIVE" th:selected="${status == 'INACTIVE'}">Inactive</option>
+            </select>
 
-    <div class="table-container">
-        <table class="custom-table">
-            <thead>
-            <tr>
-                <th style="width: 40px; text-align: center;"><input type="checkbox" id="checkAll"></th>
-                <th style="text-align: left;" th:text="${lang == 'ja' ? '会員情報' : '회원 정보'}">User Info</th>
-                <th style="text-align: center;" th:text="${lang == 'ja' ? '権限' : '권한'}">Role</th>
-                <th style="text-align: center;" th:text="${lang == 'ja' ? '状態' : '상태'}">Status</th>
-                <th style="text-align: center;" th:text="${lang == 'ja' ? '加入日' : '가입일'}">Joined</th>
-                <th style="text-align: center;" th:text="${lang == 'ja' ? '最終活動' : '최근 로그인'}">Last Active</th>
-                <th style="text-align: center;" th:text="${lang == 'ja' ? '管理' : '관리'}">Action</th>
-            </tr>
-            </thead>
-            <tbody>
+            <button type="submit" class="btn-dark" th:text="${lang == 'ja' ? '検索' : '검색'}">Search</button>
+        </form>
 
-            <tr th:if="${users.totalElements == 0}">
-                <td colspan="7" style="text-align: center; padding: 50px; color: #999;">
-                    <span th:text="${lang == 'ja' ? '会員がいません。' : '회원이 없습니다.'}">No Data</span>
-                </td>
-            </tr>
+        <div class="table-container">
+            <table class="custom-table">
+                <thead>
+                <tr>
+                    <th style="width: 40px; text-align: center;"><input type="checkbox" id="checkAll"></th>
+                    <th style="text-align: left;" th:text="${lang == 'ja' ? '会員情報' : '회원 정보'}">User Info</th>
+                    <th style="text-align: center;" th:text="${lang == 'ja' ? '権限' : '권한'}">Role</th>
+                    <th style="text-align: center;" th:text="${lang == 'ja' ? '状態' : '상태'}">Status</th>
+                    <th style="text-align: center;" th:text="${lang == 'ja' ? '加入日' : '가입일'}">Joined</th>
+                    <th style="text-align: center;" th:text="${lang == 'ja' ? '最終活動' : '최근 로그인'}">Last Active</th>
+                    <th style="text-align: center;" th:text="${lang == 'ja' ? '管理' : '관리'}">Action</th>
+                </tr>
+                </thead>
+                <tbody>
 
-            <tr th:each="u : ${users.content}">
-                <td style="text-align: center;"><input type="checkbox" name="userIds" th:value="${u.id}"></td>
-                <td>
-                    <div class="user-profile">
-                        <img th:src="@{${u.profileImage?.fileUrl ?: '/uploads/default_profile.png'}}"
-                             class="avatar-img" alt="프로필 이미지"
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div class="avatar-circle" style="display:none;"
-                             th:text="${#strings.substring(u.nickname, 0, 1)}">K</div>
+                <tr th:if="${users.totalElements == 0}">
+                    <td colspan="7" style="text-align: center; padding: 50px; color: #999;">
+                        <span th:text="${lang == 'ja' ? '会員がいません。' : '회원이 없습니다.'}">No Data</span>
+                    </td>
+                </tr>
 
-                        <div class="user-info">
-                            <span class="user-name" th:text="${u.nickname}">Nickname</span>
-                            <span class="user-email" th:text="${u.email}">Email</span>
+                <tr th:each="u : ${users.content}">
+                    <td style="text-align: center;"><input type="checkbox" name="userIds" th:value="${u.id}"></td>
+                    <td>
+                        <div class="user-profile">
+                            <img th:src="@{${u.profileImage?.fileUrl ?: '/uploads/default_profile.png'}}"
+                                 class="avatar-img" alt="프로필 이미지"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="avatar-circle" style="display:none;"
+                                 th:text="${#strings.substring(u.nickname, 0, 1)}">K</div>
+
+                            <div class="user-info">
+                                <span class="user-name" th:text="${u.nickname}">Nickname</span>
+                                <span class="user-email" th:text="${u.email}">Email</span>
+                            </div>
                         </div>
-                    </div>
-                </td>
-                <td style="text-align: center;"><span style="font-weight: 600; color: #555;" th:text="${u.role}">ROLE</span></td>
-                <td style="text-align: center;">
-                    <span class="badge"
-                          th:classappend="${u.status == 'ACTIVE' ? 'badge-active' : 'badge-inactive'}"
-                          th:text="${u.status}">STATUS</span>
-                </td>
-                <td style="text-align: center;" th:text="${u.joinedAt}">Date</td>
-                <td style="text-align: center;" th:text="${u.lastActive}">Date</td>
+                    </td>
+                    <td style="text-align: center;"><span style="font-weight: 600; color: #555;" th:text="${u.role}">ROLE</span></td>
+                    <td style="text-align: center;">
+                        <span class="badge"
+                              th:classappend="${u.status == 'ACTIVE' ? 'badge-active' : 'badge-inactive'}"
+                              th:text="${u.status}">STATUS</span>
+                    </td>
+                    <td style="text-align: center;" th:text="${u.joinedAt}">Date</td>
+                    <td style="text-align: center;" th:text="${u.lastActive}">Date</td>
 
-                <td style="text-align: center;">
-                    <button class="btn-icon" title="Edit"
-                            th:onclick="openEditModal([[${u.id}]], [[${u.role}]], [[${u.status}]])">✏️</button>
-                    <button class="btn-icon" title="Delete" th:onclick="deleteUser([[${u.id}]])">🗑️</button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+                    <td style="text-align: center;">
+                        <button class="btn-icon" title="Edit"
+                                th:onclick="openEditModal([[${u.id}]], [[${u.role}]], [[${u.status}]])">✏️</button>
+                        <button class="btn-icon" title="Delete" th:onclick="deleteUser([[${u.id}]])">🗑️</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
 
-        <div class="pagination-container" th:if="${users.totalElements > 0}">
-            <ul class="pagination">
-                <li th:classappend="${users.first} ? 'disabled'">
-                    <a th:href="@{/admin/user(page=0, lang=${lang}, keyword=${keyword}, role=${role}, status=${status})}">&laquo;&laquo;</a>
-                </li>
-                <li th:classappend="${users.first} ? 'disabled'">
-                    <a th:href="@{/admin/user(page=${users.number - 1}, lang=${lang}, keyword=${keyword}, role=${role}, status=${status})}">&lsaquo;</a>
-                </li>
-                <li th:each="pageNum : ${#numbers.sequence(startPage, endPage)}"
-                    th:classappend="${pageNum == users.number + 1} ? 'active'">
-                    <a th:href="@{/admin/user(page=${pageNum - 1}, lang=${lang}, keyword=${keyword}, role=${role}, status=${status})}"
-                       th:text="${pageNum}">1</a>
-                </li>
-                <li th:classappend="${users.last} ? 'disabled'">
-                    <a th:href="@{/admin/user(page=${users.number + 1}, lang=${lang}, keyword=${keyword}, role=${role}, status=${status})}">&rsaquo;</a>
-                </li>
-                <li th:classappend="${users.last} ? 'disabled'">
-                    <a th:href="@{/admin/user(page=${totalPages - 1}, lang=${lang}, keyword=${keyword}, role=${role}, status=${status})}">&raquo;&raquo;</a>
-                </li>
-            </ul>
+            <div class="pagination-container" th:if="${users.totalElements > 0}">
+                <ul class="pagination">
+                    <li th:classappend="${users.first} ? 'disabled'">
+                        <a th:href="@{/admin/user(page=0, lang=${lang}, keyword=${keyword}, role=${role}, status=${status}, tab='all')}">&laquo;&laquo;</a>
+                    </li>
+                    <li th:classappend="${users.first} ? 'disabled'">
+                        <a th:href="@{/admin/user(page=${users.number - 1}, lang=${lang}, keyword=${keyword}, role=${role}, status=${status}, tab='all')}">&lsaquo;</a>
+                    </li>
+                    <li th:each="pageNum : ${#numbers.sequence(startPage, endPage)}"
+                        th:classappend="${pageNum == users.number + 1} ? 'active'">
+                        <a th:href="@{/admin/user(page=${pageNum - 1}, lang=${lang}, keyword=${keyword}, role=${role}, status=${status}, tab='all')}"
+                           th:text="${pageNum}">1</a>
+                    </li>
+                    <li th:classappend="${users.last} ? 'disabled'">
+                        <a th:href="@{/admin/user(page=${users.number + 1}, lang=${lang}, keyword=${keyword}, role=${role}, status=${status}, tab='all')}">&rsaquo;</a>
+                    </li>
+                    <li th:classappend="${users.last} ? 'disabled'">
+                        <a th:href="@{/admin/user(page=${totalPages - 1}, lang=${lang}, keyword=${keyword}, role=${role}, status=${status}, tab='all')}">&raquo;&raquo;</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-content-approval" class="tab-content">
+        <div class="table-container">
+            <table class="custom-table">
+                <thead>
+                <tr>
+                    <th style="width: 40px; text-align: center;"><input type="checkbox" id="checkAllPending"></th>
+                    <th style="text-align: left;" th:text="${lang == 'ja' ? '求人者情報' : '구인자 정보'}">User Info</th>
+                    <th style="text-align: center;" th:text="${lang == 'ja' ? '加入日' : '가입일'}">Joined</th>
+                    <th style="text-align: center;" th:text="${lang == 'ja' ? '状態' : '상태'}">Status</th>
+                    <th style="text-align: center;" th:text="${lang == 'ja' ? '管理' : '승인 관리'}">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr th:if="${pendingRecruiters == null or pendingRecruiters.totalElements == 0}">
+                    <td colspan="5" style="text-align: center; padding: 50px; color: #999;">
+                        <span th:text="${lang == 'ja' ? '承認待ちの求人者がいません。' : '승인 대기 중인 구인자가 없습니다.'}">No Data</span>
+                    </td>
+                </tr>
+
+                <tr th:each="r : ${pendingRecruiters?.content}">
+                    <td style="text-align: center;"><input type="checkbox" name="pendingUserIds" th:value="${r.id}"></td>
+                    <td>
+                        <div class="user-profile">
+                            <div class="user-info">
+                                <span class="user-name" th:text="${r.name} + ' (' + ${r.nickname} + ')'">Name</span>
+                                <span class="user-email" th:text="${r.email}">Email</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="text-align: center;" th:text="${r.joinedAt}">Date</td>
+                    <td style="text-align: center;">
+                        <span class="badge badge-suspended" th:text="${lang == 'ja' ? '承認待ち' : '승인 대기'}">승인 대기</span>
+                    </td>
+                    <td style="text-align: center;">
+                        <button class="btn-dark" style="height: 32px; padding: 0 15px; font-size: 13px;"
+                                th:onclick="approveRecruiter([[${r.id}]])" th:text="${lang == 'ja' ? '承認' : '승인'}">승인</button>
+                        <button class="btn-outline" style="height: 32px; padding: 0 15px; font-size: 13px; margin-left: 5px;"
+                                th:onclick="deleteUser([[${r.id}]])" th:text="${lang == 'ja' ? '拒否' : '거절'}">거절</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="pagination-container" th:if="${pendingRecruiters != null and pendingRecruiters.totalElements > 0}">
+                <ul class="pagination">
+                    <li th:each="pageNum : ${#numbers.sequence(1, pendingRecruiters.totalPages)}"
+                        th:classappend="${pageNum == pendingRecruiters.number + 1} ? 'active'">
+                        <a th:href="@{/admin/user(pendingPage=${pageNum - 1}, lang=${lang}, tab='approval')}"
+                           th:text="${pageNum}">1</a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 
@@ -187,14 +254,71 @@
 <script th:inline="javascript">
     const currentLang = [[${lang}]] || 'ko';
 
-    // [추가] 사이드바 언어 변경 함수
+    // [추가] 탭 유지 및 전환 로직
+    document.addEventListener('DOMContentLoaded', () => {
+        const activeTab = [[${activeTab}]] || 'all'; // 백엔드에서 내려주는 탭 상태 (기본은 all)
+        switchTab(activeTab);
+
+        fetchUserStats();
+
+        const checkAll = document.getElementById('checkAll');
+        if(checkAll){
+            checkAll.addEventListener('change', function() {
+                document.querySelectorAll('input[name="userIds"]').forEach(cb => cb.checked = this.checked);
+            });
+        }
+    });
+
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.getElementById('tab-btn-' + tabName).classList.add('active');
+        document.getElementById('tab-content-' + tabName).classList.add('active');
+    }
+
+    // 언어 변경 시 탭 상태도 URL에 유지
     function changeLanguage(lang) {
         const url = new URL(window.location.href);
         url.searchParams.set('lang', lang);
-        // 검색 필터나 페이지네이션 파라미터를 유지한 채로 언어만 변경합니다.
+
+        // 현재 열려있는 탭 파악
+        const activeTabEl = document.querySelector('.tab-content.active');
+        if(activeTabEl) {
+            url.searchParams.set('tab', activeTabEl.id.replace('tab-content-', ''));
+        }
+
         window.location.href = url.toString();
     }
 
+    // [추가] 구인자 승인 로직 (기존 유저 정보 수정 API를 재활용하여 상태만 ACTIVE로 변경)
+    function approveRecruiter(userId) {
+        const msg = currentLang === 'ja' ? "この求人者を承認しますか？" : "이 구인자의 가입을 승인하시겠습니까?";
+        if(confirm(msg)) {
+            const payload = {
+                userId: userId,
+                role: "RECRUITER", // 권한 유지
+                status: "ACTIVE"   // 핵심: INACTIVE -> ACTIVE 로 변경
+            };
+
+            fetch('/admin/user/edit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(response => {
+                if(response.ok) {
+                    alert(currentLang === 'ja' ? "承認されました。" : "승인 완료되었습니다.");
+                    // 리로드 시 승인 탭 유지
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('tab', 'approval');
+                    window.location.href = url.toString();
+                } else {
+                    alert("Error");
+                }
+            });
+        }
+    }
+
+    // ... (이하 fetchUserStats, openEditModal, closeEditModal, submitEdit, deleteUser 함수들은 기존과 완벽히 동일하므로 그대로 유지) ...
     // 통계 호출 함수
     async function fetchUserStats() {
         try {
@@ -211,7 +335,6 @@
         }
     }
 
-    // [추가] 모달창 열기
     function openEditModal(id, currentRole, currentStatus) {
         document.getElementById('editUserId').value = id;
         document.getElementById('editRole').value = currentRole;
@@ -219,22 +342,9 @@
         document.getElementById('editModal').style.display = 'flex';
     }
 
-    // [추가] 모달창 닫기
     function closeEditModal() {
         document.getElementById('editModal').style.display = 'none';
     }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        fetchUserStats();
-
-        // 체크박스 이벤트
-        const checkAll = document.getElementById('checkAll');
-        if(checkAll){
-            checkAll.addEventListener('change', function() {
-                document.querySelectorAll('input[name="userIds"]').forEach(cb => cb.checked = this.checked);
-            });
-        }
-    });
 
     function submitEdit() {
         const userId = document.getElementById('editUserId').value;
@@ -243,63 +353,50 @@
 
         const msg = currentLang === 'ja' ? "修正しますか？" : "수정하시겠습니까?";
         if(confirm(msg)) {
-            // 1. 서버로 보낼 데이터 묶기
             const payload = {
                 userId: userId,
                 role: newRole,
                 status: newStatus
             };
 
-            // 2. Fetch API로 POST 요청 전송
             fetch('/admin/user/edit', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
-            })
-                .then(response => {
-                    if(response.ok) {
-                        alert(currentLang === 'ja' ? "修正が完了しました。" : "수정이 완료되었습니다.");
-                        closeEditModal();
-                        location.reload(); // 성공 시 페이지 새로고침하여 변경된 데이터 표시
-                    } else {
-                        alert(currentLang === 'ja' ? "修正に失敗しました。" : "수정에 실패했습니다.");
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert("Network Error");
-                });
+            }).then(response => {
+                if(response.ok) {
+                    alert(currentLang === 'ja' ? "修正が完了しました。" : "수정이 완료되었습니다.");
+                    closeEditModal();
+                    location.reload();
+                } else {
+                    alert(currentLang === 'ja' ? "修正に失敗しました。" : "수정에 실패했습니다.");
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+                alert("Network Error");
+            });
         }
     }
 
-    // [수정 완료] 회원 삭제 함수 (서버로 삭제 요청)
     function deleteUser(id) {
         if(confirm(currentLang === 'ja' ? "本当に削除しますか？" : "정말 삭제하시겠습니까?")) {
-
             fetch('/admin/user/delete', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId: id })
-            })
-                .then(response => {
-                    if(response.ok) {
-                        alert(currentLang === 'ja' ? "削除されました。" : "삭제되었습니다.");
-                        location.reload(); // 성공 시 새로고침
-                    } else {
-                        alert(currentLang === 'ja' ? "削除に失敗しました。" : "삭제에 실패했습니다. (관련 데이터가 존재할 수 있습니다.)");
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert("Network Error");
-                });
+            }).then(response => {
+                if(response.ok) {
+                    alert(currentLang === 'ja' ? "削除されました。" : "삭제되었습니다.");
+                    location.reload();
+                } else {
+                    alert(currentLang === 'ja' ? "削除に失敗しました。" : "삭제에 실패했습니다.");
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+                alert("Network Error");
+            });
         }
     }
 </script>
-
 </body>
 </html>
