@@ -114,7 +114,7 @@
     </div>
 </div>
 
-<div class="fixed-bottom-bar" th:unless="${isOwner}">
+<div class="fixed-bottom-bar" th:if="${isSeeker}">
     <div class="btn-group-seeker">
         <button class="btn-action btn-apply"
                 th:data-id="${job.id}"

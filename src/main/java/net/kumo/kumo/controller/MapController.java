@@ -6,6 +6,7 @@ import net.kumo.kumo.domain.dto.JobDetailDTO;
 import net.kumo.kumo.domain.dto.JobSummaryDTO;
 import net.kumo.kumo.domain.dto.ReportDTO;
 import net.kumo.kumo.domain.entity.UserEntity;
+import net.kumo.kumo.domain.entity.Enum;
 import net.kumo.kumo.repository.UserRepository;
 import net.kumo.kumo.service.MapService;
 import net.kumo.kumo.service.ScrapService;
@@ -69,12 +70,14 @@ public class MapController {
             @RequestParam Long id,
             @RequestParam String source,
             @RequestParam(defaultValue = "kr") String lang,
-            @RequestParam(defaultValue = "false") boolean isOwner,
             Principal principal, // ★ HttpSession session 대신 Spring Security의 Principal 사용
             Model model) {
 
         // 1. 서비스에서 상세 데이터 조회
         JobDetailDTO job = mapService.getJobDetail(id, source, lang);
+        boolean isOwner = false;
+        boolean isSeeker = false;
+        UserEntity user;
 
         // ==========================================
         // 🌟 [수정된 로직] Spring Security 기반 스크랩(찜하기) 여부 확인
@@ -85,10 +88,16 @@ public class MapController {
         if (principal != null) {
             // principal.getName()은 보통 유저의 로그인 ID(email)를 반환합니다.
             String loginEmail = principal.getName();
-            UserEntity user = userRepo.findByEmail(loginEmail).orElse(null);
+            user = userRepo.findByEmail(loginEmail).orElse(null);
 
             if (user != null) {
                 isScraped = scrapService.checkIsScraped(user.getUserId(), id);
+
+                // 공고 작성 id와 user의 id 를 비교하여 공고 작성자 동일 여부를 확인
+                // geocoded 테이블 수정 후 코드 사용
+                // isOwner = user.getUserId().equals(job.getUserId());
+
+                isSeeker = (user.getRole() == Enum.UserRole.SEEKER);
             }
         }
 
@@ -98,6 +107,7 @@ public class MapController {
         model.addAttribute("job", job);
         model.addAttribute("googleMapsKey", googleMapKey);
         model.addAttribute("isOwner", isOwner);
+        model.addAttribute("isSeeker", isSeeker);
         model.addAttribute("lang", lang);
 
         return "mapView/job_detail";
