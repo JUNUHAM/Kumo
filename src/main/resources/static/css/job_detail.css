@@ -1,413 +1,189 @@
+/* ============================================================
+   🎨 1. 테마 색상 팔레트 정의 (CSS 변수)
+   - 여기서 색상만 바꾸면 사이트 전체가 바뀝니다!
+============================================================ */
+:root {
+    /* 라이트 모드 기본 색상 */
+    --bg-main: #ffffff;
+    --bg-container: #ffffff;
+    --bg-sub: #f9f9f9;
+    --bg-map-none: #f0f0f0;
+
+    --text-main: #333333;
+    --text-sub: #555555;
+    --text-muted: #888888;
+
+    --border-light: #eeeeee;
+    --border-mid: #dddddd;
+    --border-dark: #333333;
+
+    --btn-apply: #8bbbe5;
+    --btn-apply-hover: #7aaad4;
+    --btn-icon-bg: transparent;
+    --btn-icon-border: transparent;
+
+    --shadow-color: rgba(0, 0, 0, 0.05);
+    --modal-overlay: rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode {
+    /* 다크 모드 덮어쓰기 색상 */
+    --bg-main: #121212;
+    --bg-container: #1e1e1e;
+    --bg-sub: #2a2a2a;
+    --bg-map-none: #1e1e1e;
+
+    --text-main: #ffffff;
+    --text-sub: #e0e0e0;
+    --text-muted: #999999;
+
+    --border-light: #333333;
+    --border-mid: #444444;
+    --border-dark: #555555;
+
+    --btn-apply: #4a90e2;
+    --btn-apply-hover: #357abd;
+    --btn-icon-bg: #2a2a2a;
+    --btn-icon-border: #444444;
+
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --modal-overlay: rgba(0, 0, 0, 0.7);
+}
+
+/* ============================================================
+   ☀️ 2. 공통 레이아웃 (변수 적용)
+============================================================ */
 body {
-    margin: 0;
-    padding: 0;
+    margin: 0; padding: 0;
     font-family: 'Noto Sans KR', sans-serif;
-    background-color: #fff;
-    color: #333;
-
-    /* 화면 내용이 짧아도 푸터를 바닥에 고정시키는 마법의 코드 */
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    display: flex; flex-direction: column; min-height: 100vh;
 }
 
-/* --- [핵심 2] 컨테이너 설정 --- */
 .container {
-    max-width: 800px;
-    margin: 0 auto;
-    /* 헤더 높이(70px) 고려 + 푸터와 간격 확보를 위해 bottom padding 제거 */
-    padding: 100px 20px 60px;
-    box-sizing: border-box;
-    width: 100%; /* 반응형 안전장치 */
-
-    /* 남은 공간을 컨테이너가 다 차지해서 푸터를 밀어냄 */
-    flex: 1;
+    max-width: 800px; margin: 0 auto;
+    padding: 100px 20px 60px; width: 100%; box-sizing: border-box; flex: 1;
+    background-color: var(--bg-container);
+    box-shadow: 0 4px 12px var(--shadow-color);
 }
+.container * { box-sizing: border-box; }
 
-/* 모든 요소에 box-sizing 적용하되, 헤더 내부에는 영향을 덜 주도록 범위 한정 */
-.container * {
-    box-sizing: border-box;
+/* 헤더 래퍼 */
+.map-header-wrapper {
+    width: 100%; position: sticky; top: 0; z-index: 1000;
+    background-color: var(--bg-container);
+    border-bottom: 1px solid var(--border-light);
 }
+.map-header-wrapper > div { max-width: 90%; margin: 0 auto; padding: 0 20px; }
 
-/* --- 1. 상단 타이틀 영역 --- */
+/* ============================================================
+   📝 3. 상세 페이지 요소 디자인
+============================================================ */
+/* 상단 타이틀 */
 .header-section { margin-bottom: 40px; }
-.job-title { font-size: 28px; font-weight: 700; margin-bottom: 10px; line-height: 1.4; }
-.job-meta { font-size: 13px; color: #888; display: flex; align-items: center; gap: 10px; }
+.job-title { font-size: 28px; font-weight: 700; margin-bottom: 10px; line-height: 1.4; color: var(--text-main); }
+.job-meta { font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 10px; }
 
-/* --- 2. 정보 그리드 (테이블 형태) --- */
+/* 정보 그리드 */
 .info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px 40px;
-    border-top: 2px solid #333;
-    border-bottom: 1px solid #ddd;
-    padding: 30px 0;
-    margin-bottom: 40px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px 40px;
+    border-top: 2px solid var(--border-dark);
+    border-bottom: 1px solid var(--border-mid);
+    padding: 30px 0; margin-bottom: 40px;
 }
-
 .info-item { display: flex; flex-direction: column; }
-.info-label { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 5px; }
-.info-value { font-size: 15px; color: #555; }
-
+.info-label { font-size: 14px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; }
+.info-value { font-size: 15px; color: var(--text-sub); }
 .text-right { text-align: right; }
 
-/* --- 3. 지도 영역 --- */
+/* 지도 & 상세설명 */
 .map-section {
-    width: 100%;
-    height: 300px;
-    background-color: #f0f0f0;
-    margin-bottom: 40px;
-    border-radius: 8px;
-    overflow: hidden;
-    position: relative; /* z-index 이슈 방지 */
-    z-index: 1; /* 헤더(1100)보다 낮게 설정 */
+    width: 100%; height: 300px; margin-bottom: 40px; border-radius: 8px;
+    overflow: hidden; position: relative; z-index: 1;
+    background-color: var(--bg-map-none); border: 1px solid var(--border-light);
 }
-
-/* --- 4. 상세 설명 텍스트 --- */
 .description-section { margin-bottom: 40px; }
-.section-title { font-size: 18px; font-weight: 700; margin-bottom: 15px; color: #333; }
-.description-text {
-    font-size: 15px;
-    line-height: 1.8;
-    color: #444;
-    white-space: pre-line;
+.section-title { font-size: 18px; font-weight: 700; margin-bottom: 15px; color: var(--text-main); }
+.description-text { font-size: 15px; line-height: 1.8; color: var(--text-sub); white-space: pre-line; }
+
+/* 갤러리 */
+.image-gallery { margin-top: 30px; }
+.gallery-img { width: 100%; max-height: 500px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
+
+/* ============================================================
+   📌 4. 하단 고정 바 & 푸터
+============================================================ */
+.dashboard-footer {
+    width: 100%; margin-top: auto; padding: 20px 0;
+    background-color: var(--bg-sub); border-top: 1px solid var(--border-light);
+}
+.dashboard-footer .footer-container { max-width: 800px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
+
+.fixed-bottom-bar {
+    position: fixed; bottom: 0; left: 0; width: 100%; height: 80px;
+    display: flex; align-items: center; justify-content: center; z-index: 1000;
+    background-color: var(--bg-container);
+    border-top: 1px solid var(--border-light);
+    box-shadow: 0 -4px 15px var(--shadow-color);
 }
 
-/* --- 5. 이미지 갤러리 --- */
-.image-gallery { margin-top: 30px; }
-.gallery-img {
-    width: 100%;
-    max-height: 500px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 10px;
+.btn-group-owner, .btn-group-seeker { width: 100%; max-width: 800px; display: flex; gap: 15px; }
+.btn-action { height: 50px; border: none; border-radius: 6px; font-size: 16px; font-weight: 700; color: white; cursor: pointer; transition: 0.2s; }
+.btn-action:hover { opacity: 0.9; }
+
+.btn-group-owner .btn-edit { flex: 2; background-color: var(--btn-apply); }
+.btn-group-owner .btn-delete { flex: 1; background-color: #ff9e9e; }
+
+.btn-group-seeker { justify-content: space-between; align-items: center; }
+.btn-apply { flex-grow: 1; margin-right: 20px; background-color: var(--btn-apply); }
+.btn-apply:hover { background-color: var(--btn-apply-hover); }
+
+.icon-actions { display: flex; gap: 20px; align-items: center; }
+.btn-icon {
+    display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0;
+    background-color: var(--btn-icon-bg); border: 1px solid var(--btn-icon-border); border-radius: 50%; width: 40px; height: 40px;
 }
+.btn-icon:hover svg { stroke: var(--text-main); }
+
+/* ============================================================
+   🚨 5. 모달창
+============================================================ */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 2000;
+    background-color: var(--modal-overlay);
+}
+.modal-window {
+    width: 400px; max-width: 90%; padding: 30px; border-radius: 16px; position: relative; animation: fadeIn 0.2s ease-out;
+    background-color: var(--bg-container);
+    box-shadow: 0 4px 20px var(--shadow-color);
+    border: 1px solid var(--border-mid);
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-light); padding-bottom: 10px; }
+.modal-header h3 { margin: 0; font-size: 18px; font-weight: 700; color: var(--text-main); }
+.btn-close-modal { background: none; border: none; font-size: 24px; color: var(--text-muted); cursor: pointer; }
+
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 8px; color: var(--text-main); }
+
+.modal-input, .modal-select, .modal-textarea {
+    width: 100%; padding: 10px 12px; border-radius: 8px; font-size: 14px; outline: none; box-sizing: border-box;
+    background-color: var(--bg-sub);
+    color: var(--text-main);
+    border: 1px solid var(--border-mid);
+}
+.modal-input:focus, .modal-select:focus, .modal-textarea:focus { border-color: var(--btn-apply); }
+.modal-textarea { height: 100px; resize: none; }
+
+.modal-footer { margin-top: 10px; text-align: center; border-top: 1px solid var(--border-light); padding-top: 20px; }
+.btn-submit-report {
+    width: 100%; background-color: #ff9e9e; color: white; border: none; padding: 12px; border-radius: 25px; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s;
+}
+.btn-submit-report:hover { background-color: #ff8585; }
 
 @media (max-width: 600px) {
     .info-grid { grid-template-columns: 1fr; gap: 20px; }
     .job-title { font-size: 24px; }
-}
-
-/* 1. 푸터 배경은 꽉 차게 */
-.dashboard-footer {
-    width: 100%;
-    background-color: #f9f9f9; /* 배경색을 살짝 넣어 구분감 주기 */
-    border-top: 1px solid #eee;
-    padding: 20px 0; /* 상하 패딩만 줌 */
-    margin-top: auto; /* body flex 설정과 합쳐져서 바닥에 붙음 */
-}
-
-/* 2. 푸터 '내용'은 본문처럼 가운데 800px로 모으기 */
-.dashboard-footer .footer-container {
-    max-width: 800px; /* 본문 너비와 동일하게 */
-    margin: 0 auto;   /* 가운데 정렬 */
-    padding: 0 20px;  /* 모바일 여백 */
-
-    /* 기존 스타일 유지하면서 정렬만 수정 */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-/* --- 하단 고정 바 공통 스타일 --- */
-.fixed-bottom-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 80px; /* 바 높이 고정 */
-    background-color: #fff;
-    border-top: 1px solid #eee;
-    padding: 0 20px; /* 좌우 패딩 */
-    display: flex;
-    align-items: center; /* 세로 중앙 정렬 */
-    justify-content: center;
-    z-index: 1000;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
-}
-
-/* 내부 컨텐츠 너비 제한 (본문과 동일하게 800px) */
-.btn-group-owner, .btn-group-seeker {
-    width: 100%;
-    max-width: 800px;
-    display: flex;
-    gap: 15px;
-}
-
-/* --- 공통 버튼 스타일 --- */
-.btn-action {
-    height: 50px;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    font-weight: 700;
-    color: white;
-    cursor: pointer;
-    transition: opacity 0.2s;
-}
-.btn-action:hover { opacity: 0.9; }
-
-/* --- CASE 1: 주인용 (수정/삭제) --- */
-.btn-group-owner .btn-edit {
-    flex: 2; /* 수정 버튼이 더 넓게 (비율 조절 가능) */
-    background-color: #8bbbe5; /* 시안의 하늘색 */
-}
-.btn-group-owner .btn-delete {
-    flex: 1; /* 삭제 버튼은 조금 좁게 */
-    background-color: #ff9e9e; /* 시안의 분홍색 */
-}
-
-/* --- CASE 2: 방문자용 (신청/아이콘) --- */
-.btn-group-seeker {
-    justify-content: space-between;
-    align-items: center;
-}
-
-/* 구인 신청 버튼 (왼쪽, 길게) */
-.btn-group-seeker .btn-apply {
-    flex-grow: 1; /* 남은 공간 다 차지 */
-    background-color: #8bbbe5; /* 시안의 하늘색 */
-    margin-right: 20px; /* 아이콘들과 간격 */
-}
-
-/* 아이콘 영역 (오른쪽) */
-.icon-actions {
-    display: flex;
-    gap: 20px; /* 아이콘 사이 간격 */
-    align-items: center;
-}
-
-.btn-icon {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* 아이콘 호버 시 진하게 */
-.btn-icon:hover svg {
-    stroke: #555;
-}
-
-/* --- 신고 모달 스타일 --- */
-
-/* 1. 배경 (어둡게 처리) */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.4); /* 반투명 검정 */
-    display: flex; /* 중앙 정렬용 */
-    justify-content: center;
-    align-items: center;
-    z-index: 2000; /* 하단바보다 위에 뜨게 */
-}
-
-/* 2. 모달창 본체 */
-.modal-window {
-    background: white;
-    width: 400px;
-    max-width: 90%;
-    padding: 30px;
-    border-radius: 16px; /* 둥근 모서리 */
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-    position: relative;
-    animation: fadeIn 0.2s ease-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* 3. 내부 요소 디자인 */
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.modal-header h3 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 700;
-    color: #333;
-}
-
-.btn-close-modal {
-    background: none;
-    border: none;
-    font-size: 24px;
-    color: #999;
-    cursor: pointer;
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    display: block;
-    font-size: 12px;
-    font-weight: 700;
-    margin-bottom: 8px;
-    color: #333;
-}
-
-/* 입력창 스타일 */
-.modal-input, .modal-select, .modal-textarea {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ddd; /* 연한 테두리 */
-    border-radius: 8px;
-    font-size: 14px;
-    background-color: #f9f9f9; /* 아주 연한 회색 배경 */
-    outline: none;
-    box-sizing: border-box; /* 패딩 포함 크기 계산 */
-}
-
-.modal-textarea {
-    height: 100px;
-    resize: none;
-}
-
-/* 4. 신고 버튼 (분홍색) */
-.modal-footer {
-    margin-top: 10px;
-    text-align: center;
-}
-
-.btn-submit-report {
-    width: 100%;
-    background-color: #ff9e9e; /* 이미지의 살구/분홍색 */
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 25px; /* 캡슐 모양 */
-    font-weight: 700;
-    font-size: 15px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.btn-submit-report:hover {
-    background-color: #ff8585;
-}
-
-/* ========================================= */
-/* 상세 페이지 전용 헤더 스타일 */
-/* ========================================= */
-.map-header-wrapper {
-    width: 100%;
-    background-color: #ffffff; /* 하얀색 배경 */
-    border-bottom: 1px solid #eaeaeb; /* 아래쪽 연한 회색 구분선 */
-    position: sticky; /* 스크롤 내릴 때 상단에 고정하고 싶다면 추가 */
-    top: 0;
-    z-index: 1000;
-}
-
-/* 헤더 내용물이 화면 양끝으로 너무 찢어지지 않게 본문 너비와 맞춰주기 */
-.map-header-wrapper > div {
-    max-width: 90%; /* 프로젝트의 container 너비와 동일하게 맞추세요 */
-    margin: 0 auto;    /* 가운데 정렬 */
-    padding: 0 20px;   /* 좌우 여백 */
-}
-
-/* ============================================================
-   🌙 [다크모드 UI 스타일 - 공고 상세 페이지]
-   body에 'dark-mode' 클래스가 있을 때 하위 요소들의 색상을 덮어씁니다.
-============================================================ */
-
-/* 1. 전체 배경 및 기본 텍스트 */
-body.dark-mode {
-    background-color: #121212;
-    color: #e0e0e0;
-}
-
-/* 2. 헤더 구분선 (하얗게 남는 부분 덮어쓰기) */
-body.dark-mode .detail-header-wrapper,
-body.dark-mode .map-header-wrapper {
-    background-color: #1e1e1e !important;
-    border-bottom: 1px solid #333;
-}
-
-/* 3. 본문 텍스트 영역 */
-body.dark-mode .job-title { color: #ffffff; }
-body.dark-mode .job-meta { color: #aaaaaa; }
-
-/* 4. 정보 그리드 (테이블 느낌의 라벨/값) */
-body.dark-mode .info-label { color: #999999; }
-body.dark-mode .info-value { color: #e0e0e0; }
-
-/* 기존 선 색상이 어떻게 되어있는지에 따라 border 색상 변경 (job_detail.css 기본 디자인 기준) */
-body.dark-mode .info-grid { border-top-color: #444; border-bottom-color: #333; }
-body.dark-mode .info-item { border-bottom-color: #333; }
-
-/* 5. 상세 정보 섹션 */
-body.dark-mode .section-title { color: #ffffff; border-bottom-color: #333; }
-body.dark-mode .description-text { color: #cccccc; }
-
-/* 지도 정보가 없을 때 안내 텍스트 박스 */
-body.dark-mode .map-section {
-    color: #888888 !important;
-    background-color: #1e1e1e;
-    border: 1px solid #333;
-}
-
-/* 6. 하단 고정 바 (Bottom Bar) */
-body.dark-mode .fixed-bottom-bar {
-    background-color: #1e1e1e;
-    border-top: 1px solid #333;
-    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.5); /* 그림자 진하게 */
-}
-
-/* 구인 신청 버튼 (Primary Button) */
-body.dark-mode .btn-apply {
-    background-color: #4a90e2; /* 다크모드에 어울리는 딥블루 */
-    color: #ffffff;
-}
-body.dark-mode .btn-apply:hover { background-color: #357abd; }
-
-/* 찜하기, 신고, 뒤로가기 아이콘 버튼 */
-body.dark-mode .btn-icon {
-    background-color: #2a2a2a;
-    border: 1px solid #444;
-}
-body.dark-mode .btn-icon:hover { background-color: #333333; }
-
-/* 7. 신고하기 모달 (Modal) */
-body.dark-mode .modal-window {
-    background-color: #1e1e1e;
-    color: #e0e0e0;
-    border: 1px solid #444;
-}
-body.dark-mode .modal-header { border-bottom: 1px solid #333; }
-body.dark-mode .modal-header h3 { color: #ffffff; }
-body.dark-mode .modal-footer { border-top: 1px solid #333; }
-
-/* 모달 내부 입력창 (Input, Select, Textarea) */
-body.dark-mode .modal-input,
-body.dark-mode .modal-select,
-body.dark-mode .modal-textarea {
-    background-color: #2a2a2a;
-    color: #e0e0e0;
-    border: 1px solid #555;
-}
-body.dark-mode .modal-input:focus,
-body.dark-mode .modal-select:focus,
-body.dark-mode .modal-textarea:focus {
-    border-color: #4a90e2; /* 포커스 시 파란색 테두리 */
-    outline: none;
-}
-
-/* 🌟 상세 페이지 중앙 하얀색 메인 박스를 다크모드로 변경 */
-body.dark-mode .container {
-    background-color: #1e1e1e; /* 어두운 회색 */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); /* 그림자도 자연스럽게 */
 }
