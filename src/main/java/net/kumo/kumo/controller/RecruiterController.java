@@ -6,7 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,11 +22,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.kumo.kumo.domain.dto.JobPostFormDTO;
+import net.kumo.kumo.domain.dto.JobPostingRequestDTO;
 import net.kumo.kumo.domain.dto.JoinRecruiterDTO;
 import net.kumo.kumo.domain.entity.CompanyEntity;
 import net.kumo.kumo.domain.entity.UserEntity;
 import net.kumo.kumo.repository.UserRepository;
+import net.kumo.kumo.service.CompanyService;
 import net.kumo.kumo.service.JobPostingService;
 import net.kumo.kumo.service.RecruiterService;
 
@@ -36,6 +40,8 @@ public class RecruiterController {
 
     private final UserRepository ur;
     private final RecruiterService rs;
+
+    private final CompanyService cs;
     private final JobPostingService js;
 
     /**
@@ -143,29 +149,6 @@ public class RecruiterController {
     }
 
     /**
-     * 공고 등록 컨트롤러!
-     * 
-     * @param model
-     * @return
-     */
-    // 예시: RecruiterController.java 내부
-    @GetMapping("/JobPosting")
-    public String showJobPostForm(Model model, Principal principal) {
-        // 1. 로그인한 사장님의 이메일(또는 ID)로 유저 정보를 찾습니다.
-        String userEmail = principal.getName();
-        UserEntity user = ur.findByEmail(userEmail).orElseThrow();
-
-        // 2. 사장님이 등록해둔 회사 목록을 가져옵니다.
-        // (UserEntity 안에 List<CompanyEntity> companies 가 있다고 가정)
-        List<CompanyEntity> myCompanies = user.getCompanies();
-
-        // 3. 화면(HTML)으로 회사 목록을 넘겨줍니다! 이름은 "companies"로 합니다.
-        model.addAttribute("companies", myCompanies);
-
-        return "recruiterView/jobPosting"; // HTML 파일명
-    }
-
-    /**
      * 지원자 상세보기 컨트롤러
      * 
      * @param model
@@ -205,17 +188,46 @@ public class RecruiterController {
         return "redirect:/Recruiter/Settings";
     }
 
-    // 🌟 [추가] 폼에서 날아온 데이터를 DB에 저장하는 POST 요청
+    /**
+     * 1. 필드에 JobPostingService 주입 추가
+     */
+    @Autowired // 또는 생성자 주입 방식으로
+    private JobPostingService jobPostingService;
+
+    /**
+     * GET - 공고 등록 페이지
+     */
+    @GetMapping("/JobPosting")
+    public String jobPostingPage(Model model,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        // 1. UserDetails에서 이메일(username)을 추출해 실제 DB의 UserEntity를 가져옵니다.
+        UserEntity user = ur.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("사용자 정보를 찾을 수 없습니다."));
+
+        // 2. 사장님이 등록한 회사 리스트 조회
+        List<CompanyEntity> companies = cs.getCompanyList(user);
+
+        model.addAttribute("companies", companies);
+        return "recruiterView/jobPosting";
+    }
+
+    /**
+     * POST - 공고 등록 처리
+     */
     @PostMapping("/JobPosting")
-    public String registerJobPost(@ModelAttribute JobPostFormDTO formDTO, Principal principal) {
+    public String submitJobPosting(
+            @ModelAttribute JobPostingRequestDTO dto,
+            @RequestParam(value = "images", required = false) List<MultipartFile> images,
+            @AuthenticationPrincipal UserDetails userDetails) { // 🌟 누가 등록하는지 확인
 
-        // 1. 현재 로그인한 사장님 이메일(ID) 가져오기
-        String userEmail = principal.getName();
+        // 1. 현재 로그인한 사용자의 엔티티를 가져옵니다.
+        UserEntity user = ur.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("사용자 정보를 찾을 수 없습니다."));
 
-        // 2. 서비스로 데이터 넘겨서 DB에 저장하기
-        js.saveJobPost(formDTO, userEmail);
+        // 2. 서비스에 'user' 객체까지 전달합니다.
+        js.saveJobPosting(dto, images, user);
 
-        // 3. 저장이 끝나면 어디로 갈지? (예: 공고 목록 페이지나 메인으로 이동)
         return "redirect:/Recruiter/Main";
     }
 }

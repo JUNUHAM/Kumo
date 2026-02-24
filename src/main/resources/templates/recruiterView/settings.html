@@ -34,6 +34,38 @@
     <header
       th:replace="~{recruiterView/fragments/recruiterHeader :: headerFragment}"
     ></header>
+    <!-- 프로필 업로드 모달 -->
+    <div id="profileModal" class="profile-modal-overlay">
+      <div class="profile-modal-window">
+    
+        <div class="profile-modal-header">
+          <h3 th:text="#{modal.title}">프로필 사진 업로드</h3>
+          <span class="close-btn">&times;</span>
+        </div>
+    
+        <div class="profile-modal-body">
+          <div class="preview-wrapper">
+            <img th:src="${user.profileImage ?: '/images/common/default_profile.png'}" id="profilePreview" alt="Profile">
+          </div>
+    
+          <p class="guide-text" th:text="#{modal.guide}">JPG, PNG, GIF 파일만 업로드 가능합니다.</p>
+    
+          <div class="file-selection-area">
+            <input type="file" id="fileInput" accept="image/*" style="display:none;">
+            <label for="fileInput" class="custom-file-btn" id="uploadBtn">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span th:text="#{modal.file.select}">사진 선택</span>
+            </label>
+            <p id="fileName" class="file-name" th:text="#{modal.file.none}">선택된 파일 없음</p>
+          </div>
+        </div>
+    
+        <div class="profile-modal-footer">
+          <button class="btn-cancel" id="cancelProfileBtn" th:text="#{btn.cancel}">취소</button>
+          <button class="btn-save" id="saveProfileBtn" th:text="#{btn.save}">저장하기</button>
+        </div>
+      </div>
+    </div>
 
     <div class="dashboard-wrapper">
       <div
@@ -49,13 +81,17 @@
         
             <div class="profile-section">
               <div class="profile-photo-area">
-                <div class="img-wrapper" id="profileContainer">
-                  <img th:src="${user.profileImage ?: '/images/common/default_profile.png'}" id="profilePreview" alt="Profile"
-                    class="profile-img-lg">
+              
+                <div class="img-wrapper">
+                  <img th:src="${user.profileImage ?: '/images/common/default_profile.png'}" class="profile-img-lg">
                 </div>
-                <input type="file" id="profileInput" accept="image/*" style="display: none;" />
-                <button type="button" class="btn-upload-photo" id="uploadBtn" th:text="#{set.btn.upload}">프로필 사진 업로드</button>
+              
+                <button type="button" class="btn-upload-photo" id="openProfileModalBtn">
+                  프로필 사진 업로드
+                </button>
+              
               </div>
+
         
               <div class="info-list">
                 <div class="info-row">
@@ -87,7 +123,7 @@
                 </div>
         
                 <div class="info-row align-items-center">
-                  <span class="label">LINE 연동</span>
+                  <span class="label" th:text="#{label.line}">LINE 연동></span>
                   <label class="switch">
                     <input type="checkbox" class="sns-toggle" th:checked="${user.socialProvider == 'LINE'}">
                     <span class="slider round"></span>
@@ -95,7 +131,7 @@
                 </div>
                 
                 <div class="info-row align-items-center">
-                  <span class="label">Google 연동</span>
+                  <span class="label" th:text="#{label.google}">Google 연동</span>
                   <label class="switch">
                     <input type="checkbox" class="sns-toggle" th:checked="${user.socialProvider == 'GOOGLE'}">
                     <span class="slider round"></span>
@@ -114,64 +150,145 @@
     </div>
 
     <script>
-            document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('DOMContentLoaded', function () {
+
+          /* =========================
+             프로필 업로드 기능
+          ========================= */
+
           const uploadBtn = document.getElementById('uploadBtn');
-          const profileInput = document.getElementById('profileInput');
+          const profileInput = document.getElementById('fileInput');
           const profilePreview = document.getElementById('profilePreview');
+          const fileNameSpan = document.getElementById('fileName');
+          const saveBtn = document.getElementById('saveProfileBtn');
 
-          // 1. 버튼 클릭 시 숨겨진 input 클릭
-          uploadBtn.onclick = () => profileInput.click();
+          let selectedFile = null;
 
-          // 2. 파일이 선택되면 서버로 즉시 전송
-          profileInput.onchange = function() {
+          if (profileInput) {
+            profileInput.onchange = function () {
+
               const file = profileInput.files[0];
               if (!file) return;
 
+              selectedFile = file;
+
+              fileNameSpan.innerText = file.name;
+
+              const reader = new FileReader();
+              reader.onload = function (e) {
+                profilePreview.src = e.target.result;
+              };
+              reader.readAsDataURL(file);
+            };
+          }
+
+          if (saveBtn) {
+            saveBtn.onclick = function () {
+
+              if (!selectedFile) {
+                Swal.fire({
+                  icon: 'warning',
+                  title: '사진을 선택해주세요.'
+                });
+                return;
+              }
+
               const formData = new FormData();
-              formData.append("profileImage", file);
+              formData.append("profileImage", selectedFile);
 
               fetch("/Recruiter/UploadProfile", {
-                  method: "POST",
-                  body: formData
-                  // Spring Security를 쓰고 계시다면 CSRF 토큰을 헤더에 넣어야 할 수도 있습니다.
+                method: "POST",
+                body: formData
               })
-              .then(response => response.json())
-              .then(data => {
-                  if (data.success) {
-                      // 성공 시 이미지 즉시 교체
-                      location.reload(); // 가장 확실한 방법
-                  } else {
-                      alert("업로드 실패: " + data.message);
-                  }
-              })
-              .catch(error => console.error("Error:", error));
-          };
-      });
+                .then(res => res.json())
+                .then(data => {
 
-      document.addEventListener('DOMContentLoaded', function () {
+                  if (data.success) {
+                    Swal.fire({
+                      icon: 'success',
+                      title: '프로필 사진이 업로드 되었습니다.'
+                    }).then(() => location.reload());
+                  } else {
+                    Swal.fire({
+                      icon: 'error',
+                      title: '업로드 실패',
+                      text: data.message
+                    });
+                  }
+
+                })
+                .catch(() => {
+                  Swal.fire({
+                    icon: 'error',
+                    title: '서버 오류'
+                  });
+                });
+            };
+          }
+
+
+          /* =========================
+             SNS 토글
+          ========================= */
+
           const snsToggles = document.querySelectorAll('.sns-toggle');
 
           snsToggles.forEach(toggle => {
-            toggle.addEventListener('click', function (e) {
-              // 1. 체크박스 상태 변경 방지 (서버 연동 전까지 고정)
+            toggle.onclick = function (e) {
+
               e.preventDefault();
 
-              // 2. 다크모드 여부 확인 (사장님 dark-theme.css 대응)
               const isDark = document.documentElement.classList.contains('dark-mode');
 
-              // 3. Seeker 감성의 SweetAlert2 띄우기
               Swal.fire({
                 title: 'Service Notice',
-                text: '아직 서비스 준비 중입니다.', // th:text="#{msg.not.service}" 대신 직접 입력 가능
+                text: '아직 서비스 준비 중입니다.',
                 icon: 'info',
-                confirmButtonText: '확인',
                 confirmButtonColor: '#7abaff',
                 background: isDark ? '#2b2b2b' : '#fff',
                 color: isDark ? '#fff' : '#333'
               });
-            });
+            };
           });
+
+
+          /* =========================
+             모달 열기 / 닫기 (여기로 이동)
+          ========================= */
+          const modal = document.getElementById("profileModal");
+          const openBtn = document.getElementById("openProfileModalBtn");
+
+          // 🌟 [핵심] 부드럽게 닫기 함수
+          function closeModal() {
+            modal.classList.add('closing'); // 닫기 애니메이션 시작
+
+            // 애니메이션 시간(0.25초)이 지난 후 실제로 숨김 처리
+            setTimeout(() => {
+              modal.style.display = "none";
+              modal.classList.remove('closing'); // 다음번을 위해 클래스 제거
+            }, 250);
+          }
+
+          // 🌟 모든 닫기 버튼에 함수 연결
+          if (openBtn) {
+            openBtn.onclick = () => {
+              modal.style.display = "flex";
+            };
+          }
+
+          // X 버튼, 취소 버튼, 바깥 클릭 모두 closeModal() 호출
+          const closeBtn = document.querySelector(".close-btn");
+          const cancelBtn = document.getElementById("cancelProfileBtn");
+
+          if (closeBtn) closeBtn.onclick = closeModal;
+          if (cancelBtn) cancelBtn.onclick = closeModal;
+
+          window.onclick = (e) => {
+            if (e.target === modal) closeModal();
+          };
+
         });
+
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>

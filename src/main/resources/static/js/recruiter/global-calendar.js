@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
         
         if (dot) {
           const color =
-            info.event.backgroundColor || info.event.color || "#7abaff";
+            info.event.backgroundColor || info.event.color || "#ff6b6b";
           dot.style.setProperty("background-color", color, "important");
           dot.style.setProperty("border-color", color, "important");
           dot.style.setProperty("width", "6px", "important");
