@@ -253,62 +253,63 @@ const MapManager = {
 
 
     // 🌟 [NEW] 마커들이 모두 보이게 지도 카메라 자동 조절
-    fitBoundsToData: function(jobs) {
-        if (!jobs || jobs.length === 0 || !AppState.map) return;
-
-        // 1. 카메라가 비출 '영역(경계)' 객체 생성
-        const bounds = new google.maps.LatLngBounds();
-        let hasValidCoords = false;
-
-        // 2. 공고들의 좌표를 하나씩 영역에 추가 (영역이 점점 넓어짐)
-        jobs.forEach(job => {
-            if (job.lat && job.lng) {
-                bounds.extend(new google.maps.LatLng(job.lat, job.lng));
-                hasValidCoords = true;
-            }
-        });
-
-        // 3. 유효한 좌표가 있다면 지도를 해당 영역에 맞춤
-        if (hasValidCoords) {
-            AppState.ignoreIdle = true;
-
-            AppState.map.fitBounds(bounds);
-
-            // 2. 지도 이동이 완전히 끝났을 때(idle) 실행
-            google.maps.event.addListenerOnce(AppState.map, "idle", function() {
-                AppState.map.setZoom(20); // 최대 줌 레벨을 20로 제한
-
-                // 🌟 중요: 줌 조절까지 완전히 끝난 후에야 스위치를 끄고, 현재 영역을 저장함
-                // setTimeout을 아주 짧게 줘서 마지막 줌 조절 idle 이벤트까지 무시하도록 안전장치
-                setTimeout(() => {
-                    AppState.lastBounds = AppState.map.getBounds();
-                    AppState.ignoreIdle = false; // 이제부터 다시 자동 갱신
-
-                    // ========================================================
-                    // 🌟 [NEW] 사용자 편의성 극대화 (UX 업데이트)
-                    // ========================================================
-
-                    // 1) 배열의 첫 번째(가장 최근) 공고 카드를 자동으로 띄워줍니다.
-                    if (jobs[0]) {
-                        UIManager.openJobCard(jobs[0]);
-                    }
-
-                    // 2) 화면에 있는 마커들을 위아래로 통통 튀게 만듭니다. (BOUNCE)
-                    AppState.jobMarkers.forEach(marker => {
-                        // 구글 맵 기본 제공 애니메이션 적용
-                        marker.setAnimation(google.maps.Animation.BOUNCE);
-
-                        // 💡 UX 꿀팁: 계속 통통 튀면 눈이 피로할 수 있으니,
-                        // 2.5초(2500ms) 뒤에 알아서 멈추도록 센스를 발휘합니다.
-                        setTimeout(() => {
-                            marker.setAnimation(null);
-                        }, 2500);
-                    });
-
-                }, 100);
-            });
-        }
-    },
+    // fitBoundsToData: function(jobs) {
+    //     if (!jobs || jobs.length === 0 || !AppState.map) return;
+    //
+    //     // 1. 카메라가 비출 '영역(경계)' 객체 생성
+    //     const bounds = new google.maps.LatLngBounds();
+    //     let hasValidCoords = false;
+    //
+    //     // 2. 공고들의 좌표를 하나씩 영역에 추가 (영역이 점점 넓어짐)
+    //     jobs.forEach(job => {
+    //         if (job.lat && job.lng) {
+    //             bounds.extend(new google.maps.LatLng(job.lat, job.lng));
+    //             hasValidCoords = true;
+    //         }
+    //     });
+    //
+    //     // 3. 유효한 좌표가 있다면 지도를 해당 영역에 맞춤
+    //     if (hasValidCoords) {
+    //         AppState.ignoreIdle = true;
+    //
+    //         AppState.map.fitBounds(bounds);
+    //
+    //         // 2. 지도 이동이 완전히 끝났을 때(idle) 실행
+    //         google.maps.event.addListenerOnce(AppState.map, "idle", function() {
+    //             AppState.map.setZoom(20); // 최대 줌 레벨을 20로 제한
+    //
+    //             // 🌟 중요: 줌 조절까지 완전히 끝난 후에야 스위치를 끄고, 현재 영역을 저장함
+    //             // setTimeout을 아주 짧게 줘서 마지막 줌 조절 idle 이벤트까지 무시하도록 안전장치
+    //             setTimeout(() => {
+    //                 AppState.lastBounds = AppState.map.getBounds();
+    //                 AppState.ignoreIdle = false; // 이제부터 다시 자동 갱신
+    //
+    //                 // ========================================================
+    //                 // 🌟 [NEW] 사용자 편의성 극대화 (UX 업데이트)
+    //                 // ========================================================
+    //
+    //                 // 🌟 [핵심 변경] autoOpenCard가 true일 때만 첫 번째 카드를 자동으로 엽니다.
+    //                 // 최근 본 공고 리스트(바텀 시트)를 볼 때는 카드가 열리지 않아 깔끔합니다.
+    //                 if (autoOpenCard && jobs[0]) {
+    //                     UIManager.openJobCard(jobs[0]);
+    //                 }
+    //
+    //                 // 2) 화면에 있는 마커들을 위아래로 통통 튀게 만듭니다. (BOUNCE)
+    //                 AppState.jobMarkers.forEach(marker => {
+    //                     // 구글 맵 기본 제공 애니메이션 적용
+    //                     marker.setAnimation(google.maps.Animation.BOUNCE);
+    //
+    //                     // 💡 UX 꿀팁: 계속 통통 튀면 눈이 피로할 수 있으니,
+    //                     // 2.5초(2500ms) 뒤에 알아서 멈추도록 센스를 발휘합니다.
+    //                     setTimeout(() => {
+    //                         marker.setAnimation(null);
+    //                     }, 2500);
+    //                 });
+    //
+    //             }, 100);
+    //         });
+    //     }
+    // },
 
     // 🌟 [NEW] 지역 변경 함수
     changeRegion: function(regionCode) {
@@ -343,6 +344,40 @@ const MapManager = {
             JobService.loadJobs(bounds);
 
         }, 800); // 0.8초 후 (지도가 부드럽게 날아가는 시간 대기)
+    },
+
+    // 🌟 [NEW] 시트에서 리스트 클릭 시 해당 위치로 지도 슉~ 이동하기
+    moveToJobLocation: function(lat, lng) {
+        if (!AppState.map || !lat || !lng) return;
+
+        // 1. 지도가 휙 이동하는 동안 새 데이터 불러오기(idle) 방지 스위치 ON!
+        AppState.ignoreIdle = true;
+
+        // 2. 해당 위치로 부드럽게 카메라 이동 및 줌인
+        const targetPos = { lat: parseFloat(lat), lng: parseFloat(lng) };
+        AppState.map.panTo(targetPos);
+        AppState.map.setZoom(18); // 상세히 볼 수 있게 줌 레벨 조정
+
+        // 3. 이동이 완전히 끝났을 때의 처리
+        google.maps.event.addListenerOnce(AppState.map, "idle", function() {
+            setTimeout(() => {
+                // 현재 이동한 위치를 '마지막 위치'로 강제 저장해둬서
+                // 스위치를 끈 직후에 데이터 갱신이 또 일어나는 것을 완벽 차단!
+                AppState.lastBounds = AppState.map.getBounds();
+                AppState.ignoreIdle = false; // 스위치 OFF (이제 다시 손으로 움직이면 갱신됨)
+
+                // (보너스) 이동한 곳의 마커를 찾아서 통통 튀게(Bounce) 만들어주기!
+                const targetMarker = AppState.jobMarkers.find(
+                    m => m.getPosition().lat().toFixed(4) === targetPos.lat.toFixed(4) &&
+                        m.getPosition().lng().toFixed(4) === targetPos.lng.toFixed(4)
+                );
+
+                if (targetMarker) {
+                    targetMarker.setAnimation(google.maps.Animation.BOUNCE);
+                    setTimeout(() => targetMarker.setAnimation(null), 2500); // 2.5초 뒤 멈춤
+                }
+            }, 100);
+        });
     },
 };
 
@@ -425,7 +460,7 @@ const JobService = {
                 MarkerManager.renderMarkers(data);
 
                 // 👉 [추가] 마커를 다 찍었으면 그쪽으로 카메라 이동!
-                MapManager.fitBoundsToData(data);
+                // MapManager.fitBoundsToData(data);
             },
             error: function(err) {
                 console.error("찜한 목록 불러오기 실패:", err);
@@ -444,15 +479,20 @@ const JobService = {
         }
 
         // ========================================================
-        // 🌟 [NEW] 배열에 데이터가 여러 개 있어도, 가장 최신(0번째) 딱 1개만 뽑아냅니다.
+        // 🌟 [수정 완료] 1개만 제한하던 코드를 지우고, 배열 전체(최대 20개)를 넘겨줍니다!
         // ========================================================
-        const latestJob = recentJobs.length > 0 ? [recentJobs[0]] : [];
+        UIManager.renderList(recentJobs);
+        MarkerManager.renderMarkers(recentJobs);
 
-        UIManager.renderList(latestJob);
-        MarkerManager.renderMarkers(latestJob);
+        // 👉 바텀 시트를 위로 스르륵 올립니다.
+        $('#bottomSheet').addClass('active');
 
-        // 👉 [추가] 최근 본 공고 쪽으로 카메라 이동!
-        MapManager.fitBoundsToData(latestJob);
+        // 👉 바텀 시트가 올라올 때, 기존에 떠있던 카드가 있다면 가려지지 않게 닫아줍니다.
+        UIManager.closeJobCard();
+
+        // 👉 지도 카메라를 최근 본 공고들이 모두 화면에 들어오도록 조절합니다.
+        // (두 번째 인자로 false를 넘겨서 카드가 자동으로 열리지 않도록 막습니다)
+        // MapManager.fitBoundsToData(recentJobs, false);
     },
 
     addRecentJob: function(jobData) {
@@ -595,7 +635,6 @@ const UIManager = {
 
         let html = '';
         jobs.forEach(job => {
-            // 🌟 삼항 연산자 제거 및 MapMessages 적용
             const title = job.title || MapMessages.fbTitle;
             const company = job.companyName || MapMessages.fbCompany;
             const wage = job.wage || MapMessages.fbWage;
@@ -606,10 +645,23 @@ const UIManager = {
 
             const detailUrl = `/map/jobs/detail?id=${job.id}&source=${job.source}&lang=${currentLang}`;
 
+            const clickAttr = (job.lat && job.lng)
+                ? `onclick="MapManager.moveToJobLocation(${job.lat}, ${job.lng})"`
+                : `onclick="alert('지도 좌표 정보가 없습니다.')"`;
+
+            // ========================================================
+            // 🌟 [핵심 변경] 로그인 여부에 따라 찜 버튼 HTML을 다르게 생성합니다.
+            // ========================================================
+            const saveBtnHtml = isUserLoggedIn
+                ? `<button class="btn">${MapMessages.btnSave}</button>`
+                : ''; // 로그인 안 했으면 빈 문자열(버튼 없음)
+
             html += `
             <tr>
                 <td>
-                    <span class="title-text">${title}</span>
+                    <span class="title-text" style="cursor: pointer; text-decoration: underline; color: var(--text-main);" ${clickAttr}>
+                        ${title}
+                    </span>
                     <span class="badge bg-blue">${MapMessages.badgeRecruit}</span>
                     <span class="badge bg-yellow">${MapMessages.badgeUrgent}</span>
                 </td>
@@ -628,7 +680,7 @@ const UIManager = {
                 </td>
                 <td>
                      <div class="btn-wrap">
-                        <button class="btn">${MapMessages.btnSave}</button>
+                        ${saveBtnHtml}
                         <button class="btn btn-view" onclick="location.href='${detailUrl}'">
                             ${MapMessages.btnDetail}
                         </button>
