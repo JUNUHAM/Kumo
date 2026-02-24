@@ -207,4 +207,9 @@ public class UserEntity {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CompanyEntity> companies = new ArrayList<>();
 
+    // 🌟 1:N 관계 설정: 구인자가 업로드한 여러 증빙서류들
+    @ToString.Exclude
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<EvidenceFileEntity> evidenceFiles = new ArrayList<>();
 }
