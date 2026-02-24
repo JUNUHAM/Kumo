@@ -517,6 +517,20 @@ const JobService = {
         localStorage.setItem('kumo_recent_jobs', JSON.stringify(recentJobs));
 
         console.log(`💾 최근 본 공고 저장됨 (총 ${recentJobs.length}개)`);
+    },
+
+    // 🌟 [추가] 검색바에서 검색 실행 시 새 창으로 이동하는 로직
+    searchJobs: function() {
+        const keyword = $('#keywordInput').val().trim();
+        const currentLang = new URLSearchParams(window.location.search).get('lang') || 'kr';
+
+        // 지역은 빼고 키워드만 달고 넘어갑니다.
+        let url = `/map/search_list?lang=${currentLang}`;
+        if (keyword) {
+            url += `&keyword=${encodeURIComponent(keyword)}`;
+        }
+
+        window.location.href = url;
     }
 };
 

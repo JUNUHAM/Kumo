@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+	<meta charset="UTF-8">
+	<title>KUMO - 구직 정보 검색</title>
+	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	
+	<link rel="stylesheet" th:href="@{/css/mapView/search_job_list.css}">
+	
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+
+<div class="list-header-wrapper">
+	<div th:replace="~{NonLoginFragments/NonLoginHeader :: headerFragment}" sec:authorize="!isAuthenticated()"></div>
+	<div th:replace="~{AuthenticatedFragments/AuthenticatedHeader :: headerFragment}" sec:authorize="isAuthenticated()"></div>
+</div>
+
+<div class="list-container">
+	<div class="page-top-section">
+		<h1 class="page-title">구직 정보</h1>
+		
+		<div class="filter-box">
+			<span class="filter-label">주소 필터</span>
+			<div class="filter-inputs">
+				<select id="mainRegion" class="filter-select">
+					<option value="tokyo">도쿄도</option>
+					<option value="osaka">오사카부</option>
+				</select>
+				<select id="subRegion" class="filter-select">
+					<option value="">전체 구/시</option>
+				</select>
+				
+				<input type="text" id="keywordInput" class="filter-input" placeholder="내용을 입력하세요">
+				<button id="btnSearch" class="btn-search">검색</button>
+			</div>
+		</div>
+	</div>
+	
+	<div class="table-wrapper">
+		<table class="job-list-table">
+			<thead>
+			<tr>
+				<th>제목</th>
+				<th>상호명</th>
+				<th>근무지</th>
+				<th>급여</th>
+				<th>연락처</th>
+				<th>작성자</th>
+				<th>관리</th>
+				<th>등록일</th>
+			</tr>
+			</thead>
+			<tbody id="searchListBody">
+			<tr>
+				<td colspan="8" class="text-center text-muted" style="padding: 40px;">데이터를 불러오는 중입니다...</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<script th:src="@{/js/mapView/search_job_list.js}"></script>
+
+</body>
+</html>

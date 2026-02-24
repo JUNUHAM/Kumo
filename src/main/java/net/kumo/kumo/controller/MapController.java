@@ -112,6 +112,25 @@ public class MapController {
 
         return "mapView/job_detail";
     }
+	
+	
+	
+	// ==========================================
+	// [NEW] 검색 리스트 관련 매핑
+	// ==========================================
+	
+	/**
+	 * 1. [VIEW] 검색 리스트 페이지 반환
+	 * URL: /map/search_list
+	 */
+	@GetMapping("/search_list")
+	public String searchListPage() {
+		// resources/templates/mapView/search_job_list.html 을 반환한다고 가정
+		return "mapView/search_job_list";
+	}
+	
+	
+	
 
     // --- 데이터 반환 (API) ---
 
@@ -156,4 +175,26 @@ public class MapController {
 
         return ResponseEntity.ok("신고가 정상적으로 접수되었습니다.");
     }
+	
+	/**
+	 * 2. [API] 검색 조건에 맞는 공고 리스트 데이터 반환
+	 * URL: /map/api/jobs/search
+	 */
+	@GetMapping("/api/jobs/search")
+	@ResponseBody
+	public List<JobSummaryDTO> searchJobsApi(
+			@RequestParam(required = false) String keyword,
+			@RequestParam(required = false) String mainRegion,
+			@RequestParam(required = false) String subRegion,
+			@RequestParam(defaultValue = "kr") String lang
+	) {
+		log.debug("검색 API 호출됨 - keyword: {}, mainRegion: {}, subRegion: {}", keyword, mainRegion, subRegion);
+		
+		// TODO: MapService에 검색 조건(키워드, 지역)으로 DB를 조회하는 로직을 추가해야 합니다.
+		// 예시: List<JobSummaryDTO> results = mapService.searchJobs(keyword, mainRegion, subRegion, lang);
+		// return results;
+		
+		// 아직 서비스가 완성되지 않았으므로 임시로 빈 배열을 반환합니다. 에러가 나지 않게 하기 위함입니다.
+		return java.util.Collections.emptyList();
+	}
 }
