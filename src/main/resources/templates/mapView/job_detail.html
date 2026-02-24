@@ -5,10 +5,6 @@
 <head>
     <meta charset="UTF-8" />
     <title th:text="${job.title}">상세 정보</title>
-<!--	<link rel="stylesheet" th:href="@{/css/NonLoginFragments/NonLoginHeader.css}"-->
-<!--	      sec:authorize="!isAuthenticated()">-->
-<!--	<link rel="stylesheet" th:href="@{/css/AuthenticatedFragments/AuthenticatedHeader.css}"-->
-<!--	      sec:authorize="isAuthenticated()">                    <- 이거 필요 없음  -->
     <link rel="stylesheet" th:href="@{/css/NonLoginFooter.css}">
     <link rel="stylesheet" th:href="@{/css/job_detail.css}">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -16,14 +12,6 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 	
 	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
-    <script th:inline="javascript">
-        /* <![CDATA[ */
-        // [수정] Spring Security를 이용한 로그인 여부 판별
-        const isUserLoggedIn = [[${#authorization.expression('isAuthenticated()')}]];
-        /* ]]> */
-    </script>
-	
     <script th:src="@{/js/mapView/job_detail.js}"></script>
 </head>
 <body>
@@ -204,6 +192,24 @@
     </div>
 </div>
 
-<footer th:replace="~{NonLoginFragments/NonLoginFooter}"></footer>
+
+<script th:inline="javascript">
+	/* <![CDATA[ */
+	// [수정] Spring Security를 이용한 로그인 여부 판별
+	const isUserLoggedIn = [[${#authorization.expression('isAuthenticated()')}]];
+	
+	// 🌟 2. [추가됨] 서버의 리소스 파일(properties)에서 다국어 메시지를 가져와 JS 객체로 만듭니다.
+	const MESSAGES = {
+		loginRequired: [[#{job.msg.loginRequired}]],
+	reportSuccess: [[#{job.msg.reportSuccess}]],
+	reportError: [[#{job.msg.reportError}]],
+	confirmReport: [[#{job.msg.confirmReport}]],
+	selectReportType: [[#{job.msg.selectReportType}]],
+	applyReady: [[#{job.msg.applyReady}]],
+	processError: [[#{job.msg.processError}]]
+	};
+	/* ]]> */
+</script>
+
 </body>
 </html>
