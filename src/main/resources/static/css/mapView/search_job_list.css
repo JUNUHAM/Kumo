@@ -1,0 +1,86 @@
+:root {
+    --bg-main: #ffffff;
+    --bg-filter: #f4f5f7;
+    --bg-table-head: #f9f9f9;
+    --border-color: #e5e5e5;
+    --text-title: #222222;
+    --text-main: #444444;
+    --text-muted: #888888;
+    --primary-blue: #4a90e2;
+
+    --badge-green-bg: #e6f4ea; --badge-green-text: #1e8e3e;
+    --badge-orange-bg: #fce8e6; --badge-orange-text: #d93025;
+}
+
+body.dark-mode {
+    --bg-main: #121212;
+    --bg-filter: #1e1e1e;
+    --bg-table-head: #1a1a1a;
+    --border-color: #333333;
+    --text-title: #ffffff;
+    --text-main: #e0e0e0;
+}
+
+/* =========================================
+   공통 요소 부드러운 전환 (스무스 다크모드)
+========================================= */
+body,
+.list-header-wrapper,
+.filter-box,
+.filter-select,
+.filter-input,
+.job-list-table th,
+.job-list-table td,
+.job-title-text {
+    /* 배경색, 글자색, 테두리색이 바뀔 때 0.3초 동안 부드럽게(ease) 변하도록 설정! */
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+body { margin: 0; font-family: 'Noto Sans KR', sans-serif; background-color: var(--bg-main); color: var(--text-main); }
+
+.list-header-wrapper { position: sticky; top: 0; z-index: 100; background-color: var(--bg-main); border-bottom: 1px solid var(--border-color); }
+.list-header-wrapper > div { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+.list-container { max-width: 1400px; margin: 0 auto; padding: 40px 20px 100px; }
+
+.page-top-section { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; }
+.page-title { font-size: 32px; font-weight: 900; color: var(--text-title); margin: 0; }
+
+.filter-box { background-color: var(--bg-filter); padding: 20px 25px; border-radius: 12px; display: flex; flex-direction: column; gap: 10px; }
+.filter-label { font-size: 13px; font-weight: bold; }
+.filter-inputs { display: flex; gap: 10px; align-items: center; }
+
+.filter-select, .filter-input { height: 40px; padding: 0 15px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--bg-main); color: var(--text-main); outline: none; }
+.filter-input { width: 250px; }
+
+.btn-search { height: 40px; padding: 0 20px; background-color: #e8f0fe; color: #1967d2; border: 1px solid #d2e3fc; border-radius: 6px; font-weight: bold; cursor: pointer; }
+.btn-search:hover { background-color: #d2e3fc; }
+
+.table-wrapper { width: 100%; overflow-x: auto; }
+.job-list-table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+.job-list-table th, .job-list-table td { padding: 16px 12px; border-bottom: 1px solid var(--border-color); text-align: left; vertical-align: middle; }
+.job-list-table th { background-color: var(--bg-table-head); color: var(--text-muted); font-size: 13px; border-top: 2px solid var(--border-color); }
+
+.job-title-cell { display: flex; flex-direction: column; gap: 6px; }
+.job-title-text { font-size: 16px; font-weight: 700; color: var(--text-title); }
+.badges { display: flex; gap: 6px; }
+.badge { padding: 4px 8px; font-size: 11px; font-weight: bold; border-radius: 4px; }
+.badge-green { background-color: var(--badge-green-bg); color: var(--badge-green-text); }
+
+.text-blue { color: var(--primary-blue); }
+.font-weight-bold { font-weight: bold; }
+.text-muted { color: var(--text-muted); font-size: 13px; }
+.wage-box { display: flex; flex-direction: column; }
+.wage-type { font-size: 12px; color: var(--primary-blue); font-weight: bold; }
+.wage-amount { font-size: 14px; font-weight: bold; color: var(--text-title); }
+
+.author-box { display: flex; align-items: center; gap: 10px; }
+.author-img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+.author-info { display: flex; flex-direction: column; }
+.author-name { font-size: 13px; font-weight: bold; color: var(--text-title); }
+
+.action-buttons { display: flex; gap: 8px; }
+.btn-outline, .btn-filled { padding: 8px 14px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer; }
+.btn-outline { background-color: transparent; border: 1px solid var(--primary-blue); color: var(--primary-blue); }
+.btn-filled { background-color: var(--primary-blue); border: none; color: white; }
+.text-center { text-align: center; }
