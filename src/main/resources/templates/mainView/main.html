@@ -41,7 +41,7 @@
 			<div class="divider"></div>
 			
 			<i class="fa-solid fa-bars menu-icon"></i>
-			<input type="text" id="keywordInput" placeholder="검색 내용을 입력하세요."
+			<input type="text" id="keywordInput" th:placeholder="#{map.region.placeholder}"
 			       onkeyup="if(event.key === 'Enter') JobService.searchJobs()">
 			<button onclick="JobService.searchJobs()">
 				<i class="fa-solid fa-magnifying-glass"></i>
@@ -137,6 +137,10 @@
 	</div>
 </div>
 <script th:inline="javascript">
+	
+	// 🌟 [추가] Spring Security를 이용한 로그인 여부 판별
+	const isUserLoggedIn = /*[[${#authorization.expression('isAuthenticated()')}]]*/ false;
+	
 	const MapMessages = {
 		loading: /*[[#{js.map.msg.loading}]]*/ '데이터 로딩 중...',
 		loadFail: /*[[#{js.map.msg.load_fail}]]*/ '로딩 실패',
