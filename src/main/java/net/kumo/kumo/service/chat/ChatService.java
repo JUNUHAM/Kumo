@@ -2,6 +2,7 @@ package net.kumo.kumo.service.chat;
 
 import lombok.RequiredArgsConstructor;
 import net.kumo.kumo.domain.dto.ChatMessageDTO; // ★ Step 1에서 만든 DTO 추가
+import net.kumo.kumo.domain.dto.ChatRoomListDTO;
 import net.kumo.kumo.domain.entity.ChatMessageEntity;
 import net.kumo.kumo.domain.entity.ChatRoomEntity;
 import net.kumo.kumo.domain.entity.Enum.MessageType;
@@ -118,9 +119,27 @@ public class ChatService {
                 .orElseThrow(() -> new IllegalArgumentException("방이 없습니다."));
     }
 
-    // ChatService 클래스 내부 어디든 상관없지만, 보통 맨 아래에 넣습니다.
-    public List<ChatRoomEntity> getChatRoomsForUser(Long userId) {
-        // Repository에게 "내가 구직자거나 구인자인 방을 싹 다 찾아와!"라고 시킵니다.
-        return chatRoomRepository.findBySeekerUserIdOrRecruiterUserId(userId, userId);
+    // [수정] 기존 메서드를 지우고 이 코드를 넣으세요.
+    @Transactional(readOnly = true)
+    public List<ChatRoomListDTO> getChatRoomsForUser(Long userId) {
+        // 1. 내가 참여한 방 목록 조회
+        List<ChatRoomEntity> rooms = chatRoomRepository.findBySeekerUserIdOrRecruiterUserId(userId, userId);
+
+        return rooms.stream().map(room -> {
+            // 2. 상대방 식별 (내가 구직자면 구인자를, 구인자면 구직자를 선택)
+            UserEntity opponent = room.getSeeker().getUserId().equals(userId) ? room.getRecruiter() : room.getSeeker();
+
+            // 3. 해당 방의 최신 메시지 1건 조회
+            ChatMessageEntity lastMsg = chatMessageRepository.findFirstByRoomOrderByCreatedAtDesc(room);
+
+            // 4. DTO로 변환하여 반환
+            return ChatRoomListDTO.builder()
+                    .roomId(room.getId())
+                    .opponentNickname(opponent.getNickname())
+                    .lastMessage(lastMsg != null ? lastMsg.getContent() : "대화 내용이 없습니다.")
+                    .lastTime(
+                            lastMsg != null ? lastMsg.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm")) : "")
+                    .build();
+        }).collect(Collectors.toList());
     }
 }

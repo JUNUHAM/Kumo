@@ -2,6 +2,7 @@ package net.kumo.kumo.controller.chat;
 
 import lombok.RequiredArgsConstructor;
 import net.kumo.kumo.domain.dto.ChatMessageDTO;
+import net.kumo.kumo.domain.dto.ChatRoomListDTO;
 import net.kumo.kumo.domain.entity.ChatRoomEntity;
 import net.kumo.kumo.domain.entity.UserEntity;
 import net.kumo.kumo.service.chat.ChatService;
@@ -65,17 +66,41 @@ public class ChatController {
         return "chat/chat_room";
     }
 
+    // ChatController.java
+
     @GetMapping("/chat/list")
     public String chatList(
             @RequestParam(value = "userId", required = false) Long userId,
             Model model) {
 
+        // 1. 방어 코드: userId가 없으면 로그인 페이지로 리다이렉트
         if (userId == null) {
             return "redirect:/login";
         }
 
-        List<ChatRoomEntity> chatRooms = chatService.getChatRoomsForUser(userId);
+        // 2. 서비스 호출: 최신 메시지와 시간이 포함된 DTO 리스트 가져오기
+        // (메서드 명은 아까 수정한 getChatRoomsForUser 입니다)
+        List<ChatRoomListDTO> chatRooms = chatService.getChatRoomsForUser(userId);
 
+        // 더미데이터
+        // 2. ★ 가라(Dummy) 데이터 2개 강제 주입
+        // ABC カンパニー 추가
+        chatRooms.add(ChatRoomListDTO.builder()
+                .roomId(999L) // 가짜 ID
+                .opponentNickname("ABC カンパニー")
+                .lastMessage("하나 궁금한게 있습니다")
+                .lastTime("15:40")
+                .build());
+
+        // 오사카 한식당 추가
+        chatRooms.add(ChatRoomListDTO.builder()
+                .roomId(888L) // 가짜 ID
+                .opponentNickname("오사카 한식당")
+                .lastMessage("신청해주셔서 감사합니다. 유감이지만...")
+                .lastTime("12:20")
+                .build());
+
+        // 3. 모델에 담아서 HTML로 전달
         model.addAttribute("chatRooms", chatRooms);
         model.addAttribute("userId", userId);
 
@@ -123,5 +148,18 @@ public class ChatController {
     public void sendMessage(ChatMessageDTO messageDTO) {
         ChatMessageDTO savedMessage = chatService.saveMessage(messageDTO);
         messagingTemplate.convertAndSend("/sub/chat/room/" + savedMessage.getRoomId(), savedMessage);
+    }
+
+    @GetMapping("/chat/create")
+    public String createRoom(
+            @RequestParam("recruiterId") Long recruiterId,
+            @RequestParam(value = "jobPostId", required = false) Long jobPostId,
+            @RequestParam("userId") Long seekerId) { // 현재 로그인한 구직자 ID
+
+        // 1. 서비스에서 방을 찾거나 생성
+        ChatRoomEntity room = chatService.createOrGetChatRoom(seekerId, recruiterId, jobPostId);
+
+        // 2. 생성된(혹은 찾은) 방으로 즉시 이동
+        return "redirect:/chat/room/" + room.getId() + "?userId=" + seekerId;
     }
 }
