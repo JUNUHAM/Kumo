@@ -1,7 +1,7 @@
 package net.kumo.kumo.service;
 
 import lombok.RequiredArgsConstructor;
-import net.kumo.kumo.domain.dto.ApplicationRequestDTO;
+import net.kumo.kumo.domain.dto.ApplicationDTO;
 import net.kumo.kumo.domain.dto.JobDetailDTO;
 import net.kumo.kumo.domain.dto.JobSummaryDTO;
 import net.kumo.kumo.domain.dto.ReportDTO;
@@ -94,9 +94,10 @@ public class MapService {
 
     // --- 4. 구인 신청(지원하기) 로직 ---
     @Transactional
-    public void applyForJob(UserEntity seeker, ApplicationRequestDTO dto) {
+    public void applyForJob(UserEntity seeker, ApplicationDTO.ApplyRequest dto) {
+        // ★ 파라미터 타입 변경됨!
 
-        // 1. 중복 지원 검사 (DB 보호 및 프론트엔드 알림용)
+        // 1. 중복 지원 검사
         boolean alreadyApplied = applicationRepo.existsByTargetSourceAndTargetPostIdAndSeeker(
                 dto.getTargetSource(),
                 dto.getTargetPostId(),
@@ -104,7 +105,6 @@ public class MapService {
         );
 
         if (alreadyApplied) {
-            // 이미 지원한 경우, 컨트롤러의 catch 블록으로 에러 메시지를 던짐
             throw new IllegalStateException("이미 지원하신 공고입니다.");
         }
 
@@ -113,7 +113,6 @@ public class MapService {
                 .targetSource(dto.getTargetSource())
                 .targetPostId(dto.getTargetPostId())
                 .seeker(seeker)
-                // status는 엔티티의 @Builder.Default 설정에 의해 'APPLIED'로 자동 들어갑니다.
                 .build();
 
         // 3. DB 저장
