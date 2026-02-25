@@ -154,4 +154,36 @@ public class MapService {
         // 테이블 설계 당시 ON DELETE CASCADE 를 걸어두지 않으셨다면
         // 여기서 applicationRepo.deleteByTargetSourceAndTargetPostId() 를 먼저 실행해 주셔야 합니다.
     }
+    
+    // ==========================================
+    // --- 4. [NEW] 검색 리스트 조회 (JobDetailDTO 반환) ---
+    // ==========================================
+    @Transactional(readOnly = true)
+    public List<JobDetailDTO> searchJobsList(String keyword, String mainRegion, String subRegion, String lang) {
+        
+        List<JobDetailDTO> results = new ArrayList<>();
+        
+        // 1. 도쿄 검색
+        if ("tokyo".equalsIgnoreCase(mainRegion)) {
+            // 위치 O: 도쿄는 wardCityJp, wardCityKr 컬럼을 확인
+            tokyoRepo.findAll(JobSearchSpec.searchConditions(keyword, subRegion, "wardCityJp", "wardCityKr"))
+                    .forEach(entity -> results.add(new JobDetailDTO(entity, lang, "TOKYO")));
+            
+            // 위치 X: address 컬럼에서 확인
+            tokyoNoRepo.findAll(JobSearchSpec.searchConditions(keyword, subRegion, "address"))
+                    .forEach(entity -> results.add(new JobDetailDTO(entity, lang, "TOKYO_NO")));
+        }
+        // 2. 오사카 검색
+        else if ("osaka".equalsIgnoreCase(mainRegion)) {
+            // 위치 O: 오사카는 wardJp, wardKr 컬럼을 확인
+            osakaRepo.findAll(JobSearchSpec.searchConditions(keyword, subRegion, "wardJp", "wardKr"))
+                    .forEach(entity -> results.add(new JobDetailDTO(entity, lang, "OSAKA")));
+            
+            // 위치 X: address 컬럼에서 확인
+            osakaNoRepo.findAll(JobSearchSpec.searchConditions(keyword, subRegion, "address"))
+                    .forEach(entity -> results.add(new JobDetailDTO(entity, lang, "OSAKA_NO")));
+        }
+        
+        return results;
+    }
 }

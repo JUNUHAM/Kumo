@@ -79,8 +79,20 @@ body { margin: 0; font-family: 'Noto Sans KR', sans-serif; background-color: var
 .author-info { display: flex; flex-direction: column; }
 .author-name { font-size: 13px; font-weight: bold; color: var(--text-title); }
 
-.action-buttons { display: flex; gap: 8px; }
-.btn-outline, .btn-filled { padding: 8px 14px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer; }
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: nowrap; /* 🌟 버튼들끼리 밑으로 안 떨어지게 */
+}
+
+.btn-outline, .btn-filled {
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap; /* 🌟 [핵심] 글자가 세로로 꺾이지 않고 무조건 한 줄로 나오게 방지! */
+}
 .btn-outline { background-color: transparent; border: 1px solid var(--primary-blue); color: var(--primary-blue); }
 .btn-filled { background-color: var(--primary-blue); border: none; color: white; }
 .text-center { text-align: center; }
