@@ -1,10 +1,12 @@
 package net.kumo.kumo.service;
 
 import lombok.RequiredArgsConstructor;
+import net.kumo.kumo.domain.dto.ApplicationRequestDTO;
 import net.kumo.kumo.domain.dto.JobDetailDTO;
 import net.kumo.kumo.domain.dto.JobSummaryDTO;
 import net.kumo.kumo.domain.dto.ReportDTO;
 import net.kumo.kumo.domain.dto.projection.JobSummaryView;
+import net.kumo.kumo.domain.entity.ApplicationEntity;
 import net.kumo.kumo.domain.entity.BaseEntity;
 import net.kumo.kumo.domain.entity.ReportEntity;
 import net.kumo.kumo.domain.entity.UserEntity;
@@ -27,6 +29,9 @@ public class MapService {
     // 신고 관련 리포지토리
     private final ReportRepository reportRepo;
     private final UserRepository userRepo; // ★ [추가] 신고자(User) 조회를 위해 필요
+
+    // 공고 신청 리포지토리
+    private final ApplicationRepository applicationRepo;
 
     // --- 1. 지도용 리스트 조회 ---
     @Transactional(readOnly = true)
@@ -85,5 +90,33 @@ public class MapService {
                 .build();
 
         reportRepo.save(report);
+    }
+
+    // --- 4. 구인 신청(지원하기) 로직 ---
+    @Transactional
+    public void applyForJob(UserEntity seeker, ApplicationRequestDTO dto) {
+
+        // 1. 중복 지원 검사 (DB 보호 및 프론트엔드 알림용)
+        boolean alreadyApplied = applicationRepo.existsByTargetSourceAndTargetPostIdAndSeeker(
+                dto.getTargetSource(),
+                dto.getTargetPostId(),
+                seeker
+        );
+
+        if (alreadyApplied) {
+            // 이미 지원한 경우, 컨트롤러의 catch 블록으로 에러 메시지를 던짐
+            throw new IllegalStateException("이미 지원하신 공고입니다.");
+        }
+
+        // 2. 지원 내역 엔티티 생성
+        ApplicationEntity application = ApplicationEntity.builder()
+                .targetSource(dto.getTargetSource())
+                .targetPostId(dto.getTargetPostId())
+                .seeker(seeker)
+                // status는 엔티티의 @Builder.Default 설정에 의해 'APPLIED'로 자동 들어갑니다.
+                .build();
+
+        // 3. DB 저장
+        applicationRepo.save(application);
     }
 }
