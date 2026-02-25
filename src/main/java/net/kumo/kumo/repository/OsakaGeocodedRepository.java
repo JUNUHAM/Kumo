@@ -28,4 +28,7 @@ public interface OsakaGeocodedRepository extends BaseRepository<OsakaGeocodedEnt
 
     // 회사 삭제 시 참조용
     long countByCompany_CompanyId(Long companyId);
+
+    // 이메일을 기준으로 해당 유저가 쓴 오사카 공고만 전부 가져오기
+    List<OsakaGeocodedEntity> findByUser_Email(String email);
 }

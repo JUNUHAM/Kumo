@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.kumo.kumo.domain.dto.JobManageListDTO;
 import net.kumo.kumo.domain.dto.JobPostingRequestDTO;
 import net.kumo.kumo.domain.dto.JoinRecruiterDTO;
 import net.kumo.kumo.domain.entity.CompanyEntity;
@@ -72,11 +73,23 @@ public class RecruiterController {
      * 공고 관리 컨트롤러
      * 
      * @param model
+     * @param principal
      * @return
      */
     @GetMapping("JobManage")
-    public String JobManage(Model model) {
-        model.addAttribute("currentMenu", "jobManage"); // 사이드바 선택(공고 관리)
+    public String JobManage(Model model, java.security.Principal principal) {
+        model.addAttribute("currentMenu", "jobManage");
+
+        // 🌟 1. 로그인한 사용자의 이메일(또는 ID)을 가져옵니다.
+        // (Principal 대신 @AuthenticationPrincipal AuthenticatedUser user 를 쓰셔도 됩니다!)
+        String userEmail = principal.getName();
+
+        // 🌟 2. 서비스에서 통합된 최신 공고 리스트를 가져옵니다.
+        List<JobManageListDTO> jobList = js.getMyJobPostings(userEmail);
+
+        // 🌟 3. 화면(HTML)으로 리스트를 넘겨줍니다.
+        model.addAttribute("jobList", jobList);
+
         return "recruiterView/jobManage";
     }
 

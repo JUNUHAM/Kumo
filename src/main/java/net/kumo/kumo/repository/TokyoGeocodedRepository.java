@@ -29,4 +29,7 @@ public interface TokyoGeocodedRepository extends BaseRepository<TokyoGeocodedEnt
 
     // 회사 삭제 시 참조용
     long countByCompany_CompanyId(Long companyId);
+
+    // 이메일을 기준으로 해당 유저가 쓴 도쿄 공고만 전부 가져오기
+    List<TokyoGeocodedEntity> findByUser_Email(String email);
 }

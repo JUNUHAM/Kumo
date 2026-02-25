@@ -52,71 +52,78 @@
             <table class="kumo-table">
               <thead>
                 <tr>
-                  <th th:utext="#{job.manage.table.title}">
-                    공고 제목 <i class="bi bi-arrow-down-up sort-icon"></i>
-                  </th>
-                  <th th:utext="#{job.manage.table.task}">업무 <i class="bi bi-arrow-down-up sort-icon"></i></th>
+                  <th th:utext="#{job.manage.table.title}">공고 제목 <i class="bi bi-arrow-down-up sort-icon"></i></th>
+                  <th>지역</th>
                   <th th:utext="#{job.manage.table.wage}">급료 <i class="bi bi-arrow-down-up sort-icon"></i></th>
-                  <th th:text="#{job.manage.table.contact}">연락처</th>
-                  <th th:utext="#{job.manage.table.reg_date}">
-                    등록 날짜 <i class="bi bi-arrow-down-up sort-icon"></i>
-                  </th>
-                  <th th:text="#{job.manage.table.status}">마감여부</th>
-                  <th></th>
+                  <th th:utext="#{job.manage.table.reg_date}">등록 날짜 <i class="bi bi-arrow-down-up sort-icon"></i></th>
+                  <th th:text="#{job.manage.table.status}">상태</th>
+                  <th>관리</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
+                <tr th:each="job : ${jobList}">
                   <td>
                     <div class="job-title-cell">
-                      <span class="job-name text-truncate-custom"
-                        >칸테키 다이닝 홀서빙 구합니다</span
-                      >
+                      <span class="job-name text-truncate-custom" th:text="${job.title}">공고 제목</span>
                     </div>
                   </td>
-                  <td>홀</td>
-                  <td><span class="salary-text">일급 9,400엔</span></td>
+                  <td><span class="badge bg-light text-dark border" th:text="${job.regionType}">오사카</span></td>
+                  <td><span class="salary-text" th:text="${job.wage}">급여</span></td>
+                  <td><span class="date-text" th:text="${#temporals.format(job.createdAt, 'yyyy-MM-dd')}">등록일</span></td>
                   <td>
-                    <span class="contact-text text-truncate-custom"
-                      >tanakada@sato-inc.com</span
-                    >
+                    <span class="status-badge status-ing" th:if="${job.status == 'RECRUITING'}"
+                      th:text="#{job.manage.status.ing}">모집중</span>
+                    <span class="status-badge status-end" th:if="${job.status == 'CLOSED'}"
+                      th:text="#{job.manage.status.end}">마감됨</span>
                   </td>
-                  <td><span class="date-text">1년 전</span></td>
-                  <td><span class="status-badge status-ing" th:text="#{job.manage.status.ing}">모집중</span></td>
                   <td>
-                    <div class="action-buttons">
-                      <button class="btn-manage" th:text="#{job.manage.btn.manage}">관리</button>
-                      <button class="btn-close-job" th:text="#{job.manage.btn.close}">마감</button>
-                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                      th:onclick="openJobModal([[${job.id}]], [[${job.datanum}]], [[${job.regionType}]], [[${job.title}]])">
+                      <i class="bi bi-gear-fill"></i>
+                    </button>
                   </td>
                 </tr>
-                <tr class="job-closed">
-                  <td>
-                    <div class="job-title-cell">
-                      <span class="job-name text-truncate-custom"
-                        >시부야 라멘집 주방 보조 급구</span
-                      >
+            
+                <tr th:if="${#lists.isEmpty(jobList)}">
+                  <td colspan="6" class="text-center py-5 text-muted"> 등록된 공고가 없습니다.
                   </td>
-                  <td>주방</td>
-                  <td>
-                    <span class="salary-text text-muted">시급 1,200엔</span>
-                  </td>
-                  <td>
-                    <span class="contact-text text-truncate-custom"
-                      >shibuya_ramen@info.jp</span
-                    >
-                  </td>
-                  <td><span class="date-text">2개월 전</span></td>
-                  <td><span class="status-badge status-end" th:text="#{job.manage.status.end}">마감됨</span></td>
-                  <td></td>
                 </tr>
               </tbody>
             </table>
-          </div>
-          <footer
-              th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"
-            ></footer>
-        </main>
+            </div>
+            
+            <div class="modal fade" id="jobManageModal" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content job-modal-content">
+                  <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">공고 관리</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body text-center pt-4 pb-4">
+                    <div class="mb-5 mt-2">
+                      <span id="modalRegionBadge" class="badge bg-primary mb-3 px-3 py-2"
+                        style="font-size: 0.8rem; border-radius: 8px;">지역</span>
+                      <h4 id="modalJobTitle" class="text-truncate px-3 fw-bold job-modal-subtitle">공고 제목이 여기에 표시됩니다.</h4>
+                    </div>
+            
+                    <div class="d-flex justify-content-center gap-2">
+                      <button type="button" class="btn-job-view" id="btnViewJob">
+                        <i class="bi bi-eye me-1"></i> 보기
+                      </button>
+                      <button type="button" class="btn-job-edit" id="btnEditJob">
+                        <i class="bi bi-pencil-square me-1"></i> 수정
+                      </button>
+                      <button type="button" class="btn-job-delete" id="btnDeleteJob">
+                        <i class="bi bi-trash3 me-1"></i> 삭제
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <footer th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"></footer>
+            </main>
       </div>
       <div
         th:replace="~{recruiterView/fragments/rightSidebar :: rightSidebarFragment}"
@@ -128,6 +135,50 @@
     <script th:src="@{/js/recruiter/rightSidebar.js}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.10/index.global.min.js"></script>
     <script th:src="@{/js/recruiter/global-calendar.js}"></script>
+    <script>
+      // 모달 열기 함수
+        function openJobModal(id, datanum, regionType, title) {
+          document.getElementById('modalRegionBadge').innerText = regionType;
+          document.getElementById('modalJobTitle').innerText = title;
 
+          // 🌟 1. 한글 지역명을 URL용 영어(TOKYO/OSAKA)로 변환
+          let sourceEn = '';
+          if (regionType === '도쿄') {
+            sourceEn = 'TOKYO';
+          } else if (regionType === '오사카') {
+            sourceEn = 'OSAKA';
+          }
+
+          // 🌟 2. '보기' 버튼 클릭 시 사장님이 원하시는 주소로 이동!
+          document.getElementById('btnViewJob').onclick = () => {
+            location.href = `/map/jobs/detail?id=${id}&source=${sourceEn}&lang=kr`;
+          };
+
+          // (수정과 삭제는 임시 주소 유지, 추후 API 완성 시 변경)
+          document.getElementById('btnEditJob').onclick = () => location.href = `/Recruiter/editPosting?datanum=${datanum}&region=${sourceEn}`;
+          document.getElementById('btnDeleteJob').onclick = () => deletePosting(datanum, sourceEn);
+
+          // 모달 띄우기
+          const modal = new bootstrap.Modal(document.getElementById('jobManageModal'));
+          modal.show();
+        }
+
+        // 삭제 처리 함수 (기존과 동일)
+        function deletePosting(datanum, sourceEn) {
+          Swal.fire({
+            title: '정말 삭제하시겠습니까?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            confirmButtonText: '삭제',
+            cancelButtonText: '취소'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // 삭제 로직 들어갈 자리
+              alert('삭제 로직 실행: ' + datanum + ' / 지역: ' + sourceEn);
+            }
+          });
+        }
+    </script>
   </body>
 </html>

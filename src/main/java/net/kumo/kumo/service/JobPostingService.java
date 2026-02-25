@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import net.kumo.kumo.domain.dto.JobManageListDTO;
 import net.kumo.kumo.domain.dto.JobPostingRequestDTO;
 import net.kumo.kumo.domain.entity.CompanyEntity;
 import net.kumo.kumo.domain.entity.OsakaGeocodedEntity;
@@ -239,5 +240,67 @@ public class JobPostingService {
             // 매핑된 한국어 구 이름이 있으면 넣고, 없으면 일본어 원본 그대로 저장!
             entity.setWardCityKr(tokyoMap.getOrDefault(wardJp, wardJp));
         }
+    }
+
+    /**
+     * 특정 유저(이메일)의 도쿄 + 오사카 공고를 합쳐서 반환 (최신순 정렬)
+     */
+    public List<JobManageListDTO> getMyJobPostings(String email) {
+        List<JobManageListDTO> result = new java.util.ArrayList<>();
+
+        // 1. 오사카 공고 가져와서 바구니에 담기
+        List<OsakaGeocodedEntity> osakaJobs = osakaGeocodedRepository.findByUser_Email(email);
+        for (OsakaGeocodedEntity o : osakaJobs) {
+
+            // 🌟 1. 여기서 영어를 한글로 싹 바꿔줍니다!
+            String displayWage = o.getWage() != null ? o.getWage()
+                    .replace("HOURLY", "시급")
+                    .replace("DAILY", "일급")
+                    .replace("MONTHLY", "월급")
+                    .replace("SALARY", "연봉") : "";
+
+            result.add(JobManageListDTO.builder()
+                    .id(o.getId()) // 🌟 [추가] 오사카 테이블의 진짜 id
+                    .datanum(o.getDatanum())
+                    .title(o.getTitle())
+                    .regionType("오사카") // 라벨링
+                    .wage(displayWage)
+                    .createdAt(o.getCreatedAt())
+                    .status(o.getStatus() != null ? o.getStatus().name() : "RECRUITING")
+                    .build());
+        }
+
+        // 2. 도쿄 공고 가져와서 바구니에 담기
+        List<TokyoGeocodedEntity> tokyoJobs = tokyoGeocodedRepository.findByUser_Email(email);
+        for (TokyoGeocodedEntity t : tokyoJobs) {
+
+            // 🌟 1. 여기서 영어를 한글로 싹 바꿔줍니다!
+            String displayWage = t.getWage() != null ? t.getWage()
+                    .replace("HOURLY", "시급")
+                    .replace("DAILY", "일급")
+                    .replace("MONTHLY", "월급")
+                    .replace("SALARY", "연봉") : "";
+
+            result.add(JobManageListDTO.builder()
+                    .id(t.getId()) // 🌟 [추가] 도쿄 테이블의 진짜 id
+                    .datanum(t.getDatanum())
+                    .title(t.getTitle())
+                    .regionType("도쿄") // 라벨링
+                    .wage(displayWage)
+                    .createdAt(t.getCreatedAt())
+                    .status(t.getStatus() != null ? t.getStatus().name() : "RECRUITING")
+                    .build());
+        }
+
+        // 3. 🌟 두 리스트를 합친 후, 등록일(createdAt) 기준 '최신순(내림차순)' 정렬!
+        result.sort((a, b) -> {
+            if (a.getCreatedAt() == null)
+                return 1;
+            if (b.getCreatedAt() == null)
+                return -1;
+            return b.getCreatedAt().compareTo(a.getCreatedAt());
+        });
+
+        return result;
     }
 }

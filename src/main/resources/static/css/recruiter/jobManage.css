@@ -17,34 +17,46 @@
   margin-bottom: 30px;
 }
 
-/* 2. 테이블 레이아웃: 줄바꿈 방지의 핵심 */
+/* 2. 테이블 레이아웃: 줄바꿈 방지 및 너비 100% 맞춤 */
 .kumo-table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed; /* 칸 너비 강제 고정 */
+  table-layout: fixed;
+  /* 칸 너비 강제 고정 */
 }
 
+/* 🌟 총 6개 컬럼의 합을 정확히 100%로 재설정했습니다! */
 .kumo-table th:nth-child(1) {
-  width: 27%; /* [수정] 25% -> 20% (제목 왼쪽 공간 활용) */
+  width: 35%;
 }
+
+/* 공고 제목 (더 넓고 시원하게!) */
 .kumo-table th:nth-child(2) {
   width: 10%;
 }
+
+/* 지역 */
 .kumo-table th:nth-child(3) {
-  width: 14%;
+  width: 20%;
 }
+
+/* 급료 (더 넉넉하게) */
 .kumo-table th:nth-child(4) {
-  width: 24%; /* [수정] 26% -> 20% (가장 널널한 연락처 공간을 활용) */
+  width: 15%;
 }
+
+/* 등록 날짜 */
 .kumo-table th:nth-child(5) {
-  width: 12%;
+  width: 10%;
 }
+
+/* 마감여부 */
 .kumo-table th:nth-child(6) {
-  width: 10%; /* [수정] 8% -> 10% (마감여부 텍스트 공간 확보) */
+  width: 10%;
+  text-align: center;
 }
-.kumo-table th:nth-child(7) {
-  width: 18%; /* [수정] 11% -> 20% (버튼 영역을 대폭 넓혀 짤림 방지) */
-}
+
+/* 관리 버튼 */
 
 .kumo-table th {
   text-align: left;
@@ -53,7 +65,30 @@
   font-weight: 600;
   font-size: 0.85rem;
   border-bottom: 1px solid #f9f9f9;
-  white-space: nowrap; /* [핵심] 제목 줄바꿈 방지 */
+  white-space: nowrap;
+}
+
+.kumo-table td {
+  padding: 20px 10px;
+  border-bottom: 1px solid #f9f9f9;
+  font-size: 0.9rem;
+  color: #333d4b;
+  vertical-align: middle;
+
+  /* 🌟 글자 넘침 방지 3대장 (필수!) */
+  white-space: nowrap;
+  /* 1. 줄바꿈 방지 */
+  overflow: hidden;
+  /* 2. 칸 넘어가면 숨기기 */
+  text-overflow: ellipsis;
+  /* 3. 숨긴 부분은 '...'으로 표시 */
+}
+
+/* 🌟 관리 컬럼(7번째)은 톱니바퀴가 예쁘게 가운데 오도록 세팅 */
+.kumo-table td:nth-child(7) {
+  text-align: center;
+  overflow: visible;
+  /* 버튼 주변 그림자나 효과가 잘리지 않게 설정 */
 }
 
 /* 3. 화살표 위치 강제 고정 */
@@ -187,4 +222,129 @@
 .status-end {
   background-color: #ffeeee !important;
   color: #ff5c5c !important;
+}
+
+/* =========================================
+   🌟 공고 관리 모달창 커스텀 (스케줄 모달 기반)
+========================================= */
+
+/* --- 1. 라이트 모드 기본 설정 --- */
+.job-modal-content {
+  background-color: #ffffff !important;
+  border-radius: 25px !important;
+  border: none !important;
+  padding: 20px !important;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1) !important;
+}
+
+.job-modal-content .modal-header {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.job-modal-content .btn-close {
+  position: absolute;
+  right: 20px;
+  top: 25px;
+}
+
+.job-modal-subtitle {
+  color: #333d4b;
+}
+
+/* --- 버튼 공통 스타일 --- */
+.btn-job-view,
+.btn-job-edit,
+.btn-job-delete {
+  border-radius: 12px;
+  padding: 10px 24px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 보기 버튼 (취소/일반 버튼 느낌) */
+.btn-job-view {
+  background: #ffffff;
+  color: #8b95a1;
+  border: 1px solid #e5e8eb;
+}
+
+.btn-job-view:hover {
+  background: #f4f6f8;
+  border-color: #d0d5db;
+  color: #4e5968;
+}
+
+/* 수정 버튼 (제출/강조 버튼 느낌) */
+.btn-job-edit {
+  background: #7abaff;
+  color: #ffffff;
+  border: none;
+}
+
+.btn-job-edit:hover {
+  background: #5aa3f0;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(122, 186, 255, 0.4);
+}
+
+/* 삭제 버튼 (경고 느낌) */
+.btn-job-delete {
+  background: #fff0f0;
+  color: #ff4d4f;
+  border: 1px solid #ffccc7;
+}
+
+.btn-job-delete:hover {
+  background: #ff4d4f;
+  color: #ffffff;
+  border-color: #ff4d4f;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 77, 79, 0.3);
+}
+
+
+/* --- 2. 다크 모드 (body.dark-mode) --- */
+body.dark-mode .job-modal-content {
+  background-color: #222222 !important;
+  border-radius: 25px !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .job-modal-content .modal-title,
+body.dark-mode .job-modal-subtitle {
+  color: #ffffff !important;
+}
+
+body.dark-mode .job-modal-content .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%) !important;
+}
+
+/* 다크모드 - 보기 버튼 */
+body.dark-mode .btn-job-view {
+  background-color: #2d2d2d !important;
+  border-color: #333d4b !important;
+  color: #aaaaaa !important;
+}
+
+body.dark-mode .btn-job-view:hover {
+  background-color: #3d3d3d !important;
+  color: #ffffff !important;
+}
+
+/* 다크모드 - 삭제 버튼 */
+body.dark-mode .btn-job-delete {
+  background: #3a1a1a !important;
+  color: #ff6b6b !important;
+  border-color: #5a2a2a !important;
+}
+
+body.dark-mode .btn-job-delete:hover {
+  background: #ff4d4f !important;
+  color: #ffffff !important;
 }
