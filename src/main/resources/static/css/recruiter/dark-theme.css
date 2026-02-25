@@ -651,3 +651,9 @@ body.dark-mode .swal2-cancel {
   background-color: #555555 !important;
   color: #ffffff !important;
 }
+
+
+/** 회사 버튼 */
+html.dark-mode .nav-pill:hover {
+  border-color: #b2d7ff;
+}

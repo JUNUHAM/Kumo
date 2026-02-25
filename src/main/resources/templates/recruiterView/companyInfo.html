@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <title>KUMO RECRUITER - 회사 정보 관리</title>
     <script th:src="@{/js/recruiter/recruiterHeader.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -241,6 +242,7 @@
     ></script>
 
     <script th:inline="javascript">
+      /* <![CDATA[ */
       function searchAddress() {
           const zip = document.getElementById('zipcode').value;
           if (!zip || zip.length < 7) {
@@ -276,10 +278,42 @@
       }
 
       function deleteCompany(id) {
-          if (confirm("정말 이 회사 정보를 삭제하시겠습니까?")) {
-              location.href = "/Recruiter/CompanyDelete?id=" + id;
-          }
-      }
+          Swal.fire({
+            title: '회사 삭제',
+            text: '정말 이 회사 정보를 삭제하시겠습니까?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ff4d4f',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: '삭제',
+            cancelButtonText: '취소'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // 🌟 1. URL 가져오기
+              const baseUrl = /*[[@{/api/company/delete/}]]*/ '/api/company/delete/';
+
+              // 🌟 2. fetch 명령어를 넣어줘야 합니다!
+              fetch(baseUrl + id, { method: 'DELETE' })
+                .then(res => {
+                  if (res.status === 409) {
+                    return res.text().then(msg => {
+                      Swal.fire({ icon: 'warning', title: '삭제 불가', text: msg });
+                    });
+                  } else if (res.ok) {
+                    Swal.fire({ icon: 'success', title: '삭제 완료', showConfirmButton: false, timer: 1200 })
+                      .then(() => location.href = '/Recruiter/CompanyInfo');
+                  } else {
+                    Swal.fire({ icon: 'error', title: '오류', text: '삭제에 실패했습니다.' });
+                  }
+                })
+                .catch(err => {
+                  console.error(err);
+                  Swal.fire({ icon: 'error', title: '통신 오류', text: '서버와 연결할 수 없습니다.' });
+                });
+            }
+          });
+        }
+        /* ]]> */
     </script>
   </body>
 </html>

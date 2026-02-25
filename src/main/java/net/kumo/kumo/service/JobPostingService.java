@@ -13,59 +13,37 @@ import lombok.RequiredArgsConstructor;
 import net.kumo.kumo.domain.dto.JobPostingRequestDTO;
 import net.kumo.kumo.domain.entity.CompanyEntity;
 import net.kumo.kumo.domain.entity.OsakaGeocodedEntity;
+import net.kumo.kumo.domain.entity.TokyoGeocodedEntity; // 🌟 도쿄 엔티티 임포트 필요!
 import net.kumo.kumo.domain.entity.UserEntity;
 import net.kumo.kumo.domain.enums.JobStatus;
 import net.kumo.kumo.repository.CompanyRepository;
 import net.kumo.kumo.repository.OsakaGeocodedRepository;
+import net.kumo.kumo.repository.TokyoGeocodedRepository; // 🌟 도쿄 레포지토리 임포트 필요!
 
 @Service
 @RequiredArgsConstructor
 public class JobPostingService {
 
     private final OsakaGeocodedRepository osakaGeocodedRepository;
+    private final TokyoGeocodedRepository tokyoGeocodedRepository; // 🌟 도쿄 레포지토리 추가
     private final CompanyRepository companyRepository;
 
-    /**
-     * 공고 등록 (companies 테이블 연동 및 OsakaGeocoded 테이블 통합 저장)
-     */
     @Transactional
     public void saveJobPosting(JobPostingRequestDTO dto, List<MultipartFile> images, UserEntity user) {
 
-        // 1. [연동 핵심] 선택한 회사 정보 및 위치 정보 추출
-        CompanyEntity company = null;
-        String companyName = null;
-        String address = null;
-        Double lat = 0.0;
-        Double lng = 0.0;
+        // 1. 단 한 번만! 회사 객체를 가져옵니다. (중복 조회 제거)
+        CompanyEntity company = companyRepository.findById(dto.getCompanyId())
+                .orElseThrow(() -> new IllegalArgumentException("회사를 찾을 수 없습니다. ID: " + dto.getCompanyId()));
 
-        // 지역 필드 (지도 필터 및 차트용)
-        String prefJp = null;
-        String cityJp = null;
-        String wardJp = null;
+        String companyName = company.getBizName();
+        String address = (company.getAddressMain() != null ? company.getAddressMain() : "")
+                + (company.getAddressDetail() != null ? " " + company.getAddressDetail() : "");
+        Double lat = company.getLatitude() != null ? company.getLatitude().doubleValue() : 0.0;
+        Double lng = company.getLongitude() != null ? company.getLongitude().doubleValue() : 0.0;
 
-        if (dto.getCompanyId() != null) {
-            company = companyRepository.findById(dto.getCompanyId())
-                    .orElseThrow(() -> new IllegalArgumentException("선택한 회사가 존재하지 않습니다."));
-
-            companyName = company.getBizName();
-            // 주소 결합 (메인 + 상세)
-            address = (company.getAddressMain() != null ? company.getAddressMain() : "")
-                    + (company.getAddressDetail() != null ? " " + company.getAddressDetail() : "");
-
-            // 위도/경도 변환
-            if (company.getLatitude() != null)
-                lat = company.getLatitude().doubleValue();
-            if (company.getLongitude() != null)
-                lng = company.getLongitude().doubleValue();
-
-            // 🌟 [추가] 지역구 정보 연동 (지도 검색 및 도넛 차트 동기화)
-            prefJp = company.getAddrPrefecture();
-            cityJp = company.getAddrCity();
-            wardJp = company.getAddrTown();
-
-            // 회사 아이디 저장
-            company.setCompanyId(dto.getCompanyId());
-        }
+        String prefJp = company.getAddrPrefecture(); // 🌟 "東京都" 또는 "大阪府"
+        String cityJp = company.getAddrCity();
+        String wardJp = company.getAddrTown();
 
         // 2. 이미지 URL 처리
         String imgUrls = "";
@@ -76,39 +54,42 @@ public class JobPostingService {
                     .collect(Collectors.joining(","));
         }
 
-        // 3. 급여 문자열 조합
-        String wage = "";
-        if (dto.getSalaryType() != null && dto.getSalaryAmount() != null) {
-            wage = dto.getSalaryType() + " " + dto.getSalaryAmount() + "円";
-        }
+        // 3. 급여 문자열 및 공통 데이터 세팅
+        String wage = (dto.getSalaryType() != null && dto.getSalaryAmount() != null)
+                ? dto.getSalaryType() + " " + dto.getSalaryAmount() + "円"
+                : "";
+        long datanum = System.currentTimeMillis();
+        LocalDateTime now = LocalDateTime.now();
+        java.time.format.DateTimeFormatter writeTimeFormatter = java.time.format.DateTimeFormatter
+                .ofPattern("yy.MM.dd");
+        String writeTime = now.format(writeTimeFormatter);
 
-        // 4. row_no 번호 자동 생성 (Integer 타입 대응)
+        // 🌟🌟 4. [핵심] 도쿄 vs 오사카 분기 처리 🌟🌟
+        if ("東京都".equals(prefJp)) {
+            saveToTokyo(dto, user, company, companyName, address, lat, lng, prefJp, cityJp, wardJp, imgUrls, wage,
+                    datanum, now, writeTime);
+        } else {
+            // 기본값은 오사카로 처리 (大阪府이거나 다른 지역일 경우 일단 오사카 DB로)
+            saveToOsaka(dto, user, company, companyName, address, lat, lng, prefJp, cityJp, wardJp, imgUrls, wage,
+                    datanum, now, writeTime);
+        }
+    }
+
+    // ==========================================
+    // 🚅 오사카 저장 로직 (기존 로직 분리)
+    // ==========================================
+    private void saveToOsaka(JobPostingRequestDTO dto, UserEntity user, CompanyEntity company, String companyName,
+            String address, Double lat, Double lng, String prefJp, String cityJp, String wardJp, String imgUrls,
+            String wage, long datanum, LocalDateTime now, String writeTime) {
         Integer maxNo = osakaGeocodedRepository.findMaxRowNo();
         Integer nextRowNo = (maxNo == null) ? 1 : maxNo + 1;
 
-        // 5. datanum 생성 (고유 식별자)
-        long datanum = System.currentTimeMillis();
-
-        // 6. 엔티티 생성 및 데이터 매핑
         OsakaGeocodedEntity entity = new OsakaGeocodedEntity();
-
-        // 1. 날짜 포맷터 준비 (YY.MM.DD 형식)
-        java.time.format.DateTimeFormatter writeTimeFormatter = java.time.format.DateTimeFormatter
-                .ofPattern("yy.MM.dd");
-
-        // 2. 현재 시간을 기준으로 생성 시간 세팅
-        LocalDateTime now = LocalDateTime.now();
         entity.setCreatedAt(now);
-
-        // 🌟 [핵심] 첫 번째 사진(write_time)을 두 번째 사진(created_at)에서 추출하여 채우기
-        // 2026-02-24 -> 26.02.24 로 변환됩니다.
-        entity.setWriteTime(now.format(writeTimeFormatter));
-
-        // 유저 정보 저장
+        entity.setWriteTime(writeTime);
         entity.setUser(user);
-
-        // 🌟 연관 관계 및 지역 데이터 세팅
         entity.setCompanyName(companyName);
+        entity.setCompany(company);
         entity.setAddress(address);
         entity.setLat(lat);
         entity.setLng(lng);
@@ -116,7 +97,6 @@ public class JobPostingService {
         entity.setCityJp(cityJp);
         entity.setWardJp(wardJp);
 
-        // 공고 기본 정보 세팅
         entity.setRowNo(nextRowNo);
         entity.setDatanum(datanum);
         entity.setTitle(dto.getTitle());
@@ -127,32 +107,57 @@ public class JobPostingService {
         entity.setBody(dto.getDescription());
         entity.setWage(wage);
         entity.setImgUrls(imgUrls.isEmpty() ? null : imgUrls);
-
-        // 상태값
-        entity.setCreatedAt(LocalDateTime.now());
         entity.setStatus(JobStatus.RECRUITING);
 
-        // 전체 주소 쪼개기 및 저정
-        parseAddressToSixColumns(entity, entity.getAddress());
-
-        // 7. 저장
+        parseAddressToSixColumnsOsaka(entity, address);
         osakaGeocodedRepository.save(entity);
     }
 
-    /**
-     * 일본어 전체 주소에서 현, 시, 구를 추출하고 한국어로 번역하여 세팅
-     */
-    private void parseAddressToSixColumns(OsakaGeocodedEntity entity, String fullAddress) {
+    // ==========================================
+    // 🚅 도쿄 저장 로직 (신규 추가)
+    // ==========================================
+    private void saveToTokyo(JobPostingRequestDTO dto, UserEntity user, CompanyEntity company, String companyName,
+            String address, Double lat, Double lng, String prefJp, String cityJp, String wardJp, String imgUrls,
+            String wage, long datanum, LocalDateTime now, String writeTime) {
+        Integer maxNo = tokyoGeocodedRepository.findMaxRowNo();
+        Integer nextRowNo = (maxNo == null) ? 1 : maxNo + 1;
+
+        TokyoGeocodedEntity entity = new TokyoGeocodedEntity();
+        entity.setCreatedAt(now);
+        entity.setWriteTime(writeTime);
+        entity.setUser(user);
+        entity.setCompanyName(companyName);
+        entity.setCompany(company);
+        entity.setAddress(address);
+        entity.setLat(lat);
+        entity.setLng(lng);
+        entity.setPrefectureJp(prefJp);
+
+        entity.setRowNo(nextRowNo);
+        entity.setDatanum(datanum);
+        entity.setTitle(dto.getTitle());
+        entity.setContactPhone(dto.getContactPhone());
+        entity.setHref("/Recruiter/posting/" + datanum);
+        entity.setPosition(dto.getPosition());
+        entity.setJobDescription(dto.getPositionDetail());
+        entity.setBody(dto.getDescription());
+        entity.setWage(wage);
+        entity.setImgUrls(imgUrls.isEmpty() ? null : imgUrls);
+        entity.setStatus(JobStatus.RECRUITING);
+
+        parseAddressToSixColumnsTokyo(entity, address);
+        tokyoGeocodedRepository.save(entity);
+    }
+
+    // ==========================================
+    // 🗺️ 주소 파싱 로직 (오사카/도쿄 분리)
+    // ==========================================
+    private void parseAddressToSixColumnsOsaka(OsakaGeocodedEntity entity, String fullAddress) {
+        // ... (사장님이 쓰시던 기존 parseAddressToSixColumns 코드와 동일하게 넣으시면 됩니다)
         if (fullAddress == null || fullAddress.isBlank())
             return;
-
-        // 1. 일본어 주소 추출 (JP)
-        // 예: "大阪府 大阪市 東淀川구..." -> " ", "府", "市", "区" 기준으로 파싱
-        String[] parts = fullAddress.split("\\s+"); // 공백 기준으로 분리
-
-        String prefJp = null;
-        String cityJp = null;
-        String wardJp = null;
+        String[] parts = fullAddress.split("\\s+");
+        String prefJp = null, cityJp = null, wardJp = null;
 
         for (String part : parts) {
             if (part.endsWith("府") || part.endsWith("県"))
@@ -167,23 +172,72 @@ public class JobPostingService {
         entity.setCityJp(cityJp);
         entity.setWardJp(wardJp);
 
-        // 2. 한국어 번역 매핑 (KR) - 오사카 기준 전용 매핑
         if ("大阪府".equals(prefJp))
             entity.setPrefectureKr("오사카부");
         if ("大阪市".equals(cityJp))
             entity.setCityKr("오사카시");
-
         if (wardJp != null) {
-            // 이미지(image_4414b1.jpg)에 등장하는 주요 구 매핑
-            Map<String, String> wardMap = Map.of(
-                    "中央区", "주오구",
-                    "浪速区", "나니와구",
-                    "北区", "기타구",
-                    "福島区", "후쿠시마구",
-                    "都島구", "미야코지마구",
-                    "大正区", "다이쇼구",
-                    "東淀川区", "히가시요도가와구");
-            entity.setWardKr(wardMap.getOrDefault(wardJp, wardJp)); // 매핑 없으면 일본어 그대로 유지
+            Map<String, String> wardMap = Map.of("中央区", "주오구", "浪速区", "나니와구", "北区", "기타구");
+            entity.setWardKr(wardMap.getOrDefault(wardJp, wardJp));
+        }
+    }
+
+    private void parseAddressToSixColumnsTokyo(TokyoGeocodedEntity entity, String fullAddress) {
+        if (fullAddress == null || fullAddress.isBlank())
+            return;
+        String[] parts = fullAddress.split("\\s+");
+        String prefJp = null, cityJp = null, wardJp = null;
+
+        for (String part : parts) {
+            if (part.endsWith("都"))
+                prefJp = part; // 도쿄도는 府가 아니라 都입니다!
+            else if (part.endsWith("市"))
+                cityJp = part;
+            else if (part.endsWith("区"))
+                wardJp = part;
+        }
+
+        entity.setPrefectureJp(prefJp);
+        // ✅ 수정 (도쿄 엔티티 구조에 맞게 통합!)
+        // 도쿄는 시/구를 wardCityJp 하나로 쓰기로 했었죠!
+        entity.setWardCityJp(wardJp != null ? wardJp : cityJp);
+
+        if ("東京都".equals(prefJp))
+            entity.setPrefectureKr("도쿄도");
+        // 도쿄의 주요 구 번역 세팅
+        // 2. 한국어 세팅 (setWardKr 대신 setWardCityKr 사용!)
+        // 🗺️ 도쿄 23구 전체 번역 매핑 (Map.ofEntries 사용)
+        if (wardJp != null) {
+            Map<String, String> tokyoMap = Map.ofEntries(
+                    Map.entry("千代田区", "지요다구"),
+                    Map.entry("中央区", "주오구"),
+                    Map.entry("港区", "미나토구"),
+                    Map.entry("新宿区", "신주쿠구"),
+                    Map.entry("文京区", "분쿄구"),
+                    Map.entry("台東区", "다이토구"),
+                    Map.entry("墨田区", "스미다구"),
+                    Map.entry("江東区", "고토구"),
+                    Map.entry("品川区", "시나가와구"),
+                    Map.entry("目黒区", "메구로구"),
+                    Map.entry("大田区", "오타구"),
+                    Map.entry("世田谷区", "세타가야구"),
+                    Map.entry("渋谷区", "시부야구"),
+                    Map.entry("中野区", "나카노구"),
+                    Map.entry("杉並区", "스기나미구"),
+                    Map.entry("豊島区", "도시마구"),
+                    Map.entry("北区", "기타구"),
+                    Map.entry("荒川区", "아라카와구"),
+                    Map.entry("板橋区", "이타바시구"),
+                    Map.entry("練馬区", "네리마구"),
+                    Map.entry("足立区", "아다치구"),
+                    Map.entry("葛飾区", "가쓰시카구"),
+                    Map.entry("江戸川区", "에도가와구"),
+                    // 필요하다면 도쿄도의 주요 시(市)도 아래처럼 계속 추가할 수 있습니다!
+                    Map.entry("八王子市", "하치오지시"),
+                    Map.entry("町田市", "마치다시"));
+
+            // 매핑된 한국어 구 이름이 있으면 넣고, 없으면 일본어 원본 그대로 저장!
+            entity.setWardCityKr(tokyoMap.getOrDefault(wardJp, wardJp));
         }
     }
 }

@@ -173,8 +173,15 @@
   border: none;
   font-weight: 700;
   font-size: 14px;
-  text-decoration: underline;
+  text-decoration: none;
   cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.btn-delete:hover {
+  color: #d71f2e;
 }
 
 /* 6. 푸터 고정 */

@@ -228,6 +228,6 @@ public class RecruiterController {
         // 2. 서비스에 'user' 객체까지 전달합니다.
         js.saveJobPosting(dto, images, user);
 
-        return "redirect:/Recruiter/Main";
+        return "redirect:/Recruiter/JobManage";
     }
 }
