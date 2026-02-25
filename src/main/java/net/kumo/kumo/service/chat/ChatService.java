@@ -5,6 +5,8 @@ import net.kumo.kumo.domain.dto.ChatMessageDTO; // ★ Step 1에서 만든 DTO �
 import net.kumo.kumo.domain.entity.ChatMessageEntity;
 import net.kumo.kumo.domain.entity.ChatRoomEntity;
 import net.kumo.kumo.domain.entity.Enum.MessageType;
+import net.kumo.kumo.domain.entity.UserEntity;
+import net.kumo.kumo.repository.UserRepository;
 import net.kumo.kumo.repository.chat.ChatMessageRepository;
 import net.kumo.kumo.repository.chat.ChatRoomRepository;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ public class ChatService {
     // (필요 시 주석 해제하여 사용)
     // private final UserRepository userRepository;
     // private final JobPostingRepository jobPostingRepository;
+    private final UserRepository userRepository;
 
     /**
      * 1. 방 만들기 (또는 찾기)
@@ -52,22 +55,24 @@ public class ChatService {
      * 2. 메시지 저장하기 (정석 개편: DTO 기반)
      * - 엔티티를 직접 받지 않고 DTO를 받아 변환 후 저장합니다.
      */
+    // [ChatService.java]
     public ChatMessageDTO saveMessage(ChatMessageDTO dto) {
-        // 1. DTO -> Entity 변환을 위한 정보 조회
         ChatRoomEntity room = getChatRoom(dto.getRoomId());
 
-        // ★ 주의: 실제 구현 시에는 userRepository에서 발신자 객체를 찾아야 합니다.
-        // ChatMessageEntity 생성 (기존 필드 구조 유지)
+        // ★ 1. 발신자(UserEntity)를 찾는 로직이 반드시 필요합니다.
+        // (userRepository 주석을 풀고 아래처럼 연결하세요)
+        UserEntity sender = userRepository.findById(dto.getSenderId())
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
         ChatMessageEntity entity = ChatMessageEntity.builder()
                 .room(room)
-                .messageType(MessageType.valueOf(dto.getMessageType()))
+                .sender(sender) // ★ 이 'sender'가 빠지면 DB 저장 시 에러(500)가 발생합니다.
                 .content(dto.getContent())
+                .messageType(MessageType.valueOf(dto.getMessageType()))
                 .isRead(false)
                 .build();
 
         ChatMessageEntity saved = chatMessageRepository.save(entity);
-
-        // 2. 저장된 Entity -> DTO로 다시 변환하여 반환 (포맷팅 포함)
         return convertToDTO(saved);
     }
 
@@ -111,5 +116,11 @@ public class ChatService {
     public ChatRoomEntity getChatRoom(Long roomId) {
         return chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("방이 없습니다."));
+    }
+
+    // ChatService 클래스 내부 어디든 상관없지만, 보통 맨 아래에 넣습니다.
+    public List<ChatRoomEntity> getChatRoomsForUser(Long userId) {
+        // Repository에게 "내가 구직자거나 구인자인 방을 싹 다 찾아와!"라고 시킵니다.
+        return chatRoomRepository.findBySeekerUserIdOrRecruiterUserId(userId, userId);
     }
 }

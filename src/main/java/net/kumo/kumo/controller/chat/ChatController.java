@@ -1,7 +1,7 @@
 package net.kumo.kumo.controller.chat;
 
 import lombok.RequiredArgsConstructor;
-import net.kumo.kumo.domain.dto.ChatMessageDTO; // ★ Step 1에서 만든 DTO 추가
+import net.kumo.kumo.domain.dto.ChatMessageDTO;
 import net.kumo.kumo.domain.entity.ChatRoomEntity;
 import net.kumo.kumo.domain.entity.UserEntity;
 import net.kumo.kumo.service.chat.ChatService;
@@ -26,34 +26,24 @@ public class ChatController {
     private final ChatService chatService;
     private final SimpMessagingTemplate messagingTemplate;
 
-    @Value("${file.upload.dir}")
-    private String uploadDir;
+    // [이식 포인트] application.properties의 file.upload.chat 값을 가져옵니다.
+    @Value("${file.upload.chat}")
+    private String chatUploadDir;
 
     // ======================================================================
     // 1. [화면 연결] 웹 페이지 이동 관련 (HTTP)
     // ======================================================================
 
-    @PostMapping("/chat/room")
-    public String createOrEnterRoom(@RequestParam("seekerId") Long seekerId,
-            @RequestParam("recruiterId") Long recruiterId,
-            @RequestParam(value = "jobPostId", defaultValue = "1") Long jobPostId) {
-
-        ChatRoomEntity room = chatService.createOrGetChatRoom(seekerId, recruiterId, jobPostId);
-
-        if (room == null)
-            return "redirect:/chat/list?userId=" + seekerId;
-
-        return "redirect:/chat/room/" + room.getId() + "?userId=" + seekerId;
-    }
-
     @GetMapping("/chat/room/{roomId}")
     public String enterRoom(@PathVariable("roomId") Long roomId,
-            @RequestParam("userId") Long userId,
+            @RequestParam(value = "userId", required = false) Long userId,
             Model model) {
 
-        ChatRoomEntity room = chatService.getChatRoom(roomId);
+        if (userId == null) {
+            return "redirect:/chat/list";
+        }
 
-        // ★ 수정 포인트: 서비스가 이제 DTO 리스트를 반환하므로 타입을 DTO로 변경
+        ChatRoomEntity room = chatService.getChatRoom(roomId);
         List<ChatMessageDTO> history = chatService.getMessageHistory(roomId);
 
         UserEntity opponent;
@@ -65,7 +55,7 @@ public class ChatController {
 
         model.addAttribute("roomId", roomId);
         model.addAttribute("userId", userId);
-        model.addAttribute("history", history); // DTO 리스트가 HTML로 전달됨
+        model.addAttribute("history", history);
 
         model.addAttribute("roomName", opponent.getNickname());
         model.addAttribute("jobTitle", room.getJobPosting().getTitle());
@@ -76,9 +66,19 @@ public class ChatController {
     }
 
     @GetMapping("/chat/list")
-    public String chatList(@RequestParam("userId") Long userId, Model model) {
-        List<ChatRoomEntity> myRooms = chatService.getSeekerChatRooms(userId);
-        model.addAttribute("list", myRooms);
+    public String chatList(
+            @RequestParam(value = "userId", required = false) Long userId,
+            Model model) {
+
+        if (userId == null) {
+            return "redirect:/login";
+        }
+
+        List<ChatRoomEntity> chatRooms = chatService.getChatRoomsForUser(userId);
+
+        model.addAttribute("chatRooms", chatRooms);
+        model.addAttribute("userId", userId);
+
         return "chat/chat_list";
     }
 
@@ -92,17 +92,22 @@ public class ChatController {
             if (file.isEmpty())
                 return ResponseEntity.badRequest().body("파일이 없습니다.");
 
+            // [이식 포인트] 프로젝트 루트 경로를 기준으로 절대 경로 계산 (조원 공용)
+            String rootPath = System.getProperty("user.dir");
+            String fullPath = rootPath + "/" + chatUploadDir;
+
             String originalFilename = file.getOriginalFilename();
             String savedFilename = UUID.randomUUID().toString() + "_" + originalFilename;
 
-            File folder = new File(uploadDir);
+            File folder = new File(fullPath);
             if (!folder.exists())
                 folder.mkdirs();
 
-            File dest = new File(uploadDir + savedFilename);
+            File dest = new File(fullPath + savedFilename);
             file.transferTo(dest);
 
-            return ResponseEntity.ok("/images/uploadFile/" + savedFilename);
+            // [이식 포인트] WebMvcConfig에서 정한 /chat_images/ 주소로 리턴
+            return ResponseEntity.ok("/chat_images/" + savedFilename);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -114,17 +119,9 @@ public class ChatController {
     // 3. [실시간 통신] 메시지 주고 받기 (WebSocket)
     // ======================================================================
 
-    /**
-     * [메시지 전송]
-     * - ★ 수정 포인트: 클라이언트에서 보낸 JSON 데이터를 DTO로 받음
-     */
     @MessageMapping("/chat/message")
     public void sendMessage(ChatMessageDTO messageDTO) {
-        // 1. 메시지 저장 및 가공 (Service에서 DTO로 처리)
         ChatMessageDTO savedMessage = chatService.saveMessage(messageDTO);
-
-        // 2. 메시지 배달
-        // DTO에 담긴 roomId를 사용하여 구독자들에게 전송
         messagingTemplate.convertAndSend("/sub/chat/room/" + savedMessage.getRoomId(), savedMessage);
     }
 }

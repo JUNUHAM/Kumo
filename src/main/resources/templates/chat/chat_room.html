@@ -14,32 +14,63 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 
     <style>
+        /* [정석] dialog 기본 스타일 초기화 (기존 레이아웃 보존) */
+        .std-dialog-clear {
+            border: none;
+            background: transparent;
+            padding: 0;
+            width: 100%;
+            max-width: 480px;
+            margin: auto;
+            outline: none;
+            overflow: visible;
+        }
+
+        .std-dialog-clear::backdrop {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        /* --- 이미지 확대 모달 (전체 화면) --- */
         .image-modal {
             display: none;
+            /* 평소엔 숨김 */
             position: fixed;
+            /* ★핵심: 뷰포트(브라우저 창 전체) 기준으로 고정 */
             z-index: 9999;
+            /* 다른 모든 요소 위에 표시 */
             left: 0;
             top: 0;
             width: 100%;
+            /* 화면 너비 100% */
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
+            /* 화면 높이 100% */
+            background-color: rgba(0, 0, 0, 0.9);
+            /* 아주 짙은 검은색 배경 */
+
+            /* 내용물 중앙 정렬을 위한 Flexbox 설정 */
+            display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
         }
 
+        /* 확대된 이미지 스타일 */
         .modal-content-img {
-            max-width: 90%;
-            max-height: 80%;
-            border-radius: 5px;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            /* 화면을 꽉 채우되, 비율은 유지 */
+            max-width: 100%;
+            max-height: 100%;
             object-fit: contain;
-            animation: zoomIn 0.2s ease-out;
+            /* 이미지 비율이 깨지지 않게 컨테이너에 맞춤 */
+
+            /* 지저분해 보일 수 있는 그림자 제거 */
+            box-shadow: none;
         }
 
+        /* 닫기 버튼 (X) 스타일 */
         .close-modal-btn {
             position: absolute;
-            top: 20px;
+            /* 모달 배경 기준으로 위치 잡기 */
+            top: 30px;
             right: 30px;
             color: #f1f1f1;
             font-size: 40px;
@@ -47,15 +78,17 @@
             cursor: pointer;
             transition: 0.3s;
             z-index: 10000;
+            /* 이미지보다도 위에 */
         }
 
         .close-modal-btn:hover {
             color: #bbb;
         }
 
+        /* 줌인 애니메이션 키프레임 */
         @keyframes zoomIn {
             from {
-                transform: scale(0.8);
+                transform: scale(0.9);
                 opacity: 0;
             }
 
@@ -83,6 +116,9 @@
 
     <div class="mobile-container">
         <div class="chat-header">
+            <a th:href="@{/chat/list(userId=${userId})}" class="header-back-btn">
+                <i class="fa-solid fa-chevron-left"></i>
+            </a>
 
             <div class="header-translate-btn">
                 <img th:src="@{/images/icons/chat_room_translate.svg}" class="translate-icon-img" alt="번역">
@@ -108,40 +144,28 @@
         <div class="msg-area" id="msgArea">
             <th:block th:each="msg, stat : ${history}">
 
-                <th:block
-                    th:if="${stat.first} or ${!#strings.equals(#temporals.format(msg.createdAt, 'yyyy-MM-dd'), #temporals.format(history[stat.index-1].createdAt, 'yyyy-MM-dd'))}">
-                    <div class="date-divider">
-                        <span class="date-divider-text"
-                            th:text="${#temporals.format(msg.createdAt, 'yyyy년 M월 d일 EEEE')}"></span>
-                    </div>
-                </th:block>
-
-                <div th:if="${msg.sender.userId != userId}" class="msg-row other"
-                    th:data-date="${#temporals.format(msg.createdAt, 'yyyy-MM-dd')}">
-
+                <div th:if="${msg.senderId != userId}" class="msg-row other">
                     <img th:src="@{/images/dog_profile.jpg}" class="profile-img">
 
-                    <th:block th:if="${msg.messageType.name() == 'TEXT'}">
+                    <th:block th:if="${msg.messageType == 'TEXT'}">
                         <div class="msg-bubble" th:text="${msg.content}">내용</div>
                     </th:block>
-                    <th:block th:if="${msg.messageType.name() == 'IMAGE'}">
+                    <th:block th:if="${msg.messageType == 'IMAGE'}">
                         <img th:src="${msg.content}" class="chat-image"
                             style="max-width: 200px; border-radius: 10px; margin-top: 5px;"
                             onclick="openImageModal(this.src)">
                     </th:block>
 
-                    <span class="msg-time" th:text="${#temporals.format(msg.createdAt, 'HH:mm')}"></span>
+                    <span class="msg-time" th:text="${msg.createdAt}"></span>
                 </div>
 
-                <div th:if="${msg.sender.userId == userId}" class="msg-row me"
-                    th:data-date="${#temporals.format(msg.createdAt, 'yyyy-MM-dd')}">
+                <div th:if="${msg.senderId == userId}" class="msg-row me">
+                    <span class="msg-time" th:text="${msg.createdAt}"></span>
 
-                    <span class="msg-time" th:text="${#temporals.format(msg.createdAt, 'HH:mm')}"></span>
-
-                    <th:block th:if="${msg.messageType.name() == 'TEXT'}">
+                    <th:block th:if="${msg.messageType == 'TEXT'}">
                         <div class="msg-bubble" th:text="${msg.content}">내용</div>
                     </th:block>
-                    <th:block th:if="${msg.messageType.name() == 'IMAGE'}">
+                    <th:block th:if="${msg.messageType == 'IMAGE'}">
                         <img th:src="${msg.content}" class="chat-image"
                             style="max-width: 200px; border-radius: 10px; margin-top: 5px;"
                             onclick="openImageModal(this.src)">
@@ -176,11 +200,6 @@
                                 class="fa-solid fa-comment-dots" style="color: #3b1e1e;"></i></div>
                         <span class="menu-name">자주 쓰는 메시지</span>
                     </div>
-                    <div class="menu-item" onclick="alert('지도 기능은 준비 중입니다!')">
-                        <div class="menu-icon-circle" style="background-color: #e3f2fd;"><i
-                                class="fa-solid fa-location-dot" style="color: #2196f3;"></i></div>
-                        <span class="menu-name">위치 공유</span>
-                    </div>
                     <div class="menu-item" onclick="document.getElementById('fileInput').click(); closeMainMenu();">
                         <div class="menu-icon-circle" style="background-color: #ffebee;"><i class="fa-solid fa-image"
                                 style="color: #f44336;"></i></div>
@@ -190,9 +209,14 @@
                         <div class="menu-icon-circle" style="background-color: #e8f5e9;"><i
                                 class="fa-solid fa-address-card" style="color: #4caf50;"></i></div>
                         <span class="menu-name">문서</span>
+
+                    </div>
+                    <div class="menu-item" onclick="alert('추후에 구현 예정이에요!')">
+                        <div class="menu-icon-circle" style="background-color: #e3f2fd;"><i
+                                class="fa-solid fa-calendar-check" style="color: #2196f3;"></i></div>
+                        <span class="menu-name">면접 일정</span>
                     </div>
                 </div>
-            </div>
         </dialog>
 
         <dialog id="templateMenu" class="std-dialog-clear" style="margin-bottom: 0;">
@@ -226,7 +250,6 @@
 
                 stompClient.connect({}, function (frame) {
                     console.log('Connected: ' + frame);
-                    initLastChatDate();
                     stompClient.subscribe('/sub/chat/room/' + roomId, function (messageOutput) {
                         showMessage(JSON.parse(messageOutput.body));
                     });
@@ -239,9 +262,10 @@
                 var messageContent = msgInput.value.trim();
 
                 if (messageContent && stompClient) {
+                    // [수정] DTO 규격에 맞게 변수명 단순화
                     var chatMessage = {
-                        room: { id: roomId },
-                        sender: { userId: myId },
+                        roomId: roomId,
+                        senderId: myId,
                         content: messageContent,
                         messageType: 'TEXT'
                     };
@@ -252,6 +276,42 @@
                     msgInput.style.overflowY = 'hidden';
                     msgInput.focus();
                 }
+            }
+
+            function showMessage(message) {
+                // [수정] message.senderId 사용
+                var isMe = (message.senderId == myId);
+                var div = document.createElement('div');
+
+                // [수정] 서버에서 보내준 createdAt (HH:mm) 그대로 사용
+                var timeString = message.createdAt;
+
+                var finalContentHtml = "";
+                if (message.messageType === 'IMAGE') {
+                    finalContentHtml = `<img src="${message.content}" class="chat-image" 
+                                        style="max-width: 200px; border-radius: 10px; margin-top: 5px;"
+                                        onclick="openImageModal(this.src)">`;
+                } else {
+                    finalContentHtml = `<div class="msg-bubble">${message.content}</div>`;
+                }
+
+                if (isMe) {
+                    div.className = "msg-row me";
+                    div.innerHTML = `
+                        <span class="msg-time">${timeString}</span>
+                        ${finalContentHtml}
+                    `;
+                } else {
+                    div.className = "msg-row other";
+                    div.innerHTML = `
+                        <img src="/images/dog_profile.jpg" class="profile-img">
+                        ${finalContentHtml}
+                        <span class="msg-time">${timeString}</span>
+                    `;
+                }
+
+                msgArea.appendChild(div);
+                scrollToBottom();
             }
 
             function autoResize(textarea) {
@@ -276,50 +336,6 @@
                 }
             }
 
-            function showMessage(message) {
-                var dateObj = message.createdAt ? new Date(message.createdAt) : new Date();
-                checkAndAddDateDivider(dateObj);
-
-                var isMe = (message.sender.userId == myId);
-                var div = document.createElement('div');
-                var timeString = dateObj.getHours().toString().padStart(2, '0') + ':' +
-                    dateObj.getMinutes().toString().padStart(2, '0');
-
-                var year = dateObj.getFullYear();
-                var month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-                var day = dateObj.getDate().toString().padStart(2, '0');
-                var dateStr = year + "-" + month + "-" + day;
-
-                var finalContentHtml = "";
-                if (message.messageType === 'IMAGE') {
-                    finalContentHtml = `<img src="${message.content}" class="chat-image" 
-                                        style="max-width: 200px; border-radius: 10px; margin-top: 5px;"
-                                        onclick="openImageModal(this.src)">`;
-                } else {
-                    finalContentHtml = `<div class="msg-bubble">${message.content}</div>`;
-                }
-
-                if (isMe) {
-                    div.className = "msg-row me";
-                    div.setAttribute("data-date", dateStr);
-                    div.innerHTML = `
-                        <span class="msg-time">${timeString}</span>
-                        ${finalContentHtml}
-                    `;
-                } else {
-                    div.className = "msg-row other";
-                    div.setAttribute("data-date", dateStr);
-                    div.innerHTML = `
-                        <img src="/images/dog_profile.jpg" class="profile-img">
-                        ${finalContentHtml}
-                        <span class="msg-time">${timeString}</span>
-                    `;
-                }
-
-                msgArea.appendChild(div);
-                scrollToBottom();
-            }
-
             function uploadImage() {
                 var fileInput = document.getElementById('fileInput');
                 var file = fileInput.files[0];
@@ -336,9 +352,10 @@
                                 alert("사진 업로드 실패");
                                 return;
                             }
+                            // [수정] DTO 규격화
                             var chatMessage = {
-                                room: { id: roomId },
-                                sender: { userId: myId },
+                                roomId: roomId,
+                                senderId: myId,
                                 content: imageUrl,
                                 messageType: 'IMAGE'
                             };
@@ -348,108 +365,20 @@
                 }
             }
 
-            function checkAndAddDateDivider(dateObj) {
-                var year = dateObj.getFullYear();
-                var month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-                var day = dateObj.getDate().toString().padStart(2, '0');
-                var dateStr = year + "-" + month + "-" + day;
-                if (lastChatDate !== dateStr) {
-                    var days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
-                    var dayName = days[dateObj.getDay()];
-                    var fullDateText = year + "년 " + parseInt(month) + "월 " + parseInt(day) + "일 " + dayName;
-                    var dividerDiv = document.createElement('div');
-                    dividerDiv.className = "date-divider";
-                    dividerDiv.innerHTML = `<span class="date-divider-text">${fullDateText}</span>`;
-                    msgArea.appendChild(dividerDiv);
-                    lastChatDate = dateStr;
-                }
-            }
-            function initLastChatDate() {
-                var rows = document.querySelectorAll('.msg-row');
-                if (rows.length > 0) {
-                    var lastRow = rows[rows.length - 1];
-                    var dateAttr = lastRow.getAttribute('data-date');
-                    if (dateAttr) lastChatDate = dateAttr;
-                }
-            }
             function scrollToBottom() {
                 setTimeout(function () {
                     msgArea.scrollTop = msgArea.scrollHeight;
                 }, 50);
             }
-            function goBackToList() {
-                var userId = document.getElementById("myId").value;
-                location.href = userId ? '/chat/list?userId=' + userId : '/chat/list';
-            }
 
-            function openImageModal(src) {
-                var modal = document.getElementById("imageModal");
-                var modalImg = document.getElementById("modalImage");
-                modal.style.display = "flex";
-                modalImg.src = src;
-            }
-
-            function closeImageModal() {
-                document.getElementById("imageModal").style.display = "none";
-            }
-
-            // [메인 메뉴] 열기
-            function openMainMenu() {
-                document.getElementById('mainPlusMenu').style.display = 'flex';
-            }
-
-            // [메인 메뉴] 닫기
-            function closeMainMenu() {
-                document.getElementById('mainPlusMenu').style.display = 'none';
-            }
-
-            // [서브 메뉴 연결] 메인 메뉴 닫으면서 -> 원하는 기능 열기
-            function openSubMenu(type) {
-                closeMainMenu(); // 1차 메뉴 닫고
-
-                if (type === 'template') {
-                    openTemplateMenu(); // 아까 만든 '상용구' 메뉴 열기
-                }
-                // 나중에 여기에 'map' 등 추가 가능
-            }
-
-            // 1. 메뉴 열기
-            function openTemplateMenu() {
-                document.getElementById('templateMenu').style.display = 'flex';
-            }
-
-            // 2. 메뉴 닫기
-            function closeTemplateMenu() {
-                document.getElementById('templateMenu').style.display = 'none';
-            }
-
-            // 3. [수정됨] 텍스트 입력창에 글자 넣기
-            function insertText(text) {
-                // 지존용사님의 HTML ID인 'msgInput'을 찾도록 수정했습니다!
-                const inputField = document.getElementById('msgInput');
-
-                if (inputField) {
-                    inputField.value = text; // 글자 입력
-                    inputField.focus();      // 커서 깜빡임
-                    // (옵션) 높이 자동 조절 함수가 있다면 실행 (지존용사님 코드에 autoResize가 있어서 추가함)
-                    if (typeof autoResize === 'function') {
-                        autoResize(inputField);
-                    }
-                } else {
-                    alert("입력창(msgInput)을 찾을 수 없습니다!");
-                }
-
-                closeTemplateMenu(); // 메뉴 닫기
-            }
-
-            // [정석] 모달 제어 변수 및 함수
+            // [정석] 모달 제어 전용 (기존 중복 함수 정리)
             const modalImg = document.getElementById("imageModal");
             const modalMain = document.getElementById("mainPlusMenu");
             const modalTemp = document.getElementById("templateMenu");
 
             function openImageModal(src) {
                 document.getElementById("modalImage").src = src;
-                modalImg.showModal(); // 정석: showModal() 호출
+                modalImg.showModal();
             }
             function closeImageModal() { modalImg.close(); }
 
@@ -459,11 +388,111 @@
             function openTemplateMenu() { modalTemp.showModal(); }
             function closeTemplateMenu() { modalTemp.close(); }
 
-            // [정석 포인트] 배경 클릭 시 자동으로 닫히는 기능 추가
+            function openSubMenu(type) {
+                closeMainMenu();
+                if (type === 'template') openTemplateMenu();
+            }
+
+            function insertText(text) {
+                const inputField = document.getElementById('msgInput');
+                if (inputField) {
+                    inputField.value = text;
+                    inputField.focus();
+                    if (typeof autoResize === 'function') autoResize(inputField);
+                }
+                closeTemplateMenu();
+            }
+
+            // 배경 클릭 시 닫기
             [modalImg, modalMain, modalTemp].forEach(m => {
                 m.addEventListener('click', (e) => {
                     if (e.target.nodeName === 'DIALOG') m.close();
                 });
+            });
+
+            // [배치 번역] 769자를 2초 만에 처리하는 고속 버전
+            async function translateAllMessages() {
+                console.log("🚀 [DEBUG] 번역 프로세스 시작"); // 이게 안 찍히면 클릭이 안 된 것임
+
+                const translateBtn = document.querySelector('.header-translate-btn');
+                const bubbles = document.querySelectorAll('.msg-bubble');
+
+                const textsToTranslate = [];
+                const targetBubbles = [];
+
+                // 1. 번역할 텍스트 수집
+                bubbles.forEach(bubble => {
+                    if (!bubble.querySelector('.translated-text')) {
+                        const txt = bubble.innerText.trim();
+                        if (txt) {
+                            textsToTranslate.push(txt);
+                            targetBubbles.push(bubble);
+                        }
+                    }
+                });
+
+                if (textsToTranslate.length === 0) {
+                    console.log("⚠️ 번역할 메시지가 없습니다.");
+                    return;
+                }
+
+                try {
+                    // 첫 번째 문장으로 언어 감지
+                    const isKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(textsToTranslate[0]);
+                    const targetLang = isKorean ? 'JA' : 'KO';
+
+                    console.log(`📡 서버에 ${textsToTranslate.length}개 문장 번역 요청 중...`);
+
+                    const response = await fetch('/api/translate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            text: textsToTranslate, // 배열로 전송
+                            target_lang: targetLang
+                        })
+                    });
+
+                    if (!response.ok) throw new Error(`서버 응답 실패: ${response.status}`);
+
+                    const data = await response.json();
+                    console.log("✅ 서버 응답 수신:", data);
+
+                    // 2. 결과 렌더링
+                    if (data && data.translations) {
+                        data.translations.forEach((item, index) => {
+                            const bubble = targetBubbles[index];
+                            if (!bubble) return;
+
+                            const hr = document.createElement('hr');
+                            hr.style.margin = '5px 0';
+                            hr.style.border = '0.5px solid rgba(0,0,0,0.1)';
+
+                            const div = document.createElement('div');
+                            div.className = 'translated-text';
+                            div.style.fontSize = '0.85em';
+                            div.style.color = '#555';
+                            div.innerText = '🌐 ' + item.text;
+
+                            bubble.appendChild(hr);
+                            bubble.appendChild(div);
+                        });
+                        console.log("🎉 모든 번역이 완료되었습니다!");
+                    }
+                } catch (err) {
+                    console.error("❌ 번역 중 에러 발생:", err);
+                    alert("번역 처리 중 문제가 발생했습니다. 콘솔을 확인하세요.");
+                }
+            }
+
+            // ★ 이벤트 연결 확인용 (매우 중요)
+            document.addEventListener("DOMContentLoaded", function () {
+                const translateBtn = document.querySelector('.header-translate-btn');
+                if (translateBtn) {
+                    translateBtn.onclick = translateAllMessages;
+                    console.log("✅ [DEBUG] 번역 버튼 이벤트 연결 완료!");
+                } else {
+                    console.error("❌ [DEBUG] 번역 버튼(.header-translate-btn)을 찾을 수 없습니다.");
+                }
             });
         </script>
 </body>
