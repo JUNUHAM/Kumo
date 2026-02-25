@@ -86,9 +86,8 @@
                   <img th:src="${user.profileImage ?: '/images/common/default_profile.png'}" class="profile-img-lg">
                 </div>
               
-                <button type="button" class="btn-upload-photo" id="openProfileModalBtn">
-                  프로필 사진 업로드
-                </button>
+                <button type="button" class="btn-upload-photo" id="openProfileModalBtn" th:text="#{set.btn.upload_photo}">프로필 사진
+                  업로드</button>
               
               </div>
 
@@ -149,12 +148,22 @@
       </div>
     </div>
 
-    <script>
+    <script th:inline="javascript">
+      /* <![CDATA[ */
       document.addEventListener('DOMContentLoaded', function () {
 
           /* =========================
              프로필 업로드 기능
           ========================= */
+
+          const settingsMsg = {
+          noPhoto:        /*[[#{set.swal.no_photo}]]*/ '사진을 선택해주세요.',
+          uploadSuccess:  /*[[#{set.swal.upload_success}]]*/ '프로필 사진이 업로드 되었습니다.',
+          uploadFail:     /*[[#{set.swal.upload_fail}]]*/ '업로드 실패',
+          serverError:    /*[[#{set.swal.server_error}]]*/ '서버 오류',
+          snsTitle:       /*[[#{set.swal.sns_title}]]*/ 'Service Notice',
+          snsText:        /*[[#{set.swal.sns_text}]]*/ '아직 서비스 준비 중입니다.',
+        };
 
           const uploadBtn = document.getElementById('uploadBtn');
           const profileInput = document.getElementById('fileInput');
@@ -186,10 +195,8 @@
             saveBtn.onclick = function () {
 
               if (!selectedFile) {
-                Swal.fire({
-                  icon: 'warning',
-                  title: '사진을 선택해주세요.'
-                });
+                // 사진 미선택
+                Swal.fire({ icon: 'warning', title: settingsMsg.noPhoto });
                 return;
               }
 
@@ -204,24 +211,18 @@
                 .then(data => {
 
                   if (data.success) {
-                    Swal.fire({
-                      icon: 'success',
-                      title: '프로필 사진이 업로드 되었습니다.'
-                    }).then(() => location.reload());
+                    // 업로드 성공
+                    Swal.fire({ icon: 'success', title: settingsMsg.uploadSuccess }).then(() => location.reload());
                   } else {
-                    Swal.fire({
-                      icon: 'error',
-                      title: '업로드 실패',
-                      text: data.message
-                    });
+                    // 업로드 실패
+                    Swal.fire({ icon: 'error', title: settingsMsg.uploadFail, text: data.message });
+
                   }
 
                 })
                 .catch(() => {
-                  Swal.fire({
-                    icon: 'error',
-                    title: '서버 오류'
-                  });
+                  // 서버 오류
+                  Swal.fire({ icon: 'error', title: settingsMsg.serverError });
                 });
             };
           }
@@ -240,9 +241,10 @@
 
               const isDark = document.documentElement.classList.contains('dark-mode');
 
+              // SNS 토글
               Swal.fire({
-                title: 'Service Notice',
-                text: '아직 서비스 준비 중입니다.',
+                title: settingsMsg.snsTitle,
+                text: settingsMsg.snsText,
                 icon: 'info',
                 confirmButtonColor: '#7abaff',
                 background: isDark ? '#2b2b2b' : '#fff',
@@ -288,8 +290,8 @@
           };
 
         });
-
-    </script>
+    /* ]]> */
+  </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

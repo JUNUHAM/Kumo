@@ -1,536 +1,522 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <title>KUMO RECRUITER - 일정 관리</title>
-    <script th:src="@{/js/recruiter/recruiterHeader.js}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    />
-    <link rel="stylesheet" th:href="@{/css/recruiter/recruiterHeader.css}" />
-    <link
-      rel="stylesheet"
-      th:href="@{/css/NonLoginFragments/NonLoginFooter.css}"
-    />
-    <link rel="stylesheet" th:href="@{/css/recruiter/sidebar.css}" />
-    <link rel="stylesheet" th:href="@{/css/recruiter/main.css}" />
-    <link rel="stylesheet" th:href="@{/css/recruiter/calendar.css}" />
-    <link rel="stylesheet" th:href="@{/css/recruiter/companyInfo.css}" />
-    <link rel="stylesheet" th:href="@{/css/recruiter/dark-theme.css}" />
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script th:src="@{/js/recruiter/main.js}"></script>
-  </head>
 
-  <body>
-    <header
-      th:replace="~{recruiterView/fragments/recruiterHeader :: headerFragment}"
-    ></header>
+<head>
+  <meta charset="UTF-8" />
+  <title>KUMO RECRUITER - 일정 관리</title>
+  <script th:src="@{/js/recruiter/recruiterHeader.js}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" th:href="@{/css/recruiter/recruiterHeader.css}" />
+  <link rel="stylesheet" th:href="@{/css/NonLoginFragments/NonLoginFooter.css}" />
+  <link rel="stylesheet" th:href="@{/css/recruiter/sidebar.css}" />
+  <link rel="stylesheet" th:href="@{/css/recruiter/main.css}" />
+  <link rel="stylesheet" th:href="@{/css/recruiter/calendar.css}" />
+  <link rel="stylesheet" th:href="@{/css/recruiter/companyInfo.css}" />
+  <link rel="stylesheet" th:href="@{/css/recruiter/dark-theme.css}" />
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script th:src="@{/js/recruiter/main.js}"></script>
+</head>
 
-    <div class="dashboard-wrapper">
-      <div
-        th:replace="~{recruiterView/fragments/sidebar :: sidebarFragment}"
-      ></div>
+<body>
+  <header th:replace="~{recruiterView/fragments/recruiterHeader :: headerFragment}"></header>
 
-      <div
-        class="main-container"
-        style="margin-right: 0; display: flex; flex-direction: column; min-height: 100vh;"
-      >
-        <main class="content-body" style="flex: 1;">
-          <div class="calendar-main-layout">
-            <div class="calendar-left-content">
-              <div id="calendar"></div>
+  <div class="dashboard-wrapper">
+    <div th:replace="~{recruiterView/fragments/sidebar :: sidebarFragment}"></div>
+
+    <div class="main-container" style="margin-right: 0; display: flex; flex-direction: column; min-height: 100vh;">
+      <main class="content-body" style="flex: 1;">
+        <div class="calendar-main-layout">
+          <div class="calendar-left-content">
+            <div id="calendar"></div>
+          </div>
+
+          <aside class="calendar-side-area">
+            <div class="schedule-full-panel">
+              <div class="panel-header" id="selected-date-title" th:text="#{main.panel.today_schedule}">
+                오늘의 일정
+              </div>
+              <div id="event-list-container" class="event-scroll-area">
+                <div class="empty-state">
+                  <i class="bi bi-calendar-check d-block mb-3 fs-1"></i>
+                  <span th:utext="#{main.sidebar.no_schedule_guide}">날짜를 클릭하여<br />일정을 확인하세요.</span>
+                </div>
+              </div>
             </div>
 
-            <aside class="calendar-side-area">
-              <div class="schedule-full-panel">
-                <div
-                  class="panel-header"
-                  id="selected-date-title"
-                  th:text="#{main.panel.today_schedule}"
-                >
-                  오늘의 일정
-                </div>
-                <div id="event-list-container" class="event-scroll-area">
-                  <div class="empty-state">
-                    <i class="bi bi-calendar-check d-block mb-3 fs-1"></i>
-                    <span th:utext="#{main.sidebar.no_schedule_guide}"
-                      >날짜를 클릭하여<br />일정을 확인하세요.</span
-                    >
-                  </div>
-                </div>
+            <div class="side-action-buttons">
+              <button class="btn btn-common-action btn-sky-blue w-100 shadow-sm" data-bs-toggle="modal"
+                data-bs-target="#scheduleModal" onclick="prepareNewSchedule()">
+                <span th:text="#{cal.btn.add_schedule}">스케줄 등록</span>
+              </button>
+              <div id="deleteDropZone" class="delete-drop-zone w-100 shadow-sm mt-2">
+                <i class="bi bi-trash3 me-1"></i>
+                <span th:text="#{cal.drag.delete_area}">여기로 끌어서 삭제</span>
               </div>
-
-              <div class="side-action-buttons">
-                <button
-                  class="btn btn-common-action btn-sky-blue w-100 shadow-sm"
-                  data-bs-toggle="modal"
-                  data-bs-target="#scheduleModal"
-                  onclick="prepareNewSchedule()"
-                ><span th:text="#{cal.btn.add_schedule}">스케줄 등록</span>
-                </button>
-
-                <div
-                  id="deleteDropZone"
-                  class="delete-drop-zone w-100 shadow-sm mt-2"
-                >
-                  <i class="bi bi-trash3 me-1"></i> 
-                  <span th:text="#{cal.drag.delete_area}">여기로 끌어서 삭제</span>
-                </div>
-              </div>
-            </aside>
-          </div>
-        </main>
-        <footer
-          th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"
-        ></footer>
-      </div>
+            </div>
+          </aside>
+        </div>
+      </main>
+      <footer th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"></footer>
     </div>
+  </div>
 
+  <!-- 모달 섹션 -->
+  <div class="modal fade" id="scheduleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content schedule-modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title w-100 text-center fw-bold" th:text="#{cal.modal.title_add}">스케줄 등록</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <form id="scheduleForm">
+            <div class="row mb-4 align-items-center">
+              <label class="col-3 modal-label" th:text="#{cal.modal.label.subject}">주제</label>
+              <div class="col-9">
+                <input type="text" id="scheduleTitle" class="kumo-modal-input"
+                  th:placeholder="#{cal.modal.placeholder.subject}" required />
+              </div>
+            </div>
 
-    <!-- 모달 섹션 -->
-    <div class="modal fade" id="scheduleModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content schedule-modal-content">
-          <div class="modal-header border-0">
-            <h5 class="modal-title w-100 text-center fw-bold" th:text="#{cal.modal.title_add}">스케줄 등록</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body p-4">
-            <form id="scheduleForm">
-              <div class="row mb-4 align-items-center">
-                <label class="col-3 modal-label" th:text="#{cal.modal.label.subject}">주제</label>
-                <div class="col-9">
-                  <input
-                    type="text"
-                    id="scheduleTitle"
-                    class="kumo-modal-input"
-                    th:placeholder="#{cal.modal.placeholder.subject}"
-                    required
-                  />
+            <div class="row mb-4 align-items-center">
+              <label class="col-3 modal-label" th:text="#{cal.modal.label.date}">날짜</label>
+              <div class="col-9">
+              <div class="time-range-wrapper">
+                <input type="date" id="scheduleDate" required />
+                <div class="custom-time-input">
+                  <select id="startHour"></select>
+                  <span>:</span>
+                  <select id="startMin"></select>
+                </div>
+                <span class="time-separator">~</span>
+                <div class="custom-time-input">
+                  <select id="endHour"></select>
+                  <span>:</span>
+                  <select id="endMin"></select>
                 </div>
               </div>
-
-              <div class="row mb-4 align-items-center">
-                <label class="col-3 modal-label" th:text="#{cal.modal.label.date}">날짜</label>
-                <div class="col-9 d-flex gap-2 align-items-center">
-                  <input
-                    type="date"
-                    id="scheduleDate"
-                    class="kumo-modal-input py-1 px-2"
-                    style="width: auto;"
-                    required
-                  />
-                  <input
-                    type="time"
-                    id="startTime"
-                    class="kumo-modal-input py-1 px-2"
-                    style="width: auto;"
-                    value="09:00"
-                  />
-                  <span>~</span>
-                  <input
-                    type="time"
-                    id="endTime"
-                    class="kumo-modal-input py-1 px-2"
-                    style="width: auto;"
-                    value="10:00"
-                  />
-                </div>
               </div>
+            </div>
 
-              <div class="row mb-4">
-                <label class="col-3 modal-label mt-2" th:text="#{cal.modal.label.detail}">상세정보</label>
-                <div class="col-9">
-                  <textarea
-                    id="scheduleDescription"
-                    class="kumo-modal-textarea"
-                    rows="4"
-                    th:placeholder="#{cal.modal.placeholder.detail}"
-                  ></textarea>
-                </div>
+            <div class="row mb-4">
+              <label class="col-3 modal-label mt-2" th:text="#{cal.modal.label.detail}">상세정보</label>
+              <div class="col-9">
+                <textarea id="scheduleDescription" class="kumo-modal-textarea" rows="4"
+                  th:placeholder="#{cal.modal.placeholder.detail}"></textarea>
               </div>
+            </div>
 
-              <div class="row mb-5 align-items-center">
-                <label class="col-3 modal-label" th:text="#{cal.modal.label.color}">색상</label>
-                <div class="col-9 d-flex gap-3 color-picker-wrapper">
-                  <div
-                    class="color-dot active"
-                    style="background-color: #ff6b6b;"
-                    data-color="#ff6b6b"
-                  ></div>
-                  <div
-                    class="color-dot"
-                    style="background-color: #ffbb33;"
-                    data-color="#ffbb33"
-                  ></div>
-                  <div
-                    class="color-dot"
-                    style="background-color: #ccff33;"
-                    data-color="#ccff33"
-                  ></div>
-                  <div
-                    class="color-dot"
-                    style="background-color: #33ff66;"
-                    data-color="#33ff66"
-                  ></div>
-                  <div
-                    class="color-dot"
-                    style="background-color: #7abaff;"
-                    data-color="#7abaff"
-                  ></div>
-                  <div
-                    class="color-dot"
-                    style="background-color: #555abf;"
-                    data-color="#555abf"
-                  ></div>
-                  <div
-                    class="color-dot"
-                    style="background-color: #cc66ff;"
-                    data-color="#cc66ff"
-                  ></div>
-                </div>
+            <div class="row mb-5 align-items-center">
+              <label class="col-3 modal-label" th:text="#{cal.modal.label.color}">색상</label>
+              <div class="col-9 d-flex gap-3 color-picker-wrapper">
+                <div class="color-dot active" style="background-color: #ff6b6b;" data-color="#ff6b6b"></div>
+                <div class="color-dot" style="background-color: #ffbb33;" data-color="#ffbb33"></div>
+                <div class="color-dot" style="background-color: #ccff33;" data-color="#ccff33"></div>
+                <div class="color-dot" style="background-color: #33ff66;" data-color="#33ff66"></div>
+                <div class="color-dot" style="background-color: #7abaff;" data-color="#7abaff"></div>
+                <div class="color-dot" style="background-color: #555abf;" data-color="#555abf"></div>
+                <div class="color-dot" style="background-color: #cc66ff;" data-color="#cc66ff"></div>
               </div>
+            </div>
 
-              <div class="d-flex gap-3 justify-content-center w-100">
-                <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
-                  <span th:text="#{cal.btn.cancel}">취소</span>
-                </button>
-              
-                <button type="button" class="btn btn-danger" id="btnDelete" onclick="deleteSchedule()" style="display: none;">
-                  <span th:text="#{cal.btn.delete}">삭제</span>
-                </button>
-              
-                <button type="button" class="btn-modal-submit" onclick="saveSchedule()">
-                  <span th:text="#{cal.modal.title_add}">스케줄 등록</span>
-                </button>
-              </div>
-            </form>
-          </div>
+            <div class="d-flex gap-3 justify-content-center w-100">
+              <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
+                <span th:text="#{cal.btn.cancel}">취소</span>
+              </button>
+              <button type="button" class="btn-modal-delete" id="btnDelete" onclick="deleteSchedule()" style="display: none;">
+                <span th:text="#{cal.btn.delete}">삭제</span>
+              </button>
+              <button type="button" class="btn-modal-submit" onclick="saveSchedule()">
+                <span th:text="#{cal.modal.title_add}">스케줄 등록</span>
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.10/index.global.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.10/index.global.min.js"></script>
-    <script th:inline="javascript">
-     /* <![CDATA[ */
-      let mainCal;
-      let editingEventId = null;
+  </div>
 
-      // 번역용 객체
-      const calMsg = {
-          titleAdd: [[#{ cal.modal.title_add }]],      // "스케줄 등록"
-          titleEdit: [[#{ cal.modal.title_edit }]],    // "스케줄 수정"
-          btnSubmitEdit: [[#{ cal.btn.submit_edit }]], // "수정 완료"
-          errorTimeRange: [[#{ cal.error.time_range }]] // "종료 시간은 시작 시간보다 늦어야 합니다."
-        };
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.10/index.global.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.10/index.global.min.js"></script>
+  <script th:inline="javascript">
+    /* <![CDATA[ */
+    let mainCal;
+    let editingEventId = null;
 
-      // [UTC 오차 해결] 한국 시간을 기준으로 YYYY-MM-DD 문자열을 만드는 함수
-      function getLocalDateString(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
+    // ★ 모든 번역 문자열 통합 관리
+    const calMsg = {
+      // 기존
+      titleAdd:        /*[[#{cal.modal.title_add}]]*/ '스케줄 등록',
+      titleEdit:       /*[[#{cal.modal.title_edit}]]*/ '스케줄 수정',
+      btnSubmitEdit:   /*[[#{cal.btn.submit_edit}]]*/ '수정 완료',
+      errorTimeRange:  /*[[#{cal.error.time_range}]]*/ '종료 시간은 시작 시간보다 늦어야 합니다.',
+
+      // 사이드바
+      scheduleTitle:   /*[[#{cal.sidebar.schedule_suffix}]]*/ ' 일정',
+      noSchedule:      /*[[#{cal.sidebar.no_schedule}]]*/ '일정이 없습니다.',
+      errorRequired:   /*[[#{cal.error.required}]]*/ '주제와 날짜를 확인해 주세요!',
+
+      // Swal - 드래그 삭제
+      dragDeleteTitle: /*[[#{cal.swal.drag_delete.title}]]*/ '일정 삭제',
+      dragDeleteText:  /*[[#{cal.swal.drag_delete.text}]]*/ '일정을 삭제하시겠습니까?',
+      dragDeleteConfirm: /*[[#{cal.swal.drag_delete.confirm}]]*/ '네, 삭제할게요!',
+
+      // Swal - 모달 삭제
+      deleteTitle:     /*[[#{cal.swal.delete.title}]]*/ '정말 삭제하시겠습니까?',
+      deleteText:      /*[[#{cal.swal.delete.text}]]*/ '삭제한 일정은 복구할 수 없습니다.',
+      deleteConfirm:   /*[[#{cal.swal.delete.confirm}]]*/ '삭제',
+      deleteSuccess:   /*[[#{cal.swal.delete.success_title}]]*/ '삭제 완료!',
+      deleteSuccessText: /*[[#{cal.swal.delete.success_text}]]*/ '일정이 깔끔하게 지워졌습니다.',
+
+      // Swal - 저장
+      saveSuccess:     /*[[#{cal.swal.save.success}]]*/ '저장되었습니다.',
+
+      // Swal - 공통
+      cancel:          /*[[#{cal.btn.cancel}]]*/ '취소',
+      errorTitle:      /*[[#{cal.swal.error.title}]]*/ '오류',
+      errorMove:       /*[[#{cal.swal.error.move}]]*/ '일정 이동에 실패했습니다. 서버를 확인해주세요.',
+      errorSave:       /*[[#{cal.swal.error.save}]]*/ '저장에 실패했습니다.',
+      errorDelete:     /*[[#{cal.swal.error.delete}]]*/ '삭제 실패! 서버 에러를 확인하세요.',
+    };
+
+    // [UTC 오차 해결] 한국 시간을 기준으로 YYYY-MM-DD 문자열을 만드는 함수
+    function getLocalDateString(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    // 조용히 서버에 저장하는 함수 (drag & drop)
+    function silentUpdate(info) {
+      function formatDateTime(d) {
+        if (!d) return null;
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const h = String(d.getHours()).padStart(2, '0');
+        const min = String(d.getMinutes()).padStart(2, '0');
+        return `${y}-${m}-${day}T${h}:${min}:00`;
       }
 
-      // 🌟 [깔끔하게 정리됨] 조용히 서버에 저장하는 함수
-      function silentUpdate(info) {
-        function formatDateTime(d) {
-          if (!d) return null;
-          const y = d.getFullYear();
-          const m = String(d.getMonth() + 1).padStart(2, '0');
-          const day = String(d.getDate()).padStart(2, '0');
-          const h = String(d.getHours()).padStart(2, '0');
-          const min = String(d.getMinutes()).padStart(2, '0');
-          return `${y}-${m}-${day}T${h}:${min}:00`;
-        }
-
-        let startStr = formatDateTime(info.event.start);
-        let endStr = info.event.end ? formatDateTime(info.event.end) : startStr;
-
-        const data = {
-          scheduleId: info.event.id,
-          title: info.event.title,
-          description: info.event.extendedProps.description || "",
-          start: startStr,
-          end: endStr,
-          color: info.event.backgroundColor || info.event.color || "#7abaff"
-        };
-
-        $.ajax({
-          url: '/api/calendar/update', // 👉 백엔드에 이 주소가 꼭 있어야 합니다!
-          type: 'POST',
-          contentType: 'application/json',
-          data: JSON.stringify(data),
-          success: function () {
-            // 조용히 우측 리스트만 새로고침!
-            updateAll(getLocalDateString(info.event.start), mainCal);
-          },
-          error: function (err) {
-            console.error(err);
-            Swal.fire('오류', '일정 이동에 실패했습니다. 서버를 확인해주세요.', 'error');
-            info.revert(); // 실패 시 원래 자리로
-          }
-        });
-      }
-
-      // 🌟 [핵심] 캘린더 로드 및 설정
-      window.addEventListener('load', function () {
-        const mainEl = document.getElementById('calendar');
-        const dropZone = document.getElementById('deleteDropZone');
-        const currentLang = /*[[${#locale.language}]]*/ 'ko';
-
-        if (mainEl && typeof FullCalendar !== "undefined") {
-          mainCal = new FullCalendar.Calendar(mainEl, {
-            initialView: 'dayGridMonth',
-            locale: currentLang,
-            headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth' },
-            events: '/api/calendar/events',
-            dayMaxEvents: 2,
-            moreLinkContent: '...',
-
-            editable: true,
-
-            // 조용히 이동 & 늘리기
-            eventDrop: function (info) { silentUpdate(info); },
-            eventResize: function (info) { silentUpdate(info); },
-
-            // 드래그 시작 시 휴지통 활성화
-            eventDragStart: function () {
-              if (dropZone) dropZone.classList.add('drag-over');
-            },
-
-            // 🌟 [중복 제거됨] 마우스를 놓았을 때 휴지통 확인!
-            eventDragStop: function (info) {
-              if (!dropZone) return;
-              const rect = dropZone.getBoundingClientRect();
-              const x = info.jsEvent.clientX;
-              const y = info.jsEvent.clientY;
-
-              if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
-                Swal.fire({
-                  title: '일정 삭제',
-                  text: `'${info.event.title}' 일정을 삭제하시겠습니까?`,
-                  icon: 'warning',
-                  showCancelButton: true,
-                  confirmButtonColor: '#dc3545',
-                  cancelButtonColor: '#6c757d',
-                  confirmButtonText: '네, 삭제할게요!',
-                  cancelButtonText: '취소'
-                }).then((result) => {
-                  if (result.isConfirmed) {
-                    deleteScheduleById(info.event.id);
-                  }
-                });
-              }
-              dropZone.classList.remove('drag-over');
-            },
-
-            dateClick: function (info) { handleDateSelection(info.dateStr, info.dayEl); },
-            eventClick: function (info) {
-              openEditModal(info.event);
-              info.jsEvent.preventDefault();
-            },
-            moreLinkClick: function (info) {
-              const dateStr = getLocalDateString(info.date);
-              handleDateSelection(dateStr, info.el.closest('.fc-daygrid-day'));
-              return false;
-            }
-          });
-          mainCal.render();
-        }
-        // 🌟 [추가] 실시간 시간 유효성 체크 로직 (여기에 들어갑니다!)
-        $('#endTime, #startTime').on('change', function () {
-          const start = $('#startTime').val();
-          const end = $('#endTime').val();
-          if (start && end && start >= end) {
-            $('#startTime, #endTime').addClass('is-invalid');
-          } else {
-            $('#startTime, #endTime').removeClass('is-invalid');
-          }
-        });
-      });
-
-      // 날짜 선택 
-      function handleDateSelection(dateStr, dayEl) {
-        document.querySelectorAll('.fc-daygrid-day').forEach(el => el.classList.remove('selected-day'));
-        if (dayEl) dayEl.classList.add('selected-day');
-
-        const dateInput = document.getElementById('scheduleDate');
-        if (dateInput) dateInput.value = dateStr;
-        updateAll(dateStr, mainCal);
-      }
-
-      // 신규 등록 모달 세팅
-      function prepareNewSchedule() {
-        editingEventId = null;
-        const selectedDate = $('#scheduleDate').val();
-        $('#scheduleForm')[0].reset();
-        $('#scheduleDate').val(selectedDate ? selectedDate : getLocalDateString(new Date()));
-        $('#btnDelete').hide();
-        // 🌟 신규 등록 모달을 준비할 때 (prepareNewSchedule 함수 내부)
-        $('.btn-modal-submit').text(calMsg.titleAdd);  // "스케줄 등록"으로 변경됨
-        $('.modal-title').text(calMsg.titleAdd);
-
-      }
-
-      // 수정 모달 세팅
-      function openEditModal(event) {
-        editingEventId = event.id;
-        $('#scheduleTitle').val(event.title);
-        $('#scheduleDescription').val(event.extendedProps.description || "");
-
-        const start = event.start;
-        const dateStr = getLocalDateString(start);
-        const timeStr = String(start.getHours()).padStart(2, '0') + ":" + String(start.getMinutes()).padStart(2, '0');
-
-        $('#scheduleDate').val(dateStr);
-        $('#startTime').val(timeStr);
-
-        $('#btnDelete').show();
-                // 🌟 수정 모달을 열 때 (openEditModal 함수 내부)
-        $('.btn-modal-submit').text(calMsg.btnSubmitEdit); // "수정 완료"로 변경됨
-        $('.modal-title').text(calMsg.titleEdit);    
-
-        const eventColor = event.backgroundColor || event.color || "#7abaff";
-        $('.color-dot').removeClass('active');
-        $(`.color-dot[data-color="${eventColor}"]`).addClass('active');
-
-        $('#scheduleModal').modal('show');
-      }
-
-      // 저장 및 수정 
-      function saveSchedule() {
-        const title = $('#scheduleTitle').val();
-        const date = $('#scheduleDate').val();
-        const startVal = $('#startTime').val(); // 예: "09:00"
-        const endVal = $('#endTime').val();     // 예: "10:00"
-
-        if (!title || !date) { alert("주제와 날짜를 확인해 주세요!"); return; }
-
-        // 🌟 [핵심] 시간 역전 방지 로직
-        // input type="time"은 문자열 비교만으로도 선후 관계 파악이 가능합니다.
-        if (startVal >= endVal) {
-          Swal.fire({
-            icon: 'warning',
-            title: 'Oops!',
-            text: calMsg.errorTimeRange,
-            confirmButtonColor: '#7abaff'
-          });
-          return; // 저장 로직 중단
-        }
-
-        const data = {
-          id: editingEventId,
-          title: title,
-          description: $('#scheduleDescription').val(),
-          start: date + "T" + ($('#startTime').val() || "09:00") + ":00",
-          end: date + "T" + ($('#endTime').val() || "10:00") + ":00",
-          color: $('.color-dot.active').data('color') || "#7abaff"
-        };
-
-        $.ajax({
-          url: editingEventId ? '/api/calendar/update' : '/api/calendar/save',
-          type: 'POST',
-          contentType: 'application/json',
-          data: JSON.stringify(data),
-          success: function () {
-            $('#scheduleModal').modal('hide');
-            mainCal.refetchEvents();
-            updateAll(date, mainCal);
-            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: '저장되었습니다.', showConfirmButton: false, timer: 1500 });
-          },
-          error: function () {
-            Swal.fire('오류', '저장에 실패했습니다.', 'error');
-          }
-        });
-      }
-
-      // 모달 안에서 삭제
-      function deleteSchedule() {
-        if (!editingEventId) return;
-        Swal.fire({
-          title: '정말 삭제하시겠습니까?',
-          text: "삭제한 일정은 복구할 수 없습니다.",
-          icon: 'error',
-          showCancelButton: true,
-          confirmButtonColor: '#dc3545',
-          cancelButtonColor: '#6c757d',
-          confirmButtonText: '삭제',
-          cancelButtonText: '취소'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            deleteScheduleById(editingEventId);
-          }
-        });
-      }
-
-      // 실제 서버 삭제
-      function deleteScheduleById(id) {
-        if (!id) return;
-        $.ajax({
-          url: '/api/calendar/delete/' + id,
-          type: 'DELETE',
-          success: function () {
-            $('#scheduleModal').modal('hide');
-            mainCal.refetchEvents();
-            updateAll($('#scheduleDate').val() || getLocalDateString(new Date()), mainCal);
-            Swal.fire({ title: '삭제 완료!', text: '일정이 깔끔하게 지워졌습니다.', icon: 'success', confirmButtonColor: '#7abaff' });
-          },
-          error: function () {
-            Swal.fire('오류', '삭제 실패! 서버 에러를 확인하세요.', 'error');
-          }
-        });
-      }
-
-      // 우측 사이드바 렌더링
-      window.updateAll = function (date, calApi) {
-        const container = document.getElementById('event-list-container');
-        const titleEl = document.getElementById('selected-date-title');
-        if (titleEl) titleEl.innerText = date + " 일정";
-
-        let evs = calApi.getEvents().filter(e => getLocalDateString(e.start) === date);
-        evs.sort((a, b) => a.start - b.start);
-        container.innerHTML = evs.length ? '' : `<div class="empty-state">일정이 없습니다.</div>`;
-
-        evs.forEach(e => {
-          const card = document.createElement("div");
-          card.className = "sidebar-card";
-          card.style.setProperty("border-left-color", e.backgroundColor || e.color || "#7abaff", "important");
-          card.style.cursor = "pointer";
-          card.onclick = () => openEditModal(e);
-
-          const hours = String(e.start.getHours()).padStart(2, '0');
-          const minutes = String(e.start.getMinutes()).padStart(2, '0');
-          card.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
-            <div class="event-item-title" style="margin: 0; font-size: 0.9rem; font-weight: 700;">${e.title}</div>
-            <div class="small text-muted"><i class="bi bi-clock me-1"></i>${hours}:${minutes}</div>
-        </div>`;
-          container.appendChild(card);
-        });
+      const data = {
+        scheduleId: info.event.id,
+        title: info.event.title,
+        description: info.event.extendedProps.description || "",
+        start: formatDateTime(info.event.start),
+        end: info.event.end ? formatDateTime(info.event.end) : formatDateTime(info.event.start),
+        color: info.event.backgroundColor || info.event.color || "#7abaff"
       };
 
-      $(document).on('click', '.color-dot', function () {
-        $('.color-dot').removeClass('active');
-        $(this).addClass('active');
+      $.ajax({
+        url: '/api/calendar/update',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function () {
+          updateAll(getLocalDateString(info.event.start), mainCal);
+        },
+        error: function (err) {
+          console.error(err);
+          Swal.fire(calMsg.errorTitle, calMsg.errorMove, 'error');
+          info.revert();
+        }
       });
-      /* ]]> */
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+    }
+
+    // 캘린더 로드 및 설정
+    window.addEventListener('load', function () {
+      // select 옵션 동적 생성
+      function fillSelect(id, max, defaultVal) {
+        const el = document.getElementById(id);
+        for (let i = 0; i <= max; i++) {
+          const opt = document.createElement('option');
+          const v = String(i).padStart(2, '0');
+          opt.value = v;
+          opt.text = v;
+          if (i === defaultVal) opt.selected = true;
+          el.appendChild(opt);
+        }
+      }
+      fillSelect('startHour', 23, 9);
+      fillSelect('startMin', 59, 0);
+      fillSelect('endHour', 23, 10);
+      fillSelect('endMin', 59, 0);
+      
+      const mainEl = document.getElementById('calendar');
+      const dropZone = document.getElementById('deleteDropZone');
+      const currentLang = /*[[${#locale.language}]]*/ 'ko';
+
+      if (mainEl && typeof FullCalendar !== "undefined") {
+        mainCal = new FullCalendar.Calendar(mainEl, {
+          initialView: 'dayGridMonth',
+          fixedWeekCount: false,
+          locale: currentLang,
+          headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
+          slotMinTime: '06:00:00',
+          slotMaxTime: '23:00:00',
+          allDaySlot: false,
+          expandRows: true,
+          events: '/api/calendar/events',
+          dayMaxEvents: 2,
+          moreLinkContent: '...',
+          editable: true,
+
+          eventsSet: function () {
+            const selectedDate = document.getElementById('scheduleDate').value;
+            if (selectedDate) updateAll(selectedDate, mainCal);
+          },
+
+          eventDrop: function (info) { silentUpdate(info); },
+          eventResize: function (info) { silentUpdate(info); },
+
+          eventDragStart: function () {
+            if (dropZone) dropZone.classList.add('drag-over');
+          },
+
+          eventDragStop: function (info) {
+            if (!dropZone) return;
+            const rect = dropZone.getBoundingClientRect();
+            const x = info.jsEvent.clientX;
+            const y = info.jsEvent.clientY;
+
+            if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+              Swal.fire({
+                title: calMsg.dragDeleteTitle,
+                text: `'${info.event.title}' ${calMsg.dragDeleteText}`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: calMsg.dragDeleteConfirm,
+                cancelButtonText: calMsg.cancel
+              }).then((result) => {
+                if (result.isConfirmed) deleteScheduleById(info.event.id);
+              });
+            }
+            dropZone.classList.remove('drag-over');
+          },
+
+          dateClick: function (info) { handleDateSelection(info.dateStr, info.dayEl); },
+          eventClick: function (info) {
+            openEditModal(info.event);
+            info.jsEvent.preventDefault();
+          },
+          moreLinkClick: function (info) {
+            const dateStr = getLocalDateString(info.date);
+            handleDateSelection(dateStr, info.el.closest('.fc-daygrid-day'));
+            return false;
+          }
+        });
+        mainCal.render();
+      }
+
+      $('#startHour, #startMin, #endHour, #endMin').on('change', function () {
+        const startH = String($('#startHour').val()).padStart(2, '0');
+        const startM = String($('#startMin').val()).padStart(2, '0');
+        const endH = String($('#endHour').val()).padStart(2, '0');
+        const endM = String($('#endMin').val()).padStart(2, '0');
+        const startVal = `${startH}:${startM}`;
+        const endVal = `${endH}:${endM}`;
+        if (startVal >= endVal) {
+          $('.custom-time-input').addClass('is-invalid-time');
+        } else {
+          $('.custom-time-input').removeClass('is-invalid-time');
+        }
+      });
+    });
+
+    // 날짜 선택
+    function handleDateSelection(dateStr, dayEl) {
+      document.querySelectorAll('.fc-daygrid-day').forEach(el => el.classList.remove('selected-day'));
+      if (dayEl) dayEl.classList.add('selected-day');
+      const dateInput = document.getElementById('scheduleDate');
+      if (dateInput) dateInput.value = dateStr;
+      updateAll(dateStr, mainCal);
+    }
+
+    // 신규 등록 모달 세팅
+    function prepareNewSchedule() {
+      editingEventId = null;
+      const selectedDate = $('#scheduleDate').val();
+      $('#scheduleForm')[0].reset();
+      $('#scheduleDate').val(selectedDate ? selectedDate : getLocalDateString(new Date()));
+      $('#btnDelete').hide();
+      $('.btn-modal-submit').text(calMsg.titleAdd);
+      $('.modal-title').text(calMsg.titleAdd);
+      $('#startHour').val('09');
+      $('#startMin').val('00');
+      $('#endHour').val('10');
+      $('#endMin').val('00');
+    }
+
+    // 수정 모달 세팅
+    function openEditModal(event) {
+      editingEventId = event.id;
+      $('#scheduleTitle').val(event.title);
+      $('#scheduleDescription').val(event.extendedProps.description || "");
+
+      const start = event.start;
+      const dateStr = getLocalDateString(start);
+      const timeStr = String(start.getHours()).padStart(2, '0') + ":" + String(start.getMinutes()).padStart(2, '0');
+
+      $('#scheduleDate').val(dateStr);
+      const [sh, sm] = timeStr.split(':');
+      $('#startHour').val(sh);
+      $('#startMin').val(sm);
+      $('#btnDelete').show();
+      $('.btn-modal-submit').text(calMsg.btnSubmitEdit);
+      $('.modal-title').text(calMsg.titleEdit);
+
+      // end 시간도 세팅 추가
+      if (event.end) {
+        const endH = String(event.end.getHours()).padStart(2, '0');
+        const endM = String(event.end.getMinutes()).padStart(2, '0');
+        $('#endHour').val(endH);
+        $('#endMin').val(endM);
+      }
+
+      const eventColor = event.backgroundColor || event.color || "#7abaff";
+      $('.color-dot').removeClass('active');
+      $(`.color-dot[data-color="${eventColor}"]`).addClass('active');
+
+      $('#scheduleModal').modal('show');
+    }
+
+    // 시간 입력 자동 보정 (숫자만, 범위 제한)
+      $(document).on('input', '#startHour, #endHour', function () {
+        let v = parseInt($(this).val()) || 0;
+        if (v > 23) v = 23;
+        $(this).val(String(v).padStart(2, '0'));
+      });
+      $(document).on('input', '#startMin, #endMin', function () {
+        let v = parseInt($(this).val()) || 0;
+        if (v > 59) v = 59;
+        $(this).val(String(v).padStart(2, '0'));
+      });
+      
+
+    // 저장 및 수정
+    function saveSchedule() {
+      const title = $('#scheduleTitle').val();
+      const date = $('#scheduleDate').val();
+      // ↓ 교체
+      const startH = String($('#startHour').val()).padStart(2, '0');
+      const startM = String($('#startMin').val()).padStart(2, '0');
+      const endH = String($('#endHour').val()).padStart(2, '0');
+      const endM = String($('#endMin').val()).padStart(2, '0');
+      const startVal = `${startH}:${startM}`;
+      const endVal = `${endH}:${endM}`;
+
+      if (!title || !date) {
+        Swal.fire(calMsg.errorTitle, calMsg.errorRequired, 'warning');
+        return;
+      }
+
+      if (startVal >= endVal) {
+        Swal.fire({ icon: 'warning', title: 'Oops!', text: calMsg.errorTimeRange, confirmButtonColor: '#7abaff' });
+        return;
+      }
+
+      const data = {
+        id: editingEventId,
+        title: title,
+        description: $('#scheduleDescription').val(),
+        start: date + "T" + (startVal || "09:00") + ":00",
+        end: date + "T" + (endVal || "10:00") + ":00",
+        color: $('.color-dot.active').data('color') || "#7abaff"
+      };
+
+      $.ajax({
+        url: editingEventId ? '/api/calendar/update' : '/api/calendar/save',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function () {
+          $('#scheduleModal').modal('hide');
+          mainCal.refetchEvents();
+          updateAll(date, mainCal);
+          Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: calMsg.saveSuccess, showConfirmButton: false, timer: 1500 });
+        },
+        error: function () {
+          Swal.fire(calMsg.errorTitle, calMsg.errorSave, 'error');
+        }
+      });
+    }
+
+    // 모달 안에서 삭제
+    function deleteSchedule() {
+      if (!editingEventId) return;
+      Swal.fire({
+        title: calMsg.deleteTitle,
+        text: calMsg.deleteText,
+        icon: 'error',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: calMsg.deleteConfirm,
+        cancelButtonText: calMsg.cancel
+      }).then((result) => {
+        if (result.isConfirmed) deleteScheduleById(editingEventId);
+      });
+    }
+
+    // 실제 서버 삭제
+    function deleteScheduleById(id) {
+      if (!id) return;
+      $.ajax({
+        url: '/api/calendar/delete/' + id,
+        type: 'DELETE',
+        success: function () {
+          $('#scheduleModal').modal('hide');
+          mainCal.refetchEvents();
+          updateAll($('#scheduleDate').val() || getLocalDateString(new Date()), mainCal);
+          Swal.fire({ title: calMsg.deleteSuccess, text: calMsg.deleteSuccessText, icon: 'success', confirmButtonColor: '#7abaff' });
+        },
+        error: function () {
+          Swal.fire(calMsg.errorTitle, calMsg.errorDelete, 'error');
+        }
+      });
+    }
+
+    // 우측 사이드바 렌더링
+    window.updateAll = function (date, calApi) {
+      const container = document.getElementById('event-list-container');
+      const titleEl = document.getElementById('selected-date-title');
+      if (titleEl) titleEl.innerText = date + calMsg.scheduleTitle;
+
+      let evs = calApi.getEvents().filter(e => getLocalDateString(e.start) === date);
+      evs.sort((a, b) => a.start - b.start);
+      container.innerHTML = evs.length ? '' : `<div class="empty-state">${calMsg.noSchedule}</div>`;
+
+      evs.forEach(e => {
+        const card = document.createElement("div");
+        card.className = "sidebar-card";
+        card.style.setProperty("border-left-color", e.backgroundColor || e.color || "#7abaff", "important");
+        card.style.cursor = "pointer";
+        card.onclick = () => openEditModal(e);
+
+        const hours = String(e.start.getHours()).padStart(2, '0');
+        const minutes = String(e.start.getMinutes()).padStart(2, '0');
+        card.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
+              <div class="event-item-title" style="margin: 0; font-size: 0.9rem; font-weight: 700;">${e.title}</div>
+              <div class="small text-muted"><i class="bi bi-clock me-1"></i>${hours}:${minutes}</div>
+            </div>`;
+        container.appendChild(card);
+      });
+    };
+
+    $(document).on('click', '.color-dot', function () {
+      $('.color-dot').removeClass('active');
+      $(this).addClass('active');
+    });
+    /* ]]> */
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
 </html>

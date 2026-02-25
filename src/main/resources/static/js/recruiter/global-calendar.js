@@ -41,10 +41,6 @@ document.addEventListener("DOMContentLoaded", function () {
   // 2. 미니 캘린더 영역
   const miniEl = document.getElementById("mini-calendar");
   if (miniEl && typeof FullCalendar !== "undefined") {
-    const now = new Date();
-    const todayStr = now.toISOString().split("T")[0];
-    const dateToSelect = localStorage.getItem("selectedDate") || todayStr;
-
     const miniCalendar = new FullCalendar.Calendar(miniEl, {
       initialView: "dayGridMonth",
       locale: currentLang,
@@ -53,7 +49,6 @@ document.addEventListener("DOMContentLoaded", function () {
       center: 'title', // 월/년 제목
       right: 'next'   // 오른쪽 버튼
       },
-  
       height: "auto",
       events: "/api/calendar/events",
 
@@ -67,6 +62,25 @@ document.addEventListener("DOMContentLoaded", function () {
       // 이 방법은 데이터 자체를 건드리는거라 복잡하니 패스하고, 
       // 아래 스타일 로직에서 display: none을 확실히 줍니다.
       return eventData;
+      },
+      
+        // ★ 이벤트 로드 완료 후 자동 실행 → 오늘 날짜 선택 + 일정 표시
+  eventsSet: function () {
+    const now = new Date();
+    const todayStr = getLocalDateStr(now);
+    const dateToSelect = localStorage.getItem("selectedDate") || todayStr;
+
+    // selected-day 클래스 적용
+    setTimeout(() => {
+      document.querySelectorAll(".fc-daygrid-day").forEach(el => {
+        const dateAttr = el.getAttribute("data-date");
+        if (dateAttr === dateToSelect) {
+          el.classList.add("selected-day");
+        }
+      });
+    }, 0);
+
+    updateScheduleDetail(dateToSelect, miniCalendar);
   },
 
       dayCellContent: (arg) => ({ html: arg.date.getDate() }),
@@ -121,8 +135,14 @@ document.addEventListener("DOMContentLoaded", function () {
       },
     });
     miniCalendar.render();
-    updateScheduleDetail(dateToSelect, miniCalendar);
   }
+
+  function getLocalDateStr(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
 
   // 3. 상세 일정 업데이트 함수
   function updateScheduleDetail(dateStr, calendarApi) {
