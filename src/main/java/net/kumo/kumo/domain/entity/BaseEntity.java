@@ -63,10 +63,18 @@ public abstract class BaseEntity {
     private LocalDateTime createdAt;
 
     /**
-     * [추가된 부분] 공고 상태 관리
+     * 공고 상태 관리
      * @Enumerated(EnumType.STRING): DB에 숫자가 아닌 "RECRUITING" 문자열로 저장됨
      */
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private JobStatus status;
+
+    // ==========================================
+    // 공고 작성자 식별자
+    // 크롤링 데이터는 작성자가 없으므로 null 허용
+    // geocoded 테이블에 컬럼 추가 필요!!!!!
+    // ==========================================
+    @Column(name = "user_id")
+    private Long userId;
 }
