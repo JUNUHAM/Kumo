@@ -258,19 +258,14 @@ public class MapController {
 	 */
 	@GetMapping("/api/jobs/search")
 	@ResponseBody
-	public List<JobSummaryDTO> searchJobsApi(
-			@RequestParam(required = false) String keyword,
-			@RequestParam(required = false) String mainRegion,
-			@RequestParam(required = false) String subRegion,
-			@RequestParam(defaultValue = "kr") String lang
+	public List<JobDetailDTO> searchJobsApi(
+	                                         @RequestParam(required = false) String keyword,
+	                                         @RequestParam(required = false) String mainRegion,
+	                                         @RequestParam(required = false) String subRegion,
+	                                         @RequestParam(defaultValue = "kr") String lang
 	) {
-		log.debug("검색 API 호출됨 - keyword: {}, mainRegion: {}, subRegion: {}", keyword, mainRegion, subRegion);
+		log.info("검색 API 호출됨 - keyword: {}, mainRegion: {}, subRegion: {}", keyword, mainRegion, subRegion);
 		
-		// TODO: MapService에 검색 조건(키워드, 지역)으로 DB를 조회하는 로직을 추가해야 합니다.
-		// 예시: List<JobSummaryDTO> results = mapService.searchJobs(keyword, mainRegion, subRegion, lang);
-		// return results;
-		
-		// 아직 서비스가 완성되지 않았으므로 임시로 빈 배열을 반환합니다. 에러가 나지 않게 하기 위함입니다.
-		return java.util.Collections.emptyList();
+		return mapService.searchJobsList(keyword, mainRegion, subRegion, lang);
 	}
 }
