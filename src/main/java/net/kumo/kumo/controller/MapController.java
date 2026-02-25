@@ -2,7 +2,7 @@ package net.kumo.kumo.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.kumo.kumo.domain.dto.ApplicationRequestDTO;
+import net.kumo.kumo.domain.dto.ApplicationDTO;
 import net.kumo.kumo.domain.dto.JobDetailDTO;
 import net.kumo.kumo.domain.dto.JobSummaryDTO;
 import net.kumo.kumo.domain.dto.ReportDTO;
@@ -120,7 +120,8 @@ public class MapController {
      */
     @PostMapping("/api/apply")
     @ResponseBody
-    public ResponseEntity<String> applyForJob(@RequestBody ApplicationRequestDTO dto, Principal principal) {
+    public ResponseEntity<String> applyForJob(@RequestBody ApplicationDTO.ApplyRequest dto, Principal principal) {
+        // ★ 타입이 ApplicationDTO.ApplyRequest 로 변경됨!
 
         // 1. 로그인 검증
         if (principal == null) {
@@ -135,7 +136,7 @@ public class MapController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 사용자입니다.");
         }
 
-        // 3. 구직자 권한(SEEKER) 확인 (구인자는 남의 공고에 지원할 수 없음)
+        // 3. 구직자 권한(SEEKER) 확인
         if (user.getRole() != Enum.UserRole.SEEKER) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("구직자(SEEKER) 계정만 지원할 수 있습니다.");
         }
@@ -146,7 +147,6 @@ public class MapController {
             return ResponseEntity.ok("구인 신청이 완료되었습니다.");
 
         } catch (IllegalStateException e) {
-            // 중복 지원 시 서비스에서 던진 예외 처리
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             log.error("지원 처리 중 오류 발생: ", e);
