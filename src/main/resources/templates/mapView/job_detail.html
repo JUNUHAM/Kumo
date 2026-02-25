@@ -99,15 +99,17 @@
 <div class="fixed-bottom-bar" th:if="${isOwner}">
     <div class="btn-group-owner">
         <button class="btn-action btn-edit"
-                th:data-msg="${lang == 'ja' ? '修正ページへ移動' : '수정 페이지로 이동'}"
-                onclick="alert(this.getAttribute('data-msg'))"
+                th:data-id="${job.id}"
+                th:data-source="${job.source}"
+                onclick="editJob(this)"
                 th:text="${lang == 'ja' ? '修正' : '공고 수정'}">
             공고 수정
         </button>
 
         <button class="btn-action btn-delete"
-                th:data-msg="${lang == 'ja' ? '削除API呼び出し' : '삭제 API 호출'}"
-                onclick="alert(this.getAttribute('data-msg'))"
+                th:data-id="${job.id}"
+                th:data-source="${job.source}"
+                onclick="deleteJob(this)"
                 th:text="${lang == 'ja' ? '削除' : '삭제'}">
             삭제
         </button>

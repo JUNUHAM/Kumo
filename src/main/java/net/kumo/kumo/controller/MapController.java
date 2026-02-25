@@ -153,8 +153,43 @@ public class MapController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("지원 처리 중 서버 오류가 발생했습니다.");
         }
     }
-	
-	
+
+    /**
+     * [NEW] 공고 삭제 API (작성자 전용)
+     * URL: /map/api/jobs
+     */
+    @DeleteMapping("/api/jobs")
+    @ResponseBody
+    public ResponseEntity<String> deleteJob(
+            @RequestParam Long id,
+            @RequestParam String source,
+            Principal principal) {
+
+        // 1. 로그인 검증
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        // 2. 유저 정보 조회
+        String loginEmail = principal.getName();
+        UserEntity user = userRepo.findByEmail(loginEmail).orElse(null);
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 사용자입니다.");
+        }
+
+        // 3. 서비스 호출 및 삭제 실행
+        try {
+            mapService.deleteJobPost(id, source, user);
+            return ResponseEntity.ok("공고가 성공적으로 삭제되었습니다.");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            // 본인 공고가 아니거나, 공고가 존재하지 않을 때
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("공고 삭제 중 오류 발생: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("공고 삭제 중 오류가 발생했습니다.");
+        }
+    }
 	
 	// ==========================================
 	// [NEW] 검색 리스트 관련 매핑

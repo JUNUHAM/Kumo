@@ -177,3 +177,63 @@ function toggleScrap(btnElement) {
         }
     });
 }
+
+// ==========================================
+// [기능 4] 공고 수정 및 삭제 (작성자 전용)
+// ==========================================
+
+// 1. 공고 수정 페이지로 이동
+function editJob(btnElement) {
+    const postId = btnElement.getAttribute('data-id');
+    const source = btnElement.getAttribute('data-source');
+
+    if (!postId || !source) {
+        alert("Error: ID or Source Not Found");
+        return;
+    }
+
+    // TODO: 나중에 실제 공고 수정 폼 페이지 URL로 변경하세요.
+    // 기존 공고의 id와 source를 달아서 보내면, 수정 페이지 컨트롤러에서 이 값을 받아 기존 데이터를 폼에 채워줄 수 있습니다.
+    const editUrl = `/map/jobs/edit?id=${postId}&source=${source}`;
+    window.location.href = editUrl;
+}
+
+// 2. 공고 완전 삭제
+function deleteJob(btnElement) {
+    const postId = btnElement.getAttribute('data-id');
+    const source = btnElement.getAttribute('data-source');
+
+    if (!postId || !source) {
+        alert("Error: ID or Source Not Found");
+        return;
+    }
+
+    const lang = typeof currentLang !== 'undefined' ? currentLang : 'kr';
+    const confirmMsg = lang === 'ja' ? "本当にこの求人を削除しますか？\n(削除すると元に戻せません)" : "정말로 이 공고를 삭제하시겠습니까?\n(삭제 후 복구할 수 없습니다.)";
+
+    // 사용자 확인
+    if (!confirm(confirmMsg)) {
+        return;
+    }
+
+    // 서버로 DELETE 요청 전송
+    fetch(`/map/api/jobs?id=${postId}&source=${source}`, {
+        method: 'DELETE'
+    })
+        .then(async response => {
+            const message = await response.text();
+
+            if (response.ok) {
+                alert(lang === 'ja' ? "削除が完了しました。" : "삭제가 완료되었습니다.");
+                // 삭제 성공 시, 공고 목록(메인) 페이지로 튕겨내기
+                window.location.href = '/map/main';
+            } else {
+                // 권한 없음 등의 에러
+                alert(message);
+            }
+        })
+        .catch(error => {
+            console.error("삭제 에러:", error);
+            alert(lang === 'ja' ? "処理中にエラーが発生しました。" : "처리 중 서버 오류가 발생했습니다.");
+        });
+}
