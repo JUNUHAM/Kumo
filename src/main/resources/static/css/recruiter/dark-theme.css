@@ -365,7 +365,7 @@ html.dark-mode #calendar .fc-day-today.selected-day {
 }
 
 html.dark-mode #calendar .fc-day-today.selected-day .fc-daygrid-day-number {
-  color: #fcc419 !important;
+  color: #7abaff !important;
 }
 
 /* 요일 헤더 */

@@ -175,14 +175,14 @@
               </div>
               <div class="panel-body">
                 <div class="myjobs-head">
-                  <span style="flex: 2;">지원 공고</span>
-                  <span style="flex: 1;">지역</span>
-                  <span style="flex: 1.5;">급여</span>
-                  <span style="flex: 1.2;">등록일</span>
-                  <span style="flex: 1;">관리</span>
+                  <span style="flex: 2;" th:text="#{main.myjobs.col.title}">공고 제목</span>
+                  <span style="flex: 1;" th:text="#{main.myjobs.col.region}">지역</span>
+                  <span style="flex: 1.5;" th:text="#{main.myjobs.col.wage}">급여</span>
+                  <span style="flex: 1.2;" th:text="#{main.myjobs.col.date}">등록일</span>
+                  <span style="flex: 1;" th:text="#{main.myjobs.col.manage}">관리</span>
                 </div>
               
-                <div class="empty-state" th:if="${jobList == null or #lists.isEmpty(jobList)}">
+                <div class="empty-state" th:if="${jobList == null or #lists.isEmpty(jobList)}" th:text="#{main.myjobs.empty}">
                   등록된 공고가 없습니다.
                 </div>
               
@@ -194,8 +194,7 @@
                   <div style="flex: 1.5;" th:text="${job.wage}">급여</div>
                   <div style="flex: 1.2;" th:text="${#temporals.format(job.createdAt, 'yyyy-MM-dd')}">등록일</div>
                   <div style="flex: 1;">
-                    <a class="btn-detail"
-                      th:href="@{/Recruiter/editJobPosting(id=${job.id}, region=${job.regionType == '도쿄' ? 'TOKYO' : 'OSAKA'})}">공고 수정</a>
+                      <a class="btn-detail" th:href="@{/Recruiter/editJobPosting(id=${job.id}, region=${job.regionType == '도쿄' ? 'TOKYO' : 'OSAKA'})}" th:text="#{main.myjobs.btn.edit}">공고 수정</a>
                   </div>
                 </div>
               </div>
