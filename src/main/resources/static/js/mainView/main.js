@@ -10,12 +10,14 @@ const AppState = {
     map: null,                // 구글 맵 객체
     markerCluster: null,      // 마커 클러스터 객체
     jobMarkers: [],           // 개별 마커 배열
-    isLocationMode: false,    // 내 주변 보기 모드 스위치
     debounceTimer: null,      // 디바운스 타이머
     currentXhr: null,          // 현재 진행 중인 AJAX 요청 (취소용)
     lastBounds: null,
     maskPolygon: null,          // 지도 경계선
-    ignoreIdle: false // 🌟 [NEW] 지도가 강제 이동 중일 때 자동 갱신을 막는 스위치
+    ignoreIdle: false, // 🌟 [NEW] 지도가 강제 이동 중일 때 자동 갱신을 막는 스위치
+    isFilterMode: false, // 🌟 [NEW] 저장/최근 탭이 켜져 있을 때 갱신을 '영구적'으로 막는 스위치
+    userLocation: null,    // 🌟 [NEW] 내 GPS 위치 저장용
+    isLocationMode: false  // 🌟 [NEW] 내 주변 보기 모드 켜짐 여부
 };
 
 // ============================================================
@@ -40,14 +42,25 @@ $(document).ready(function() {
     })
 
     $(".nav-item").on('click', function () {
-        // 1. UI 활성화 처리
+        const $this = $(this);
+        const tabName = $this.data('tab');
+
+        // 채팅 탭은 화면 이동이므로 바로 실행
+        if (tabName === 'chat') {
+            UIManager.switchTab('chat');
+            return;
+        }
+
+        // 🌟 [핵심 UX] 이미 켜진 탭을 '한 번 더' 눌렀을 때 -> 선택 해제 및 '자유 탐색' 모드로 복귀!
+        if ($this.hasClass('active')) {
+            $this.removeClass('active');
+            UIManager.switchTab('explore'); // 🌟 새로운 '자유 탐색' 모드 실행
+            return;
+        }
+
+        // 🌟 [핵심 변경] 토글 로직을 제거하고 직관적으로 탭을 이동하게 만듭니다.
         $('.nav-item').removeClass('active');
-        $(this).addClass('active');
-
-        // 2. data-tab 속성 값 읽기
-        const tabName = $(this).data('tab');
-
-        // 3. 기능 실행
+        $this.addClass('active');
         UIManager.switchTab(tabName);
     })
 });
@@ -74,7 +87,7 @@ const MapManager = {
             disableDefaultUI: true,
             styles: initialStyle,
             gestureHandling: 'greedy',
-            maxZoom: 14
+            maxZoom: 18
         });
 
         MapManager.drawMasking();
@@ -90,26 +103,20 @@ const MapManager = {
         // 🌟 [복구] 이 부분(이벤트 리스너)이 빠져 있었습니다!
         // 지도가 멈출 때(idle)마다 실행한다는 명령이 없어서 동작을 안 했던 겁니다.
         map.addListener("idle", () => {
-
-            // 강제로 지도가 이동중 (jobRecent) 에는 idle이 실행되지 않도록 하기
-            if(AppState.ignoreIdle){
+// 🌟 [핵심 변경] 강제 이동 중(ignoreIdle)이거나 필터 모드(isFilterMode)일 때는 갱신 정지!
+            if(AppState.ignoreIdle || AppState.isFilterMode){
                 return;
             }
 
-            // 기존 타이머 취소 (디바운싱)
             clearTimeout(AppState.debounceTimer);
 
-            // 0.5초 뒤 실행 예약
             AppState.debounceTimer = setTimeout(() => {
                 const bounds = map.getBounds();
 
-                // 🛑 무한 루프 방지 브레이크
                 if (AppState.lastBounds && bounds.equals(AppState.lastBounds)) {
-                    console.log("✋ 지도가 움직이지 않아 데이터 요청을 건너뜁니다.");
                     return;
                 }
 
-                // 범위가 달라졌을 때만 갱신하고 데이터를 요청함
                 AppState.lastBounds = bounds;
                 JobService.loadJobs(bounds);
 
@@ -136,6 +143,7 @@ const MapManager = {
                     lng: position.coords.longitude,
                 };
 
+                AppState.userLocation = pos;
                 AppState.map.setCenter(pos);
                 AppState.map.setZoom(15);
 
@@ -250,66 +258,6 @@ const MapManager = {
             strokeWeight: 2
         }
     },
-
-
-    // 🌟 [NEW] 마커들이 모두 보이게 지도 카메라 자동 조절
-    // fitBoundsToData: function(jobs) {
-    //     if (!jobs || jobs.length === 0 || !AppState.map) return;
-    //
-    //     // 1. 카메라가 비출 '영역(경계)' 객체 생성
-    //     const bounds = new google.maps.LatLngBounds();
-    //     let hasValidCoords = false;
-    //
-    //     // 2. 공고들의 좌표를 하나씩 영역에 추가 (영역이 점점 넓어짐)
-    //     jobs.forEach(job => {
-    //         if (job.lat && job.lng) {
-    //             bounds.extend(new google.maps.LatLng(job.lat, job.lng));
-    //             hasValidCoords = true;
-    //         }
-    //     });
-    //
-    //     // 3. 유효한 좌표가 있다면 지도를 해당 영역에 맞춤
-    //     if (hasValidCoords) {
-    //         AppState.ignoreIdle = true;
-    //
-    //         AppState.map.fitBounds(bounds);
-    //
-    //         // 2. 지도 이동이 완전히 끝났을 때(idle) 실행
-    //         google.maps.event.addListenerOnce(AppState.map, "idle", function() {
-    //             AppState.map.setZoom(20); // 최대 줌 레벨을 20로 제한
-    //
-    //             // 🌟 중요: 줌 조절까지 완전히 끝난 후에야 스위치를 끄고, 현재 영역을 저장함
-    //             // setTimeout을 아주 짧게 줘서 마지막 줌 조절 idle 이벤트까지 무시하도록 안전장치
-    //             setTimeout(() => {
-    //                 AppState.lastBounds = AppState.map.getBounds();
-    //                 AppState.ignoreIdle = false; // 이제부터 다시 자동 갱신
-    //
-    //                 // ========================================================
-    //                 // 🌟 [NEW] 사용자 편의성 극대화 (UX 업데이트)
-    //                 // ========================================================
-    //
-    //                 // 🌟 [핵심 변경] autoOpenCard가 true일 때만 첫 번째 카드를 자동으로 엽니다.
-    //                 // 최근 본 공고 리스트(바텀 시트)를 볼 때는 카드가 열리지 않아 깔끔합니다.
-    //                 if (autoOpenCard && jobs[0]) {
-    //                     UIManager.openJobCard(jobs[0]);
-    //                 }
-    //
-    //                 // 2) 화면에 있는 마커들을 위아래로 통통 튀게 만듭니다. (BOUNCE)
-    //                 AppState.jobMarkers.forEach(marker => {
-    //                     // 구글 맵 기본 제공 애니메이션 적용
-    //                     marker.setAnimation(google.maps.Animation.BOUNCE);
-    //
-    //                     // 💡 UX 꿀팁: 계속 통통 튀면 눈이 피로할 수 있으니,
-    //                     // 2.5초(2500ms) 뒤에 알아서 멈추도록 센스를 발휘합니다.
-    //                     setTimeout(() => {
-    //                         marker.setAnimation(null);
-    //                     }, 2500);
-    //                 });
-    //
-    //             }, 100);
-    //         });
-    //     }
-    // },
 
     // 🌟 [NEW] 지역 변경 함수
     changeRegion: function(regionCode) {
@@ -440,26 +388,52 @@ const JobService = {
     },
 
     processData: function(data) {
+        let filteredData = data; // 기본적으로는 서버에서 온 데이터를 그대로 씀
 
-        console.log(`출력 데이터: ${data.length}개`);
+        // 🌟 [핵심 로직] 내 주변 모드이고, 내 GPS 위치를 아는 상태라면?
+        if (AppState.isLocationMode && AppState.userLocation) {
+            const RADIUS_KM = 3.0; // 🎯 원하는 반경을 설정하세요! (예: 3km = 3.0)
 
-        // UI 업데이트
+            filteredData = data.filter(job => {
+                if (!job.lat || !job.lng) return false; // 좌표 없는 공고는 제외
+
+                // Utils의 함수로 내 위치와 공고 위치 사이의 거리를 계산 (km 단위)
+                const dist = Utils.getDistanceFromLatLonInKm(
+                    AppState.userLocation.lat,
+                    AppState.userLocation.lng,
+                    job.lat,
+                    job.lng
+                );
+
+                return dist <= RADIUS_KM; // 계산된 거리가 반경 이내인 것만 통과!
+            });
+
+            console.log(`📍 내 반경 ${RADIUS_KM}km 이내 필터링: 전체 ${data.length}개 -> ${filteredData.length}개 남음`);
+        }
+
+        // UI 업데이트 (원본 data 대신 걸러진 filteredData를 넣어줍니다!)
         MarkerManager.clearMarkers();
-        UIManager.renderList(data);
-        MarkerManager.renderMarkers(data);
+        UIManager.renderList(filteredData);
+        MarkerManager.renderMarkers(filteredData);
     },
 
     // 🌟 [저장된 공고] DB에서 스크랩 내역 가져오기
     loadSavedJobs: function() {
+        const currentLang = new URLSearchParams(window.location.search).get('lang') === 'ja' ? 'ja' : 'kr'; // 언어 확인
+
         $.ajax({
-            url: '/api/scraps',
+            url: `/api/scraps?lang=${currentLang}`, // 🌟 URL에 언어 추가
             method: 'GET',
             dataType: 'json',
             success: function(data) {
-                UIManager.renderList(data);
+                UIManager.renderList(data, true);
                 MarkerManager.renderMarkers(data);
 
-                // 👉 [추가] 마커를 다 찍었으면 그쪽으로 카메라 이동!
+                // 🌟 [추가] 찜한 공고 리스트를 가져오면 바텀 시트를 위로 열어주기!
+                $('#bottomSheet').addClass('active');
+                UIManager.closeJobCard(); // 혹시 열려있는 카드가 있으면 닫기
+
+                // (선택) 찜한 마커들이 한눈에 보이게 카메라 조절 원하시면 주석 해제
                 // MapManager.fitBoundsToData(data);
             },
             error: function(err) {
@@ -548,9 +522,12 @@ const MarkerManager = {
         const markers = jobs
             .filter(job => job.lat && job.lng)
             .map(job => {
+                // 🌟 [변경] 기본 마커 대신 커스텀 SVG 마커 적용
+                // 여기서 파란색(#4285F4)이나 빨간색(#EA4335) 등 원하는 색상을 지정할 수 있습니다.
+                // 사진처럼 숫자를 넣고 싶다면 label 속성을 사용합니다.
                 const marker = new google.maps.Marker({
                     position: { lat: job.lat, lng: job.lng },
-                    title: job.title,
+                    icon: MarkerManager.createCustomMarkerIcon('#EA4335'), // 빨간색 마커 예시 (파란색은 #4285F4)
                 });
 
                 marker.addListener("click", () => {
@@ -605,7 +582,25 @@ const MarkerManager = {
                 });
             }
         };
-    }
+    },
+
+    // 🌟 [추가] 마커용 SVG 아이콘을 생성하는 헬퍼 함수
+    // color: 마커 배경색 (예: #4285F4)
+    createCustomMarkerIcon: function(color) {
+        // 사진과 비슷한 둥근 물방울(핀) 모양의 SVG 패스입니다.
+        const svgPath = 'M 12,0 C 5.373,0 0,5.373 0,12 c 0,7.194 10.74,22.25 11.31,23.03 l 0.69,0.97 l 0.69,-0.97 C 13.26,34.25 24,19.194 24,12 C 24,5.373 18.627,0 12,0 Z';
+
+        return {
+            path: svgPath,
+            fillColor: color, // 마커 배경색
+            fillOpacity: 1, // 불투명도 80%
+            strokeWeight: 1, // 테두리 두께
+            strokeColor: '#ffffff', // 테두리는 흰색
+            anchor: new google.maps.Point(12, 34), // 뾰족한 끝이 정확한 좌표를 가리키도록 앵커 포인트 설정
+            labelOrigin: new google.maps.Point(12, 12), // 텍스트(라벨)가 들어갈 중앙 위치
+            scale: 1 // 마커 크기 조정
+        };
+    },
 };
 
 // ============================================================
@@ -617,28 +612,54 @@ const UIManager = {
     switchTab: function(tabName) {
         console.log(`탭 전환 기능 실행: ${tabName}`);
 
-        // (UI 변경 코드는 위쪽 이벤트 리스너로 이사 갔음! 삭제됨)
+        const $sheetTitle = $('#sheetTitle');
+        const currentLang = new URLSearchParams(window.location.search).get('lang') === 'ja' ? 'ja' : 'kr';
 
-        // 기능별 로직만 남음
         if (tabName === 'nearby') {
-            AppState.isLocationMode = true;
+            $sheetTitle.text(currentLang === 'ja' ? '周辺の求人情報 📍' : '내 주변 구직 정보 📍');
+
+            // 🌟 1. '내 주변'도 필터이므로 지도 이동 갱신을 멈춥니다(Lock)!
+            AppState.isFilterMode = true;
+            AppState.isLocationMode = true; // 반경 3km 필터 켜기
+
+            // GPS 위치로 날아간 뒤, 그 위치에서 딱 1번만 데이터를 불러옵니다.
             MapManager.moveToCurrentLocation();
         }
         else if (tabName === 'saved') {
-            // TODO: 저장된 공고 불러오기
+            $sheetTitle.text(currentLang === 'ja' ? 'お気に入りの求人 ⭐' : '즐겨찾기한 구직 정보 ⭐');
+            AppState.isFilterMode = true;
+            AppState.isLocationMode = false;
             JobService.loadSavedJobs();
         }
         else if (tabName === 'recent') {
-            // TODO: 최근 본 공고 불러오기
+            $sheetTitle.text(currentLang === 'ja' ? '最近見た求人 🕒' : '최근 본 구직 정보 🕒');
+            AppState.isFilterMode = true;
+            AppState.isLocationMode = false;
             JobService.loadRecentJobs();
+        }
+        else if (tabName === 'explore') {
+            // 🌟 4. [NEW] 토글이 풀린 자유 탐색 모드!
+            $sheetTitle.text(currentLang === 'ja' ? '求人情報リスト 📋' : '구직 정보 리스트 📋');
+
+            AppState.isFilterMode = false; // 지도 이동 갱신(idle) 다시 켜기!
+            AppState.isLocationMode = false; // 반경 3km 필터 끄기!
+
+            // 현재 화면에 보이는 범위 기준으로 모든 공고를 즉시 다시 불러옵니다.
+            if (AppState.map) {
+                const bounds = AppState.map.getBounds();
+                if (bounds) {
+                    AppState.lastBounds = bounds;
+                    JobService.loadJobs(bounds);
+                }
+            }
         }
         else if (tabName === 'chat') {
             location.href = '/chat/room';
         }
     },
 
-    // 🌟 [핵심] job_list.html의 로직을 여기로 통합!
-    renderList: function(jobs) {
+    // 🌟 [핵심 수정] jobs 옆에 isSavedMode = false 를 꼭 넣어주셔야 합니다!
+    renderList: function(jobs, isSavedMode = false) {
         const $tbody = $('#listBody');
         const currentLang = new URLSearchParams(window.location.search).get('lang') === 'ja' ? 'ja' : 'kr';
 
@@ -656,20 +677,28 @@ const UIManager = {
             const thumb = job.thumbnailUrl || 'https://placehold.co/40';
             const dateStr = job.writeTime || MapMessages.fbTime;
             const contact = job.contactPhone || '-';
-
             const detailUrl = `/map/jobs/detail?id=${job.id}&source=${job.source}&lang=${currentLang}`;
 
             const clickAttr = (job.lat && job.lng)
                 ? `onclick="MapManager.moveToJobLocation(${job.lat}, ${job.lng})"`
                 : `onclick="alert('지도 좌표 정보가 없습니다.')"`;
 
-            // ========================================================
-            // 🌟 [핵심 변경] 로그인 여부에 따라 찜 버튼 HTML을 다르게 생성합니다.
-            // ========================================================
-            const saveBtnHtml = isUserLoggedIn
-                ? `<button class="btn">${MapMessages.btnSave}</button>`
-                : ''; // 로그인 안 했으면 빈 문자열(버튼 없음)
+            let btnClass = 'btn';
+            let btnText = MapMessages.btnSave;
+            let unsaveText = currentLang === 'ja' ? '保存解除' : '찜해제';
 
+            // 🌟 1. 모드에 따라 버튼 디자인과 텍스트를 먼저 바꿉니다.
+            if (isSavedMode) {
+                btnClass = "btn btn-saved"; // 노란색 클래스 적용
+                btnText = unsaveText;
+            }
+
+            // 🌟 2. 로그인 여부에 따라 찜 버튼 HTML을 다르게 생성합니다.
+            const saveBtnHtml = isUserLoggedIn
+                ? `<button class="${btnClass}" data-id="${job.id}" data-source="${job.source}" onclick="UIManager.toggleListScrap(this, ${isSavedMode})">${btnText}</button>`
+                : '';
+
+            // 🌟 3. 최종 HTML 조립
             html += `
             <tr>
                 <td>
@@ -747,6 +776,45 @@ const UIManager = {
         // HTML에서 선언한 MapMessages.table 배열을 그대로 입혀줍니다.
         headers.each(function(index) {
             if(MapMessages.table[index]) $(this).text(MapMessages.table[index]);
+        });
+    },
+
+    // 🌟 [NEW] 리스트 테이블 안에서 직접 찜하기/해제를 누를 때 작동하는 함수
+    toggleListScrap: function(btnElement, isSavedMode) {
+        const $btn = $(btnElement);
+        const jobId = $btn.data('id');
+        const source = $btn.data('source');
+        const currentLang = new URLSearchParams(window.location.search).get('lang') === 'ja' ? 'ja' : 'kr';
+
+        $.ajax({
+            url: '/api/scraps',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ targetPostId: jobId, targetSource: source }),
+            success: function(response) {
+                if (response.isScraped) {
+                    // 찜 등록 시 노란색으로 변경
+                    $btn.addClass('btn-saved').text(currentLang === 'ja' ? '保存解除' : '찜해제');
+                } else {
+                    // 🌟 찜 해제 시!
+                    if (isSavedMode) {
+                        // 저장된 공고 탭에서 해제했다면, 리스트에서 스르륵 사라지게 만듭니다 (고급 UX)
+                        $btn.closest('tr').fadeOut(300, function() {
+                            $(this).remove();
+                            // 다 지워서 남은 게 없으면 '공고 없음' 메시지 띄우기
+                            if ($('#listBody tr').length === 0) {
+                                $('#listBody').html(`<tr><td colspan="7" class="msg-box">${MapMessages.emptyJob}</td></tr>`);
+                            }
+                        });
+                    } else {
+                        // 일반 주변 일자리 탭이라면 원래 회색 버튼으로 복구
+                        $btn.removeClass('btn-saved').text(MapMessages.btnSave);
+                    }
+                }
+            },
+            error: function() {
+                alert("처리 중 오류가 발생했습니다.");
+            }
         });
     }
 };

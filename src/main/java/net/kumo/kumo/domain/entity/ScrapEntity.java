@@ -27,4 +27,8 @@ public class ScrapEntity {
 	@CreationTimestamp
 	@Column(name = "created_at", updatable = false)
 	private Timestamp createdAt;
+	
+	// 기존 컬럼들 밑에 source를 추가해 주세요.
+	@Column(name = "source", length = 20)
+	private String source; // TOKYO, OSAKA 등 출처 저장
 }

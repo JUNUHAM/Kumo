@@ -155,14 +155,26 @@ function toggleScrap(btnElement) {
     const $btn = $(btnElement);
     const jobId = $btn.data('id');
     const $svg = $btn.find('svg');
+    // 🌟 [핵심 추가] 버튼의 data-source 속성에서 TOKYO, OSAKA 등의 값을 꺼내옵니다!
+    const source = $btn.data('source');
+
+    // 만약 값이 제대로 안 읽힌다면 에러 방지
+    if (!jobId || !source) {
+        console.error("찜하기 실패: ID 또는 Source 값을 찾을 수 없습니다.", {jobId, source});
+        return;
+    }
 
     $.ajax({
         url: '/api/scraps',
         method: 'POST',
         contentType: 'application/json',
-        data: JSON.stringify({ targetPostId: jobId }),
+        data: JSON.stringify({ targetPostId: jobId , targetSource: source}),
         success: function(response) {
-            if (response.isScraped) {
+
+            // 🌟 [핵심 변경] 스프링이 is를 빼고 보냈을 경우(scraped)까지 완벽하게 체크합니다!
+            const isScrapedResult = response.isScraped !== undefined ? response.isScraped : response.scraped;
+
+            if (isScrapedResult) {
                 $svg.attr('fill', '#4285F4').attr('stroke', '#4285F4');
             } else {
                 $svg.attr('fill', 'none').attr('stroke', '#999');

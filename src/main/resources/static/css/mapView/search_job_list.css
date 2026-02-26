@@ -38,10 +38,33 @@ body,
 
 body { margin: 0; font-family: 'Noto Sans KR', sans-serif; background-color: var(--bg-main); color: var(--text-main); }
 
-.list-header-wrapper { position: sticky; top: 0; z-index: 100; background-color: var(--bg-main); border-bottom: 1px solid var(--border-color); }
-.list-header-wrapper > div { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+/* 🌟 헤더 래퍼: 화면 상단에 100% 너비로 완벽하게 고정 */
+.list-header-wrapper {
+    position: fixed; /* sticky 대신 fixed로 확실하게 고정 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000; /* 지도 페이지와 동일하게 z-index를 높여줍니다 */
+    background-color: var(--bg-main);
+    border-bottom: 1px solid var(--border-color);
+}
 
-.list-container { max-width: 1400px; margin: 0 auto; padding: 40px 20px 100px; }
+/* 🌟 헤더 내부 컨텐츠: 1200px 제한을 풀고 100% 꽉 차는 반응형으로! */
+.list-header-wrapper > div,
+.list-header-wrapper header {
+    width: 100% !important;
+    position: sticky;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between; /* 양쪽 끝으로 로고와 메뉴를 쫙 벌려줍니다 */
+}
+
+/* 🌟 컨테이너: fixed 헤더에 내용이 가려지지 않도록 상단 패딩(top)을 100px로 증가! */
+.list-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 100px 20px 100px; /* 원래 40px이었던 상단 여백을 100px로 넉넉하게! */
+}
 
 .page-top-section { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; }
 .page-title { font-size: 32px; font-weight: 900; color: var(--text-title); margin: 0; }
