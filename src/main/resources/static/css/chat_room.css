@@ -471,66 +471,86 @@ textarea.input-field::placeholder {
 }
 
 /* [메인 메뉴] 하얀색 박스 (서랍) */
+/* 1. 모달 전체가 열릴 때 배경이 부드럽게 어두워지는 효과 */
+dialog[open] {
+    animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
 .main-menu-box {
     width: 100%;
     background: #ffffff;
-    border-radius: 20px 20px 0 0;
-    padding: 30px 20px 50px 20px;
-    /* 아래 여백을 넉넉히 줌 */
-    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
-    animation: slideUp 0.3s ease-out;
+    border-radius: 24px 24px 0 0;
+    /* 곡선을 더 부드럽게 */
+    padding: 40px 20px 50px 20px;
+    /* 위아래 여백을 넉넉히 줘서 중앙 밸런스 확보 */
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.08);
+    /* 은은한 그림자 */
+    display: flex;
+    justify-content: center;
+    /* 내부 아이템 중앙 정렬 */
+
+    animation: slideUp 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 
 /* 1. 전체 틀: 여백을 조정하여 균형감 확보 */
 .menu-grid {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    justify-content: space-around;
-    align-items: flex-start;
-    /* 상하 여백을 늘려 시원한 느낌을 주고, 좌우는 적당히 유지 */
-    padding: 25px 10px !important;
-    width: 100% !important;
-    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    width: 100%;
+    max-width: 420px;
+    /* 너무 퍼지지 않게 최대 너비 제한해서 중앙으로 모아줌 */
 }
 
 /* 2. 개별 아이템: 구조 유지 */
 .menu-item {
-    display: flex !important;
+    display: flex;
     flex-direction: column;
     align-items: center;
-    width: 25% !important;
-    min-width: 0;
     cursor: pointer;
 }
 
 /* 3. 아이콘: 모달 크기에 맞게 '적당히' 확대 (핵심) */
 .menu-icon-circle {
-    /* 기존 35~38px에서 48px로 확대 -> 시인성 확보 */
-    width: 48px !important;
-    height: 48px !important;
+    width: 60px;
+    /* 기존 55px -> 60px 사이즈 업! */
+    height: 60px;
     border-radius: 50%;
     display: flex;
-    align-items: center;
     justify-content: center;
-    /* 텍스트와의 간격을 조금 더 줌 */
-    margin-bottom: 8px;
-    font-size: 20px !important;
-    transition: filter 0.2s ease-in-out, transform 0.1s ease-in-out !important;
+    align-items: center;
+    margin-bottom: 12px;
+    /* 아이콘과 글자 사이 간격 쪼금 더 띄움 */
+    font-size: 26px;
+    /* 아이콘 자체 크기 업! */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+    /* 버튼에 입체감 살짝 추가 */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* 4. 텍스트: 가독성 좋게 크기 키우고 자간 정상화 */
+/* 마우스 올렸을 때 살짝 떠오르는 애니메이션 */
+.menu-item:hover .menu-icon-circle {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* 메뉴 이름 텍스트 */
 .menu-name {
-    /* 글자 크기를 12px로 키움 */
-    font-size: 12px !important;
-    /* 좁혔던 자간을 기본값으로 돌려 읽기 편하게 */
-    letter-spacing: normal !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: #333;
+    font-size: 13px;
+    font-weight: 500;
+    color: #444;
+    /* 텍스트를 너무 까맣지 않은 세련된 먹색으로 */
     text-align: center;
-    width: 100%;
 }
 
 /* [정석] dialog 기본 스타일 초기화 */

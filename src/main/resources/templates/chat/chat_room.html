@@ -226,30 +226,35 @@
         <dialog id="mainPlusMenu" class="std-dialog-clear" style="margin-bottom: 0;">
             <div class="main-menu-box" onclick="event.stopPropagation()">
                 <div class="menu-grid">
+
                     <div class="menu-item" onclick="openSubMenu('template')">
-                        <div class="menu-icon-circle" style="background-color: #fef01b;"><i
-                                class="fa-solid fa-comment-dots" style="color: #3b1e1e;"></i></div>
+                        <div class="menu-icon-circle" style="background-color: #fff4cc;">
+                            <i class="fa-regular fa-message" style="color: #ffb800;"></i>
+                        </div>
                         <span class="menu-name">자주 쓰는 메시지</span>
                     </div>
 
                     <div class="menu-item" onclick="document.getElementById('fileInput').click(); closeMainMenu();">
-                        <div class="menu-icon-circle" style="background-color: #ffebee;"><i class="fa-solid fa-image"
-                                style="color: #f44336;"></i></div>
+                        <div class="menu-icon-circle" style="background-color: #ffe8e8;">
+                            <i class="fa-regular fa-image" style="color: #ff5252;"></i>
+                        </div>
                         <span class="menu-name">앨범</span>
                     </div>
 
                     <div class="menu-item" onclick="document.getElementById('docFileInput').click(); closeMainMenu();">
                         <div class="menu-icon-circle" style="background-color: #e8f5e9;">
-                            <i class="fa-solid fa-file-invoice" style="color: #4caf50;"></i>
+                            <i class="fa-regular fa-file-lines" style="color: #4caf50;"></i>
                         </div>
                         <span class="menu-name">문서</span>
                     </div>
 
                     <div class="menu-item" onclick="alert('추후에 구현 예정이에요!')">
-                        <div class="menu-icon-circle" style="background-color: #e3f2fd;"><i
-                                class="fa-solid fa-calendar-check" style="color: #2196f3;"></i></div>
+                        <div class="menu-icon-circle" style="background-color: #e3f2fd;">
+                            <i class="fa-regular fa-calendar" style="color: #2196f3;"></i>
+                        </div>
                         <span class="menu-name">면접 일정</span>
                     </div>
+
                 </div>
             </div>
         </dialog>
