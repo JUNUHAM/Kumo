@@ -68,13 +68,13 @@
                 </tr>
               </thead>
               <tbody>
-                <tr th:each="job : ${jobList}">
+                <tr th:each="job : ${jobList}" th:classappend="${job.status == 'CLOSED'} ? 'job-closed-row' : ''">
                   <td>
                     <div class="job-title-cell">
                       <span class="job-name text-truncate-custom" th:text="${job.title}">공고 제목</span>
                     </div>
                   </td>
-                  <td><span class="badge bg-light text-dark border" th:text="${job.regionType}">오사카</span></td>
+                  <td><span class="badge bg-light text-dark border" th:text="${job.regionType}">지역</span></td>
                   <td><span class="salary-text" th:text="${job.wage}">급여</span></td>
                   <td><span class="date-text" th:text="${#temporals.format(job.createdAt, 'yyyy-MM-dd')}">등록일</span></td>
                   <td>
@@ -84,16 +84,20 @@
                       th:text="#{job.manage.status.end}">마감됨</span>
                   </td>
                   <td>
-                    <button type="button" class="btn-gear"
-                      th:onclick="openJobModal([[${job.id}]], [[${job.datanum}]], [[${job.regionType}]], [[${job.title}]])">
+                    <button th:if="${job.status == 'RECRUITING'}" type="button" class="btn-gear"
+                      th:onclick="openJobModal([[${job.id}]], [[${job.datanum}]], [[${job.regionType}]], [[${job.title}]], [[${job.status}]])">
                       <i class="bi bi-gear-fill"></i>
+                    </button>
+              
+                    <button th:if="${job.status == 'CLOSED'}" type="button" class="btn-close-delete"
+                      th:onclick="deletePosting([[${job.datanum}]], [[${job.regionType == '도쿄' ? 'TOKYO' : 'OSAKA'}]])">
+                      <i class="bi bi-x-lg"></i>
                     </button>
                   </td>
                 </tr>
-            
+              
                 <tr th:if="${#lists.isEmpty(jobList)}">
-                  <td colspan="6" class="text-center py-5 text-muted"> 등록된 공고가 없습니다.
-                  </td>
+                  <td colspan="6" class="text-center py-5 text-muted">등록된 공고가 없습니다.</td>
                 </tr>
               </tbody>
             </table>
@@ -162,7 +166,7 @@
           };
 
           // (수정과 삭제는 임시 주소 유지, 추후 API 완성 시 변경)
-          document.getElementById('btnEditJob').onclick = () => location.href = `/Recruiter/editPosting?datanum=${datanum}&region=${sourceEn}`;
+          document.getElementById('btnEditJob').onclick = () => location.href = `/Recruiter/editJobPosting?id=${id}&region=${sourceEn}`;
           document.getElementById('btnDeleteJob').onclick = () => deletePosting(datanum, sourceEn);
 
           // 모달 띄우기
@@ -210,6 +214,61 @@
               }
             });
           }
+          document.addEventListener('DOMContentLoaded', () => {
+              const table = document.querySelector('.kumo-table');
+              const headers = table.querySelectorAll('th');
+              const tbody = table.querySelector('tbody');
+
+              headers.forEach((header, index) => {
+                // 지역(1), 상태(4), 관리(5) 칸은 정렬에서 제외
+                if (index === 1 || index === 4 || index === 5) return;
+
+                header.addEventListener('click', () => {
+                  const rows = Array.from(tbody.querySelectorAll('tr:not(.text-center)'));
+                  const isAscending = header.classList.contains('sort-asc');
+
+                  // 모든 헤더 아이콘 초기화
+                  headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+
+                  rows.sort((rowA, rowB) => {
+                    // 🌟 0순위: 상태(Status) 정렬 (RECRUITING 우선)
+                    const statusA = rowA.querySelector('.status-badge').classList.contains('status-ing') ? 0 : 1;
+                    const statusB = rowB.querySelector('.status-badge').classList.contains('status-ing') ? 0 : 1;
+
+                    if (statusA !== statusB) {
+                      return statusA - statusB; // 무조건 '모집중'이 위로!
+                    }
+
+                    // 🌟 1순위: 사용자가 선택한 컬럼 정렬 (같은 상태 내에서만 작동)
+                    let cellA = rowA.children[index].innerText.trim();
+                    let cellB = rowB.children[index].innerText.trim();
+
+                    // [숫자 처리] 급여 (연봉 2000엔 -> 2000)
+                    if (index === 2) {
+                      cellA = parseInt(cellA.replace(/[^0-9]/g, '')) || 0;
+                      cellB = parseInt(cellB.replace(/[^0-9]/g, '')) || 0;
+                    }
+                    // [날짜 처리] 등록일 (2026-02-26)
+                    else if (index === 3) {
+                      cellA = new Date(cellA);
+                      cellB = new Date(cellB);
+                    }
+
+                    // 오름차순/내림차순 토글
+                    if (cellA < cellB) return isAscending ? 1 : -1;
+                    if (cellA > cellB) return isAscending ? -1 : 1;
+                    return 0;
+                  });
+
+                  // 결과 반영 및 아이콘 방향 표시
+                  header.classList.toggle('sort-asc', !isAscending);
+                  header.classList.toggle('sort-desc', isAscending);
+
+                  // 정렬된 행들을 다시 조립
+                  rows.forEach(row => tbody.appendChild(row));
+                });
+              });
+            });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </body>

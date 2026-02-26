@@ -75,9 +75,19 @@ public class RecruiterController {
         UserEntity user = ur.findByEmail(loginEmail)
                 .orElseThrow(() -> new RuntimeException("사용자 정보를 찾을 수 없습니다."));
 
+<<<<<<< Updated upstream
         // TODO: 머지 후 적용!!!
         // List<JobApplicantGroupDTO> groupedList = js.getGroupedApplicantsForRecruiter(user);
         // model.addAttribute("groupedList", groupedList);
+=======
+        // 2. 서비스 호출: 이 구인자가 올린 공고에 지원한 모든 지원자 목록 가져오기
+        // 머지 후 구현 가능!!
+        // List<ApplicationDTO.ApplicantResponse> applicantList =
+        // rs.getApplicantsForRecruiter(user.getUserId());
+
+        // 3. 화면(Model)에 데이터 전달
+        // model.addAttribute("applicantList", applicantList);
+>>>>>>> Stashed changes
 
         return "recruiterView/applicantInfo";
     }

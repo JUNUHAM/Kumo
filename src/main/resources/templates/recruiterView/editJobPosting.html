@@ -30,19 +30,6 @@
         <div class="main-container">
             <main class="content-body">
             <div class="posting-card">
-                <!-- posting-card 맨 위에 임시 추가 -->
-                <div style="background:#fff3cd; padding:10px; margin-bottom:20px; font-size:12px;">
-                    <b>DEBUG:</b><br>
-                    title: <span th:text="${job.title}"></span><br>
-                    position: <span th:text="${job.position}"></span><br>
-                    jobDescription: <span th:text="${job.jobDescription}"></span><br>
-                    contactPhone: <span th:text="${job.contactPhone}"></span><br>
-                    salaryType: <span th:text="${job.salaryType}"></span><br>
-                    salaryAmount: <span th:text="${job.salaryAmount}"></span><br>
-                    body: <span th:text="${job.body}"></span><br>
-                    datanum: <span th:text="${job.datanum}"></span><br>
-                    companyId: <span th:text="${job.companyId}"></span><br>
-                </div>
                 <h2 class="posting-title">공고 수정</h2>
             
                 <form th:action="@{/Recruiter/editJobPosting}" method="post" enctype="multipart/form-data" id="jobEditForm">
@@ -61,8 +48,8 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">업무 상세</label>
-                            <input type="text" name="jobDescription" class="form-control kumo-input"
-                                th:value="${job.jobDescription}" placeholder="상세 업무를 입력하세요" />
+                            <input type="text" name="jobDescription" class="form-control kumo-input" th:value="${job.jobDescription}"
+                                placeholder="상세 업무를 입력하세요" />
                         </div>
                     </div>
             
@@ -91,8 +78,7 @@
             
                     <div class="form-group mb-5">
                         <label class="form-label">상세정보</label>
-                        <textarea name="body" class="form-control kumo-input" rows="6"
-                            th:text="${job.body}"></textarea>
+                        <textarea name="body" class="form-control kumo-input" rows="6" th:text="${job.body}"></textarea>
                     </div>
             
                     <div class="d-flex justify-content-center gap-3 mb-5 mt-2">
@@ -108,34 +94,12 @@
     </div>
 
     <script th:inline="javascript">
-       /* <![CDATA[ */
-
-        // 1. 이미지 미리보기 - file-upload가 있을 때만 실행
-        const fileUpload = document.getElementById('file-upload');
-        if (fileUpload) {
-            fileUpload.addEventListener('change', function () {
-                const previewArea = document.getElementById('previewArea');
-                previewArea.innerHTML = '';
-                Array.from(this.files).forEach(file => {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        const wrapper = document.createElement('div');
-                        wrapper.style.cssText = 'position:relative; width:80px; height:80px;';
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.style.cssText = 'width:80px; height:80px; object-fit:cover; border-radius:10px; border:2px solid #e5e8eb;';
-                        wrapper.appendChild(img);
-                        previewArea.appendChild(wrapper);
-                    };
-                    reader.readAsDataURL(file);
-                });
-            });
-        }
-
-        // 2. 마감하기
-        function closePosting() {
+       function closePosting() {
             const datanum = document.querySelector('input[name="datanum"]').value;
             const region = document.querySelector('input[name="region"]').value;
+
+            // 🌟 스프링 시큐리티를 위한 CSRF 토큰 가져오기 (Thymeleaf가 자동으로 만들어줍니다)
+            // 만약 이 코드가 안 먹히면 HTML 헤더에 meta 태그 설정을 확인해야 할 수도 있어요!
 
             Swal.fire({
                 title: '공고를 마감하시겠습니까?',
@@ -147,13 +111,36 @@
                 cancelButtonText: '취소'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire('마감 완료!', '공고가 성공적으로 마감되었습니다.', 'success')
-                        .then(() => { location.href = '/Recruiter/JobManage'; });
+                    // 서버에 마감 요청 보내기
+                    fetch(`/Recruiter/closeJobPosting?datanum=${datanum}&region=${region}`, {
+                        method: 'POST',
+                        headers: {
+                            // 보통 Spring Security는 헤더에 이걸 넣어줘야 POST를 허용합니다.
+                            // 만약 403 에러가 나면 이 부분이 필요해요!
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                        .then(response => response.text())
+                        .then(data => {
+                            if (data === "success") {
+                                Swal.fire({
+                                    title: '마감 완료!',
+                                    text: '공고가 성공적으로 마감되었습니다.',
+                                    icon: 'success'
+                                }).then(() => {
+                                    location.href = '/Recruiter/JobManage';
+                                });
+                            } else {
+                                Swal.fire('에러 발생', '마감 처리에 실패했습니다.', 'error');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire('에러 발생', '서버와 통신 중 문제가 생겼습니다.', 'error');
+                        });
                 }
             });
         }
-
-        /* ]]> */
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
