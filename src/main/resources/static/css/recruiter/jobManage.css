@@ -1,20 +1,30 @@
+/* 1. 메인 카드 영역 (지원자 페이지와 100% 동일한 크기 및 여백) */
 .job-manage-card {
   background: white;
   border-radius: 25px;
-  padding: 35px 40px;
+  padding: 30px;
+  /* 기존 35px 40px에서 30px로 통일 */
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
-
-  /* [수정] 메인 대시보드와 동일한 시작 지점으로 고정 */
   margin-left: 0;
   width: 100%;
   max-width: 1200px;
   box-sizing: border-box;
 }
+
+/* 2. 상단 헤더 정렬 (지원자 페이지와 동일) */
+.card-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+/* 3. 공고 관리 타이틀 텍스트 (지원자 페이지 1.4rem 동일 적용) */
 .table-title {
-  font-size: 1.45rem;
+  font-size: 1.4rem;
   font-weight: 800;
   color: #333d4b;
-  margin-bottom: 30px;
+  margin: 0 0 10px 0;
 }
 
 /* 2. 테이블 레이아웃: 줄바꿈 방지 및 너비 100% 맞춤 */
@@ -347,4 +357,78 @@ body.dark-mode .btn-job-delete {
 body.dark-mode .btn-job-delete:hover {
   background: #ff4d4f !important;
   color: #ffffff !important;
+}
+
+/* =========================================
+   🌟 전체 공고 수 카운터 뱃지 스타일
+========================================= */
+/* =========================================
+   🌟 전체 공고 수 카운터 (크기 축소 & 위치 고정)
+========================================= */
+/* 제목과 뱃지를 세로로 예쁘게 정렬 */
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  /* 제목과 뱃지 사이 간격 */
+}
+
+.total-count-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* 글자와 뱃지 사이 간격 */
+}
+
+/* 글자 크기 다이어트 (1.1rem -> 0.9rem) */
+.count-label {
+  font-size: 0.9rem;
+  color: #8b95a1;
+  /* 지원자 페이지와 동일한 은은한 회색 */
+}
+
+.count-badge {
+  background-color: #e8f3ff;
+  color: #7abaff;
+  padding: 0px 8px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+/* =========================================
+   🌟 관리 버튼 (톱니바퀴) 가운데 정렬 & 디자인
+========================================= */
+
+/* 1. 6번째 칸(관리)을 완벽한 정중앙으로 세팅 */
+.kumo-table th:nth-child(6),
+.kumo-table td:nth-child(6) {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+/* 2. 톱니바퀴 버튼 배경/테두리 제거 */
+.btn-gear {
+  background: transparent;
+  /* 배경 투명하게 */
+  border: none;
+  /* 테두리 제거 */
+  color: #a0aec0;
+  /* 은은한 회색 */
+  font-size: 1.25rem;
+  /* 아이콘 크기 살짝 키움 */
+  padding: 5px;
+  /* 클릭 영역 확보 */
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+/* 3. 마우스 올렸을 때 효과 (색상 변경 + 회전 애니메이션) */
+.btn-gear:hover {
+  color: #7abaff;
+  /* 사장님 메인 파란색으로 변신 */
+  transform: rotate(90deg);
+  /* 톱니바퀴가 찌잉~ 하고 돌아가는 귀여운 디테일 */
 }

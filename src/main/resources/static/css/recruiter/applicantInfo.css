@@ -372,3 +372,41 @@
   filter: brightness(0.98);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
+
+/* =========================================
+   🌟 관리 버튼 (톱니바퀴) 가운데 정렬 & 디자인
+========================================= */
+
+/* 1. 6번째 칸(관리)을 완벽한 정중앙으로 세팅 */
+.kumo-table th:nth-child(6),
+.kumo-table td:nth-child(6) {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+/* 2. 톱니바퀴 버튼 배경/테두리 제거 */
+.btn-gear {
+  background: transparent;
+  /* 배경 투명하게 */
+  border: none;
+  /* 테두리 제거 */
+  color: #a0aec0;
+  /* 은은한 회색 */
+  font-size: 1.25rem;
+  /* 아이콘 크기 살짝 키움 */
+  padding: 5px;
+  /* 클릭 영역 확보 */
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+/* 3. 마우스 올렸을 때 효과 (색상 변경 + 회전 애니메이션) */
+.btn-gear:hover {
+  color: #7abaff;
+  /* 사장님 메인 파란색으로 변신 */
+  transform: rotate(90deg);
+  /* 톱니바퀴가 찌잉~ 하고 돌아가는 귀여운 디테일 */
+}

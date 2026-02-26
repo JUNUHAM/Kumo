@@ -1,6 +1,7 @@
 package net.kumo.kumo.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -32,4 +33,7 @@ public interface TokyoGeocodedRepository extends BaseRepository<TokyoGeocodedEnt
 
     // 이메일을 기준으로 해당 유저가 쓴 도쿄 공고만 전부 가져오기
     List<TokyoGeocodedEntity> findByUser_Email(String email);
+
+    // datanum으로 단일 공고 찾기
+    Optional<TokyoGeocodedEntity> findByDatanum(Long datanum);
 }

@@ -83,7 +83,7 @@
                 >
                 <h4
                   class="fw-bold mt-2 mb-0"
-                  th:text="${#numbers.formatInteger(openJobCount ?: 0, 0, 'COMMA')}"
+                  th:text="${#lists.size(jobList)}"
                 >
                   12
                 </h4>

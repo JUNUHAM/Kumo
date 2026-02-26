@@ -12,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,7 +53,13 @@ public class RecruiterController {
      * @return
      */
     @GetMapping("Main")
-    public String Main(Model model) {
+    public String Main(Model model, java.security.Principal principal) {
+
+        // 전체 공고 수 출력 용
+        String userEmail = principal.getName();
+        List<JobManageListDTO> jobList = js.getMyJobPostings(userEmail);
+        model.addAttribute("jobList", jobList);
+
         model.addAttribute("currentMenu", "home"); // 사이드바 선택(홈 메뉴)
         return "recruiterView/main";
     }
@@ -242,5 +249,30 @@ public class RecruiterController {
         js.saveJobPosting(dto, images, user);
 
         return "redirect:/Recruiter/JobManage";
+    }
+
+    /**
+     * 공고 삭제 API
+     */
+    @DeleteMapping("/api/recruiter/postings")
+    public ResponseEntity<?> deletePosting(@RequestParam("datanum") Long datanum,
+            @RequestParam("region") String region,
+            java.security.Principal principal) {
+        try {
+            // 로그인한 유저 이메일 가져오기
+            String userEmail = principal.getName();
+
+            // 삭제 서비스 호출
+            jobPostingService.deleteMyJobPosting(datanum, region, userEmail);
+
+            return ResponseEntity.ok().body("공고가 성공적으로 삭제되었습니다.");
+
+        } catch (IllegalStateException e) {
+            // 권한이 없을 때 (403 Forbidden)
+            return ResponseEntity.status(403).body(e.getMessage());
+        } catch (Exception e) {
+            // 기타 서버 에러 (500)
+            return ResponseEntity.status(500).body("삭제 중 오류가 발생했습니다: " + e.getMessage());
+        }
     }
 }

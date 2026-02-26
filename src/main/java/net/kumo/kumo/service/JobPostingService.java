@@ -303,4 +303,39 @@ public class JobPostingService {
 
         return result;
     }
+
+    /**
+     * 특정 유저의 공고 삭제 로직 (보안 검증 포함)
+     */
+    @Transactional
+    public void deleteMyJobPosting(Long datanum, String region, String email) {
+        if ("TOKYO".equalsIgnoreCase(region)) {
+            // 1. 도쿄 공고 찾기
+            TokyoGeocodedEntity entity = tokyoGeocodedRepository.findByDatanum(datanum)
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공고입니다."));
+
+            // 2. 이 공고를 작성한 사람이 현재 접속한 사람(email)이 맞는지 확인!
+            if (!entity.getUser().getEmail().equals(email)) {
+                throw new IllegalStateException("삭제 권한이 없습니다.");
+            }
+
+            // 3. 삭제!
+            tokyoGeocodedRepository.delete(entity);
+
+        } else if ("OSAKA".equalsIgnoreCase(region)) {
+            // 1. 오사카 공고 찾기
+            OsakaGeocodedEntity entity = osakaGeocodedRepository.findByDatanum(datanum)
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공고입니다."));
+
+            // 2. 권한 확인
+            if (!entity.getUser().getEmail().equals(email)) {
+                throw new IllegalStateException("삭제 권한이 없습니다.");
+            }
+
+            // 3. 삭제!
+            osakaGeocodedRepository.delete(entity);
+        } else {
+            throw new IllegalArgumentException("알 수 없는 지역입니다.");
+        }
+    }
 }

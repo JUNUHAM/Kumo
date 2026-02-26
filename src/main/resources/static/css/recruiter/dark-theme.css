@@ -147,7 +147,7 @@ body.dark-mode .name-line h1 {
 
 body.dark-mode .applicant-count,
 body.dark-mode .info-item span {
-  color: #ffffff !important;
+  color: #8b95a1 !important;
 }
 
 body.dark-mode .pr-box {
@@ -164,6 +164,15 @@ body.dark-mode .btn-action-main {
   background: #7abaff !important;
   color: #fff !important;
 }
+
+body.dark-mode .btn-gear {
+  color: #718096;
+}
+
+body.dark-mode .btn-gear:hover {
+  color: #7abaff;
+}
+
 
 /* ===================================================
    7. 공고 관리
@@ -190,6 +199,15 @@ body.dark-mode .job-closed .job-name {
 body.dark-mode .myjobs-head {
   background-color: #252525 !important;
   color: #ffffff !important;
+}
+
+body.dark-mode .count-label {
+  color: #a0aec0 !important;
+}
+
+body.dark-mode .count-badge {
+  background-color: #2b3a4a !important;
+  color: #7abaff !important;
 }
 
 /* ===================================================
