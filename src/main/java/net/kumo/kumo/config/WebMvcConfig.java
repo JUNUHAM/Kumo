@@ -22,4 +22,5 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/chat_images/**")
                 .addResourceLocations("file:" + rootPath + "/" + chatUploadDir);
     }
+
 }
