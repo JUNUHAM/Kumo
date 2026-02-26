@@ -691,12 +691,11 @@ textarea.input-field::placeholder {
 }
 
 .file-icon-box {
-    font-size: 26px;
-    color: #3498db;
-    /* KUMO 메인 하늘색 */
+    font-size: 24px;
     margin-right: 12px;
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .file-info-box {
@@ -707,12 +706,18 @@ textarea.input-field::placeholder {
 }
 
 .file-display-name {
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 14px;
+    font-weight: bold;
     color: #333;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    max-width: 180px;
+    /* 박스가 화면을 뚫고 나가지 않게 제어 */
+    word-break: break-all;
+    /* 긴 이름은 가차없이 밑으로 줄바꿈 */
+    white-space: normal;
+    /* 여러 줄 허용 */
+    line-height: 1.4;
+    /* 위아래 글자 간격 쾌적하게 */
+    margin-bottom: 2px;
 }
 
 .file-display-sub {

@@ -124,9 +124,9 @@ public class ChatController {
                 return ResponseEntity.badRequest().body("파일명 오류");
 
             String ext = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
-            // 이미지(기존) + 문서(추가) 허용 리스트
-            List<String> allowedExts = Arrays.asList("jpg", "jpeg", "png", "gif", "pdf", "docx", "doc", "xlsx", "xls",
-                    "txt");
+            // 이미지(기존) + 문서(추가) + 최신 웹 이미지 포맷(webp, avif) 허용 리스트
+            List<String> allowedExts = Arrays.asList("jpg", "jpeg", "png", "gif", "webp", "avif", "pdf", "docx", "doc",
+                    "xlsx", "xls", "txt");
 
             if (!allowedExts.contains(ext)) {
                 return ResponseEntity.badRequest().body("업로드 실패: 지원하지 않는 형식입니다.");

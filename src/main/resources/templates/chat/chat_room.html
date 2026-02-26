@@ -141,7 +141,7 @@
         </div>
 
         <div class="msg-area" id="msgArea">
-            <th:block th:each="msg, stat : ${history}">
+            <th:block th:each="msg : ${history}">
 
                 <div th:if="${msg.senderId != userId}" class="msg-row other">
                     <img th:src="@{/images/dog_profile.jpg}" class="profile-img">
@@ -149,10 +149,23 @@
                     <th:block th:if="${msg.messageType == 'TEXT'}">
                         <div class="msg-bubble" th:text="${msg.content}">내용</div>
                     </th:block>
+
                     <th:block th:if="${msg.messageType == 'IMAGE'}">
                         <img th:src="${msg.content}" class="chat-image"
                             style="max-width: 200px; border-radius: 10px; margin-top: 5px;"
                             onclick="openImageModal(this.src)">
+                    </th:block>
+
+                    <th:block th:if="${msg.messageType == 'FILE'}">
+                        <div class="file-bubble" th:data-url="${msg.content}"
+                            onclick="window.open(this.getAttribute('data-url'))" style="cursor: pointer;">
+                            <div class="file-icon-box"><i class="fa-solid fa-file-pdf"></i></div>
+                            <div class="file-info-box">
+                                <div class="raw-file-name" style="display: none;" th:text="${msg.content}"></div>
+                                <div class="file-display-name"></div>
+                                <div class="file-display-sub">파일 열기</div>
+                            </div>
+                        </div>
                     </th:block>
 
                     <span class="msg-time" th:text="${msg.createdAt}"></span>
@@ -164,10 +177,23 @@
                     <th:block th:if="${msg.messageType == 'TEXT'}">
                         <div class="msg-bubble" th:text="${msg.content}">내용</div>
                     </th:block>
+
                     <th:block th:if="${msg.messageType == 'IMAGE'}">
                         <img th:src="${msg.content}" class="chat-image"
                             style="max-width: 200px; border-radius: 10px; margin-top: 5px;"
                             onclick="openImageModal(this.src)">
+                    </th:block>
+
+                    <th:block th:if="${msg.messageType == 'FILE'}">
+                        <div class="file-bubble" th:data-url="${msg.content}"
+                            onclick="window.open(this.getAttribute('data-url'))" style="cursor: pointer;">
+                            <div class="file-icon-box"><i class="fa-solid fa-file-pdf"></i></div>
+                            <div class="file-info-box">
+                                <div class="raw-file-name" style="display: none;" th:text="${msg.content}"></div>
+                                <div class="file-display-name"></div>
+                                <div class="file-display-sub">파일 열기</div>
+                            </div>
+                        </div>
                     </th:block>
                 </div>
 
@@ -299,17 +325,28 @@
                             style="max-width: 200px; border-radius: 10px; margin-top: 5px;"
                             onclick="openImageModal(this.src)">`;
             }
-            /* ★ 이 부분(FILE 타입 렌더링)이 반드시 들어가야 합니다 ★ */
             else if (message.messageType === 'FILE') {
-                const fileName = message.content.split('_').pop(); // UUID 제거 후 원본 파일명 추출
+                const rawPath = message.content;
+                const fileName = rawPath.includes('_') ? rawPath.split('_').pop() : rawPath;
+                const ext = fileName.split('.').pop().toLowerCase();
+
+                // 확장자별 아이콘 및 색상 판별
+                let iconClass = 'fa-file';
+                let iconColor = '#95a5a6'; // 기본 회색
+
+                if (ext === 'pdf') { iconClass = 'fa-file-pdf'; iconColor = '#ff6b6b'; }
+                else if (ext === 'xlsx' || ext === 'xls') { iconClass = 'fa-file-excel'; iconColor = '#2ecc71'; }
+                else if (ext === 'docx' || ext === 'doc') { iconClass = 'fa-file-word'; iconColor = '#4a90e2'; }
+                else if (ext === 'txt') { iconClass = 'fa-file-lines'; iconColor = '#f1c40f'; }
+
                 finalContentHtml = `
-            <div class="file-bubble" onclick="window.open('${message.content}')">
-                <div class="file-icon-box"><i class="fa-solid fa-file-pdf"></i></div>
-                <div class="file-info-box">
-                    <div class="file-display-name">${fileName}</div>
-                    <div class="file-display-sub">파일 열기</div>
-                </div>
-            </div>`;
+                <div class="file-bubble" data-url="${message.content}" onclick="window.open(this.getAttribute('data-url'))" style="cursor: pointer;">
+                    <div class="file-icon-box" style="color: ${iconColor};"><i class="fa-solid ${iconClass}"></i></div>
+                    <div class="file-info-box">
+                        <div class="file-display-name">${fileName}</div>
+                        <div class="file-display-sub">파일 열기</div>
+                    </div>
+                </div>`;
             } else {
                 finalContentHtml = `<div class="msg-bubble">${message.content}</div>`;
             }
@@ -415,10 +452,17 @@
             }
         }
 
+        /* ★ 스크롤 함수 교체 ★ */
         function scrollToBottom() {
+            // 렌더링 시간을 고려해 여유있게 150ms 후 스크롤
             setTimeout(function () {
                 msgArea.scrollTop = msgArea.scrollHeight;
-            }, 50);
+            }, 150);
+
+            // 이미지나 파일이 늦게 뜰 경우를 대비해 500ms 후 확인 사살 (끝까지 밀어내기)
+            setTimeout(function () {
+                msgArea.scrollTop = msgArea.scrollHeight;
+            }, 500);
         }
 
         // [정석] 모달 제어 전용 (기존 중복 함수 정리)
@@ -534,8 +578,12 @@
             }
         }
 
-        // ★ 이벤트 연결 확인용 (매우 중요)
+        // =================================================================================
+        // ★ 페이지 로딩 완료 시 실행되는 초기화 코드 (번역 버튼 연결 + 파일 아이콘 색칠)
+        // =================================================================================
         document.addEventListener("DOMContentLoaded", function () {
+
+            // 1. [번역 버튼] 이벤트 연결
             const translateBtn = document.querySelector('.header-translate-btn');
             if (translateBtn) {
                 translateBtn.onclick = translateAllMessages;
@@ -543,6 +591,46 @@
             } else {
                 console.error("❌ [DEBUG] 번역 버튼(.header-translate-btn)을 찾을 수 없습니다.");
             }
+
+            // 2. [파일 메시지] 파일명 정리 및 확장자별 아이콘 적용
+            document.querySelectorAll('.file-bubble').forEach(bubble => {
+                const rawNameDiv = bubble.querySelector('.raw-file-name');
+                const displayNameDiv = bubble.querySelector('.file-display-name');
+                const iconElement = bubble.querySelector('.file-icon-box i'); // 아이콘 요소 찾기
+                const iconBox = bubble.querySelector('.file-icon-box'); // 색상 칠할 박스
+
+                if (rawNameDiv && displayNameDiv && iconElement) {
+                    const rawPath = rawNameDiv.innerText;
+
+                    // 파일명 추출
+                    const fileName = rawPath.includes('_') ? rawPath.split('_').pop() : rawPath;
+                    displayNameDiv.innerText = fileName;
+
+                    // 확장자 추출 및 소문자 변환
+                    const ext = fileName.split('.').pop().toLowerCase();
+
+                    // 기존 아이콘 클래스 초기화
+                    iconElement.className = 'fa-solid';
+
+                    // 확장자별 맞춤 아이콘 및 색상 맵핑
+                    if (ext === 'pdf') {
+                        iconElement.classList.add('fa-file-pdf');
+                        iconBox.style.color = '#ff6b6b'; // 분홍/빨강 계열
+                    } else if (ext === 'xlsx' || ext === 'xls') {
+                        iconElement.classList.add('fa-file-excel');
+                        iconBox.style.color = '#2ecc71'; // 연두색 계열
+                    } else if (ext === 'docx' || ext === 'doc') {
+                        iconElement.classList.add('fa-file-word');
+                        iconBox.style.color = '#4a90e2'; // 하늘색 계열
+                    } else if (ext === 'txt') {
+                        iconElement.classList.add('fa-file-lines');
+                        iconBox.style.color = '#f1c40f'; // 연노랑 계열
+                    } else {
+                        iconElement.classList.add('fa-file'); // 기타 기본 아이콘
+                        iconBox.style.color = '#95a5a6'; // 회색
+                    }
+                }
+            });
         });
     </script>
 </body>
