@@ -69,19 +69,15 @@ public class RecruiterController {
      */
     @GetMapping("ApplicantInfo")
     public String ApplicantInfo(Model model, Principal principal) {
-        model.addAttribute("currentMenu", "applicants"); // 사이드바 선택
+        model.addAttribute("currentMenu", "applicants");
 
-        // 1. 현재 로그인한 구인자 정보 가져오기
         String loginEmail = principal.getName();
         UserEntity user = ur.findByEmail(loginEmail)
                 .orElseThrow(() -> new RuntimeException("사용자 정보를 찾을 수 없습니다."));
 
-        // 2. 서비스 호출: 이 구인자가 올린 공고에 지원한 모든 지원자 목록 가져오기
-        // 머지 후 구현 가능!!
-        //List<ApplicationDTO.ApplicantResponse> applicantList = rs.getApplicantsForRecruiter(user.getUserId());
-
-        // 3. 화면(Model)에 데이터 전달
-        //model.addAttribute("applicantList", applicantList);
+        // TODO: 머지 후 적용!!!
+        // List<JobApplicantGroupDTO> groupedList = js.getGroupedApplicantsForRecruiter(user);
+        // model.addAttribute("groupedList", groupedList);
 
         return "recruiterView/applicantInfo";
     }
