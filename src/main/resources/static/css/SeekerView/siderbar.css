@@ -1,0 +1,127 @@
+@charset "UTF-8";
+
+/* ============================
+   [공통] 사이드바 스타일
+   ============================ */
+.sidebar {
+    width: 260px;
+    background-color: #ffffff;
+    border-right: 1px solid #eee;
+
+    display: flex;
+    flex-direction: column;
+
+    /* ★ [수정] 100vh -> 100% 로 변경! */
+    /* 이미 부모(.mypage-container)가 헤더/푸터 뺀 만큼만 크기를 잡고 있음 */
+    height: 100%;
+
+    padding: 30px 0;
+    flex-shrink: 0;
+    overflow-y: auto; /* 메뉴가 너무 많으면 스크롤 */
+}
+
+.sidebar-nav ul {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0;
+    list-style: none;
+}
+
+.sidebar-nav li a {
+    display: flex;
+    align-items: center;
+    padding: 15px 40px;
+    font-size: 14px;
+    color: #888;
+    transition: all 0.2s;
+    border-left: 4px solid transparent; /* 활성화 바 공간 */
+    text-decoration: none;
+}
+
+.sidebar-nav li a i {
+    width: 24px;
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+/* 활성화 된 메뉴 (Active) - 피그마의 파란 바 */
+.sidebar-nav li.active a {
+    color: #42a5f5; /* KUMO 블루 */
+    background-color: #f0f9ff;
+    border-left-color: #42a5f5;
+    font-weight: 500;
+}
+
+.sidebar-nav li a:hover {
+    color: #42a5f5;
+    background-color: #f0f9ff;
+    border-left: 4px solid #42a5f5;
+    font-weight: 500;
+}
+
+.sidebar-footer {
+    margin-top: auto; /* ★ 이게 있어야 로그아웃 버튼이 맨 아래로 밀림 */
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+/* 로그아웃 버튼 */
+.btn-logout {
+    display: flex;
+    align-items: center;
+    padding: 15px 40px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #ff5a5a;          /* 기본 레드 */
+    background-color: #fff5f5;
+    border-left: 4px solid #ff5a5a;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-logout i {
+    width: 24px;
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+.btn-logout:hover {
+    background-color: #ff5a5a;
+    color: #ffffff;
+}
+
+/* ============================
+   [다크모드] 사이드바 대응
+   ============================ */
+body.dark-mode .sidebar {
+    background-color: #1e1e1e;
+    border-color: #333;
+}
+
+body.dark-mode .sidebar-nav li a {
+    color: #ccc;
+}
+
+body.dark-mode .sidebar-nav li.active a {
+    background-color: #2a3441; /* 어두운 파란 배경 */
+    color: #7db4e6;
+}
+
+body.dark-mode .sidebar-nav li a:hover {
+    background-color: #2a3441;
+    color: #7db4e6;
+    border-left-color: #7db4e6;
+}
+
+body.dark-mode .btn-logout {
+    background-color: #2d1f1f;
+    color: #ff6b6b;
+    border-left-color: #ff6b6b;
+}
+
+body.dark-mode .btn-logout:hover {
+    background-color: #ff6b6b;
+    color: #fff;
+}

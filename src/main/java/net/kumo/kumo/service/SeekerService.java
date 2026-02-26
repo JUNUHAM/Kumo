@@ -3,6 +3,7 @@ package net.kumo.kumo.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.kumo.kumo.domain.dto.JoinSeekerDTO;
 import net.kumo.kumo.domain.dto.ProfileImageUploadDTO;
 import net.kumo.kumo.domain.dto.SeekerMyPageDTO;
 import net.kumo.kumo.domain.entity.ProfileImageEntity;
@@ -109,4 +110,23 @@ public class SeekerService {
 		
 	}
 	
+	public void updateProfile(JoinSeekerDTO dto) {
+		UserEntity user = userRepository.findByEmail(dto.getEmail())
+				.orElseThrow(() -> new RuntimeException("해당 이메일을 가진 유저를 찾을 수 없습니다: " + dto.getEmail()));
+		
+		// 2. 새 객체를 만들지 말고, 기존 객체의 알맹이(필드)만 쏙쏙 바꿔 입힙니다!
+		// (UserEntity 클래스에 @Setter 나 수정용 메서드가 있어야 합니다.)
+		user.setNickname(dto.getNickname());
+		user.setZipCode(dto.getZipCode());
+		user.setAddressMain(dto.getAddressMain());
+		user.setAddressDetail(dto.getAddressDetail());
+		user.setAddrPrefecture(dto.getAddrPrefecture());
+		user.setAddrCity(dto.getAddrCity());
+		user.setAddrTown(dto.getAddrTown());
+		user.setLatitude(dto.getLatitude());
+		user.setLongitude(dto.getLongitude());
+		
+		userRepository.save(user);
+		
+	}
 }

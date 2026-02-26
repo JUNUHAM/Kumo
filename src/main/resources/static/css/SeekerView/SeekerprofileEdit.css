@@ -1,0 +1,281 @@
+@charset "UTF-8";
+
+/* ============================================================
+   KUMO - 회원정보 수정 (스크롤바 커스텀 & 스타일 복구)
+   ============================================================ */
+
+/* [중요] 스크롤바 커스텀 (Chrome, Safari, Edge) */
+/* 1. 스크롤바 너비 최소화 (거의 안 보임) */
+::-webkit-scrollbar {
+    width: 6px;  /* 세로 스크롤바 너비 */
+    height: 6px; /* 가로 스크롤바 너비 */
+}
+
+/* 2. 스크롤바 트랙 (배경) - 투명하게 */
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* 3. 스크롤바 핸들 (움직이는 막대) - 아주 연하게 */
+::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
+}
+
+/* 4. 마우스 올렸을 때만 조금 진하게 */
+::-webkit-scrollbar-thumb:hover {
+    background: #aaa;
+}
+
+/* [다크모드 스크롤바] 어두운 배경에 맞춤 */
+body.dark-mode ::-webkit-scrollbar-thumb {
+    background: #444;
+}
+body.dark-mode ::-webkit-scrollbar-thumb:hover {
+    background: #666;
+}
+
+/* [Firefox 전용 스크롤바 설정] */
+* {
+    scrollbar-width: thin; /* 얇게 */
+    scrollbar-color: #ccc transparent; /* 핸들색 트랙색 */
+}
+body.dark-mode * {
+    scrollbar-color: #444 transparent;
+}
+
+
+/* ------------------------------------------------------------ */
+
+/* 1. 기본 설정 (라이트 모드) */
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden; /* 전체 스크롤 방지 */
+
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+/* 2. 대시보드 래퍼 */
+.dashboard-wrapper {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* 3. 메인 컨테이너 (스크롤바 숨김 적용) */
+.main-container.profile-edit-full-bg {
+    flex: 1;
+    background-color: #f8faff;
+    overflow-y: auto; /* 내용은 스크롤되지만 */
+    /* overlay 속성은 비표준이라 위에서 만든 커스텀 스크롤바가 적용됨 */
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 60px;
+    padding-bottom: 100px;
+    transition: background-color 0.3s ease;
+}
+
+/* 4. 중앙 정렬 래퍼 */
+.profile-edit-centered-wrapper {
+    width: 100%;
+    max-width: 680px;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+/* 5. 수정 박스 (라이트 모드) */
+.edit-box {
+    background-color: #ffffff;
+    padding: 50px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eef0f2;
+    transition: all 0.3s ease;
+}
+
+.edit-title {
+    font-size: 24px;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 40px;
+    color: #191f28;
+}
+
+.edit-divider {
+    margin: 30px 0;
+    border: 0;
+    border-top: 1px solid #eef0f2;
+}
+
+/* 6. 폼 레이아웃 */
+.form-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.form-col-vertical,
+.input-group-vertical {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.input-group-vertical {
+    margin-bottom: 25px;
+}
+
+.input-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #4e5968;
+    margin-bottom: 8px;
+    text-align: left;
+    margin-left: 2px;
+}
+
+/* 7. 입력 필드 */
+.custom-input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    background-color: #ffffff;
+    border: 1px solid #eef0f2;
+    font-size: 15px;
+    color: #191f28;
+    height: 50px;
+    transition: all 0.2s;
+}
+
+.custom-input:focus {
+    outline: none;
+    border-color: #42a5f5;
+    box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.1);
+}
+
+.gray-input {
+    background-color: #f2f4f6 !important;
+    color: #8b95a1 !important;
+    border-color: #f2f4f6 !important;
+    cursor: default;
+}
+
+/* 8. 버튼 스타일 */
+.action-row {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-sub-action {
+    height: 50px;
+    white-space: nowrap;
+    padding: 0 24px;
+    border-radius: 12px;
+    background-color: #ffffff;
+    border: 1px solid #d1d6db;
+    color: #4e5968;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-sub-action:hover {
+    background-color: #f9fafb;
+    border-color: #b0b8c1;
+}
+
+.birth-row {
+    display: flex;
+    gap: 10px;
+}
+.text-center { text-align: center; }
+
+.btn-submit-edit {
+    width: 100%;
+    padding: 18px;
+    background-color: #7abaff;
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    margin-top: 40px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-submit-edit:hover {
+    background-color: #5a9fee;
+    transform: translateY(-2px);
+}
+
+.error-msg {
+    font-size: 13px;
+    margin-top: 6px;
+    min-height: 18px;
+    color: #f04452;
+}
+
+/* ============================================================
+   [PART 2] 다크모드 오버라이드 (MyPage와 색상 통일)
+   ============================================================ */
+body.dark-mode {
+    background-color: #121212; /* 마이페이지와 동일한 딥 블랙 */
+    color: #e0e0e0;
+}
+
+body.dark-mode .main-container.profile-edit-full-bg {
+    background-color: #121212 !important;
+}
+
+body.dark-mode .edit-box {
+    background-color: #1e1e1e !important; /* 마이페이지 카드와 동일한 진회색 */
+    border: 1px solid #333 !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+body.dark-mode .edit-title { color: #ffffff !important; }
+body.dark-mode .edit-divider { border-top-color: #333 !important; }
+body.dark-mode .input-label { color: #bbbbbb !important; }
+
+/* 입력 필드 (마이페이지 스타일) */
+body.dark-mode .custom-input {
+    background-color: #121212 !important;
+    border: 1px solid #3d3d3d !important;
+    color: #e0e0e0 !important;
+}
+
+body.dark-mode .custom-input:focus {
+    background-color: #2a2a2a !important;
+    border-color: #42a5f5 !important;
+    box-shadow: none !important;
+}
+
+body.dark-mode .gray-input {
+    background-color: #1e1e1e !important;
+    color: #666 !important;
+    border-color: #2d2d2d !important;
+}
+
+body.dark-mode .btn-sub-action {
+    background-color: #333 !important;
+    border-color: #444 !important;
+    color: #ccc !important;
+}
+
+body.dark-mode .btn-sub-action:hover {
+    background-color: #444 !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode .error-msg { color: #ff6b6b !important; }
