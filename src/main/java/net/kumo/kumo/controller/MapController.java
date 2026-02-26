@@ -92,7 +92,7 @@ public class MapController {
             user = userRepo.findByEmail(loginEmail).orElse(null);
 
             if (user != null) {
-                isScraped = scrapService.checkIsScraped(user.getUserId(), id);
+                isScraped = scrapService.checkIsScraped(user.getUserId(), id, source);
 
                 // 공고 작성 id와 user의 id 를 비교하여 공고 작성자 동일 여부를 확인
                 // geocoded 테이블 수정 후 코드 사용

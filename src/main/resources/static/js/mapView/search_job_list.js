@@ -75,7 +75,7 @@ const SearchService = {
         window.history.pushState(null, '', newUrl);
 
         // 로딩 메시지도 다국어 적용
-        $('#searchListBody').html(`<tr><td colspan="8" style="text-align:center; padding: 40px;">${LIST_MESSAGES.loading}</td></tr>`);
+        $('#searchListBody').html(`<tr><td colspan="7" style="text-align:center; padding: 40px;">${LIST_MESSAGES.loading}</td></tr>`);
 
         // 🌟 AJAX 요청
         $.ajax({
@@ -93,7 +93,7 @@ const SearchService = {
             },
             error: function(xhr, status, error) {
                 console.error("검색 실패:", error);
-                $('#searchListBody').html(`<tr><td colspan="8" style="text-align:center; padding: 40px; color: red;">${LIST_MESSAGES.error}</td></tr>`);
+                $('#searchListBody').html(`<tr><td colspan="7" style="text-align:center; padding: 40px; color: red;">${LIST_MESSAGES.error}</td></tr>`);
             }
         });
     },
@@ -102,7 +102,7 @@ const SearchService = {
         const $tbody = $('#searchListBody');
 
         if (!jobs || jobs.length === 0) {
-            $tbody.html(`<tr><td colspan="8" style="text-align:center; padding: 40px; color: #888;">${LIST_MESSAGES.empty}</td></tr>`);
+            $tbody.html(`<tr><td colspan="7" style="text-align:center; padding: 40px; color: #888;">${LIST_MESSAGES.empty}</td></tr>`);
             return;
         }
 
@@ -146,7 +146,6 @@ const SearchService = {
                         <button class="btn-filled" onclick="location.href='/map/jobs/detail?id=${job.id}'">${LIST_MESSAGES.detailBtn}</button>
                     </div>
                 </td>
-                <td class="text-muted">방금 전</td>
             </tr>`;
         });
 

@@ -86,28 +86,13 @@ body {
     box-shadow: 0 4px 12px var(--shadow-color);
 }
 
-/* 🌟 헤더 래퍼: 컨테이너 너비에 갇히지 않고 무조건 화면 100%를 채우도록 강제! */
-.map-header-wrapper {
-    position: fixed; /* 기존 sticky 대신 fixed를 사용하여 화면 최상단에 완전히 고정 */
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-    background-color: var(--bg-main); /* 카드 색상 말고 찐 배경색 사용 (다크모드 완벽 대응) */
-    border-bottom: 1px solid var(--border-light);
-}
-
-/* 🌟 헤더 내부 컨텐츠: 메인/검색 페이지와 동일한 1200px 너비로 통일! */
-.map-header-wrapper > div {
-    width: 100%;
-    max-width: 1200px; /* (추천) 너무 넓은 모니터에서 메뉴가 무한정 멀어지는 걸 방지합니다 */
-    margin: 0 auto;
-    padding: 0 20px; /* 🌟 [핵심] 양옆에 20px씩 보호막을 쳐서 오른쪽 아이콘이 안 잘리게 방어! */
+.map-header-wrapper > div,
+.map-header-wrapper header {
+    width: 100% !important;
+    position: sticky;
     box-sizing: border-box;
-}
-
-.authenticated-header {
-
+    display: flex;
+    justify-content: space-between; /* 양쪽 끝으로 로고와 메뉴를 쫙 벌려줍니다 */
 }
 /* ============================================================
    📝 3. 상세 페이지 요소 디자인
