@@ -28,6 +28,9 @@
   align-items: center;
   text-decoration: none;
   flex-shrink: 0;
+  width: 165px;
+    /* 사이드바 너비와 동일하게 */
+    justify-content: center;
 }
 
 .logo img,
