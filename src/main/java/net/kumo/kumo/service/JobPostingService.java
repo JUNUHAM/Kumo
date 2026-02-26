@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import net.kumo.kumo.domain.dto.JobApplicantGroupDTO;
-import net.kumo.kumo.domain.entity.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,6 +12,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import net.kumo.kumo.domain.dto.JobManageListDTO;
 import net.kumo.kumo.domain.dto.JobPostingRequestDTO;
+import net.kumo.kumo.domain.entity.CompanyEntity;
+import net.kumo.kumo.domain.entity.OsakaGeocodedEntity;
+import net.kumo.kumo.domain.entity.TokyoGeocodedEntity;
+import net.kumo.kumo.domain.entity.UserEntity;
 // TODO: 머지 후 적용!!!
 // import net.kumo.kumo.domain.dto.JobApplicantGroupDTO;
 // import net.kumo.kumo.domain.dto.ApplicationDTO;
@@ -22,8 +24,6 @@ import net.kumo.kumo.domain.enums.JobStatus;
 import net.kumo.kumo.repository.CompanyRepository;
 import net.kumo.kumo.repository.OsakaGeocodedRepository;
 import net.kumo.kumo.repository.TokyoGeocodedRepository;
-import java.util.ArrayList;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -59,10 +59,47 @@ public class JobPostingService {
                     .collect(Collectors.joining(","));
         }
 
+        // 급여 부분 임시 변수
+        String salaryType;
+        String salaryTypeJp;
+
+        // 급여 기준 별 임시 변수 저장
+        switch (dto.getSalaryType()) {
+            case "HOURLY":
+                salaryType = "시급";
+                salaryTypeJp = "時給";
+                break;
+
+            case "DAILY":
+                salaryType = "일급";
+                salaryTypeJp = "日給";
+                break;
+
+            case "MONTHLY":
+                salaryType = "월급";
+                salaryTypeJp = "月給";
+                break;
+
+            case "SALARY":
+                salaryType = "연봉";
+                salaryTypeJp = "年収";
+                break;
+
+            default:
+                salaryType = "미정";
+                salaryTypeJp = "未定";
+                break;
+        }
+
         // 3. 급여 문자열 및 공통 데이터 세팅
         String wage = (dto.getSalaryType() != null && dto.getSalaryAmount() != null)
-                ? dto.getSalaryType() + " " + dto.getSalaryAmount() + "円"
+                ? salaryType + " " + dto.getSalaryAmount() + "엔"
                 : "";
+
+        String wageJp = (dto.getSalaryType() != null && dto.getSalaryAmount() != null)
+                ? salaryTypeJp + " " + dto.getSalaryAmount() + "円"
+                : "";
+
         long datanum = System.currentTimeMillis();
         LocalDateTime now = LocalDateTime.now();
         java.time.format.DateTimeFormatter writeTimeFormatter = java.time.format.DateTimeFormatter
@@ -72,11 +109,11 @@ public class JobPostingService {
         // 🌟🌟 4. [핵심] 도쿄 vs 오사카 분기 처리 🌟🌟
         if ("東京都".equals(prefJp)) {
             saveToTokyo(dto, user, company, companyName, address, lat, lng, prefJp, cityJp, wardJp, imgUrls, wage,
-                    datanum, now, writeTime);
+                    wageJp, datanum, now, writeTime);
         } else {
             // 기본값은 오사카로 처리 (大阪府이거나 다른 지역일 경우 일단 오사카 DB로)
             saveToOsaka(dto, user, company, companyName, address, lat, lng, prefJp, cityJp, wardJp, imgUrls, wage,
-                    datanum, now, writeTime);
+                    wageJp, datanum, now, writeTime);
         }
     }
 
@@ -85,7 +122,7 @@ public class JobPostingService {
     // ==========================================
     private void saveToOsaka(JobPostingRequestDTO dto, UserEntity user, CompanyEntity company, String companyName,
             String address, Double lat, Double lng, String prefJp, String cityJp, String wardJp, String imgUrls,
-            String wage, long datanum, LocalDateTime now, String writeTime) {
+            String wage, String wageJp, long datanum, LocalDateTime now, String writeTime) {
         Integer maxNo = osakaGeocodedRepository.findMaxRowNo();
         Integer nextRowNo = (maxNo == null) ? 1 : maxNo + 1;
 
@@ -102,15 +139,20 @@ public class JobPostingService {
         entity.setCityJp(cityJp);
         entity.setWardJp(wardJp);
 
+        // 🌟 [추가] 수정 시 입력창에 다시 뿌려주기 위해 원본 데이터 저장!
+        entity.setSalaryType(dto.getSalaryType()); // "HOURLY" 등 저장
+        entity.setSalaryAmount(dto.getSalaryAmount()); // 1200 등 저장
+
         entity.setRowNo(nextRowNo);
         entity.setDatanum(datanum);
         entity.setTitle(dto.getTitle());
         entity.setContactPhone(dto.getContactPhone());
         entity.setHref("/Recruiter/posting/" + datanum);
         entity.setPosition(dto.getPosition());
-        entity.setJobDescription(dto.getPositionDetail());
-        entity.setBody(dto.getDescription());
+        entity.setJobDescription(dto.getJobDescription());
+        entity.setBody(dto.getBody());
         entity.setWage(wage);
+        entity.setWageJp(wageJp);
         entity.setImgUrls(imgUrls.isEmpty() ? null : imgUrls);
         entity.setStatus(JobStatus.RECRUITING);
 
@@ -123,7 +165,7 @@ public class JobPostingService {
     // ==========================================
     private void saveToTokyo(JobPostingRequestDTO dto, UserEntity user, CompanyEntity company, String companyName,
             String address, Double lat, Double lng, String prefJp, String cityJp, String wardJp, String imgUrls,
-            String wage, long datanum, LocalDateTime now, String writeTime) {
+            String wage, String wageJp, long datanum, LocalDateTime now, String writeTime) {
         Integer maxNo = tokyoGeocodedRepository.findMaxRowNo();
         Integer nextRowNo = (maxNo == null) ? 1 : maxNo + 1;
 
@@ -138,15 +180,20 @@ public class JobPostingService {
         entity.setLng(lng);
         entity.setPrefectureJp(prefJp);
 
+        // 🌟 [추가] 수정 시 입력창에 다시 뿌려주기 위해 원본 데이터 저장!
+        entity.setSalaryType(dto.getSalaryType()); // "HOURLY" 등 저장
+        entity.setSalaryAmount(dto.getSalaryAmount()); // 1200 등 저장
+
         entity.setRowNo(nextRowNo);
         entity.setDatanum(datanum);
         entity.setTitle(dto.getTitle());
         entity.setContactPhone(dto.getContactPhone());
         entity.setHref("/Recruiter/posting/" + datanum);
         entity.setPosition(dto.getPosition());
-        entity.setJobDescription(dto.getPositionDetail());
-        entity.setBody(dto.getDescription());
+        entity.setJobDescription(dto.getJobDescription());
+        entity.setBody(dto.getBody());
         entity.setWage(wage);
+        entity.setWageJp(wageJp);
         entity.setImgUrls(imgUrls.isEmpty() ? null : imgUrls);
         entity.setStatus(JobStatus.RECRUITING);
 
@@ -305,6 +352,21 @@ public class JobPostingService {
             return b.getCreatedAt().compareTo(a.getCreatedAt());
         });
 
+        result.sort((a, b) -> {
+            // 1. 상태 기준 정렬: RECRUITING(모집중)이 CLOSED(마감)보다 앞으로 오게 함
+            if (!a.getStatus().equals(b.getStatus())) {
+                // RECRUITING 이면 -1(앞으로), CLOSED 이면 1(뒤로)
+                return a.getStatus().equals("RECRUITING") ? -1 : 1;
+            }
+
+            // 2. 상태가 같다면 최신 등록일 순으로 정렬
+            if (a.getCreatedAt() == null)
+                return 1;
+            if (b.getCreatedAt() == null)
+                return -1;
+            return b.getCreatedAt().compareTo(a.getCreatedAt());
+        });
+
         return result;
     }
 
@@ -340,6 +402,141 @@ public class JobPostingService {
             osakaGeocodedRepository.delete(entity);
         } else {
             throw new IllegalArgumentException("알 수 없는 지역입니다.");
+        }
+    }
+
+        /**
+
+    
+     * 수정용 공고 데이터 단일 조회
+     *
+     * public JobPostingRequestDTO getJobPostingForE
+     *     JobPostingRequestDTO dto = 
+     * 
+     * 
+     *     if ("TOKYO".equalsIgnoreCas
+     *         TokyoGeocodedEntity e = tokyoGeocodedRepository.findById(id)
+     * 
+     *             .orElseThrow(() -> new IllegalArgumentException
+     *     dto.setDatanum(e.getDatanum
+     * 
+     *     dto.setPosition(e.getPosition());
+     *     dto.setContactPhone(
+     *     dto.setJobDescription(e.getJobDescription
+     *     dto.setBody(e.getBody());
+     * 
+     *     dto.setSalaryType(e.get
+     * dto.setSalaryAmount(e.ge
+     * SalaryAmount());
+     * 
+     *     dto.setCompanyId(e.getCompany().g
+     * 
+     * 
+     * 
+     * 
+     * OsakaGeocodedEntity e = osakaGeocodedRepository.fin
+     *         .orElseThrow(() -> new IllegalArgumentException("공고를 찾
+     * atanum(e.getDatanum());
+     * 
+     * dto.setPosition(
+     * dto.setContactPhone(e.getContactPhone());
+     * setJobDescription(e.getJobDescriptio
+     * setBody(e.getBody());
+     * 
+     * 
+     * setSalaryAmount(e.getSalaryA
+     * e.getCompany() != null)
+     * ompanyId(e.getCompany().getCompanyId());
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * bPosting(Long id, String region, Job
+     *  null;
+     * ll) {
+     * S
+     *  
+     * 
+     *             .collect(Collectors.joining(","))
+     *     if (!joined.isEmpty
+     *         imgUrls = joined;
+     * }
+     * 
+     * 
+     * ng salaryLabel = switch 
+     * dto.getSalaryType() != null ? dto.getSalaryType() : "") {
+     * 
+     * case "DAILY" ->
+     * case "MONTHLY" -> "월급";
+     * 
+     * 
+     * 
+     * default -> "미정";
+     * 
+     * 
+     * case "HOURLY" -> "時給";
+     *  "DAILY" -> "日給";
+     * 
+     * 
+     *  "SALARY" -> "年収";
+     * 未定";
+     * 
+     * o.getSalar
+     * 
+     * 
+     * lsIgnoreCase(region
+     * dEntity e = toky
+     * lseThrow(() -> new Illega
+     * to.getTitle());
+     * n(dto.getPosition());
+     * Phone(dto.getContactPhone());
+     * ription(dto.getJobDescription());
+     * o.getBody(
+     * e
+     *  
+     * 
+     *     e.setWageJp(wageJp);
+     *     if (imgUrls != null)
+     *         e.setImgUrls(imgUrls);
+     *     if (dto.getCompanyId() !
+     *     companyRepository.findById(dto.getC
+     * 
+     * se {
+     *    
+     * 
+     *     e.setTitle(dto.
+     *  
+       
+           
+
+            e.setJobDescription(dto.getJobDescription());
+            e.setBody(dto.getBody());
+            e.setSalaryType(dto.getSalaryType());
+            e.setSalaryAmount(dto.getSalaryAmount());
+            e.setWage(wage);
+            e.setWageJp(wageJp);
+            if (imgUrls != null)
+                e.setImgUrls(imgUrls);
+            if (dto.getCompanyId() != null)
+                companyRepository.findById(dto.getCompanyId()).ifPresent(e::setCompany);
+        }
+    }
+
+    @Transactional
+    public void closeJobPosting(Long datanum, String region) {
+        if ("TOKYO".equalsIgnoreCase(region)) {
+            TokyoGeocodedEntity entity = tokyoGeocodedRepository.findByDatanum(datanum)
+                    .orElseThrow(() -> new IllegalArgumentException("공고를 찾을 수 없습니다."));
+            entity.setStatus(JobStatus.CLOSED); // 🌟 상태를 마감으로 변경!
+        } else {
+            OsakaGeocodedEntity entity = osakaGeocodedRepository.findByDatanum(datanum)
+                    .orElseThrow(() -> new IllegalArgumentException("공고를 찾을 수 없습니다."));
+            entity.setStatus(JobStatus.CLOSED);
         }
     }
 
@@ -435,3 +632,5 @@ public class JobPostingService {
         return groupedList;
     } */
 }
+
+    

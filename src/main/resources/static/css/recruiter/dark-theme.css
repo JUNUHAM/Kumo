@@ -675,3 +675,20 @@ body.dark-mode .swal2-cancel {
 html.dark-mode .nav-pill:hover {
   border-color: #b2d7ff;
 }
+
+.kumo-table th {
+  cursor: pointer;
+  user-select: none;
+  /* 드래그 방지 */
+}
+
+.kumo-table th:hover {
+  background-color: rgba(122, 186, 255, 0.05);
+  /* 살짝 강조 */
+}
+
+.sort-icon {
+  font-size: 0.8rem;
+  margin-left: 5px;
+  color: #b0b8c1;
+}
