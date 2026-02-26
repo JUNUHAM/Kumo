@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -47,24 +48,21 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
                         @Param("contact") String contact,
                         @Param("role") Enum.UserRole role);
 
-        /*
-         * =========================================
-         * 새로 추가된 통계용 쿼리 메소드
-         * =========================================
-         */
+    /**
+     * 특정 시간 이후 가입자 수 (신규 회원)
+     */
+    long countByCreatedAtAfter(LocalDateTime dateTime);
 
-        /**
-         * 특정 시간 이후 가입자 수 (신규 회원)
-         */
-        long countByCreatedAtAfter(LocalDateTime dateTime);
+    // 🌟 [추가] 특정 시간 이후에 가입한 유저 '목록' 가져오기 (월별 통계용)
+    List<UserEntity> findByCreatedAtAfter(LocalDateTime dateTime);
 
-        /**
-         * 활성화된 회원 수 (isActive = true)
-         */
-        long countByIsActiveTrue();
+    /**
+     * 활성화된 회원 수 (isActive = true)
+     */
+    long countByIsActiveTrue();
 
-        /**
-         * 비활성화된 회원 수 (isActive = false)
-         */
-        long countByIsActiveFalse();
+    /**
+     * 비활성화된 회원 수 (isActive = false)
+     */
+    long countByIsActiveFalse();
 }

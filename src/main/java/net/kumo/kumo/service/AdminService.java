@@ -86,23 +86,23 @@ public class AdminService {
     }
 
     // 유저 통계 가져오기
+    // 유저 통계 가져오기
     public Map<String, Object> getUserStats() {
         Map<String, Object> stats = new HashMap<>();
 
         // 1. 전체 회원 수
         long total = userRepo.count();
 
-        // 2. 신규 회원 (최근 7일)
-        LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
+        // 2. 신규 회원 (신규 기준을 1일 전 자정 기준으로 통일)
+        LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(1).withHour(0).withMinute(0);
         long newUsers = userRepo.countByCreatedAtAfter(sevenDaysAgo);
 
         // 3. 활동 중인 회원 (Active)
         long active = userRepo.countByIsActiveTrue();
 
         // 4. 비활성 회원
-        long inactive = total - active; // 간단하게 계산 가능
+        long inactive = total - active;
 
-        // ★ Map에 담기 (Key 이름은 프론트엔드 JS와 맞춰야 함)
         stats.put("totalUsers", total);
         stats.put("newUsers", newUsers);
         stats.put("activeUsers", active);
@@ -360,8 +360,19 @@ public class AdminService {
         Map<String, Long> osakaWards = listToMap(osakaGeoRepo.countByWard());
         Map<String, Long> tokyoWards = listToMap(tokyoGeoRepo.countByWard());
 
-        Map<String, Long> mockUserStats = new LinkedHashMap<>();
-        mockUserStats.put("Jan", 120L); mockUserStats.put("Feb", 150L);
+        // 1. 기존의 mockUserStats 관련 코드를 지웁니다.
+
+        // 2. 최근 6개월 치 진짜 DB 데이터 가져오기 및 월별 그룹화 (수정된 코드)
+        LocalDateTime sixMonthsAgo = LocalDateTime.now().minusMonths(5).withDayOfMonth(1).withHour(0).withMinute(0);
+        List<UserEntity> recentUsers = userRepo.findByCreatedAtAfter(sixMonthsAgo);
+
+        // 연-월(예: 2026-01, 2026-02) 기준으로 그룹화하여 카운트
+        Map<String, Long> realMonthlyStats = recentUsers.stream()
+                .collect(Collectors.groupingBy(
+                        user -> user.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM")),
+                        TreeMap::new, // 시간순 정렬을 위해 TreeMap 사용
+                        Collectors.counting()
+                ));
 
         return AdminDashboardDTO.builder()
                 .totalUsers(userRepo.count())
@@ -371,7 +382,7 @@ public class AdminService {
                 .weeklyPostStats(weeklyStats)
                 .osakaWardStats(osakaWards)
                 .tokyoWardStats(tokyoWards)
-                .monthlyUserStats(mockUserStats)
+                .monthlyUserStats(realMonthlyStats) // <-- 진짜 DB 데이터 맵핑!
                 .build();
     }
 
