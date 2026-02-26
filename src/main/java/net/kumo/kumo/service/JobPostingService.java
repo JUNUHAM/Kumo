@@ -55,10 +55,47 @@ public class JobPostingService {
                     .collect(Collectors.joining(","));
         }
 
+        // 급여 부분 임시 변수
+        String salaryType;
+        String salaryTypeJp;
+
+        // 급여 기준 별 임시 변수 저장
+        switch (dto.getSalaryType()) {
+            case "HOURLY":
+                salaryType = "시급";
+                salaryTypeJp = "時給";
+                break;
+
+            case "DAILY":
+                salaryType = "일급";
+                salaryTypeJp = "日給";
+                break;
+
+            case "MONTHLY":
+                salaryType = "월급";
+                salaryTypeJp = "月給";
+                break;
+
+            case "SALARY":
+                salaryType = "연봉";
+                salaryTypeJp = "年収";
+                break;
+
+            default:
+                salaryType = "미정";
+                salaryTypeJp = "未定";
+                break;
+        }
+
         // 3. 급여 문자열 및 공통 데이터 세팅
         String wage = (dto.getSalaryType() != null && dto.getSalaryAmount() != null)
-                ? dto.getSalaryType() + " " + dto.getSalaryAmount() + "円"
+                ? salaryType + " " + dto.getSalaryAmount() + "엔"
                 : "";
+
+        String wageJp = (dto.getSalaryType() != null && dto.getSalaryAmount() != null)
+                ? salaryTypeJp + " " + dto.getSalaryAmount() + "円"
+                : "";
+
         long datanum = System.currentTimeMillis();
         LocalDateTime now = LocalDateTime.now();
         java.time.format.DateTimeFormatter writeTimeFormatter = java.time.format.DateTimeFormatter
@@ -68,11 +105,11 @@ public class JobPostingService {
         // 🌟🌟 4. [핵심] 도쿄 vs 오사카 분기 처리 🌟🌟
         if ("東京都".equals(prefJp)) {
             saveToTokyo(dto, user, company, companyName, address, lat, lng, prefJp, cityJp, wardJp, imgUrls, wage,
-                    datanum, now, writeTime);
+                    wageJp, datanum, now, writeTime);
         } else {
             // 기본값은 오사카로 처리 (大阪府이거나 다른 지역일 경우 일단 오사카 DB로)
             saveToOsaka(dto, user, company, companyName, address, lat, lng, prefJp, cityJp, wardJp, imgUrls, wage,
-                    datanum, now, writeTime);
+                    wageJp, datanum, now, writeTime);
         }
     }
 
@@ -81,7 +118,7 @@ public class JobPostingService {
     // ==========================================
     private void saveToOsaka(JobPostingRequestDTO dto, UserEntity user, CompanyEntity company, String companyName,
             String address, Double lat, Double lng, String prefJp, String cityJp, String wardJp, String imgUrls,
-            String wage, long datanum, LocalDateTime now, String writeTime) {
+            String wage, String wageJp, long datanum, LocalDateTime now, String writeTime) {
         Integer maxNo = osakaGeocodedRepository.findMaxRowNo();
         Integer nextRowNo = (maxNo == null) ? 1 : maxNo + 1;
 
@@ -98,6 +135,10 @@ public class JobPostingService {
         entity.setCityJp(cityJp);
         entity.setWardJp(wardJp);
 
+        // 🌟 [추가] 수정 시 입력창에 다시 뿌려주기 위해 원본 데이터 저장!
+        entity.setSalaryType(dto.getSalaryType()); // "HOURLY" 등 저장
+        entity.setSalaryAmount(dto.getSalaryAmount()); // 1200 등 저장
+
         entity.setRowNo(nextRowNo);
         entity.setDatanum(datanum);
         entity.setTitle(dto.getTitle());
@@ -107,6 +148,7 @@ public class JobPostingService {
         entity.setJobDescription(dto.getPositionDetail());
         entity.setBody(dto.getDescription());
         entity.setWage(wage);
+        entity.setWageJp(wageJp);
         entity.setImgUrls(imgUrls.isEmpty() ? null : imgUrls);
         entity.setStatus(JobStatus.RECRUITING);
 
@@ -119,7 +161,7 @@ public class JobPostingService {
     // ==========================================
     private void saveToTokyo(JobPostingRequestDTO dto, UserEntity user, CompanyEntity company, String companyName,
             String address, Double lat, Double lng, String prefJp, String cityJp, String wardJp, String imgUrls,
-            String wage, long datanum, LocalDateTime now, String writeTime) {
+            String wage, String wageJp, long datanum, LocalDateTime now, String writeTime) {
         Integer maxNo = tokyoGeocodedRepository.findMaxRowNo();
         Integer nextRowNo = (maxNo == null) ? 1 : maxNo + 1;
 
@@ -134,6 +176,10 @@ public class JobPostingService {
         entity.setLng(lng);
         entity.setPrefectureJp(prefJp);
 
+        // 🌟 [추가] 수정 시 입력창에 다시 뿌려주기 위해 원본 데이터 저장!
+        entity.setSalaryType(dto.getSalaryType()); // "HOURLY" 등 저장
+        entity.setSalaryAmount(dto.getSalaryAmount()); // 1200 등 저장
+
         entity.setRowNo(nextRowNo);
         entity.setDatanum(datanum);
         entity.setTitle(dto.getTitle());
@@ -143,6 +189,7 @@ public class JobPostingService {
         entity.setJobDescription(dto.getPositionDetail());
         entity.setBody(dto.getDescription());
         entity.setWage(wage);
+        entity.setWageJp(wageJp);
         entity.setImgUrls(imgUrls.isEmpty() ? null : imgUrls);
         entity.setStatus(JobStatus.RECRUITING);
 

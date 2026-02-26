@@ -151,4 +151,11 @@ public class OsakaGeocodedEntity extends BaseEntity {
 		if (this.status == null)
 			this.status = JobStatus.RECRUITING;
 	}
+
+	// 수정 시 필요한 급여정보
+	@Column(name = "salary_type")
+	private String salaryType;
+
+	@Column(name = "salary_amount")
+	private Integer salaryAmount;
 }

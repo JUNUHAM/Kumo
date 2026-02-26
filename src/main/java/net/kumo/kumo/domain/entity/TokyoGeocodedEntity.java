@@ -58,4 +58,11 @@ public class TokyoGeocodedEntity extends BaseEntity { // BaseEntity 와의 상�
 
 	@Column(name = "ward_city_kr")
 	private String wardCityKr;
+
+	// 수정 시 필요한 급여정보
+	@Column(name = "salary_type")
+	private String salaryType;
+
+	@Column(name = "salary_amount")
+	private Integer salaryAmount;
 }

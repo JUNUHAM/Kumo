@@ -1,0 +1,162 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>KUMO RECRUITER - 공고 수정</title>
+    <script th:src="@{/js/recruiter/recruiterHeader.js}"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link rel="stylesheet" th:href="@{/css/recruiter/recruiterHeader.css}" />
+    <link rel="stylesheet" th:href="@{/css/NonLoginFragments/NonLoginFooter.css}" />
+    <link rel="stylesheet" th:href="@{/css/recruiter/sidebar.css}" />
+    <link rel="stylesheet" th:href="@{/css/recruiter/main.css}" />
+    <link rel="stylesheet" th:href="@{/css/recruiter/jobPosting.css}" />
+    <link rel="stylesheet" th:href="@{/css/recruiter/companyInfo.css}" />
+    <link rel="stylesheet" th:href="@{/css/recruiter/dark-theme.css}" />
+    <link rel="icon"
+        href="data:;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==">
+</head>
+
+<body>
+    <header th:replace="~{recruiterView/fragments/recruiterHeader :: headerFragment}"></header>
+
+    <div class="dashboard-wrapper">
+        <div th:replace="~{recruiterView/fragments/sidebar :: sidebarFragment}"></div>
+
+        <div class="main-container">
+            <main class="content-body">
+            <div class="posting-card">
+                <!-- posting-card 맨 위에 임시 추가 -->
+                <div style="background:#fff3cd; padding:10px; margin-bottom:20px; font-size:12px;">
+                    <b>DEBUG:</b><br>
+                    title: <span th:text="${job.title}"></span><br>
+                    position: <span th:text="${job.position}"></span><br>
+                    jobDescription: <span th:text="${job.jobDescription}"></span><br>
+                    contactPhone: <span th:text="${job.contactPhone}"></span><br>
+                    salaryType: <span th:text="${job.salaryType}"></span><br>
+                    salaryAmount: <span th:text="${job.salaryAmount}"></span><br>
+                    body: <span th:text="${job.body}"></span><br>
+                    datanum: <span th:text="${job.datanum}"></span><br>
+                    companyId: <span th:text="${job.companyId}"></span><br>
+                </div>
+                <h2 class="posting-title">공고 수정</h2>
+            
+                <form th:action="@{/Recruiter/editJobPosting}" method="post" enctype="multipart/form-data" id="jobEditForm">
+                    <input type="hidden" name="id" th:value="${jobId}">
+                    <input type="hidden" name="region" th:value="${region}">
+            
+                    <div class="form-group mb-4">
+                        <label class="form-label">제목</label>
+                        <input type="text" name="title" class="form-control kumo-input" th:value="${job.title}" required />
+                    </div>
+            
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">업무</label>
+                            <input type="text" name="position" class="form-control kumo-input" th:value="${job.position}" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">업무 상세</label>
+                            <input type="text" name="jobDescription" class="form-control kumo-input"
+                                th:value="${job.jobDescription}" placeholder="상세 업무를 입력하세요" />
+                        </div>
+                    </div>
+            
+                    <div class="form-group mb-4">
+                        <label class="form-label">연락처</label>
+                        <input type="text" name="contactPhone" class="form-control kumo-input" th:value="${job.contactPhone}"
+                            placeholder="연락처를 입력하세요" required />
+                    </div>
+            
+                    <div class="form-group mb-4">
+                        <label class="form-label">급여</label>
+                        <div class="d-flex align-items-center gap-2">
+                            <select name="salaryType" class="form-select kumo-input-sm" style="width: 100px;">
+                                <option value="HOURLY" th:selected="${job.salaryType == 'HOURLY'}">시급</option>
+                                <option value="DAILY" th:selected="${job.salaryType == 'DAILY'}">일급</option>
+                                <option value="MONTHLY" th:selected="${job.salaryType == 'MONTHLY'}">월급</option>
+                                <option value="SALARY" th:selected="${job.salaryType == 'SALARY'}">연봉</option>
+                            </select>
+                            <div class="position-relative flex-grow-1">
+                                <input type="number" name="salaryAmount" class="form-control kumo-input"
+                                    th:value="${job.salaryAmount}" style="padding-right: 40px;" />
+                                <span class="position-absolute end-0 top-50 translate-middle-y me-3 text-muted">円</span>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <div class="form-group mb-5">
+                        <label class="form-label">상세정보</label>
+                        <textarea name="body" class="form-control kumo-input" rows="6"
+                            th:text="${job.body}"></textarea>
+                    </div>
+            
+                    <div class="d-flex justify-content-center gap-3 mb-5 mt-2">
+                        <button type="button" class="btn btn-light px-4 py-2 fw-bold" onclick="history.back();">취소</button>
+                        <button type="button" class="btn btn-dark px-4 py-2 fw-bold" onclick="closePosting()">마감하기</button>
+                        <button type="submit" class="btn btn-primary px-4 py-2 fw-bold">공고수정</button>
+                    </div>
+                    <input type="hidden" name="datanum" th:value="${job.datanum}">
+                </form>
+            </div>
+            </main>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+       /* <![CDATA[ */
+
+        // 1. 이미지 미리보기 - file-upload가 있을 때만 실행
+        const fileUpload = document.getElementById('file-upload');
+        if (fileUpload) {
+            fileUpload.addEventListener('change', function () {
+                const previewArea = document.getElementById('previewArea');
+                previewArea.innerHTML = '';
+                Array.from(this.files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const wrapper = document.createElement('div');
+                        wrapper.style.cssText = 'position:relative; width:80px; height:80px;';
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.cssText = 'width:80px; height:80px; object-fit:cover; border-radius:10px; border:2px solid #e5e8eb;';
+                        wrapper.appendChild(img);
+                        previewArea.appendChild(wrapper);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            });
+        }
+
+        // 2. 마감하기
+        function closePosting() {
+            const datanum = document.querySelector('input[name="datanum"]').value;
+            const region = document.querySelector('input[name="region"]').value;
+
+            Swal.fire({
+                title: '공고를 마감하시겠습니까?',
+                text: "마감된 공고는 지원자가 더 이상 지원할 수 없습니다.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#333d4b',
+                confirmButtonText: '마감하기',
+                cancelButtonText: '취소'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire('마감 완료!', '공고가 성공적으로 마감되었습니다.', 'success')
+                        .then(() => { location.href = '/Recruiter/JobManage'; });
+                }
+            });
+        }
+
+        /* ]]> */
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
