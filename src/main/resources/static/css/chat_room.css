@@ -231,21 +231,29 @@ body {
     flex-shrink: 0;
 }
 
+/* 카카오톡 스타일 날짜 변경선 */
 .date-divider {
     text-align: center;
-    margin: 15px 0;
+    margin: 20px 0;
+    /* 위아래 여백을 넉넉하게 줘서 답답하지 않게 */
     position: relative;
     display: flex;
     justify-content: center;
 }
 
 .date-divider-text {
-    background-color: rgba(0, 0, 0, 0.1);
-    color: #555;
+    background-color: rgba(0, 0, 0, 0.15);
+    /* 찐 카톡 느낌의 반투명 캡슐 */
+    color: #ffffff;
+    /* 글씨는 깔끔한 흰색 */
     font-size: 12px;
-    padding: 5px 15px;
-    border-radius: 15px;
+    padding: 5px 16px;
+    /* 좌우로 조금 더 길게 */
+    border-radius: 20px;
+    /* 완벽한 타원형 */
     display: inline-block;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    /* 살짝 입체감 추가 */
 }
 
 /* ==================================================

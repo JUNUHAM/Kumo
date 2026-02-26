@@ -15,4 +15,5 @@ public class ChatMessageDTO {
     private String messageType; // TEXT, IMAGE
     private String fileName;
     private String createdAt; // "17:05" 처럼 포맷팅된 시간
+    private String createdDate; // 날짜 변경선 계산을 위한 날짜 필드
 }

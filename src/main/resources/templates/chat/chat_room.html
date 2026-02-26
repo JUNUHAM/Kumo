@@ -141,7 +141,13 @@
         </div>
 
         <div class="msg-area" id="msgArea">
-            <th:block th:each="msg : ${history}">
+            <th:block th:each="msg, stat : ${history}">
+
+                <th:block th:if="${stat.first or msg.createdDate != history[stat.index - 1].createdDate}">
+                    <div class="date-divider" th:if="${msg.createdDate != null}">
+                        <span class="date-divider-text" th:text="${msg.createdDate}">2026-02-26</span>
+                    </div>
+                </th:block>
 
                 <div th:if="${msg.senderId != userId}" class="msg-row other">
                     <img th:src="@{/images/dog_profile.jpg}" class="profile-img">
@@ -315,6 +321,19 @@
         }
 
         function showMessage(message) {
+            // 실시간 메시지 전송 시 날짜선 긋기
+            var today = new Date();
+            var days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+            // "2026년 2월 26일 목요일" 형태로 생성
+            var currentDate = today.getFullYear() + "년 " + (today.getMonth() + 1) + "월 " + today.getDate() + "일 " + days[today.getDay()];
+
+            if (lastChatDate !== currentDate) {
+                var dateDiv = document.createElement('div');
+                dateDiv.className = "date-divider";
+                dateDiv.innerHTML = `<span class="date-divider-text">${currentDate}</span>`;
+                msgArea.appendChild(dateDiv);
+                lastChatDate = currentDate;
+            }
             var isMe = (message.senderId == myId);
             var div = document.createElement('div');
             var timeString = message.createdAt;
@@ -582,6 +601,11 @@
         // ★ 페이지 로딩 완료 시 실행되는 초기화 코드 (번역 버튼 연결 + 파일 아이콘 색칠)
         // =================================================================================
         document.addEventListener("DOMContentLoaded", function () {
+
+            var dividers = document.querySelectorAll('.date-divider-text');
+            if (dividers.length > 0) {
+                lastChatDate = dividers[dividers.length - 1].innerText.trim();
+            }
 
             // 1. [번역 버튼] 이벤트 연결
             const translateBtn = document.querySelector('.header-translate-btn');
