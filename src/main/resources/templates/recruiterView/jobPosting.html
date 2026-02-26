@@ -58,21 +58,6 @@
             </div>
     
             <div class="form-group mb-4">
-              <label class="form-label" th:text="#{post.label.deadline}">마감일</label>
-              <div class="d-flex align-items-center gap-2 flex-nowrap">
-                <input type="number" id="dl-year" class="form-control kumo-input-sm" style="width: 85px;"
-                  placeholder="YYYY" />
-                <input type="number" id="dl-month" class="form-control kumo-input-sm" style="width: 65px;"
-                  placeholder="MM" />
-                <input type="number" id="dl-day" class="form-control kumo-input-sm" style="width: 65px;" placeholder="DD" />
-                <input type="time" id="dl-time" class="form-control kumo-input-sm" style="width: 110px;" />
-                <span class="fw-bold text-nowrap" style="color: #4a90e2; min-width: 40px;"
-                  th:text="#{post.label.until}">까지</span>
-              </div>
-              <input type="hidden" name="deadline" id="hiddenDeadline" />
-            </div>
-    
-            <div class="form-group mb-4">
               <label class="form-label" th:text="#{post.label.wage}">급여</label>
               <div class="d-flex align-items-center gap-2">
                 <select name="salaryType" class="form-select kumo-input-sm" style="width: 100px;">

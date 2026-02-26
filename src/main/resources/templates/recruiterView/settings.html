@@ -81,14 +81,13 @@
         
             <div class="profile-section">
               <div class="profile-photo-area">
-              
                 <div class="img-wrapper">
-                  <img th:src="${user.profileImage ?: '/images/common/default_profile.png'}" class="profile-img-lg">
+                  <img th:src="${user.profileImage?.fileUrl ?: '/images/common/default_profile.png'}" class="profile-img-lg">
                 </div>
               
-                <button type="button" class="btn-upload-photo" id="openProfileModalBtn" th:text="#{set.btn.upload_photo}">프로필 사진
-                  업로드</button>
-              
+                <button type="button" class="btn-upload-photo" id="openProfileModalBtn" th:text="#{set.btn.upload_photo}">
+                  프로필 사진 업로드
+                </button>
               </div>
 
         

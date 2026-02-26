@@ -159,7 +159,14 @@ public class RecruiterController {
             // DB에는 웹에서 접근 가능한 가상 경로를 저장합니다.
             String userEmail = principal.getName();
             String webPath = "/upload/profiles/" + fileName;
-            rs.updateProfileImage(userEmail, webPath);
+
+            // 🌟 [추가] DB가 간절히 원하는 3가지 정보 추가 추출!
+            String originalFileName = file.getOriginalFilename(); // 원래 파일명 (예: myface.jpg)
+            String storedFileName = fileName; // UUID 붙은 파일명
+            Long fileSize = file.getSize(); // 파일 용량
+
+            // 🌟 [수정] 서비스로 5가지 정보를 꽉꽉 채워서 보냅니다!
+            rs.updateProfileImage(userEmail, webPath, originalFileName, storedFileName, fileSize);
 
             return ResponseEntity.ok().body(Map.of("success", true, "imageUrl", webPath));
         } catch (Exception e) {
