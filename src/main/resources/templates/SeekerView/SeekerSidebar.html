@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<aside class="sidebar" th:fragment="sidebarFragment(menu)">
+
+    <link rel="stylesheet" th:href="@{/css/SeekerView/siderbar.css}">
+
+    <nav class="sidebar-nav">
+        <ul>
+            <li th:classappend="${menu == 'account'} ? 'active'">
+                <a th:href="@{/Seeker/MyPage}">
+                    <i class="fa-regular fa-user"></i>
+                    <span th:text="#{sidebar.account}">내 계정</span>
+                </a>
+            </li>
+
+            <li th:classappend="${menu == 'resume'} ? 'active'">
+                <a th:href="@{/Seeker/resume}">
+                    <i class="fa-regular fa-file-lines"></i>
+                    <span th:text="#{sidebar.resume}">내 이력서</span>
+                </a>
+            </li>
+
+            <li th:classappend="${menu == 'history'} ? 'active'">
+                <a th:href="@{/Seeker/history}">
+                    <i class="fa-regular fa-bell"></i>
+                    <span th:text="#{sidebar.history}">지원 내역 확인</span>
+                </a>
+            </li>
+
+            <li th:classappend="${menu == 'settings'} ? 'active'">
+                <a th:href="@{/Seeker/settings}">
+                    <i class="fa-solid fa-gear"></i>
+                    <span th:text="#{sidebar.settings}">설정</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+        <a th:href="@{/logout}" class="btn-logout">
+            <i class="fa-solid fa-power-off"></i>
+            <span th:text="#{btn.logout}">LOGOUT</span>
+        </a>
+    </div>
+</aside>
+
+</body>
+</html>
