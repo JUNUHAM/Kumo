@@ -13,5 +13,6 @@ public class ChatMessageDTO {
     private String senderNickname; // 화면에 표시할 이름
     private String content;
     private String messageType; // TEXT, IMAGE
+    private String fileName;
     private String createdAt; // "17:05" 처럼 포맷팅된 시간
 }

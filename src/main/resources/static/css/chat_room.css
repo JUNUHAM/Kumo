@@ -627,7 +627,7 @@ textarea.input-field::placeholder {
     transform: scale(0.9) !important;
 }
 
-/* 3. 전송(종이비행기) 버튼 (가상 요소 폰트 아이콘이라 text-shadow 사용) */
+/* 전송(종이비행기) 버튼 (가상 요소 폰트 아이콘이라 text-shadow 사용) */
 .btn-send {
     transition: text-shadow 0.2s ease, transform 0.1s ease !important;
 }
@@ -654,4 +654,69 @@ textarea.input-field::placeholder {
 /* 3. 클릭 시 안쪽 아이콘만 쫀득하게 눌리는 효과 */
 .menu-item:active .menu-icon-circle i {
     transform: scale(0.85) !important;
+}
+
+/* [chat_room.css 추가] 파일 전용 메시지 버블 */
+.file-bubble {
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    border: 1px solid #d0e8ff;
+    border-radius: 12px;
+    padding: 12px 15px;
+    margin-top: 5px;
+    cursor: pointer;
+    min-width: 200px;
+    max-width: 260px;
+    /* 기존 msg-bubble의 70% 제약 내외로 설정 */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: background-color 0.2s;
+}
+
+/* 내가 보낸 파일일 때 배경색 살짝 조정 */
+.msg-row.me .file-bubble {
+    background-color: #f8fbff;
+    border-color: #a0cfee;
+    border-top-right-radius: 0;
+    /* 기존 말풍선 꼬리 규칙 계승 */
+}
+
+/* 상대방이 보낸 파일 */
+.msg-row.other .file-bubble {
+    border-top-left-radius: 0;
+}
+
+.file-bubble:hover {
+    background-color: #f0f7ff;
+}
+
+.file-icon-box {
+    font-size: 26px;
+    color: #3498db;
+    /* KUMO 메인 하늘색 */
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+}
+
+.file-info-box {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* 파일명이 너무 길면 잘라줌 */
+}
+
+.file-display-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-display-sub {
+    font-size: 11px;
+    color: #888;
+    margin-top: 2px;
 }

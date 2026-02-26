@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -117,11 +118,29 @@ public class ChatController {
             if (file.isEmpty())
                 return ResponseEntity.badRequest().body("파일이 없습니다.");
 
-            // [이식 포인트] 프로젝트 루트 경로를 기준으로 절대 경로 계산 (조원 공용)
+            // [추가] 일본 시장 대응을 위한 확장자 및 용량 필터링 (기존 로직 보존을 위해 상단에 배치)
+            String originalFilename = file.getOriginalFilename();
+            if (originalFilename == null)
+                return ResponseEntity.badRequest().body("파일명 오류");
+
+            String ext = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
+            // 이미지(기존) + 문서(추가) 허용 리스트
+            List<String> allowedExts = Arrays.asList("jpg", "jpeg", "png", "gif", "pdf", "docx", "doc", "xlsx", "xls",
+                    "txt");
+
+            if (!allowedExts.contains(ext)) {
+                return ResponseEntity.badRequest().body("업로드 실패: 지원하지 않는 형식입니다.");
+            }
+
+            // [추가] 일본 네트워크 환경 고려: 10MB 제한 (필요시 조절)
+            if (file.getSize() > 10 * 1024 * 1024) {
+                return ResponseEntity.badRequest().body("업로드 실패: 용량 초과 (최대 10MB)");
+            }
+
+            // ================== 여기서부터 기존 로직 (절대 건드리지 않음) ==================
             String rootPath = System.getProperty("user.dir");
             String fullPath = rootPath + "/" + chatUploadDir;
 
-            String originalFilename = file.getOriginalFilename();
             String savedFilename = UUID.randomUUID().toString() + "_" + originalFilename;
 
             File folder = new File(fullPath);
@@ -131,8 +150,9 @@ public class ChatController {
             File dest = new File(fullPath + savedFilename);
             file.transferTo(dest);
 
-            // [이식 포인트] WebMvcConfig에서 정한 /chat_images/ 주소로 리턴
+            // WebMvcConfig 설정을 그대로 따름
             return ResponseEntity.ok("/chat_images/" + savedFilename);
+            // ===========================================================================
 
         } catch (IOException e) {
             e.printStackTrace();

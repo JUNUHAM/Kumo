@@ -199,301 +199,352 @@
                                 class="fa-solid fa-comment-dots" style="color: #3b1e1e;"></i></div>
                         <span class="menu-name">자주 쓰는 메시지</span>
                     </div>
+
                     <div class="menu-item" onclick="document.getElementById('fileInput').click(); closeMainMenu();">
                         <div class="menu-icon-circle" style="background-color: #ffebee;"><i class="fa-solid fa-image"
                                 style="color: #f44336;"></i></div>
                         <span class="menu-name">앨범</span>
                     </div>
-                    <div class="menu-item" onclick="alert('이력서 전송 기능')">
-                        <div class="menu-icon-circle" style="background-color: #e8f5e9;"><i
-                                class="fa-solid fa-address-card" style="color: #4caf50;"></i></div>
-                        <span class="menu-name">문서</span>
 
+                    <div class="menu-item" onclick="document.getElementById('docFileInput').click(); closeMainMenu();">
+                        <div class="menu-icon-circle" style="background-color: #e8f5e9;">
+                            <i class="fa-solid fa-file-invoice" style="color: #4caf50;"></i>
+                        </div>
+                        <span class="menu-name">문서</span>
                     </div>
+
                     <div class="menu-item" onclick="alert('추후에 구현 예정이에요!')">
                         <div class="menu-icon-circle" style="background-color: #e3f2fd;"><i
                                 class="fa-solid fa-calendar-check" style="color: #2196f3;"></i></div>
                         <span class="menu-name">면접 일정</span>
                     </div>
                 </div>
-        </dialog>
-
-        <dialog id="templateMenu" class="std-dialog-clear" style="margin-bottom: 0;">
-            <div class="template-box" onclick="event.stopPropagation()">
-                <div class="template-header">
-                    <span>자주 쓰는 메시지</span>
-                    <span class="close-btn" onclick="closeTemplateMenu()">&times;</span>
-                </div>
-                <div class="template-list">
-                    <button onclick="insertText('안녕하세요, 면접 제안 드리고 싶습니다. :)')">📅 면접 제안</button>
-                    <button onclick="insertText('이력서를 추가로 요청드려도 될까요? :)')">📂 이력서 요청</button>
-                    <button onclick="insertText('합격 통보 드립니다. 축하합니다! :)')">🎉 합격 통보</button>
-                    <button onclick="insertText('네, 면접 일정 확인했습니다. :)')">✅ 일정 확인</button>
-                    <button onclick="insertText('도착했습니다. 기다리고 있어요. :)')">📍 도착 알림</button>
-                </div>
             </div>
         </dialog>
 
-        <script>
-            var stompClient = null;
-            var roomId = document.getElementById("roomId").value;
-            var myId = document.getElementById("myId").value;
-            var msgArea = document.getElementById("msgArea");
-            var lastChatDate = null;
+        <input type="file" id="docFileInput" style="display: none;" accept=".pdf, .xlsx, .xls, .docx, .doc, .txt"
+            onchange="uploadFile()">
 
-            connect();
 
-            function connect() {
-                var socket = new SockJS('/ws-stomp');
-                stompClient = Stomp.over(socket);
+    </div>
+    </dialog>
 
-                stompClient.connect({}, function (frame) {
-                    console.log('Connected: ' + frame);
-                    stompClient.subscribe('/sub/chat/room/' + roomId, function (messageOutput) {
-                        showMessage(JSON.parse(messageOutput.body));
-                    });
-                    scrollToBottom();
+    <dialog id="templateMenu" class="std-dialog-clear" style="margin-bottom: 0;">
+        <div class="template-box" onclick="event.stopPropagation()">
+            <div class="template-header">
+                <span>자주 쓰는 메시지</span>
+                <span class="close-btn" onclick="closeTemplateMenu()">&times;</span>
+            </div>
+            <div class="template-list">
+                <button onclick="insertText('안녕하세요, 면접 제안 드리고 싶습니다. :)')">📅 면접 제안</button>
+                <button onclick="insertText('이력서를 추가로 요청드려도 될까요? :)')">📂 이력서 요청</button>
+                <button onclick="insertText('합격 통보 드립니다. 축하합니다! :)')">🎉 합격 통보</button>
+                <button onclick="insertText('네, 면접 일정 확인했습니다. :)')">✅ 일정 확인</button>
+                <button onclick="insertText('도착했습니다. 기다리고 있어요. :)')">📍 도착 알림</button>
+            </div>
+        </div>
+    </dialog>
+
+    <script>
+        var stompClient = null;
+        var roomId = document.getElementById("roomId").value;
+        var myId = document.getElementById("myId").value;
+        var msgArea = document.getElementById("msgArea");
+        var lastChatDate = null;
+
+        connect();
+
+        function connect() {
+            var socket = new SockJS('/ws-stomp');
+            stompClient = Stomp.over(socket);
+
+            stompClient.connect({}, function (frame) {
+                console.log('Connected: ' + frame);
+                stompClient.subscribe('/sub/chat/room/' + roomId, function (messageOutput) {
+                    showMessage(JSON.parse(messageOutput.body));
                 });
-            }
-
-            function sendMessage() {
-                var msgInput = document.getElementById("msgInput");
-                var messageContent = msgInput.value.trim();
-
-                if (messageContent && stompClient) {
-                    // [수정] DTO 규격에 맞게 변수명 단순화
-                    var chatMessage = {
-                        roomId: roomId,
-                        senderId: myId,
-                        content: messageContent,
-                        messageType: 'TEXT'
-                    };
-                    stompClient.send("/pub/chat/message", {}, JSON.stringify(chatMessage));
-
-                    msgInput.value = '';
-                    msgInput.style.height = 'auto';
-                    msgInput.style.overflowY = 'hidden';
-                    msgInput.focus();
-                }
-            }
-
-            function showMessage(message) {
-                // [수정] message.senderId 사용
-                var isMe = (message.senderId == myId);
-                var div = document.createElement('div');
-
-                // [수정] 서버에서 보내준 createdAt (HH:mm) 그대로 사용
-                var timeString = message.createdAt;
-
-                var finalContentHtml = "";
-                if (message.messageType === 'IMAGE') {
-                    finalContentHtml = `<img src="${message.content}" class="chat-image" 
-                                        style="max-width: 200px; border-radius: 10px; margin-top: 5px;"
-                                        onclick="openImageModal(this.src)">`;
-                } else {
-                    finalContentHtml = `<div class="msg-bubble">${message.content}</div>`;
-                }
-
-                if (isMe) {
-                    div.className = "msg-row me";
-                    div.innerHTML = `
-                        <span class="msg-time">${timeString}</span>
-                        ${finalContentHtml}
-                    `;
-                } else {
-                    div.className = "msg-row other";
-                    div.innerHTML = `
-                        <img src="/images/dog_profile.jpg" class="profile-img">
-                        ${finalContentHtml}
-                        <span class="msg-time">${timeString}</span>
-                    `;
-                }
-
-                msgArea.appendChild(div);
                 scrollToBottom();
-            }
-
-            function autoResize(textarea) {
-                textarea.style.height = 'auto';
-                var maxHeight = 120;
-                if (textarea.scrollHeight > maxHeight) {
-                    textarea.style.height = maxHeight + 'px';
-                    textarea.style.overflowY = 'auto';
-                } else {
-                    textarea.style.height = textarea.scrollHeight + 'px';
-                    textarea.style.overflowY = 'hidden';
-                }
-            }
-
-            function handleEnter(e) {
-                if (e.isComposing || e.keyCode === 229) return;
-                if (e.key === 'Enter') {
-                    if (!e.shiftKey) {
-                        e.preventDefault();
-                        sendMessage();
-                    }
-                }
-            }
-
-            function uploadImage() {
-                var fileInput = document.getElementById('fileInput');
-                var file = fileInput.files[0];
-                if (file) {
-                    var formData = new FormData();
-                    formData.append("file", file);
-                    fetch('/chat/upload', {
-                        method: 'POST',
-                        body: formData
-                    })
-                        .then(response => response.text())
-                        .then(imageUrl => {
-                            if (imageUrl.includes("실패")) {
-                                alert("사진 업로드 실패");
-                                return;
-                            }
-                            // [수정] DTO 규격화
-                            var chatMessage = {
-                                roomId: roomId,
-                                senderId: myId,
-                                content: imageUrl,
-                                messageType: 'IMAGE'
-                            };
-                            stompClient.send("/pub/chat/message", {}, JSON.stringify(chatMessage));
-                        });
-                    fileInput.value = '';
-                }
-            }
-
-            function scrollToBottom() {
-                setTimeout(function () {
-                    msgArea.scrollTop = msgArea.scrollHeight;
-                }, 50);
-            }
-
-            // [정석] 모달 제어 전용 (기존 중복 함수 정리)
-            const modalImg = document.getElementById("imageModal");
-            const modalMain = document.getElementById("mainPlusMenu");
-            const modalTemp = document.getElementById("templateMenu");
-
-            function openImageModal(src) {
-                document.getElementById("modalImage").src = src;
-                modalImg.showModal();
-            }
-            function closeImageModal() { modalImg.close(); }
-
-            function openMainMenu() { modalMain.showModal(); }
-            function closeMainMenu() { modalMain.close(); }
-
-            function openTemplateMenu() { modalTemp.showModal(); }
-            function closeTemplateMenu() { modalTemp.close(); }
-
-            function openSubMenu(type) {
-                closeMainMenu();
-                if (type === 'template') openTemplateMenu();
-            }
-
-            function insertText(text) {
-                const inputField = document.getElementById('msgInput');
-                if (inputField) {
-                    inputField.value = text;
-                    inputField.focus();
-                    if (typeof autoResize === 'function') autoResize(inputField);
-                }
-                closeTemplateMenu();
-            }
-
-            // 배경 클릭 시 닫기
-            [modalImg, modalMain, modalTemp].forEach(m => {
-                m.addEventListener('click', (e) => {
-                    if (e.target.nodeName === 'DIALOG') m.close();
-                });
             });
+        }
 
-            // [배치 번역] 769자를 2초 만에 처리하는 고속 버전
-            async function translateAllMessages() {
-                console.log("🚀 [DEBUG] 번역 프로세스 시작"); // 이게 안 찍히면 클릭이 안 된 것임
+        function sendMessage() {
+            var msgInput = document.getElementById("msgInput");
+            var messageContent = msgInput.value.trim();
 
-                const translateBtn = document.querySelector('.header-translate-btn');
-                const bubbles = document.querySelectorAll('.msg-bubble');
+            if (messageContent && stompClient) {
+                // [수정] DTO 규격에 맞게 변수명 단순화
+                var chatMessage = {
+                    roomId: roomId,
+                    senderId: myId,
+                    content: messageContent,
+                    messageType: 'TEXT'
+                };
+                stompClient.send("/pub/chat/message", {}, JSON.stringify(chatMessage));
 
-                const textsToTranslate = [];
-                const targetBubbles = [];
+                msgInput.value = '';
+                msgInput.style.height = 'auto';
+                msgInput.style.overflowY = 'hidden';
+                msgInput.focus();
+            }
+        }
 
-                // 1. 번역할 텍스트 수집
-                bubbles.forEach(bubble => {
-                    if (!bubble.querySelector('.translated-text')) {
-                        const txt = bubble.innerText.trim();
-                        if (txt) {
-                            textsToTranslate.push(txt);
-                            targetBubbles.push(bubble);
+        function showMessage(message) {
+            var isMe = (message.senderId == myId);
+            var div = document.createElement('div');
+            var timeString = message.createdAt;
+
+            var finalContentHtml = "";
+            if (message.messageType === 'IMAGE') {
+                finalContentHtml = `<img src="${message.content}" class="chat-image" 
+                            style="max-width: 200px; border-radius: 10px; margin-top: 5px;"
+                            onclick="openImageModal(this.src)">`;
+            }
+            /* ★ 이 부분(FILE 타입 렌더링)이 반드시 들어가야 합니다 ★ */
+            else if (message.messageType === 'FILE') {
+                const fileName = message.content.split('_').pop(); // UUID 제거 후 원본 파일명 추출
+                finalContentHtml = `
+            <div class="file-bubble" onclick="window.open('${message.content}')">
+                <div class="file-icon-box"><i class="fa-solid fa-file-pdf"></i></div>
+                <div class="file-info-box">
+                    <div class="file-display-name">${fileName}</div>
+                    <div class="file-display-sub">파일 열기</div>
+                </div>
+            </div>`;
+            } else {
+                finalContentHtml = `<div class="msg-bubble">${message.content}</div>`;
+            }
+
+            if (isMe) {
+                div.className = "msg-row me";
+                div.innerHTML = `<span class="msg-time">${timeString}</span>${finalContentHtml}`;
+            } else {
+                div.className = "msg-row other";
+                div.innerHTML = `<img src="/images/dog_profile.jpg" class="profile-img">${finalContentHtml}<span class="msg-time">${timeString}</span>`;
+            }
+
+            msgArea.appendChild(div);
+            scrollToBottom();
+        }
+
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            var maxHeight = 120;
+            if (textarea.scrollHeight > maxHeight) {
+                textarea.style.height = maxHeight + 'px';
+                textarea.style.overflowY = 'auto';
+            } else {
+                textarea.style.height = textarea.scrollHeight + 'px';
+                textarea.style.overflowY = 'hidden';
+            }
+        }
+
+        function handleEnter(e) {
+            if (e.isComposing || e.keyCode === 229) return;
+            if (e.key === 'Enter') {
+                if (!e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            }
+        }
+
+        function uploadImage() {
+            var fileInput = document.getElementById('fileInput');
+            var file = fileInput.files[0];
+            if (file) {
+                var formData = new FormData();
+                formData.append("file", file);
+                fetch('/chat/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.text())
+                    .then(imageUrl => {
+                        if (imageUrl.includes("실패")) {
+                            alert("사진 업로드 실패");
+                            return;
                         }
-                    }
-                });
-
-                if (textsToTranslate.length === 0) {
-                    console.log("⚠️ 번역할 메시지가 없습니다.");
-                    return;
-                }
-
-                try {
-                    // 첫 번째 문장으로 언어 감지
-                    const isKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(textsToTranslate[0]);
-                    const targetLang = isKorean ? 'JA' : 'KO';
-
-                    console.log(`📡 서버에 ${textsToTranslate.length}개 문장 번역 요청 중...`);
-
-                    const response = await fetch('/api/translate', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            text: textsToTranslate, // 배열로 전송
-                            target_lang: targetLang
-                        })
+                        // [수정] DTO 규격화
+                        var chatMessage = {
+                            roomId: roomId,
+                            senderId: myId,
+                            content: imageUrl,
+                            messageType: 'IMAGE'
+                        };
+                        stompClient.send("/pub/chat/message", {}, JSON.stringify(chatMessage));
                     });
-
-                    if (!response.ok) throw new Error(`서버 응답 실패: ${response.status}`);
-
-                    const data = await response.json();
-                    console.log("✅ 서버 응답 수신:", data);
-
-                    // 2. 결과 렌더링
-                    if (data && data.translations) {
-                        data.translations.forEach((item, index) => {
-                            const bubble = targetBubbles[index];
-                            if (!bubble) return;
-
-                            const hr = document.createElement('hr');
-                            hr.style.margin = '5px 0';
-                            hr.style.border = '0.5px solid rgba(0,0,0,0.1)';
-
-                            const div = document.createElement('div');
-                            div.className = 'translated-text';
-                            div.style.fontSize = '0.85em';
-                            div.style.color = '#555';
-                            div.innerText = '🌐 ' + item.text;
-
-                            bubble.appendChild(hr);
-                            bubble.appendChild(div);
-                        });
-                        console.log("🎉 모든 번역이 완료되었습니다!");
-                    }
-                } catch (err) {
-                    console.error("❌ 번역 중 에러 발생:", err);
-                    alert("번역 처리 중 문제가 발생했습니다. 콘솔을 확인하세요.");
-                }
+                fileInput.value = '';
             }
+        }
 
-            // ★ 이벤트 연결 확인용 (매우 중요)
-            document.addEventListener("DOMContentLoaded", function () {
-                const translateBtn = document.querySelector('.header-translate-btn');
-                if (translateBtn) {
-                    translateBtn.onclick = translateAllMessages;
-                    console.log("✅ [DEBUG] 번역 버튼 이벤트 연결 완료!");
-                } else {
-                    console.error("❌ [DEBUG] 번역 버튼(.header-translate-btn)을 찾을 수 없습니다.");
+        /* [chat_room.html] 스크립트 영역 내 적당한 위치에 추가 */
+
+        function uploadFile() {
+            var fileInput = document.getElementById('docFileInput');
+            var file = fileInput.files[0];
+
+            if (file) {
+                var formData = new FormData();
+                formData.append("file", file);
+
+                // 1. 서버 전송 (기존 이미지 업로드 API 활용)
+                fetch('/chat/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.text())
+                    .then(fileUrl => {
+                        if (fileUrl.includes("실패")) {
+                            alert("파일 업로드 실패");
+                            return;
+                        }
+
+                        // 2. 소켓을 통해 상대방에게 전달
+                        // messageType을 'FILE'로 보내야 우리가 만든 카드 디자인이 뜹니다.
+                        var chatMessage = {
+                            roomId: roomId,
+                            senderId: myId,
+                            content: fileUrl,
+                            messageType: 'FILE'
+                        };
+                        stompClient.send("/pub/chat/message", {}, JSON.stringify(chatMessage));
+                    })
+                    .catch(err => console.error("업로드 에러:", err));
+
+                fileInput.value = ''; // 다음 업로드를 위해 비워주기
+            }
+        }
+
+        function scrollToBottom() {
+            setTimeout(function () {
+                msgArea.scrollTop = msgArea.scrollHeight;
+            }, 50);
+        }
+
+        // [정석] 모달 제어 전용 (기존 중복 함수 정리)
+        const modalImg = document.getElementById("imageModal");
+        const modalMain = document.getElementById("mainPlusMenu");
+        const modalTemp = document.getElementById("templateMenu");
+
+        function openImageModal(src) {
+            document.getElementById("modalImage").src = src;
+            modalImg.showModal();
+        }
+        function closeImageModal() { modalImg.close(); }
+
+        function openMainMenu() { modalMain.showModal(); }
+        function closeMainMenu() { modalMain.close(); }
+
+        function openTemplateMenu() { modalTemp.showModal(); }
+        function closeTemplateMenu() { modalTemp.close(); }
+
+        function openSubMenu(type) {
+            closeMainMenu();
+            if (type === 'template') openTemplateMenu();
+        }
+
+        function insertText(text) {
+            const inputField = document.getElementById('msgInput');
+            if (inputField) {
+                inputField.value = text;
+                inputField.focus();
+                if (typeof autoResize === 'function') autoResize(inputField);
+            }
+            closeTemplateMenu();
+        }
+
+        // 배경 클릭 시 닫기
+        [modalImg, modalMain, modalTemp].forEach(m => {
+            m.addEventListener('click', (e) => {
+                if (e.target.nodeName === 'DIALOG') m.close();
+            });
+        });
+
+        // [배치 번역] 769자를 2초 만에 처리하는 고속 버전
+        async function translateAllMessages() {
+            console.log("🚀 [DEBUG] 번역 프로세스 시작"); // 이게 안 찍히면 클릭이 안 된 것임
+
+            const translateBtn = document.querySelector('.header-translate-btn');
+            const bubbles = document.querySelectorAll('.msg-bubble');
+
+            const textsToTranslate = [];
+            const targetBubbles = [];
+
+            // 1. 번역할 텍스트 수집
+            bubbles.forEach(bubble => {
+                if (!bubble.querySelector('.translated-text')) {
+                    const txt = bubble.innerText.trim();
+                    if (txt) {
+                        textsToTranslate.push(txt);
+                        targetBubbles.push(bubble);
+                    }
                 }
             });
-        </script>
+
+            if (textsToTranslate.length === 0) {
+                console.log("⚠️ 번역할 메시지가 없습니다.");
+                return;
+            }
+
+            try {
+                // 첫 번째 문장으로 언어 감지
+                const isKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(textsToTranslate[0]);
+                const targetLang = isKorean ? 'JA' : 'KO';
+
+                console.log(`📡 서버에 ${textsToTranslate.length}개 문장 번역 요청 중...`);
+
+                const response = await fetch('/api/translate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text: textsToTranslate, // 배열로 전송
+                        target_lang: targetLang
+                    })
+                });
+
+                if (!response.ok) throw new Error(`서버 응답 실패: ${response.status}`);
+
+                const data = await response.json();
+                console.log("✅ 서버 응답 수신:", data);
+
+                // 2. 결과 렌더링
+                if (data && data.translations) {
+                    data.translations.forEach((item, index) => {
+                        const bubble = targetBubbles[index];
+                        if (!bubble) return;
+
+                        const hr = document.createElement('hr');
+                        hr.style.margin = '5px 0';
+                        hr.style.border = '0.5px solid rgba(0,0,0,0.1)';
+
+                        const div = document.createElement('div');
+                        div.className = 'translated-text';
+                        div.style.fontSize = '0.85em';
+                        div.style.color = '#555';
+                        div.innerText = '🌐 ' + item.text;
+
+                        bubble.appendChild(hr);
+                        bubble.appendChild(div);
+                    });
+                    console.log("🎉 모든 번역이 완료되었습니다!");
+                }
+            } catch (err) {
+                console.error("❌ 번역 중 에러 발생:", err);
+                alert("번역 처리 중 문제가 발생했습니다. 콘솔을 확인하세요.");
+            }
+        }
+
+        // ★ 이벤트 연결 확인용 (매우 중요)
+        document.addEventListener("DOMContentLoaded", function () {
+            const translateBtn = document.querySelector('.header-translate-btn');
+            if (translateBtn) {
+                translateBtn.onclick = translateAllMessages;
+                console.log("✅ [DEBUG] 번역 버튼 이벤트 연결 완료!");
+            } else {
+                console.error("❌ [DEBUG] 번역 버튼(.header-translate-btn)을 찾을 수 없습니다.");
+            }
+        });
+    </script>
 </body>
 
 </html>
