@@ -371,149 +371,138 @@ public class JobPostingService {
     }
 
     /**
-     * 특정 유저의 공고 삭제 로직 (보안 검증 포함)
+     * 🌟 [완전 복구] 특정 유저의 공고 삭제 로직 (보안 검증 포함)
+     * 
+     * @param datanum : 공고 고유 번호
+     * @param region  : TOKYO 또는 OSAKA
+     * @param email   : 현재 로그인한 유저의 이메일 (검증용)
      */
     @Transactional
     public void deleteMyJobPosting(Long datanum, String region, String email) {
         if ("TOKYO".equalsIgnoreCase(region)) {
-            // 1. 도쿄 공고 찾기
+            // 1. 도쿄 테이블에서 데이터 조회
             TokyoGeocodedEntity entity = tokyoGeocodedRepository.findByDatanum(datanum)
-                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공고입니다."));
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 도쿄 공고입니다. (datanum: " + datanum + ")"));
 
-            // 2. 이 공고를 작성한 사람이 현재 접속한 사람(email)이 맞는지 확인!
+            // 2. [보안 핵심] 작성자와 현재 로그인 유저가 일치하는지 확인
             if (!entity.getUser().getEmail().equals(email)) {
-                throw new IllegalStateException("삭제 권한이 없습니다.");
+                throw new IllegalStateException("해당 공고를 삭제할 권한이 없습니다.");
             }
 
-            // 3. 삭제!
+            // 3. 검증 통과 시 삭제
             tokyoGeocodedRepository.delete(entity);
 
         } else if ("OSAKA".equalsIgnoreCase(region)) {
-            // 1. 오사카 공고 찾기
+            // 1. 오사카 테이블에서 데이터 조회
             OsakaGeocodedEntity entity = osakaGeocodedRepository.findByDatanum(datanum)
-                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공고입니다."));
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 오사카 공고입니다. (datanum: " + datanum + ")"));
 
-            // 2. 권한 확인
+            // 2. [보안 핵심] 작성자 검증
             if (!entity.getUser().getEmail().equals(email)) {
-                throw new IllegalStateException("삭제 권한이 없습니다.");
+                throw new IllegalStateException("해당 공고를 삭제할 권한이 없습니다.");
             }
 
-            // 3. 삭제!
+            // 3. 검증 통과 시 삭제
             osakaGeocodedRepository.delete(entity);
+
         } else {
-            throw new IllegalArgumentException("알 수 없는 지역입니다.");
+            throw new IllegalArgumentException("알 수 없는 지역 정보입니다: " + region);
         }
     }
 
-        /**
-
-    
+    /**
      * 수정용 공고 데이터 단일 조회
-     *
-     * public JobPostingRequestDTO getJobPostingForE
-     *     JobPostingRequestDTO dto = 
-     * 
-     * 
-     *     if ("TOKYO".equalsIgnoreCas
-     *         TokyoGeocodedEntity e = tokyoGeocodedRepository.findById(id)
-     * 
-     *             .orElseThrow(() -> new IllegalArgumentException
-     *     dto.setDatanum(e.getDatanum
-     * 
-     *     dto.setPosition(e.getPosition());
-     *     dto.setContactPhone(
-     *     dto.setJobDescription(e.getJobDescription
-     *     dto.setBody(e.getBody());
-     * 
-     *     dto.setSalaryType(e.get
-     * dto.setSalaryAmount(e.ge
-     * SalaryAmount());
-     * 
-     *     dto.setCompanyId(e.getCompany().g
-     * 
-     * 
-     * 
-     * 
-     * OsakaGeocodedEntity e = osakaGeocodedRepository.fin
-     *         .orElseThrow(() -> new IllegalArgumentException("공고를 찾
-     * atanum(e.getDatanum());
-     * 
-     * dto.setPosition(
-     * dto.setContactPhone(e.getContactPhone());
-     * setJobDescription(e.getJobDescriptio
-     * setBody(e.getBody());
-     * 
-     * 
-     * setSalaryAmount(e.getSalaryA
-     * e.getCompany() != null)
-     * ompanyId(e.getCompany().getCompanyId());
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * bPosting(Long id, String region, Job
-     *  null;
-     * ll) {
-     * S
-     *  
-     * 
-     *             .collect(Collectors.joining(","))
-     *     if (!joined.isEmpty
-     *         imgUrls = joined;
-     * }
-     * 
-     * 
-     * ng salaryLabel = switch 
-     * dto.getSalaryType() != null ? dto.getSalaryType() : "") {
-     * 
-     * case "DAILY" ->
-     * case "MONTHLY" -> "월급";
-     * 
-     * 
-     * 
-     * default -> "미정";
-     * 
-     * 
-     * case "HOURLY" -> "時給";
-     *  "DAILY" -> "日給";
-     * 
-     * 
-     *  "SALARY" -> "年収";
-     * 未定";
-     * 
-     * o.getSalar
-     * 
-     * 
-     * lsIgnoreCase(region
-     * dEntity e = toky
-     * lseThrow(() -> new Illega
-     * to.getTitle());
-     * n(dto.getPosition());
-     * Phone(dto.getContactPhone());
-     * ription(dto.getJobDescription());
-     * o.getBody(
-     * e
-     *  
-     * 
-     *     e.setWageJp(wageJp);
-     *     if (imgUrls != null)
-     *         e.setImgUrls(imgUrls);
-     *     if (dto.getCompanyId() !
-     *     companyRepository.findById(dto.getC
-     * 
-     * se {
-     *    
-     * 
-     *     e.setTitle(dto.
-     *  
-       
-           
+     */
+    public JobPostingRequestDTO getJobPostingForEdit(Long id, String region) {
+        JobPostingRequestDTO dto = new JobPostingRequestDTO();
 
+        if ("TOKYO".equalsIgnoreCase(region)) {
+            TokyoGeocodedEntity e = tokyoGeocodedRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("공고를 찾을 수 없습니다."));
+            dto.setDatanum(e.getDatanum());
+            dto.setTitle(e.getTitle());
+            dto.setPosition(e.getPosition());
+            dto.setContactPhone(e.getContactPhone());
+            dto.setJobDescription(e.getJobDescription());
+            dto.setBody(e.getBody());
+            dto.setSalaryType(e.getSalaryType());
+            dto.setSalaryAmount(e.getSalaryAmount());
+            if (e.getCompany() != null)
+                dto.setCompanyId(e.getCompany().getCompanyId());
+
+        } else {
+            OsakaGeocodedEntity e = osakaGeocodedRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("공고를 찾을 수 없습니다."));
+            dto.setDatanum(e.getDatanum());
+            dto.setTitle(e.getTitle());
+            dto.setPosition(e.getPosition());
+            dto.setContactPhone(e.getContactPhone());
+            dto.setJobDescription(e.getJobDescription());
+            dto.setBody(e.getBody());
+            dto.setSalaryType(e.getSalaryType());
+            dto.setSalaryAmount(e.getSalaryAmount());
+            if (e.getCompany() != null)
+                dto.setCompanyId(e.getCompany().getCompanyId());
+        }
+
+        return dto;
+    }
+
+    /**
+     * 공고 수정
+     */
+    @Transactional
+    public void updateJobPosting(Long id, String region, JobPostingRequestDTO dto, List<MultipartFile> images) {
+        String imgUrls = null;
+        if (images != null) {
+            String joined = images.stream()
+                    .filter(f -> !f.isEmpty())
+                    .map(f -> "/uploads/" + f.getOriginalFilename())
+                    .collect(Collectors.joining(","));
+            if (!joined.isEmpty())
+                imgUrls = joined;
+        }
+
+        String salaryLabel = switch (dto.getSalaryType() != null ? dto.getSalaryType() : "") {
+            case "HOURLY" -> "시급";
+            case "DAILY" -> "일급";
+            case "MONTHLY" -> "월급";
+            case "SALARY" -> "연봉";
+            default -> "미정";
+        };
+        String salaryLabelJp = switch (dto.getSalaryType() != null ? dto.getSalaryType() : "") {
+            case "HOURLY" -> "時給";
+            case "DAILY" -> "日給";
+            case "MONTHLY" -> "月給";
+            case "SALARY" -> "年収";
+            default -> "未定";
+        };
+        String wage = dto.getSalaryAmount() != null ? salaryLabel + " " + dto.getSalaryAmount() + "엔" : "";
+        String wageJp = dto.getSalaryAmount() != null ? salaryLabelJp + " " + dto.getSalaryAmount() + "円" : "";
+
+        if ("TOKYO".equalsIgnoreCase(region)) {
+            TokyoGeocodedEntity e = tokyoGeocodedRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("공고를 찾을 수 없습니다."));
+            e.setTitle(dto.getTitle());
+            e.setPosition(dto.getPosition());
+            e.setContactPhone(dto.getContactPhone());
+            e.setJobDescription(dto.getJobDescription());
+            e.setBody(dto.getBody());
+            e.setSalaryType(dto.getSalaryType());
+            e.setSalaryAmount(dto.getSalaryAmount());
+            e.setWage(wage);
+            e.setWageJp(wageJp);
+            if (imgUrls != null)
+                e.setImgUrls(imgUrls);
+            if (dto.getCompanyId() != null)
+                companyRepository.findById(dto.getCompanyId()).ifPresent(e::setCompany);
+
+        } else {
+            OsakaGeocodedEntity e = osakaGeocodedRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("공고를 찾을 수 없습니다."));
+            e.setTitle(dto.getTitle());
+            e.setPosition(dto.getPosition());
+            e.setContactPhone(dto.getContactPhone());
             e.setJobDescription(dto.getJobDescription());
             e.setBody(dto.getBody());
             e.setSalaryType(dto.getSalaryType());
@@ -539,98 +528,4 @@ public class JobPostingService {
             entity.setStatus(JobStatus.CLOSED);
         }
     }
-
-    // TODO: 머지 후 적용!!!
-    /*
-    // ==========================================
-    // 지원자 관리 탭 : 내 공고별 지원자 목록 가져오기
-    // ==========================================
-    @Transactional(readOnly = true)
-    public List<JobApplicantGroupDTO> getGroupedApplicantsForRecruiter(UserEntity user) {
-        List<JobApplicantGroupDTO> groupedList = new ArrayList<>();
-        String email = user.getEmail();
-
-        // ------------------------------------------
-        // 1. 오사카 공고 조회 및 지원자 매핑
-        // ------------------------------------------
-        List<OsakaGeocodedEntity> osakaJobs = osakaGeocodedRepository.findByUser_Email(email);
-        if (!osakaJobs.isEmpty()) {
-            List<Long> osakaJobIds = osakaJobs.stream().map(OsakaGeocodedEntity::getId).toList();
-
-            // 이 구인자의 오사카 공고들에 지원한 모든 지원서 한 번에 조회
-            List<ApplicationEntity> osakaApps = applicationRepository.findByTargetSourceAndTargetPostIdIn("OSAKA", osakaJobIds);
-
-            // 공고 ID(targetPostId)를 기준으로 지원서들을 그룹화 (Map 형태로 분리)
-            Map<Long, List<ApplicationEntity>> appMap = osakaApps.stream()
-                    .collect(Collectors.groupingBy(ApplicationEntity::getTargetPostId));
-
-            // 각 공고별로 DTO 조립
-            for (OsakaGeocodedEntity job : osakaJobs) {
-                // 해당 공고에 달린 지원서 리스트 꺼내기 (없으면 빈 리스트)
-                List<ApplicationEntity> appsForThisJob = appMap.getOrDefault(job.getId(), new ArrayList<>());
-
-                // 엔티티 -> DTO 변환 및 최신 지원순 정렬
-                List<ApplicationDTO.ApplicantResponse> appResponses = appsForThisJob.stream()
-                        .map(app -> ApplicationDTO.ApplicantResponse.from(app, job.getTitle()))
-                        .sorted((a, b) -> b.getAppId().compareTo(a.getAppId()))
-                        .toList();
-
-                groupedList.add(JobApplicantGroupDTO.builder()
-                        .jobId(job.getId())
-                        .source("OSAKA")
-                        .jobTitle(job.getTitle())
-                        .status(job.getStatus() != null ? job.getStatus().name() : "RECRUITING")
-                        .createdAt(job.getCreatedAt())
-                        .applicantCount(appResponses.size())
-                        .applicants(appResponses) // 🌟 지원자 목록 쏙!
-                        .build());
-            }
-        }
-
-        // ------------------------------------------
-        // 2. 도쿄 공고 조회 및 지원자 매핑
-        // ------------------------------------------
-        List<TokyoGeocodedEntity> tokyoJobs = tokyoGeocodedRepository.findByUser_Email(email);
-        if (!tokyoJobs.isEmpty()) {
-            List<Long> tokyoJobIds = tokyoJobs.stream().map(TokyoGeocodedEntity::getId).toList();
-
-            // 도쿄 공고 지원서 조회
-            List<ApplicationEntity> tokyoApps = applicationRepository.findByTargetSourceAndTargetPostIdIn("TOKYO", tokyoJobIds);
-
-            Map<Long, List<ApplicationEntity>> appMap = tokyoApps.stream()
-                    .collect(Collectors.groupingBy(ApplicationEntity::getTargetPostId));
-
-            for (TokyoGeocodedEntity job : tokyoJobs) {
-                List<ApplicationEntity> appsForThisJob = appMap.getOrDefault(job.getId(), new ArrayList<>());
-
-                List<ApplicationDTO.ApplicantResponse> appResponses = appsForThisJob.stream()
-                        .map(app -> ApplicationDTO.ApplicantResponse.from(app, job.getTitle()))
-                        .sorted((a, b) -> b.getAppId().compareTo(a.getAppId()))
-                        .toList();
-
-                groupedList.add(JobApplicantGroupDTO.builder()
-                        .jobId(job.getId())
-                        .source("TOKYO")
-                        .jobTitle(job.getTitle())
-                        .status(job.getStatus() != null ? job.getStatus().name() : "RECRUITING")
-                        .createdAt(job.getCreatedAt())
-                        .applicantCount(appResponses.size())
-                        .applicants(appResponses) // 🌟 지원자 목록 쏙!
-                        .build());
-            }
-        }
-
-        // ------------------------------------------
-        // 3. 최신 공고가 아코디언 맨 위에 뜨도록 정렬
-        // ------------------------------------------
-        groupedList.sort((a, b) -> {
-            if (a.getCreatedAt() == null) return 1;
-            if (b.getCreatedAt() == null) return -1;
-            return b.getCreatedAt().compareTo(a.getCreatedAt());
-        });
-
-        return groupedList;
-    } */
 }
-
-    

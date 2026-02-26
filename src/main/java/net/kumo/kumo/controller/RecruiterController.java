@@ -47,7 +47,7 @@ public class RecruiterController {
     private final JobPostingService js;
 
     /**
-     * 홈 메뉴 컨트롤러
+     * 메인 컨트롤러
      * 
      * @param model
      * @return
@@ -76,9 +76,9 @@ public class RecruiterController {
                 .orElseThrow(() -> new RuntimeException("사용자 정보를 찾을 수 없습니다."));
 
         // TODO: 머지 후 적용!!!
-        // List<JobApplicantGroupDTO> groupedList = js.getGroupedApplicantsForRecruiter(user);
+        // List<JobApplicantGroupDTO> groupedList =
+        // js.getGroupedApplicantsForRecruiter(user);
         // model.addAttribute("groupedList", groupedList);
-
         // 2. 서비스 호출: 이 구인자가 올린 공고에 지원한 모든 지원자 목록 가져오기
         // 머지 후 구현 가능!!
         // List<ApplicationDTO.ApplicantResponse> applicantList =
@@ -294,6 +294,58 @@ public class RecruiterController {
         } catch (Exception e) {
             // 기타 서버 에러 (500)
             return ResponseEntity.status(500).body("삭제 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 공고 수정 페이지
+     */
+    @GetMapping("/editJobPosting")
+    public String editJobPostingPage(@RequestParam("id") Long id,
+            @RequestParam("region") String region,
+            Model model,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        JobPostingRequestDTO job = js.getJobPostingForEdit(id, region);
+        UserEntity user = ur.findByEmail(userDetails.getUsername()).get();
+        List<CompanyEntity> companies = cs.getCompanyList(user);
+
+        model.addAttribute("job", job);
+        model.addAttribute("companies", companies);
+        model.addAttribute("region", region);
+        model.addAttribute("jobId", id);
+
+        return "recruiterView/editJobPosting";
+    }
+
+    /**
+     * 공고 수정 처리
+     */
+    @PostMapping("/editJobPosting")
+    public String updateJobPosting(@RequestParam("id") Long id,
+            @RequestParam("region") String region,
+            @ModelAttribute JobPostingRequestDTO dto,
+            @RequestParam(value = "images", required = false) List<MultipartFile> images) {
+
+        js.updateJobPosting(id, region, dto, images);
+        return "redirect:/Recruiter/JobManage";
+    }
+
+    /**
+     * 공고 마감
+     * 
+     * @param datanum
+     * @param region
+     * @return
+     */
+    @PostMapping("/closeJobPosting")
+    @ResponseBody // 🌟 화면 이동 없이 결과만 알려주기 위해 필요!
+    public String closeJobPosting(@RequestParam Long datanum, @RequestParam String region) {
+        try {
+            jobPostingService.closeJobPosting(datanum, region);
+            return "success";
+        } catch (Exception e) {
+            return "fail";
         }
     }
 }
