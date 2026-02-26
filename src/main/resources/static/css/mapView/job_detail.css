@@ -77,22 +77,38 @@ body {
     display: flex; flex-direction: column; min-height: 100vh;
 }
 
+/* 🌟 컨테이너: fixed 헤더에 내용이 가려지지 않도록 상단 패딩 100px 유지 */
 .container {
     max-width: 800px; margin: 0 auto;
-    padding: 100px 20px 60px; width: 100%; box-sizing: border-box; flex: 1;
+    padding: 100px 20px 60px; /* (중요) 상단 100px 여백이 헤더 공간을 확보해 줍니다 */
+    width: 100%; box-sizing: border-box; flex: 1;
     background-color: var(--bg-container);
     box-shadow: 0 4px 12px var(--shadow-color);
 }
-.container * { box-sizing: border-box; }
 
-/* 헤더 래퍼 */
+/* 🌟 헤더 래퍼: 컨테이너 너비에 갇히지 않고 무조건 화면 100%를 채우도록 강제! */
 .map-header-wrapper {
-    width: 100%; position: sticky; top: 0; z-index: 1000;
-    background-color: var(--bg-container);
+    position: fixed; /* 기존 sticky 대신 fixed를 사용하여 화면 최상단에 완전히 고정 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background-color: var(--bg-main); /* 카드 색상 말고 찐 배경색 사용 (다크모드 완벽 대응) */
     border-bottom: 1px solid var(--border-light);
 }
-.map-header-wrapper > div { max-width: 90%; margin: 0 auto; padding: 0 20px; }
 
+/* 🌟 헤더 내부 컨텐츠: 메인/검색 페이지와 동일한 1200px 너비로 통일! */
+.map-header-wrapper > div {
+    width: 100%;
+    max-width: 1200px; /* (추천) 너무 넓은 모니터에서 메뉴가 무한정 멀어지는 걸 방지합니다 */
+    margin: 0 auto;
+    padding: 0 20px; /* 🌟 [핵심] 양옆에 20px씩 보호막을 쳐서 오른쪽 아이콘이 안 잘리게 방어! */
+    box-sizing: border-box;
+}
+
+.authenticated-header {
+
+}
 /* ============================================================
    📝 3. 상세 페이지 요소 디자인
 ============================================================ */
