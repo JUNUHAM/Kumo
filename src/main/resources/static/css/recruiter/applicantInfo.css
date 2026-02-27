@@ -239,7 +239,7 @@
 /* 기본 아이콘 (이미지 없을 때 뒤에 보이는 것) */
 .default-icon {
   font-size: 3.5rem;
-  color: #cbd5e0;
+  color: #b7cce2;
   z-index: 1;
 }
 
@@ -361,7 +361,7 @@
   color: #4a90e2;
 }
 .btn-action-gray {
-  background: #cbd5e0;
+  background: #b7cce2;
   color: #4a5568;
 }
 
@@ -371,4 +371,128 @@
   transform: translateY(-3px);
   filter: brightness(0.98);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* =========================================
+   🌟 관리 버튼 (톱니바퀴) 가운데 정렬 & 디자인
+========================================= */
+
+/* 1. 6번째 칸(관리)을 완벽한 정중앙으로 세팅 */
+.kumo-table th:nth-child(6),
+.kumo-table td:nth-child(6) {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+/* 2. 톱니바퀴 버튼 배경/테두리 제거 */
+.btn-gear {
+  background: transparent;
+  /* 배경 투명하게 */
+  border: none;
+  /* 테두리 제거 */
+  color: #a0aec0;
+  /* 은은한 회색 */
+  font-size: 1.25rem;
+  /* 아이콘 크기 살짝 키움 */
+  padding: 5px;
+  /* 클릭 영역 확보 */
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+/* 3. 마우스 올렸을 때 효과 (색상 변경 + 회전 애니메이션) */
+.btn-gear:hover {
+  color: #7abaff;
+  /* 사장님 메인 파란색으로 변신 */
+  transform: rotate(90deg);
+  /* 톱니바퀴가 찌잉~ 하고 돌아가는 귀여운 디테일 */
+}
+
+/* ============================================================
+   🌟 [추가] 아코디언 (공고 리스트) 및 지원자 미니 테이블 스타일
+   ============================================================ */
+
+.job-accordion {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border: 1px solid #e9ecef;
+}
+.job-accordion .accordion-item {
+    border: none;
+    border-bottom: 1px solid #f1f3f5;
+}
+.job-accordion .accordion-item:last-child { border-bottom: none; }
+.job-accordion .accordion-button {
+    background-color: #fff;
+    padding: 20px;
+    font-weight: 600;
+    color: #212529;
+}
+.job-accordion .accordion-button:not(.collapsed) {
+    background-color: #f0f1f6;
+    color: #339af0;
+    box-shadow: inset 0 -1px 0 rgba(0,0,0,.125);
+}
+.job-accordion .accordion-button:focus {
+    box-shadow: none;
+    border-color: rgba(0,0,0,.125);
+}
+
+.accordion-body {
+    background-color: #fcfcfc;
+    padding: 15px 30px 25px 30px;
+    border-left: 4px solid #339af0;
+}
+
+.mini-table {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    margin-top: 10px;
+}
+.mini-table th {
+    background-color: #f1f3f5;
+    color: #495057;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-bottom: none;
+}
+.mini-table td {
+    vertical-align: middle;
+    font-size: 0.95rem;
+    border-color: #f0f1f6;
+}
+
+/* 🌟 [추가] 이력서 모달창 스타일 */
+.resume-modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+    background-color: #f0f1f6;
+    padding: 20px;
+}
+.resume-section {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.resume-section h5 {
+    border-bottom: 2px solid #339af0;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    font-weight: bold;
+    color: #212529;
+}
+.spec-item { margin-bottom: 10px; }
+.spec-item .label {
+    font-weight: 600;
+    color: #495057;
+    width: 100px;
+    display: inline-block;
 }

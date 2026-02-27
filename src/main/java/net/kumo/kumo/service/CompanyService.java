@@ -9,12 +9,14 @@ import lombok.RequiredArgsConstructor;
 import net.kumo.kumo.domain.entity.CompanyEntity;
 import net.kumo.kumo.domain.entity.UserEntity;
 import net.kumo.kumo.repository.CompanyRepository;
+import net.kumo.kumo.repository.OsakaGeocodedRepository;
 
 @Service
 @RequiredArgsConstructor
 public class CompanyService {
 
     private final CompanyRepository companyRepository;
+    private final OsakaGeocodedRepository osakaGeocodedRepository;
 
     // 회사 목록 조회
     public List<CompanyEntity> getCompanyList(UserEntity user) {
@@ -34,8 +36,12 @@ public class CompanyService {
     }
 
     // 삭제
-    @Transactional
-    public void deleteCompany(Long id) {
-        companyRepository.deleteById(id);
+    public void deleteCompany(Long companyId) {
+        long count = osakaGeocodedRepository.countByCompany_CompanyId(companyId);
+        if (count > 0) {
+            throw new IllegalStateException(
+                    "이 회사를 참조하는 공고가 " + count + "개 있어 삭제할 수 없습니다.");
+        }
+        companyRepository.deleteById(companyId);
     }
 }

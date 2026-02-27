@@ -5,6 +5,8 @@
     <title>KUMO RECRUITER - 내 계정</title>
     <script th:src="@{/js/recruiter/main.js}"></script>
     <script th:src="@{/js/recruiter/recruiterHeader.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -32,6 +34,38 @@
     <header
       th:replace="~{recruiterView/fragments/recruiterHeader :: headerFragment}"
     ></header>
+    <!-- 프로필 업로드 모달 -->
+    <div id="profileModal" class="profile-modal-overlay">
+      <div class="profile-modal-window">
+    
+        <div class="profile-modal-header">
+          <h3 th:text="#{modal.title}">프로필 사진 업로드</h3>
+          <span class="close-btn">&times;</span>
+        </div>
+    
+        <div class="profile-modal-body">
+          <div class="preview-wrapper">
+            <img th:src="${user.profileImage ?: '/images/common/default_profile.png'}" id="profilePreview" alt="Profile">
+          </div>
+    
+          <p class="guide-text" th:text="#{modal.guide}">JPG, PNG, GIF 파일만 업로드 가능합니다.</p>
+    
+          <div class="file-selection-area">
+            <input type="file" id="fileInput" accept="image/*" style="display:none;">
+            <label for="fileInput" class="custom-file-btn" id="uploadBtn">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span th:text="#{modal.file.select}">사진 선택</span>
+            </label>
+            <p id="fileName" class="file-name" th:text="#{modal.file.none}">선택된 파일 없음</p>
+          </div>
+        </div>
+    
+        <div class="profile-modal-footer">
+          <button class="btn-cancel" id="cancelProfileBtn" th:text="#{btn.cancel}">취소</button>
+          <button class="btn-save" id="saveProfileBtn" th:text="#{btn.save}">저장하기</button>
+        </div>
+      </div>
+    </div>
 
     <div class="dashboard-wrapper">
       <div
@@ -41,192 +75,222 @@
       <div class="main-container" style="margin-right: 0;">
         <main class="content-body">
           <div class="settings-container">
-            <h2 class="settings-title" th:text="#{sidebar.menu.settings}">
-              내 계정
-            </h2>
-
-            <div class="settings-form-wrapper">
-              <div class="profile-section mb-5">
-                <label class="info-label" th:text="#{set.label.profile}"
-                  >프로필 사진</label
-                >
-                <div class="profile-image-box">
-                  <div class="profile-img-container" id="profileContainer">
-                    <img
-                      th:src="${user.profileImage}"
-                      alt="Profile"
-                      class="profile-img-lg"
-                      id="profilePreview"
-                      th:if="${user.profileImage != null}"
-                    />
-                    <i
-                      class="bi bi-person-circle"
-                      id="defaultIcon"
-                      th:unless="${user.profileImage != null}"
-                    ></i>
-                  </div>
-
-                  <input
-                    type="file"
-                    id="profileInput"
-                    accept="image/*"
-                    style="display: none;"
-                  />
-
-                  <button
-                    type="button"
-                    class="btn-profile-upload"
-                    id="uploadBtn"
-                    th:text="#{set.btn.upload}"
-                  >
-                    프로필 사진 업로드
-                  </button>
+            <div class="content-header">
+              <h2 class="settings-title" th:text="#{sidebar.menu.settings}">내 계정</h2>
+            </div>
+        
+            <div class="profile-section">
+              <div class="profile-photo-area">
+                <div class="img-wrapper">
+                  <img th:src="${user.profileImage?.fileUrl ?: '/images/common/default_profile.png'}" class="profile-img-lg">
                 </div>
-              </div>
-
-              <div class="info-group">
-                <div class="info-row">
-                  <span class="info-label" th:text="#{set.label.name}"
-                    >이름</span
-                  >
-                  <span class="info-value" th:text="${fullName}"
-                    >이름 데이터</span
-                  >
-                </div>
-
-                <div class="info-row">
-                  <span class="info-label" th:text="#{join.label.birth}"
-                    >생년월일</span
-                  >
-                  <span class="info-value">
-                    <span
-                      th:text="${#temporals.format(user.birthDate, 'yyyy / MM / dd')}"
-                      >1990 / 01 / 01</span
-                    >
-                    <span
-                      class="text-muted ms-2"
-                      th:text="#{set.label.age_suffix(${age})}"
-                      >( 만 40세 )</span
-                    >
-                  </span>
-                </div>
-
-                <div class="info-row">
-                  <span class="info-label" th:text="#{join.label.nickname}"
-                    >닉네임</span
-                  >
-                  <span class="info-value" th:text="${user.nickname}"
-                    >닉네임 데이터</span
-                  >
-                </div>
-
-                <div class="info-row">
-                  <span class="info-label" th:text="#{join.label.email}"
-                    >이메일</span
-                  >
-                  <span class="info-value" th:text="${user.email}"
-                    >user@kumo.io</span
-                  >
-                </div>
-
-                <div class="info-row">
-                  <span class="info-label" th:text="#{join.label.address}"
-                    >주소</span
-                  >
-                  <span
-                    class="info-value"
-                    th:text="${user.addressMain + ' ' + user.addressDetail}"
-                  >
-                    주소 데이터
-                  </span>
-                </div>
-              </div>
-
-              <div class="info-group mt-4">
-                <div class="info-row align-items-center">
-                  <span class="info-label">LINE 연동</span>
-                  <div class="form-check form-switch custom-switch">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      th:checked="${user.socialProvider == 'LINE'}"
-                    />
-                  </div>
-                </div>
-                <div class="info-row align-items-center">
-                  <span class="info-label">Google 연동</span>
-                  <div class="form-check form-switch custom-switch">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      th:checked="${user.socialProvider == 'GOOGLE'}"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div class="settings-footer-actions">
-                <button
-                  type="button"
-                  class="btn-quit"
-                  th:text="#{set.btn.quit}"
-                >
-                  회원 탈퇴
+              
+                <button type="button" class="btn-upload-photo" id="openProfileModalBtn" th:text="#{set.btn.upload_photo}">
+                  프로필 사진 업로드
                 </button>
-                <a
-                  th:href="@{/Recruiter/ProfileEdit}"
-                  class="btn-submit"
-                  th:text="#{set.btn.edit}"
-                >
-                  회원정보 수정
-                </a>
+              </div>
+
+        
+              <div class="info-list">
+                <div class="info-row">
+                  <span class="label" th:text="#{set.label.name}">이름</span>
+                  <span class="value" th:text="${fullName}">이름 데이터</span>
+                </div>
+        
+                <div class="info-row">
+                  <span class="label" th:text="#{join.label.birth}">생년월일</span>
+                  <span class="value">
+                    <span th:text="${#temporals.format(user.birthDate, 'yyyy / MM / dd')}">1990 / 01 / 01</span>
+                    <span class="age-suffix" th:text="#{set.label.age_suffix(${age})}">( 만 40세 )</span>
+                  </span>
+                </div>
+        
+                <div class="info-row">
+                  <span class="label" th:text="#{join.label.nickname}">닉네임</span>
+                  <span class="value" th:text="${user.nickname}">닉네임 데이터</span>
+                </div>
+        
+                <div class="info-row">
+                  <span class="label" th:text="#{join.label.email}">이메일</span>
+                  <span class="value" th:text="${user.email}">user@kumo.io</span>
+                </div>
+        
+                <div class="info-row">
+                  <span class="label" th:text="#{join.label.address}">주소</span>
+                  <span class="value" th:text="${user.addressMain + ' ' + user.addressDetail}">주소 데이터</span>
+                </div>
+        
+                <div class="info-row align-items-center">
+                  <span class="label" th:text="#{label.line}">LINE 연동></span>
+                  <label class="switch">
+                    <input type="checkbox" class="sns-toggle" th:checked="${user.socialProvider == 'LINE'}">
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+                
+                <div class="info-row align-items-center">
+                  <span class="label" th:text="#{label.google}">Google 연동</span>
+                  <label class="switch">
+                    <input type="checkbox" class="sns-toggle" th:checked="${user.socialProvider == 'GOOGLE'}">
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+              </div>
+        
+              <div class="action-buttons">
+                <button type="button" class="btn-quit" th:text="#{set.btn.quit}">회원 탈퇴</button>
+                <a th:href="@{/Recruiter/ProfileEdit}" class="btn-edit" th:text="#{set.btn.edit}">회원정보 수정</a>
               </div>
             </div>
-            <footer
-              th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"
-            ></footer>
           </div>
         </main>
       </div>
     </div>
 
-    <script>
-            document.addEventListener('DOMContentLoaded', function() {
+    <script th:inline="javascript">
+      /* <![CDATA[ */
+      document.addEventListener('DOMContentLoaded', function () {
+
+          /* =========================
+             프로필 업로드 기능
+          ========================= */
+
+          const settingsMsg = {
+          noPhoto:        /*[[#{set.swal.no_photo}]]*/ '사진을 선택해주세요.',
+          uploadSuccess:  /*[[#{set.swal.upload_success}]]*/ '프로필 사진이 업로드 되었습니다.',
+          uploadFail:     /*[[#{set.swal.upload_fail}]]*/ '업로드 실패',
+          serverError:    /*[[#{set.swal.server_error}]]*/ '서버 오류',
+          snsTitle:       /*[[#{set.swal.sns_title}]]*/ 'Service Notice',
+          snsText:        /*[[#{set.swal.sns_text}]]*/ '아직 서비스 준비 중입니다.',
+        };
+
           const uploadBtn = document.getElementById('uploadBtn');
-          const profileInput = document.getElementById('profileInput');
+          const profileInput = document.getElementById('fileInput');
           const profilePreview = document.getElementById('profilePreview');
+          const fileNameSpan = document.getElementById('fileName');
+          const saveBtn = document.getElementById('saveProfileBtn');
 
-          // 1. 버튼 클릭 시 숨겨진 input 클릭
-          uploadBtn.onclick = () => profileInput.click();
+          let selectedFile = null;
 
-          // 2. 파일이 선택되면 서버로 즉시 전송
-          profileInput.onchange = function() {
+          if (profileInput) {
+            profileInput.onchange = function () {
+
               const file = profileInput.files[0];
               if (!file) return;
 
+              selectedFile = file;
+
+              fileNameSpan.innerText = file.name;
+
+              const reader = new FileReader();
+              reader.onload = function (e) {
+                profilePreview.src = e.target.result;
+              };
+              reader.readAsDataURL(file);
+            };
+          }
+
+          if (saveBtn) {
+            saveBtn.onclick = function () {
+
+              if (!selectedFile) {
+                // 사진 미선택
+                Swal.fire({ icon: 'warning', title: settingsMsg.noPhoto });
+                return;
+              }
+
               const formData = new FormData();
-              formData.append("profileImage", file);
+              formData.append("profileImage", selectedFile);
 
               fetch("/Recruiter/UploadProfile", {
-                  method: "POST",
-                  body: formData
-                  // Spring Security를 쓰고 계시다면 CSRF 토큰을 헤더에 넣어야 할 수도 있습니다.
+                method: "POST",
+                body: formData
               })
-              .then(response => response.json())
-              .then(data => {
+                .then(res => res.json())
+                .then(data => {
+
                   if (data.success) {
-                      // 성공 시 이미지 즉시 교체
-                      location.reload(); // 가장 확실한 방법
+                    // 업로드 성공
+                    Swal.fire({ icon: 'success', title: settingsMsg.uploadSuccess }).then(() => location.reload());
                   } else {
-                      alert("업로드 실패: " + data.message);
+                    // 업로드 실패
+                    Swal.fire({ icon: 'error', title: settingsMsg.uploadFail, text: data.message });
+
                   }
-              })
-              .catch(error => console.error("Error:", error));
+
+                })
+                .catch(() => {
+                  // 서버 오류
+                  Swal.fire({ icon: 'error', title: settingsMsg.serverError });
+                });
+            };
+          }
+
+
+          /* =========================
+             SNS 토글
+          ========================= */
+
+          const snsToggles = document.querySelectorAll('.sns-toggle');
+
+          snsToggles.forEach(toggle => {
+            toggle.onclick = function (e) {
+
+              e.preventDefault();
+
+              const isDark = document.documentElement.classList.contains('dark-mode');
+
+              // SNS 토글
+              Swal.fire({
+                title: settingsMsg.snsTitle,
+                text: settingsMsg.snsText,
+                icon: 'info',
+                confirmButtonColor: '#7abaff',
+                background: isDark ? '#2b2b2b' : '#fff',
+                color: isDark ? '#fff' : '#333'
+              });
+            };
+          });
+
+
+          /* =========================
+             모달 열기 / 닫기 (여기로 이동)
+          ========================= */
+          const modal = document.getElementById("profileModal");
+          const openBtn = document.getElementById("openProfileModalBtn");
+
+          // 🌟 [핵심] 부드럽게 닫기 함수
+          function closeModal() {
+            modal.classList.add('closing'); // 닫기 애니메이션 시작
+
+            // 애니메이션 시간(0.25초)이 지난 후 실제로 숨김 처리
+            setTimeout(() => {
+              modal.style.display = "none";
+              modal.classList.remove('closing'); // 다음번을 위해 클래스 제거
+            }, 250);
+          }
+
+          // 🌟 모든 닫기 버튼에 함수 연결
+          if (openBtn) {
+            openBtn.onclick = () => {
+              modal.style.display = "flex";
+            };
+          }
+
+          // X 버튼, 취소 버튼, 바깥 클릭 모두 closeModal() 호출
+          const closeBtn = document.querySelector(".close-btn");
+          const cancelBtn = document.getElementById("cancelProfileBtn");
+
+          if (closeBtn) closeBtn.onclick = closeModal;
+          if (cancelBtn) cancelBtn.onclick = closeModal;
+
+          window.onclick = (e) => {
+            if (e.target === modal) closeModal();
           };
-      });
-    </script>
+
+        });
+    /* ]]> */
+  </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

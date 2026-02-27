@@ -74,7 +74,7 @@
                   class="fw-bold mt-2 mb-0 text-primary"
                   th:text="${#numbers.formatInteger(unreadApplicants ?: 0, 0, 'COMMA')}"
                 >
-                  82
+                  0
                 </h4>
               </div>
               <div class="stat-card">
@@ -83,9 +83,9 @@
                 >
                 <h4
                   class="fw-bold mt-2 mb-0"
-                  th:text="${#numbers.formatInteger(openJobCount ?: 0, 0, 'COMMA')}"
+                  th:text="${#lists.size(jobList)}"
                 >
-                  12
+                  0
                 </h4>
               </div>
               <div class="stat-card">
@@ -98,7 +98,7 @@
                   class="fw-bold mt-2 mb-0 text-success"
                   th:text="${#numbers.formatInteger(todayVisits ?: 0, 0, 'COMMA')}"
                 >
-                  342
+                  0
                 </h4>
               </div>
             </div>
@@ -164,7 +164,7 @@
                 class="panel-header d-flex justify-content-between align-items-center"
               >
                 <h5 class="panel-title mb-0" th:text="#{main.panel.my_jobs}">
-                  내 공고
+                  최근 공고
                 </h5>
                 <a
                   class="panel-link text-decoration-none"
@@ -175,43 +175,26 @@
               </div>
               <div class="panel-body">
                 <div class="myjobs-head">
-                  <span th:text="#{main.table.job}">공고</span>
-                  <span th:text="#{main.table.position}">직무</span>
-                  <span th:text="#{main.table.region}">지역</span>
-                  <span th:text="#{main.table.salary}">급여</span>
-                  <span th:text="#{main.table.contact}">연락처</span>
-                  <span th:text="#{main.table.action}">액션</span>
-                  <span th:text="#{main.table.date}">등록</span>
+                  <span style="flex: 2;" th:text="#{main.myjobs.col.title}">공고 제목</span>
+                  <span style="flex: 1;" th:text="#{main.myjobs.col.region}">지역</span>
+                  <span style="flex: 1.5;" th:text="#{main.myjobs.col.wage}">급여</span>
+                  <span style="flex: 1.2;" th:text="#{main.myjobs.col.date}">등록일</span>
+                  <span style="flex: 1;" th:text="#{main.myjobs.col.manage}">관리</span>
                 </div>
-                <div
-                  class="empty-state"
-                  th:if="${myJobList == null or #lists.isEmpty(myJobList)}"
-                  th:text="#{main.jobs.empty}"
-                >
+              
+                <div class="empty-state" th:if="${jobList == null or #lists.isEmpty(jobList)}" th:text="#{main.myjobs.empty}">
                   등록된 공고가 없습니다.
                 </div>
-                <div class="myjobs-row" th:each="job : ${myJobList}">
-                  <div class="job-title">
-                    <div class="job-name text-truncate" th:text="${job.title}">
-                      공고명
-                    </div>
+              
+                <div class="myjobs-row" th:each="job, iterStat : ${jobList}" th:if="${iterStat.index < 2}">
+                  <div class="job-title" style="flex: 2;">
+                    <div class="job-name text-truncate" th:text="${job.title}">공고명</div>
                   </div>
-                  <div th:text="${job.position}">직무</div>
-                  <div th:text="${job.region}">지역</div>
-                  <div th:text="${job.wage}">급여</div>
-                  <div th:text="${job.contact}">연락처</div>
-                  <div>
-                    <a
-                      class="btn-detail"
-                      th:href="@{/recruiter/jobs/{id}(id=${job.jobId})}"
-                      th:text="#{main.btn.view_detail}"
-                      >상세보기</a
-                    >
-                  </div>
-                  <div
-                    th:text="${#temporals.format(job.createdAt, 'yyyy-MM-dd')}"
-                  >
-                    등록
+                  <div style="flex: 1;" th:text="${job.regionType}">지역</div>
+                  <div style="flex: 1.5;" th:text="${job.wage}">급여</div>
+                  <div style="flex: 1.2;" th:text="${#temporals.format(job.createdAt, 'yyyy-MM-dd')}">등록일</div>
+                  <div style="flex: 1;">
+                      <a class="btn-detail" th:href="@{/Recruiter/editJobPosting(id=${job.id}, region=${job.regionType == '도쿄' ? 'TOKYO' : 'OSAKA'})}" th:text="#{main.myjobs.btn.edit}">공고 수정</a>
                   </div>
                 </div>
               </div>

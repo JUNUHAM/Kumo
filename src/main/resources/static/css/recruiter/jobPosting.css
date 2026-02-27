@@ -1,13 +1,12 @@
 /* jobPosting.css - 최종 통합본 */
 
-/* 1. 전체 카드 레이아웃 (위치 보정 버전) */
+/* 1. 전체 카드 레이아웃 (정중앙 정렬 버전) */
 .posting-card {
   background: #ffffff;
   max-width: 950px;
 
-  /* [수정] 좌측 사이드바와의 간격을 위해 좌측 마진을 명시적으로 추가 */
-  /* auto auto는 중앙 정렬이지만, 좌측에 40px 정도 더 여유를 줍니다 */
-  margin: 0 auto 50px 60px;
+  /* [수정] 좌측 60px 밀기를 제거하고 상하 0, 50px / 좌우 auto로 설정 */
+  margin: 0 auto 50px auto !important;
 
   padding: 40px 50px;
   border-radius: 25px;
@@ -105,7 +104,7 @@
   align-items: center;
   justify-content: center;
   font-size: 28px;
-  color: #cbd5e0;
+  color: #b7cce2;
   cursor: pointer;
   transition: background 0.2s;
 }
@@ -136,4 +135,32 @@
 .kumo-btn-submit:hover {
   background-color: #66aaff !important;
   transform: translateY(-2px);
+}
+
+/* 회사 선택 박스 커스텀 */
+.company-selection-box .input-group {
+  background-color: #f2f4f6;
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 5px;
+}
+
+.company-selection-box .form-select {
+  background-color: transparent !important;
+  font-weight: 500;
+  color: #333d4b;
+  height: 45px;
+}
+
+.company-selection-box .form-select:focus {
+  box-shadow: none;
+}
+
+.kumo-btn-outline {
+  background: white !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-left: 5px;
 }

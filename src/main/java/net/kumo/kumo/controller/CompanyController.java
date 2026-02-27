@@ -3,11 +3,14 @@ package net.kumo.kumo.controller;
 import java.util.List; // 🌟 1. List import 추가
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -87,16 +90,21 @@ public class CompanyController {
     /**
      * 삭제 프로세스
      */
-    @GetMapping("/CompanyDelete")
-    public String deleteCompany(@RequestParam("id") Long id,
-            @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
-        if (authenticatedUser == null)
-            return "redirect:/login";
-
-        companyService.deleteCompany(id);
-        return "redirect:/Recruiter/CompanyInfo";
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteCompany(@PathVariable Long id) {
+        try {
+            companyService.deleteCompany(id);
+            return ResponseEntity.ok().build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(409).body(e.getMessage());
+        }
     }
 
+    /**
+     * 회사 등록 프로세스
+     * 
+     * @return
+     */
     @GetMapping("/CompanyAdd")
     public String companyAddForm() {
         return "redirect:/Recruiter/CompanyInfo";

@@ -374,3 +374,82 @@ footer {
   -ms-overflow-style: none !important; /* IE */
   scrollbar-width: none !important; /* 파이어폭스 */
 }
+
+/* 내 공고 목록 컨테이너 */
+.myjobs-head,
+.myjobs-row {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  /* 🌟 위아래 여백을 늘려 시원하게 만듭니다 */
+  gap: 15px;
+  /* 🌟 칸 사이 간격을 줍니다 */
+}
+
+/* 헤더 스타일 */
+.myjobs-head {
+  background-color: #f0f1f6;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #6b7684;
+  margin-bottom: 10px;
+}
+
+/* 데이터 줄 스타일 */
+.myjobs-row {
+  border-bottom: 1px solid #eee;
+  transition: background 0.2s;
+}
+
+/* ===================================================
+   18. [추가] 내 공고 목록 - 부드러운 호버 (은은한 버전)
+   =================================================== */
+
+/* 라이트 모드일 때 (기본) */
+.myjobs-row:hover {
+  background-color: #f9fafb !important;
+  /* 라이트모드에서도 조금 더 연하게 */
+}
+
+/* 🌟 다크 모드일 때 (사장님이 원하시는 은은한 느낌!) */
+body.dark-mode .myjobs-row:hover {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  /* 6% 정도의 아주 은은한 밝기 */
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  transition: background-color 0.2s ease !important;
+}
+
+/* 1. 기본 상태: 쫀득한 애니메이션 준비 */
+.btn-detail {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px !important;
+  border-radius: 10px !important;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  /* 🌟 애니메이션의 핵심: 0.3초 동안 부드럽게, 베지어 곡선으로 쫀득하게! */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  cursor: pointer;
+}
+
+/* 2. 다크모드 전용: 고급스러운 호버 효과 */
+body.dark-mode .btn-detail:hover {
+  /* 🌟 색상은 사장님 포인트 컬러(7abaff)를 조금 더 확실하게 사용 */
+  background-color: #7abaff !important;
+  color: #ffffff !important;
+
+  /* 🌟 고급짐의 핵심 1: 아주 살짝 위로 띄우기 (-2px) */
+  transform: translateY(-2px);
+
+  /* 🌟 고급짐의 핵심 2: 은은한 파란색 네온 광채 추가 */
+  box-shadow: 0 5px 15px rgba(122, 186, 255, 0.4) !important;
+}
+
+/* 3. 클릭 시 반응 (쫀득함의 완성) */
+body.dark-mode .btn-detail:active {
+  transform: translateY(0) scale(0.96);
+  /* 누를 때 살짝 들어가는 느낌 */
+}
+

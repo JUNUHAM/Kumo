@@ -47,6 +47,10 @@
   box-shadow: 0 4px 14px rgba(122, 186, 255, 0.3);
 }
 
+.nav-pill:hover {
+  border-color: #b2d7ff;
+}
+
 .nav-pill-add {
   width: 46px;
   height: 46px;
@@ -89,7 +93,7 @@
   padding: 15px 20px;
   border-radius: 14px;
   border: 1px solid #eef0f2;
-  background-color: #f8f9fa;
+  background-color: #f0f1f6;
   font-size: 15.5px;
   color: #191f28;
   height: 52px;
@@ -169,8 +173,15 @@
   border: none;
   font-weight: 700;
   font-size: 14px;
-  text-decoration: underline;
+  text-decoration: none;
   cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.btn-delete:hover {
+  color: #d71f2e;
 }
 
 /* 6. 푸터 고정 */

@@ -48,10 +48,9 @@
                 <h2 class="table-title" th:text="#{app.info.title}">
                   지원자 정보
                 </h2>
-                <div class="applicant-count">
-                  <span th:text="#{app.info.total_count}">전체 지원자 수</span>
                   <span class="count-badge">20</span>
-                </div>
+
+                  <!--  <span class="count-badge" th:text="${applicantList.size()}">0</span> -->
               </div>
               <button class="btn-filter">
                 <i class="bi bi-funnel"></i>
@@ -86,67 +85,48 @@
                     </th>
                     <th></th>
                   </tr>
+                <!--
                 </thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      <input
-                        type="checkbox"
-                        class="kumo-check"
-                        name="applicantCheck"
-                      />
-                    </td>
-                    <td>
-                      <div class="user-profile">
-                        <span class="avatar-sm bg-peach">😊</span>
-                        <span class="user-name">홍길동</span>
-                      </div>
-                    </td>
-                    <td>40</td>
-                    <td th:text="#{join.gender.female}">여자</td>
-                    <td>오사카 한식당 홀서빙 구해요</td>
-                    <td>2022-03-01</td>
-                    <td>
-                      <a th:href="@{/Recruiter/ApplicantDetail}"
-                        ><button
-                          class="btn-view"
-                          th:text="#{main.status.viewed}"
-                        >
-                          열람
-                        </button></a
-                      >
-                    </td>
+                  <tbody>
+                  <tr th:each="app : ${applicantList}">
+                      <td>
+                          <input
+                                  type="checkbox"
+                                  class="kumo-check"
+                                  name="applicantCheck"
+                                  th:value="${app.appId}"
+                          />
+                      </td>
+                      <td>
+                          <div class="user-profile">
+                              <span class="avatar-sm bg-peach">😊</span>
+                              <span class="user-name" th:text="${app.seekerName}">홍길동</span>
+                          </div>
+                      </td>
+
+                      <td th:text="${app.seekerAge != null ? app.seekerAge : '-'}">40</td>
+                      <td th:text="${app.seekerGender != null ? app.seekerGender : '-'}">여자</td>
+
+                      <td th:text="${app.jobTitle}">오사카 한식당 홀서빙 구해요</td>
+
+                      <td th:text="${app.appliedAt}">2022-03-01</td>
+
+                      <td>
+                          <a th:href="@{/Recruiter/ApplicantDetail(appId=${app.appId})}">
+                              <button class="btn-view" th:text="#{main.status.viewed}">
+                                  열람
+                              </button>
+                          </a>
+                      </td>
                   </tr>
-                  <tr>
-                    <td>
-                      <input
-                        type="checkbox"
-                        class="kumo-check"
-                        name="applicantCheck"
-                      />
-                    </td>
-                    <td>
-                      <div class="user-profile">
-                        <span class="avatar-sm bg-sky">😊</span>
-                        <span class="user-name">Savannah Nguyen</span>
-                      </div>
-                    </td>
-                    <td>40</td>
-                    <td th:text="#{join.gender.female}">여자</td>
-                    <td>오사카 한식당 주방 구해요</td>
-                    <td>2022-03-01</td>
-                    <td>
-                      <a th:href="@{/Recruiter/ApplicantDetail}"
-                        ><button
-                          class="btn-view"
-                          th:text="#{main.status.viewed}"
-                        >
-                          열람
-                        </button></a
-                      >
-                    </td>
+
+                  <tr th:if="${#lists.isEmpty(applicantList)}">
+                      <td colspan="7" style="text-align: center; padding: 30px;">
+                          아직 지원자가 없습니다.
+                      </td>
                   </tr>
-                </tbody>
+                  </tbody>
+                  -->
               </table>
             </div>
           </div>
@@ -186,3 +166,232 @@
     <script th:src="@{/js/recruiter/global-calendar.js}"></script>
   </body>
 </html>
+
+
+<!-- TODO: 머지 후 위의 코드를 모두 지우고 아래 코드 주석해제 -->
+<!-- <!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>KUMO RECRUITER - 지원자 정보</title>
+    </head>
+<body>
+<header th:replace="~{recruiterView/fragments/recruiterHeader :: headerFragment}"></header>
+
+<div class="dashboard-wrapper">
+    <div th:replace="~{recruiterView/fragments/sidebar :: sidebarFragment}"></div>
+
+    <div class="main-container">
+        <main class="content-body">
+            <div class="applicant-card" style="background: transparent; box-shadow: none; padding: 0;">
+
+                <div class="d-flex justify-content-between align-items-center mb-4 px-2">
+                    <div class="header-title-area d-flex align-items-center">
+                        <h2 class="table-title mb-0 fw-bold" th:text="#{app.info.title}">내 공고 및 지원자 관리</h2>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="text-muted fw-semibold">총 진행 중인 공고:
+                            <span class="text-primary" th:text="${groupedList != null ? groupedList.size() : 0} + '건'">0건</span>
+                        </span>
+
+                        <button class="btn btn-outline-primary btn-sm rounded-pill px-3" id="btnToggleAll" onclick="toggleAllAccordions()">
+                            <i class="bi bi-arrows-expand"></i> 모두 펼치기
+                        </button>
+                    </div>
+                </div>
+
+                <div class="accordion job-accordion" id="jobListAccordion" th:if="${groupedList != null and !groupedList.isEmpty()}">
+
+                    <div class="accordion-item" th:each="jobGroup, stat : ${groupedList}">
+                        <h2 class="accordion-header" th:id="'heading' + ${stat.index}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    th:data-bs-target="'#collapse' + ${stat.index}" aria-expanded="false">
+                                <div class="d-flex justify-content-between align-items-center w-100 pe-3">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="badge bg-primary" th:if="${jobGroup.status == 'RECRUITING'}">진행중</span>
+                                        <span class="badge bg-secondary" th:if="${jobGroup.status != 'RECRUITING'}">마감</span>
+                                        <span class="fs-5" th:text="${jobGroup.jobTitle}">공고 제목</span>
+                                    </div>
+                                    <div class="text-muted font-sm">
+                                        <i class="bi bi-people-fill me-1"></i> 지원자 <strong class="text-dark" th:text="${jobGroup.applicantCount}">0</strong>명
+                                    </div>
+                                </div>
+                            </button>
+                        </h2>
+
+                        <div th:id="'collapse' + ${stat.index}" class="accordion-collapse collapse" th:aria-labelledby="'heading' + ${stat.index}">
+                            <div class="accordion-body">
+                                <div th:if="${#lists.isEmpty(jobGroup.applicants)}" class="text-center text-muted py-3">
+                                    아직 이 공고에 지원한 구직자가 없습니다.
+                                </div>
+
+                                <div th:unless="${#lists.isEmpty(jobGroup.applicants)}" class="table-responsive mini-table">
+                                    <table class="table table-hover mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 50px;" class="text-center">
+                                                    <input type="checkbox" class="form-check-input"
+                                                           th:classappend="'check-all-job' + ${jobGroup.jobId}"
+                                                           th:onclick="'toggleJobCheckboxes(\'job' + ${jobGroup.jobId} + '\', this)'" />
+                                                </th>
+                                                <th>이름</th>
+                                                <th>나이</th>
+                                                <th>성별</th>
+                                                <th>지원 일자</th>
+                                                <th>상태</th>
+                                                <th class="text-center">이력서</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="app : ${jobGroup.applicants}">
+                                                <td class="text-center">
+                                                    <input type="checkbox" class="form-check-input"
+                                                           th:classappend="'job' + ${jobGroup.jobId} + '-checkbox'"
+                                                           th:value="${app.appId}" />
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <span class="avatar-sm bg-peach me-2" style="width: 30px; height: 30px;">😊</span>
+                                                        <span class="fw-semibold" th:text="${app.seekerName}">지원자 이름</span>
+                                                    </div>
+                                                </td>
+                                                <td th:text="${app.seekerAge != null ? app.seekerAge + '세' : '-'}">나이</td>
+                                                <td th:text="${app.seekerGender != null ? app.seekerGender : '-'}">성별</td>
+                                                <td class="text-muted" th:text="${app.appliedAt}">지원일</td>
+                                                <td>
+                                                    <span class="badge bg-warning text-dark" th:if="${app.status.name() == 'APPLIED'}">검토중</span>
+                                                    <span class="badge bg-success" th:if="${app.status.name() == 'PASSED'}">합격</span>
+                                                    <span class="badge bg-danger" th:if="${app.status.name() == 'REJECTED'}">불합격</span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <button class="btn btn-sm btn-outline-primary rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#resumeModal"
+                                                            onclick="loadResumeData(this)"
+                                                            th:data-name="${app.seekerName}"
+                                                            th:data-age="${app.seekerAge != null ? app.seekerAge : 0}"
+                                                            th:data-gender="${app.seekerGender != null ? app.seekerGender : '-'}"
+                                                            th:data-job="${jobGroup.jobTitle}">
+                                                        열람
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${groupedList == null or groupedList.isEmpty()}" class="text-center py-5">
+                    <h5 class="text-muted">등록된 공고가 없습니다.</h5>
+                </div>
+
+            </div>
+            <footer th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"></footer>
+        </main>
+        <div th:replace="~{recruiterView/fragments/rightSidebar :: rightSidebarFragment}"></div>
+    </div>
+</div>
+
+<div class="modal fade" id="resumeModal" tabindex="-1" aria-labelledby="resumeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <div>
+                    <h4 class="modal-title fw-bold" id="resumeModalLabel">
+                        <span id="modalName">지원자 이름</span>의 이력서
+                    </h4>
+                    <p class="mb-0 text-muted mt-1">
+                        지원 공고: <span id="modalJob" class="fw-semibold text-dark">공고명</span> |
+                        <span id="modalAge">00</span>세 · <span id="modalGender">성별</span>
+                    </p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body resume-modal-body">
+                <div class="resume-section">
+                    <h5><i class="bi bi-person-lines-fill me-2"></i>자기소개 (Self PR)</h5>
+                    <p class="text-secondary" style="line-height: 1.6;">[더미 데이터] 지원자의 자기소개서가 들어갈 자리입니다. 추후 리포지토리가 연결되면 실제 데이터로 교체됩니다.</p>
+                </div>
+                <div class="resume-section">
+                    <h5><i class="bi bi-briefcase-fill me-2"></i>경력 사항</h5>
+                    <div class="border-bottom pb-2 mb-2">
+                        <div class="fw-bold fs-6">KUMO 상사 (도쿄점)</div>
+                        <div class="text-muted small">2023.01 ~ 2024.12 (2년) | 영업 관리</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="resume-section h-100">
+                            <h5><i class="bi bi-mortarboard-fill me-2"></i>학력</h5>
+                            <div class="spec-item"><span class="label">KUMO 대학교</span> 컴퓨터공학과 (졸업)</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="resume-section h-100">
+                            <h5><i class="bi bi-award-fill me-2"></i>자격 및 어학</h5>
+                            <div class="spec-item"><span class="label">JLPT N1</span> 일본국제교육지원협회 (2024.01)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between bg-light">
+                <button type="button" class="btn btn-outline-danger px-4" onclick="actionReject()"><i class="bi bi-x-circle me-1"></i> 불합격</button>
+                <div>
+                    <button type="button" class="btn btn-primary px-4 me-2" onclick="actionSchedule()"><i class="bi bi-calendar-check me-1"></i> 면접 제안</button>
+                    <button type="button" class="btn btn-success px-4" onclick="actionApprove()"><i class="bi bi-check-circle me-1"></i> 합격</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 공고별 내부 체크박스 독립적 동작 로직 (공고별 고유 클래스 사용)
+    function toggleJobCheckboxes(jobId, headerCheckbox) {
+        const checkboxes = document.querySelectorAll(`.${jobId}-checkbox`);
+        checkboxes.forEach(cb => { cb.checked = headerCheckbox.checked; });
+    }
+
+    // 모달 데이터 로드 (실제 이름/나이는 받아오고 내부는 더미)
+    function loadResumeData(btn) {
+        document.getElementById('modalName').innerText = btn.getAttribute('data-name');
+        document.getElementById('modalAge').innerText = btn.getAttribute('data-age');
+        document.getElementById('modalGender').innerText = btn.getAttribute('data-gender');
+        document.getElementById('modalJob').innerText = btn.getAttribute('data-job');
+    }
+
+    // 🌟 모두 펼치기 / 접기 로직
+    let isAllExpanded = false;
+
+    function toggleAllAccordions() {
+        const collapses = document.querySelectorAll('.job-accordion .accordion-collapse');
+        const btn = document.getElementById('btnToggleAll');
+
+        isAllExpanded = !isAllExpanded;
+
+        collapses.forEach(col => {
+            const bsCollapse = new bootstrap.Collapse(col, { toggle: false });
+            if (isAllExpanded) bsCollapse.show();
+            else bsCollapse.hide();
+        });
+
+        if (isAllExpanded) {
+            btn.innerHTML = '<i class="bi bi-arrows-collapse"></i> 모두 접기';
+            btn.classList.replace('btn-outline-primary', 'btn-primary');
+        } else {
+            btn.innerHTML = '<i class="bi bi-arrows-expand"></i> 모두 펼치기';
+            btn.classList.replace('btn-primary', 'btn-outline-primary');
+        }
+    }
+
+    // 임시 액션 함수
+    function actionReject() { alert('불합격 처리 기능은 백엔드 연결 후 활성화됩니다.'); }
+    function actionApprove() { alert('합격 처리 기능은 백엔드 연결 후 활성화됩니다.'); }
+    function actionSchedule() { alert('캘린더 연동 기능은 추후 개발 예정입니다.'); }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.10/index.global.min.js"></script>
+<script th:src="@{/js/recruiter/global-calendar.js}"></script>
+</body>
+</html> -->

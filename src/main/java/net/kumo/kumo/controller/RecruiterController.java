@@ -6,9 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,11 +23,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.kumo.kumo.domain.dto.JobPostFormDTO;
+import net.kumo.kumo.domain.dto.JobManageListDTO;
+import net.kumo.kumo.domain.dto.JobPostingRequestDTO;
 import net.kumo.kumo.domain.dto.JoinRecruiterDTO;
 import net.kumo.kumo.domain.entity.CompanyEntity;
 import net.kumo.kumo.domain.entity.UserEntity;
 import net.kumo.kumo.repository.UserRepository;
+import net.kumo.kumo.service.CompanyService;
 import net.kumo.kumo.service.JobPostingService;
 import net.kumo.kumo.service.RecruiterService;
 
@@ -36,29 +42,51 @@ public class RecruiterController {
 
     private final UserRepository ur;
     private final RecruiterService rs;
+
+    private final CompanyService cs;
     private final JobPostingService js;
 
     /**
-     * 홈 메뉴 컨트롤러
+     * 메인 컨트롤러
      * 
      * @param model
      * @return
      */
     @GetMapping("Main")
-    public String Main(Model model) {
+    public String Main(Model model, java.security.Principal principal) {
+
+        // 전체 공고 수 출력 용
+        String userEmail = principal.getName();
+        List<JobManageListDTO> jobList = js.getMyJobPostings(userEmail);
+        model.addAttribute("jobList", jobList);
+
         model.addAttribute("currentMenu", "home"); // 사이드바 선택(홈 메뉴)
         return "recruiterView/main";
     }
 
     /**
      * 지원자 관리 컨트롤러
-     * 
-     * @param model
-     * @return
      */
     @GetMapping("ApplicantInfo")
-    public String ApplicantInfo(Model model) {
-        model.addAttribute("currentMenu", "applicants"); // 사이드바 선택((지원자 관리)
+    public String ApplicantInfo(Model model, Principal principal) {
+        model.addAttribute("currentMenu", "applicants");
+
+        String loginEmail = principal.getName();
+        UserEntity user = ur.findByEmail(loginEmail)
+                .orElseThrow(() -> new RuntimeException("사용자 정보를 찾을 수 없습니다."));
+
+        // TODO: 머지 후 적용!!!
+        // List<JobApplicantGroupDTO> groupedList =
+        // js.getGroupedApplicantsForRecruiter(user);
+        // model.addAttribute("groupedList", groupedList);
+        // 2. 서비스 호출: 이 구인자가 올린 공고에 지원한 모든 지원자 목록 가져오기
+        // 머지 후 구현 가능!!
+        // List<ApplicationDTO.ApplicantResponse> applicantList =
+        // rs.getApplicantsForRecruiter(user.getUserId());
+
+        // 3. 화면(Model)에 데이터 전달
+        // model.addAttribute("applicantList", applicantList);
+
         return "recruiterView/applicantInfo";
     }
 
@@ -66,11 +94,23 @@ public class RecruiterController {
      * 공고 관리 컨트롤러
      * 
      * @param model
+     * @param principal
      * @return
      */
     @GetMapping("JobManage")
-    public String JobManage(Model model) {
-        model.addAttribute("currentMenu", "jobManage"); // 사이드바 선택(공고 관리)
+    public String JobManage(Model model, java.security.Principal principal) {
+        model.addAttribute("currentMenu", "jobManage");
+
+        // 🌟 1. 로그인한 사용자의 이메일(또는 ID)을 가져옵니다.
+        // (Principal 대신 @AuthenticationPrincipal AuthenticatedUser user 를 쓰셔도 됩니다!)
+        String userEmail = principal.getName();
+
+        // 🌟 2. 서비스에서 통합된 최신 공고 리스트를 가져옵니다.
+        List<JobManageListDTO> jobList = js.getMyJobPostings(userEmail);
+
+        // 🌟 3. 화면(HTML)으로 리스트를 넘겨줍니다.
+        model.addAttribute("jobList", jobList);
+
         return "recruiterView/jobManage";
     }
 
@@ -133,36 +173,20 @@ public class RecruiterController {
             // DB에는 웹에서 접근 가능한 가상 경로를 저장합니다.
             String userEmail = principal.getName();
             String webPath = "/upload/profiles/" + fileName;
-            rs.updateProfileImage(userEmail, webPath);
+
+            // 🌟 [추가] DB가 간절히 원하는 3가지 정보 추가 추출!
+            String originalFileName = file.getOriginalFilename(); // 원래 파일명 (예: myface.jpg)
+            String storedFileName = fileName; // UUID 붙은 파일명
+            Long fileSize = file.getSize(); // 파일 용량
+
+            // 🌟 [수정] 서비스로 5가지 정보를 꽉꽉 채워서 보냅니다!
+            rs.updateProfileImage(userEmail, webPath, originalFileName, storedFileName, fileSize);
 
             return ResponseEntity.ok().body(Map.of("success", true, "imageUrl", webPath));
         } catch (Exception e) {
             e.printStackTrace(); // 콘솔에 상세 에러 출력
             return ResponseEntity.status(500).body(Map.of("success", false, "message", e.getMessage()));
         }
-    }
-
-    /**
-     * 공고 등록 컨트롤러!
-     * 
-     * @param model
-     * @return
-     */
-    // 예시: RecruiterController.java 내부
-    @GetMapping("/JobPosting")
-    public String showJobPostForm(Model model, Principal principal) {
-        // 1. 로그인한 사장님의 이메일(또는 ID)로 유저 정보를 찾습니다.
-        String userEmail = principal.getName();
-        UserEntity user = ur.findByEmail(userEmail).orElseThrow();
-
-        // 2. 사장님이 등록해둔 회사 목록을 가져옵니다.
-        // (UserEntity 안에 List<CompanyEntity> companies 가 있다고 가정)
-        List<CompanyEntity> myCompanies = user.getCompanies();
-
-        // 3. 화면(HTML)으로 회사 목록을 넘겨줍니다! 이름은 "companies"로 합니다.
-        model.addAttribute("companies", myCompanies);
-
-        return "recruiterView/jobPosting"; // HTML 파일명
     }
 
     /**
@@ -206,22 +230,123 @@ public class RecruiterController {
         return "redirect:/Recruiter/Settings";
     }
 
-    // 🌟 [추가] 폼에서 날아온 데이터를 DB에 저장하는 POST 요청
-    @PostMapping("/JobPosting")
-    public String registerJobPost(@ModelAttribute JobPostFormDTO formDTO, Principal principal) {
+    /**
+     * 1. 필드에 JobPostingService 주입 추가
+     */
+    @Autowired // 또는 생성자 주입 방식으로
+    private JobPostingService jobPostingService;
 
-        // 1. 현재 로그인한 사장님 이메일(ID) 가져오기
-        String userEmail = principal.getName();
+    /**
+     * GET - 공고 등록 페이지
+     */
+    @GetMapping("/JobPosting")
+    public String jobPostingPage(Model model,
+            @AuthenticationPrincipal UserDetails userDetails) {
 
-        // 2. 서비스로 데이터 넘겨서 DB에 저장하기
-        js.saveJobPost(formDTO, userEmail);
+        // 1. UserDetails에서 이메일(username)을 추출해 실제 DB의 UserEntity를 가져옵니다.
+        UserEntity user = ur.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("사용자 정보를 찾을 수 없습니다."));
 
-        // 3. 저장이 끝나면 어디로 갈지? (예: 공고 목록 페이지나 메인으로 이동)
-        return "redirect:/Recruiter/Main";
+        // 2. 사장님이 등록한 회사 리스트 조회
+        List<CompanyEntity> companies = cs.getCompanyList(user);
+
+        model.addAttribute("companies", companies);
+        return "recruiterView/jobPosting";
     }
 
-    // ----------------------------------------------------------------
-    // ------------------------- 회사정보 구역 --------------------------
-    // ----------------------------------------------------------------
+    /**
+     * POST - 공고 등록 처리
+     */
+    @PostMapping("/JobPosting")
+    public String submitJobPosting(
+            @ModelAttribute JobPostingRequestDTO dto,
+            @RequestParam(value = "images", required = false) List<MultipartFile> images,
+            @AuthenticationPrincipal UserDetails userDetails) { // 🌟 누가 등록하는지 확인
 
+        // 1. 현재 로그인한 사용자의 엔티티를 가져옵니다.
+        UserEntity user = ur.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("사용자 정보를 찾을 수 없습니다."));
+
+        // 2. 서비스에 'user' 객체까지 전달합니다.
+        js.saveJobPosting(dto, images, user);
+
+        return "redirect:/Recruiter/JobManage";
+    }
+
+    /**
+     * 공고 삭제 API
+     */
+    @DeleteMapping("/api/recruiter/postings")
+    public ResponseEntity<?> deletePosting(@RequestParam("datanum") Long datanum,
+            @RequestParam("region") String region,
+            java.security.Principal principal) {
+        try {
+            // 로그인한 유저 이메일 가져오기
+            String userEmail = principal.getName();
+
+            // 삭제 서비스 호출
+            jobPostingService.deleteMyJobPosting(datanum, region, userEmail);
+
+            return ResponseEntity.ok().body("공고가 성공적으로 삭제되었습니다.");
+
+        } catch (IllegalStateException e) {
+            // 권한이 없을 때 (403 Forbidden)
+            return ResponseEntity.status(403).body(e.getMessage());
+        } catch (Exception e) {
+            // 기타 서버 에러 (500)
+            return ResponseEntity.status(500).body("삭제 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 공고 수정 페이지
+     */
+    @GetMapping("/editJobPosting")
+    public String editJobPostingPage(@RequestParam("id") Long id,
+            @RequestParam("region") String region,
+            Model model,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        JobPostingRequestDTO job = js.getJobPostingForEdit(id, region);
+        UserEntity user = ur.findByEmail(userDetails.getUsername()).get();
+        List<CompanyEntity> companies = cs.getCompanyList(user);
+
+        model.addAttribute("job", job);
+        model.addAttribute("companies", companies);
+        model.addAttribute("region", region);
+        model.addAttribute("jobId", id);
+
+        return "recruiterView/editJobPosting";
+    }
+
+    /**
+     * 공고 수정 처리
+     */
+    @PostMapping("/editJobPosting")
+    public String updateJobPosting(@RequestParam("id") Long id,
+            @RequestParam("region") String region,
+            @ModelAttribute JobPostingRequestDTO dto,
+            @RequestParam(value = "images", required = false) List<MultipartFile> images) {
+
+        js.updateJobPosting(id, region, dto, images);
+        return "redirect:/Recruiter/JobManage";
+    }
+
+    /**
+     * 공고 마감
+     * 
+     * @param datanum
+     * @param region
+     * @return
+     */
+    @PostMapping("/closeJobPosting")
+    @ResponseBody // 🌟 화면 이동 없이 결과만 알려주기 위해 필요!
+    public String closeJobPosting(@RequestParam Long datanum, @RequestParam String region) {
+        try {
+            jobPostingService.closeJobPosting(datanum, region);
+            return "success";
+        } catch (Exception e) {
+            return "fail";
+        }
+    }
 }

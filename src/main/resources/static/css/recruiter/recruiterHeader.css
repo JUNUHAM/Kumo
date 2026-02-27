@@ -9,7 +9,7 @@
   width: 100%;
   height: 70px;
   min-height: 70px;
-  z-index: 9999;
+  z-index: 1030;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -28,6 +28,9 @@
   align-items: center;
   text-decoration: none;
   flex-shrink: 0;
+  width: 165px;
+    /* 사이드바 너비와 동일하게 */
+    justify-content: center;
 }
 
 .logo img,
@@ -157,7 +160,7 @@
   border: 1px solid #eee;
   border-radius: 8px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  z-index: 2000;
+  z-index: 1030;
   overflow: hidden;
 }
 
@@ -284,7 +287,7 @@
   align-items: flex-start;
 }
 .notify-item:hover {
-  background-color: #f8f9fa;
+  background-color: #f0f1f6;
 }
 .notify-item.unread {
   background-color: #f0f7ff;
@@ -366,7 +369,7 @@
 /* 프로필 드롭다운 내부 */
 .profile-info {
   padding: 15px;
-  background: #f8f9fa;
+  background: #f0f1f6;
   border-bottom: 1px solid #eee;
   display: flex;
   flex-direction: column;

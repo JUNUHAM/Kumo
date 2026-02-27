@@ -1,39 +1,56 @@
 /* ============================================================
-   [KUMO RECRUITER] 통합 다크모드 마스터 v7.0 (사장님 전용)
+   [KUMO RECRUITER] 다크모드 마스터 CSS
    ============================================================ */
 
+/* ===================================================
+   0. 기본 배경 설정
+   =================================================== */
 :root {
-  background-color: #ffffff; /* 기본 배경 */
+  background-color: #ffffff;
 }
 
-/* html에 dark-mode 클래스가 붙는 순간 즉시 배경색 고정 */
 html.dark-mode {
   background-color: #121212 !important;
 }
 
-/* 1. 글로벌 배경 및 텍스트 밝기 (최상급 가독성) */
-body.dark-mode {
-  background-color: #121212 !important;
-  color: #ffffff !important; /* 전체 기본 글자 흰색 */
+html,
+body {
+  height: auto !important;
+  overflow-x: hidden !important;
+  overflow-y: visible !important;
 }
 
-/* [추가] 헤더 다크모드 대응 (사장님 요청사항) */
+/* ===================================================
+   1. 글로벌 배경 및 텍스트
+   =================================================== */
+body.dark-mode {
+  background-color: #121212 !important;
+  color: #ffffff !important;
+}
+
+/* ===================================================
+   2. 헤더
+   =================================================== */
 body.dark-mode .custom-header,
 body.dark-mode .non-login-header {
   background-color: #121212 !important;
   border-bottom: 1px solid #2d2d2d !important;
 }
+
 body.dark-mode .header-left-section,
 body.dark-mode .lang-dropdown {
   background-color: #121212 !important;
 }
+
 body.dark-mode .nav-menu a,
 body.dark-mode .icon-btn,
 body.dark-mode .lang-item {
   color: #ffffff !important;
 }
 
-/* 2. 모든 페이지 컨테이너 통합 배경 */
+/* ===================================================
+   3. 페이지 컨테이너
+   =================================================== */
 body.dark-mode .main-container,
 body.dark-mode .content-body,
 body.dark-mode .dashboard-wrapper,
@@ -43,32 +60,47 @@ body.dark-mode .settings-container {
   background-color: #121212 !important;
 }
 
-/* 3. 좌측 사이드바 (sidebar.css) */
+.dashboard-wrapper,
+.main-container,
+.content-body,
+.settings-container {
+  height: auto !important;
+  min-height: calc(100vh - 80px);
+  overflow: visible !important;
+}
+
+/* ===================================================
+   4. 사이드바
+   =================================================== */
 body.dark-mode .sidebar-container {
   background-color: #1a1a1a !important;
   border-right: 1px solid #2d2d2d !important;
 }
-body.dark-mode .nav-item {
-  color: #ffffff !important;
-} /* 메뉴 흰색 */
+
+body.dark-mode .nav-item,
 body.dark-mode .nav-item i {
   color: #ffffff !important;
 }
+
 body.dark-mode .nav-item.active {
   background-color: #1e293b !important;
   color: #7abaff !important;
   border-left: 4px solid #7abaff !important;
 }
+
 body.dark-mode .nav-item:hover {
   background-color: #242f3f !important;
   color: #7abaff !important;
 }
+
 body.dark-mode .logout-btn:hover {
   background-color: #331a1a !important;
   color: #ff6b6b !important;
 }
 
-/* 4. 중앙 대시보드 및 모든 판넬/카드 (main.css, jobManage.css, jobPosting.css) */
+/* ===================================================
+   5. 카드 및 패널
+   =================================================== */
 body.dark-mode .stat-card,
 body.dark-mode .panel,
 body.dark-mode .graph-container,
@@ -83,13 +115,12 @@ body.dark-mode .posting-card {
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4) !important;
 }
 
-/* [긴급수정] 오늘의 채용 현황, 스카우트 등 제목 텍스트 강제 밝기 */
 body.dark-mode .welcome-section h2,
 body.dark-mode .welcome-section p,
 body.dark-mode .panel-title,
 body.dark-mode .text-muted,
 body.dark-mode .small {
-  color: #ffffff !important; /* 어두운 회색 다 꺼져! 무조건 흰색 */
+  color: #ffffff !important;
 }
 
 body.dark-mode .panel-header,
@@ -100,64 +131,105 @@ body.dark-mode .kumo-table td {
   color: #ffffff !important;
 }
 
-/* 5. 지원자 정보 및 테이블 (applicant_info.css) */
+/* ===================================================
+   6. 테이블 (지원자 관리)
+   =================================================== */
 body.dark-mode .kumo-table th {
   color: #ffffff !important;
   border-bottom: 1px solid #333 !important;
 }
+
 body.dark-mode .job-name,
 body.dark-mode .table-title,
 body.dark-mode .name-line h1 {
   color: #ffffff !important;
 }
+
 body.dark-mode .applicant-count,
 body.dark-mode .info-item span {
-  color: #ffffff !important;
+  color: #8b95a1 !important;
 }
+
 body.dark-mode .pr-box {
   background: #252525 !important;
   color: #ffffff !important;
 }
+
 body.dark-mode .middle-border {
   border-color: #2d2d2d !important;
 }
+
 body.dark-mode .btn-view,
 body.dark-mode .btn-action-main {
   background: #7abaff !important;
   color: #fff !important;
 }
 
-/* 6. 공고 관리 특화 (jobManage.css) */
+body.dark-mode .btn-gear {
+  color: #718096;
+}
+
+body.dark-mode .btn-gear:hover {
+  color: #7abaff;
+}
+
+
+/* ===================================================
+   7. 공고 관리
+   =================================================== */
 body.dark-mode .status-ing {
   background-color: rgba(92, 184, 92, 0.2) !important;
   color: #72d572 !important;
 }
+
 body.dark-mode .status-end {
   background-color: rgba(255, 92, 92, 0.2) !important;
   color: #ff8080 !important;
 }
+
 body.dark-mode .salary-text {
   color: #7abaff !important;
 }
+
 body.dark-mode .job-closed td,
 body.dark-mode .job-closed .job-name {
   color: #718096 !important;
 }
+
 body.dark-mode .myjobs-head {
   background-color: #252525 !important;
   color: #ffffff !important;
 }
 
-/* 7. 회사 정보 및 모든 입력창 (companyInfo.css, jobPosting.css) */
+body.dark-mode .count-label {
+  color: #a0aec0 !important;
+}
+
+body.dark-mode .count-badge {
+  background-color: #2b3a4a !important;
+  color: #7abaff !important;
+}
+
+/* ===================================================
+   8. 입력창 및 폼
+   =================================================== */
 body.dark-mode .nav-pill {
   background: #252525 !important;
   color: #ffffff !important;
   border-color: #333 !important;
 }
+
 body.dark-mode .nav-pill.active {
   background: #7abaff !important;
   color: #fff !important;
 }
+
+body.dark-mode .nav-pill:not(.active) {
+  background-color: #2d2d2d !important;
+  color: #aaa !important;
+  border: 1px solid #444 !important;
+}
+
 body.dark-mode .kumo-form-control,
 body.dark-mode .kumo-input,
 body.dark-mode .kumo-input-sm {
@@ -165,38 +237,88 @@ body.dark-mode .kumo-input-sm {
   border: 1px solid #333 !important;
   color: #ffffff !important;
 }
+
+body.dark-mode .kumo-input::placeholder,
+body.dark-mode .kumo-input-sm::placeholder {
+  color: #888 !important;
+  opacity: 1 !important;
+}
+
+body.dark-mode .form-select.kumo-input-sm {
+  background-color: #252525 !important;
+  color: #ffffff !important;
+  border: 1px solid #444 !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  background-size: 16px 12px !important;
+  padding-right: 2.5rem !important;
+}
+
 body.dark-mode .info-label,
 body.dark-mode .form-label {
   color: #ffffff !important;
   font-weight: 800 !important;
 }
+
 body.dark-mode .btn-address-search,
 body.dark-mode .upload-btn {
   background: #333d4b !important;
   color: #fff !important;
 }
+
 body.dark-mode .upload-container {
-  background: #1a1a1a !important;
-  border-color: #333 !important;
+  background-color: #1a1a1a !important;
+  border: 2px dashed #444 !important;
 }
 
-/* 8. 우측 사이드바 및 캘린더 (rightSidebar.css, calendar.css) - [이 부분만 어둡게 보정] */
+body.dark-mode .upload-btn i {
+  color: #7abaff !important;
+}
+
+body.dark-mode .fw-bold.text-nowrap,
+body.dark-mode .position-absolute.translate-middle-y {
+  color: #7abaff !important;
+}
+
+/* ===================================================
+   9. 캘린더 우측 패널
+   =================================================== */
 body.dark-mode .dashboard-right-sidebar,
 body.dark-mode .calendar-side-area {
   background-color: #121212 !important;
   border-left: 1px solid #2d2d2d !important;
 }
+
 body.dark-mode .side-panel,
 body.dark-mode .schedule-full-panel,
-body.dark-mode .calendar-card,
-body.dark-mode .sidebar-card {
+body.dark-mode .calendar-card {
   background-color: #1e1e1e !important;
   border: 1px solid #2d2d2d !important;
-  border-left: 5px solid transparent !important; /* 왼쪽 바 자리를 비워둡니다 */
   color: #ffffff !important;
 }
 
-/* [보정] 하얀 캘린더 격자와 배경을 다크로 강제 전환 */
+body.dark-mode .sidebar-card {
+  background-color: #1e1e1e !important;
+  border: 1px solid #2d2d2d !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .event-item-title {
+  color: #ffffff !important;
+}
+
+body.dark-mode .panel-placeholder {
+  background: #1a1a1a !important;
+  border-color: #333 !important;
+  color: #ffffff !important;
+}
+
+/* ===================================================
+   10. 본 캘린더 (#calendar)
+   =================================================== */
 body.dark-mode #calendar,
 body.dark-mode .fc-theme-standard td,
 body.dark-mode .fc-theme-standard th,
@@ -205,265 +327,217 @@ body.dark-mode .fc-scrollgrid {
   border-color: #2d2d2d !important;
 }
 
-/* [긴급수정] 2026-02-05 일정 등 캘린더 제목 흰색 */
-body.dark-mode .panel-header,
-body.dark-mode .fc-daygrid-day-number,
-body.dark-mode .fc-col-header-cell-cushion {
-  color: #ffffff !important;
-}
 body.dark-mode #calendar .fc-event {
   background-color: #1a2635 !important;
   border-left: 4px solid #7abaff !important;
 }
-body.dark-mode #mini-calendar .fc-day-today .fc-daygrid-day-number {
-  color: #121212 !important;
+
+/* 날짜 숫자 기본 */
+html.dark-mode #calendar .fc-daygrid-day-number {
+  color: #ccc !important;
 }
-body.dark-mode .panel-placeholder {
-  background: #1a1a1a !important;
-  border-color: #333 !important;
+
+/* 오늘 날짜 */
+html.dark-mode #calendar .fc-day-today {
+  background-color: rgba(252, 196, 25, 0.2) !important;
+}
+
+html.dark-mode #calendar .fc-day-today .fc-daygrid-day-number {
+  color: #7abaff !important;
+  background-color: transparent !important;
+}
+
+/* 선택된 날짜: 연파랑 네모 배경 */
+html.dark-mode #calendar .selected-day {
+  background-color: rgba(122, 186, 255, 0.25) !important;
+}
+
+html.dark-mode #calendar .selected-day .fc-daygrid-day-number {
+  background-color: transparent !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+/* 오늘 + 선택 */
+html.dark-mode #calendar .fc-day-today.selected-day {
+  background-color: rgba(122, 186, 255, 0.25) !important;
+}
+
+html.dark-mode #calendar .fc-day-today.selected-day .fc-daygrid-day-number {
+  color: #7abaff !important;
+}
+
+/* 요일 헤더 */
+html.dark-mode .fc-col-header-cell-cushion {
+  color: #aaa !important;
+}
+
+/* 토요일/일요일 */
+html.dark-mode .fc-day-sat .fc-col-header-cell-cushion,
+html.dark-mode #calendar .fc-day-sat .fc-daygrid-day-number {
+  color: #4facfe !important;
+}
+
+html.dark-mode .fc-day-sun .fc-col-header-cell-cushion,
+html.dark-mode #calendar .fc-day-sun .fc-daygrid-day-number {
+  color: #ff6b6b !important;
+}
+
+/* "+more" 링크 */
+html.dark-mode .fc-daygrid-more-link {
+  color: #a2a4f0 !important;
+}
+
+/* ===================================================
+   11. 미니 캘린더 (#mini-calendar)
+   =================================================== */
+body.dark-mode #mini-calendar .fc-daygrid-day-number,
+body.dark-mode #mini-calendar .fc-daygrid-day-top a {
+  color: #ffffff !important;
+  text-decoration: none !important;
+}
+
+body.dark-mode #mini-calendar .fc-col-header-cell-cushion {
   color: #ffffff !important;
 }
 
-/* 9. 계정 설정 및 프로필 (settings.css) */
+body.dark-mode #mini-calendar .fc-day-other .fc-daygrid-day-number {
+  color: #555555 !important;
+}
+
+/* 오늘 날짜: 노란 원 */
+html.dark-mode #mini-calendar .fc-day-today {
+  background-color: transparent !important;
+}
+
+html.dark-mode #mini-calendar .fc-day-today .fc-daygrid-day-number {
+  background-color: #fcc419 !important;
+  color: #121212 !important;
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto !important;
+  box-shadow: 0 2px 8px rgba(252, 196, 25, 0.4) !important;
+}
+
+/* 선택된 날짜: 파란 원 */
+html.dark-mode #mini-calendar .selected-day {
+  background-color: transparent !important;
+}
+
+html.dark-mode #mini-calendar .selected-day .fc-daygrid-day-number {
+  background-color: #7abaff !important;
+  color: #121212 !important;
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto !important;
+  box-shadow: 0 4px 10px rgba(122, 186, 255, 0.4) !important;
+}
+
+/* 오늘 + 선택: 파란 원 우선 */
+html.dark-mode #mini-calendar .fc-day-today.selected-day .fc-daygrid-day-number {
+  background-color: #7abaff !important;
+  color: #121212 !important;
+  box-shadow: 0 4px 10px rgba(122, 186, 255, 0.4) !important;
+}
+
+/* ===================================================
+   12. 스케줄 모달
+   =================================================== */
+body.dark-mode .schedule-modal-content {
+  background-color: #222222 !important;
+  border-radius: 25px !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .modal-title,
+body.dark-mode .modal-label {
+  color: #ffffff !important;
+}
+
+body.dark-mode .kumo-modal-input,
+body.dark-mode .kumo-modal-textarea {
+  background-color: #2d2d2d !important;
+  border: 1px solid #3d3d3d !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .btn-modal-cancel {
+  background-color: #2d2d2d !important;
+  border-color: #333d4b !important;
+  color: #aaaaaa !important;
+}
+
+body.dark-mode .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%) !important;
+}
+
+body.dark-mode .color-picker-wrapper {
+  flex-wrap: wrap;
+  padding-top: 5px;
+}
+
+/* 시간 선택 (다크) */
+body.dark-mode .time-range-wrapper {
+  background: #2d2d2d !important;
+  border-color: #3d3d3d !important;
+}
+
+body.dark-mode .time-range-wrapper input[type="date"],
+body.dark-mode .custom-time-input select,
+body.dark-mode .custom-time-input span,
+body.dark-mode .time-separator {
+  color: #ffffff !important;
+}
+
+body.dark-mode .btn-modal-delete {
+  background: #3a1a1a !important;
+  color: #ff6b6b !important;
+  border-color: #5a2a2a !important;
+}
+
+body.dark-mode .btn-modal-delete:hover {
+  background: #ff4d4f !important;
+  color: #ffffff !important;
+}
+
+/* ===================================================
+   13. 계정 설정 (settings)
+   =================================================== */
 body.dark-mode .settings-title {
   color: #ffffff !important;
 }
+
 body.dark-mode .default-profile-icon {
   background-color: #2d2d2d !important;
   color: #ffffff !important;
 }
+
 body.dark-mode .profile-img-lg {
   border: 2px solid #333 !important;
 }
+
 body.dark-mode .info-value {
   color: #ffffff !important;
 }
+
 body.dark-mode .btn-profile-upload {
   background: #333d4b !important;
   color: #ffffff !important;
   border: none !important;
 }
 
-/* ============================================================
-   [긴급 보정] ApplicantDetail (지원자 상세) 가독성 업그레이드
-   ============================================================ */
-
-/* 1. 목록으로 돌아가기 버튼 (너무 밝은 배경 수정) */
-body.dark-mode .btn-back-list {
-  background-color: #2d3748 !important; /* 어두운 네이비 그레이 */
-  color: #7abaff !important; /* 글자는 포인트 컬러인 스카이블루 */
-  border: 1px solid #3e4e63 !important;
-  padding: 8px 15px !important;
-  border-radius: 8px !important;
-}
-body.dark-mode .btn-back-list:hover {
-  background-color: #3e4e63 !important;
-  color: #ffffff !important;
-}
-
-/* 2. 카드 내부 제목 및 데이터 글자색 (어두운 글자 강제 퇴출) */
-body.dark-mode .name-line h1,
-body.dark-mode .grid-col h3,
-body.dark-mode .info-item strong {
-  color: #ffffff !important; /* 메인 텍스트는 무조건 흰색 */
-}
-
-body.dark-mode .name-line span,
-body.dark-mode .contact-line p,
-body.dark-mode .info-item span {
-  color: #cbd5e0 !important; /* 라벨이나 보조 텍스트는 연한 회색 */
-}
-
-/* 3. 아이콘 색상 보정 */
-body.dark-mode .grid-col h3 i,
-body.dark-mode .contact-line i {
-  color: #7abaff !important; /* 아이콘에 포인트 컬러 적용 */
-}
-
-/* 4. 자기소개 박스 (PR Box) 보정 */
-body.dark-mode .pr-box {
-  background-color: #252525 !important;
-  border: 1px solid #333d4b !important;
-  color: #e2e8f0 !important;
-  line-height: 1.6 !important;
-}
-
-/* 5. 아바타 박스 배경 */
-body.dark-mode .avatar-placeholder {
-  background-color: #2d2d2d !important;
-  border: 1px solid #444 !important;
-}
-body.dark-mode .avatar-placeholder .default-icon {
-  color: #555 !important;
-}
-
-/* 6. 하단 액션 버튼 보정 (서브 버튼들) */
-body.dark-mode .btn-action-sub {
-  background-color: #334155 !important;
-  color: #ffffff !important;
-  border: none !important;
-}
-body.dark-mode .btn-action-gray {
-  background-color: #1e293b !important;
-  color: #94a3b8 !important;
-  border: 1px solid #334155 !important;
-}
-
-/* ============================================================
-   [긴급 보정] JobPosting (공고 등록) 입력창 가독성 강화
-   ============================================================ */
-
-/* 1. 공고 등록 카드 제목 */
-body.dark-mode .posting-title {
-  color: #ffffff !important;
-  border-bottom: 2px solid #2d3748 !important;
-  padding-bottom: 15px !important;
-}
-
-/* 2. 입력창(Input) 및 텍스트 영역(Textarea) 내부 글자색 */
-body.dark-mode .kumo-input,
-body.dark-mode .kumo-input-sm,
-body.dark-mode .form-control.kumo-input {
-  background-color: #252525 !important;
-  color: #ffffff !important; /* 입력하는 글자 흰색 */
-  border: 1px solid #444 !important;
-}
-
-/* 3. Placeholder (입력 전 흐릿한 안내 문구) 가독성 업그레이드 */
-body.dark-mode .kumo-input::placeholder,
-body.dark-mode .kumo-input-sm::placeholder {
-  color: #888 !important; /* 너무 어둡지 않은 회색으로 보정 */
-  opacity: 1 !important;
-}
-
-/* 4. 선택 박스 (Select) 보정 - [무늬 겹침 해결 버전] */
-body.dark-mode .form-select.kumo-input-sm {
-  background-color: #252525 !important;
-  color: #ffffff !important;
-  border: 1px solid #444 !important;
-
-  /* [추가] 브라우저 기본 화살표를 완전히 제거합니다 */
-  -webkit-appearance: none !important;
-  -moz-appearance: none !important;
-  appearance: none !important;
-
-  /* [수정] 화살표 이미지를 넣되, 반복되지 않게 설정합니다 */
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
-  background-repeat: no-repeat !important; /* 무늬가 반복되는 걸 막아줍니다 */
-  background-position: right 0.75rem center !important; /* 화살표를 오른쪽 정렬 */
-  background-size: 16px 12px !important; /* 화살표 크기 적절히 조절 */
-  padding-right: 2.5rem !important; /* 글자가 화살표를 침범하지 않게 여백 추가 */
-}
-
-/* 5. 마감일 '까지' 및 급여 '円' 표시 텍스트 */
-body.dark-mode .fw-bold.text-nowrap,
-body.dark-mode .position-absolute.translate-middle-y {
-  color: #7abaff !important; /* 포인트 컬러로 시인성 확보 */
-}
-
-/* 6. 회사 선택 탭 (Nav-pills) 미선택 상태 보정 */
-body.dark-mode .nav-pill:not(.active) {
-  background-color: #2d2d2d !important;
-  color: #aaa !important;
-  border: 1px solid #444 !important;
-}
-
-/* 7. 하단 등록 버튼 (메인 블루) */
-body.dark-mode .kumo-btn-submit {
-  background-color: #7abaff !important;
-  border: none !important;
-  color: #ffffff !important;
-  font-weight: bold !important;
-  padding: 12px 40px !important;
-}
-body.dark-mode .kumo-btn-submit:hover {
-  background-color: #5da5ff !important;
-  transform: translateY(-2px) !important;
-}
-
-/* 8. 사진 업로드 버튼 영역 */
-body.dark-mode .upload-container {
-  background-color: #1a1a1a !important;
-  border: 2px dashed #444 !important;
-}
-body.dark-mode .upload-btn i {
-  color: #7abaff !important;
-}
-
-/* ============================================================
-   [다크모드 교정] 선택된 날짜 원형 디자인 및 글자색 가독성 확보
-   ============================================================ */
-
-/* 1. 미니 캘린더 내의 모든 날짜 숫자 (링크 포함) */
-body.dark-mode #mini-calendar .fc-daygrid-day-number,
-body.dark-mode #mini-calendar .fc-daygrid-day-top a,
-body.dark-mode #mini-calendar .fc-daygrid-day-frame {
-  color: #ffffff !important;
-  text-decoration: none !important;
-  opacity: 1 !important;
-}
-
-/* 2. 요일 헤더 (일, 월, 화...) */
-body.dark-mode #mini-calendar .fc-col-header-cell-cushion {
-  color: #ffffff !important;
-}
-
-/* 3. 이전/다음 달의 희미한 날짜 (가독성을 위해 약간 흐리게) */
-body.dark-mode #mini-calendar .fc-day-other .fc-daygrid-day-number {
-  color: #555555 !important;
-}
-
-/* ============================================================
-   [최종 보정] 본 캘린더(네모) vs 미니 캘린더(원형) 다크모드 구분
-   ============================================================ */
-
-/* [본 캘린더 #calendar] 오늘 날짜를 클릭했을 때도 파란 네모 배경이 나오도록 */
-html.dark-mode #calendar .selected-day,
-html.dark-mode #calendar .fc-day-today.selected-day {
-  background-color: rgba(122, 186, 255, 0.25) !important; /* 연한 파란색 네모 */
-}
-
-/* [미니 캘린더 #mini-calendar] 선택 시 칸 배경 제거 (원형 유지를 위해) */
-html.dark-mode #mini-calendar .selected-day {
-  background-color: transparent !important;
-}
-
-/* [공통] 숫자 부분 스타일링 */
-html.dark-mode .fc-daygrid-day-number {
-  transition: all 0.2s ease;
-}
-
-/* [미니 캘린더] 숫자만 동그랗게 만들기 */
-html.dark-mode #mini-calendar .selected-day .fc-daygrid-day-number {
-  background-color: #7abaff !important; /* 시그니처 블루 원 */
-  color: #121212 !important;
-  width: 32px !important;
-  height: 32px !important;
-  border-radius: 50% !important;
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  margin: 5px auto !important;
-  box-shadow: 0 4px 10px rgba(122, 186, 255, 0.4) !important;
-}
-
-/* [본 캘린더] 오늘 날짜가 선택되었을 때 (숫자는 노란색 유지, 배경은 파란 네모) */
-html.dark-mode #calendar .fc-day-today.selected-day .fc-daygrid-day-number {
-  background-color: transparent !important; /* 본 캘린더는 숫자 원형 배경 안 씀 */
-  color: #fcc419 !important; /* 오늘 날짜 상징인 노란색 유지 */
-}
-
-/* [미니 캘린더] 오늘 날짜 선택 시 (노란색 원으로 강조) */
-html.dark-mode
-  #mini-calendar
-  .fc-day-today.selected-day
-  .fc-daygrid-day-number {
-  background-color: #fcc419 !important;
-  color: #121212 !important;
-  border-radius: 50% !important;
-}
-
-/* [다크모드] profileEdit 페이지 보정 */
+/* ===================================================
+   14. 회원정보 수정 (profileEdit)
+   =================================================== */
 html.dark-mode .profile-edit-full-bg {
   background-color: #121212 !important;
 }
@@ -499,255 +573,122 @@ html.dark-mode .btn-sub-action {
   color: #aaaaaa !important;
 }
 
-/* ============================================================
-   [최종 마스터] 본 캘린더(네모) vs 미니 캘린더(원형) 완벽 분리
-   ============================================================ */
-
-/* --- 1. 본 캘린더 (#calendar) : 무조건 네모칸 배경 --- */
-/* 오늘 날짜이든 일반 날짜이든 선택되면 연파랑 네모 배경 */
-html.dark-mode #calendar .selected-day,
-html.dark-mode #calendar .fc-day-today.selected-day {
-  background-color: rgba(122, 186, 255, 0.25) !important;
+/* ===================================================
+   15. 지원자 상세 (applicantDetail)
+   =================================================== */
+body.dark-mode .btn-back-list {
+  background-color: #2d3748 !important;
+  color: #7abaff !important;
+  border: 1px solid #3e4e63 !important;
+  padding: 8px 15px !important;
+  border-radius: 8px !important;
 }
 
-/* 본 캘린더 오늘 날짜 선택 시 숫자 색상 (노란색 유지) */
-html.dark-mode #calendar .fc-day-today.selected-day .fc-daygrid-day-number {
-  color: #fcc419 !important;
+body.dark-mode .btn-back-list:hover {
+  background-color: #3e4e63 !important;
+  color: #ffffff !important;
 }
 
-/* --- 2. 미니 캘린더 (#mini-calendar) : 무조건 숫자 원형 배경 --- */
-/* 미니 캘린더는 칸 배경을 투명하게 (네모 방지) */
-html.dark-mode #mini-calendar .selected-day {
-  background-color: transparent !important;
+body.dark-mode .name-line h1,
+body.dark-mode .grid-col h3,
+body.dark-mode .info-item strong {
+  color: #ffffff !important;
 }
 
-/* 미니 캘린더 숫자만 동그랗게 색상 입히기 */
-html.dark-mode #mini-calendar .selected-day .fc-daygrid-day-number {
+body.dark-mode .name-line span,
+body.dark-mode .contact-line p {
+  color: #cbd5e0 !important;
+}
+
+body.dark-mode .grid-col h3 i,
+body.dark-mode .contact-line i {
+  color: #7abaff !important;
+}
+
+body.dark-mode .avatar-placeholder {
+  background-color: #2d2d2d !important;
+  border: 1px solid #444 !important;
+}
+
+body.dark-mode .avatar-placeholder .default-icon {
+  color: #555 !important;
+}
+
+body.dark-mode .btn-action-sub {
+  background-color: #334155 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+body.dark-mode .btn-action-gray {
+  background-color: #1e293b !important;
+  color: #94a3b8 !important;
+  border: 1px solid #334155 !important;
+}
+
+/* ===================================================
+   16. 공고 등록 (jobPosting)
+   =================================================== */
+body.dark-mode .posting-title {
+  color: #ffffff !important;
+  border-bottom: 2px solid #2d3748 !important;
+  padding-bottom: 15px !important;
+}
+
+body.dark-mode .kumo-btn-submit {
   background-color: #7abaff !important;
-  color: #121212 !important;
-  width: 32px !important;
-  height: 32px !important;
-  border-radius: 50% !important;
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto !important;
-  box-shadow: 0 4px 10px rgba(122, 186, 255, 0.4) !important;
-}
-
-/* 미니 캘린더 오늘 날짜 선택 시 (노란색 원형) */
-html.dark-mode
-  #mini-calendar
-  .fc-day-today.selected-day
-  .fc-daygrid-day-number {
-  background-color: #fcc419 !important;
-  color: #121212 !important;
-}
-
-/* --- 3. 공통 보정 (네모 박스 잔상 제거) --- */
-html.dark-mode .fc-daygrid-day-top {
-  background: transparent !important;
   border: none !important;
+  color: #ffffff !important;
+  font-weight: bold !important;
+  padding: 12px 40px !important;
 }
 
-/* ============================================================
-   [진짜 최종 마스터] 메인(네모) vs 미니(원형) 선택 효과 완벽 분리
-   ============================================================ */
-
-/* 1. 메인 캘린더 (#calendar) : 오늘 날짜 포함 무조건 '네모' 배경 */
-html.dark-mode #calendar .fc-daygrid-day.selected-day .fc-daygrid-day-frame {
-  background-color: rgba(
-    122,
-    186,
-    255,
-    0.3
-  ) !important; /* 시원한 연파랑 네모 */
+body.dark-mode .kumo-btn-submit:hover {
+  background-color: #5da5ff !important;
+  transform: translateY(-2px) !important;
 }
 
-/* 메인 캘린더 선택 시 숫자 원형 배경 절대 안 생기게 차단 */
-html.dark-mode #calendar .selected-day .fc-daygrid-day-number {
-  background-color: transparent !important;
-  color: #ffffff !important; /* 선택된 숫자 강조 */
-  box-shadow: none !important;
-  width: auto !important;
-  height: auto !important;
-  border-radius: 0 !important;
+/* ===================================================
+   17. SweetAlert2
+   =================================================== */
+body.dark-mode .swal2-popup {
+  background-color: #2b2b2b !important;
+  color: #ffffff !important;
+  border: 1px solid #444 !important;
 }
 
-/* 메인 오늘 날짜가 선택됐을 때 숫자 색상 유지 (노란색) */
-html.dark-mode #calendar .fc-day-today.selected-day .fc-daygrid-day-number {
-  color: #fcc419 !important;
-}
-
-/* ------------------------------------------------------------ */
-
-/* 2. 미니 캘린더 (#mini-calendar) : 무조건 숫자 '원형' 배경 */
-/* 미니는 칸(네모) 배경을 아예 투명하게 박멸 */
-html.dark-mode #mini-calendar .selected-day .fc-daygrid-day-frame {
-  background-color: transparent !important;
-}
-
-/* 미니 캘린더 숫자만 동그랗게 색칠 */
-html.dark-mode #mini-calendar .selected-day .fc-daygrid-day-number {
-  background-color: #7abaff !important; /* 블루 원 */
-  color: #121212 !important;
-  width: 32px !important;
-  height: 32px !important;
-  border-radius: 50% !important;
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  margin: 5px auto !important;
-  box-shadow: 0 4px 10px rgba(122, 186, 255, 0.4) !important;
-}
-
-/* 미니 오늘 날짜 선택 시 (노란색 원형으로 강조) */
-html.dark-mode
-  #mini-calendar
-  .fc-day-today.selected-day
-  .fc-daygrid-day-number {
-  background-color: #fcc419 !important;
-  color: #121212 !important;
-}
-
-/* ------------------------------------------------------------ */
-
-/* 3. 공통 보정 : 숫자 주변 지저분한 테두리/잔상 제거 */
-html.dark-mode .fc-daygrid-day-top,
-html.dark-mode .fc-daygrid-day-number {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  outline: none !important;
-}
-
-/* [최종] 오늘 날짜 칸 전체 배경 노란색으로 강제 고정 */
-
-/* 1. 본 캘린더 (#calendar) : 은은한 노란 사각형 배경 */
-html.dark-mode #calendar .fc-day-today {
-  background-color: rgba(252, 196, 25, 0.2) !important; /* 칸 전체 배경 */
-}
-
-/* 2. 미니 캘린더 (#mini-calendar) : 꽉 찬 노란 사각형 배경 */
-html.dark-mode #mini-calendar .fc-day-today {
-  background-color: transparent !important; /* 칸 전체 배경 */
-}
-
-/* 3. 오늘 날짜 숫자 가독성 (배경이 노란색이니 글자는 검게) */
-html.dark-mode #calendar .fc-day-today .fc-daygrid-day-number,
-html.dark-mode #mini-calendar .fc-day-today .fc-daygrid-day-number {
-  color: #7abaff !important; /* 글자색 검정 */
-  background-color: transparent !important; /* 숫자 주변 배경 제거 */
-  border-radius: 0 !important; /* 사각형 유지 */
-}
-
-/* [다크모드] 토요일/일요일 색상 강제 적용 */
-
-/* 토요일 (파란색) */
-html.dark-mode .fc-day-sat .fc-col-header-cell-cushion,
-html.dark-mode .fc-day-sat .fc-daygrid-day-number {
-  color: #4facfe !important;
-}
-
-/* 일요일 (빨간색) */
-html.dark-mode .fc-day-sun .fc-col-header-cell-cushion,
-html.dark-mode .fc-day-sun .fc-daygrid-day-number {
-  color: #ff6b6b !important;
-}
-
-/* ============================================================
-   [스케줄 모달] 다크모드 전용 보정 (어둡게 잘 깔리게)
-   ============================================================ */
-body.dark-mode .schedule-modal-content {
-  background-color: #1e1e1e !important; /* 다크 판넬 색상 */
+body.dark-mode .swal2-title {
   color: #ffffff !important;
 }
 
-body.dark-mode .modal-title,
-body.dark-mode .modal-label {
+body.dark-mode .swal2-html-container {
+  color: #cccccc !important;
+}
+
+body.dark-mode .swal2-cancel {
+  background-color: #555555 !important;
   color: #ffffff !important;
 }
 
-/* 다크모드 입력창 (더 어둡게) */
-body.dark-mode .kumo-modal-input,
-body.dark-mode .kumo-modal-textarea {
-  background-color: #252525 !important;
-  border: 1px solid #333d4b !important;
-  color: #ffffff !important;
+
+/** 회사 버튼 */
+html.dark-mode .nav-pill:hover {
+  border-color: #b2d7ff;
 }
 
-/* 다크모드 취소 버튼 */
-body.dark-mode .btn-modal-cancel {
-  background-color: #2d2d2d !important;
-  border-color: #333d4b !important;
-  color: #aaaaaa !important;
+.kumo-table th {
+  cursor: pointer;
+  user-select: none;
+  /* 드래그 방지 */
 }
 
-/* 다크모드 닫기 버튼(X) 흰색으로 */
-body.dark-mode .btn-close {
-  filter: invert(1) grayscale(100%) brightness(200%);
+.kumo-table th:hover {
+  background-color: rgba(122, 186, 255, 0.05);
+  /* 살짝 강조 */
 }
 
-/* ============================================================
-   [다크모드 모달] 날짜 레이아웃 및 가독성 최종 보정
-   ============================================================ */
-body.dark-mode .schedule-modal-content {
-  background-color: #222222 !important; /* 사진처럼 진한 다크그레이 */
-  border-radius: 25px !important;
-  color: #ffffff !important;
-}
-
-/* 날짜 줄바꿈 적용 */
-body.dark-mode .schedule-modal-content .col-9.d-flex {
-  flex-wrap: wrap !important;
-}
-
-/* 다크모드 입력창 (사진 image_1cbf0e 감성 재현) */
-body.dark-mode .kumo-modal-input,
-body.dark-mode .kumo-modal-textarea {
-  background-color: #2d2d2d !important;
-  border: 1px solid #3d3d3d !important;
-  color: #ffffff !important;
-}
-
-/* 색상 선택 도트 위치 보정 */
-body.dark-mode .color-picker-wrapper {
-  flex-wrap: wrap;
-  padding-top: 5px;
-}
-
-/* 닫기 버튼(X) 다크모드 전용 색상 */
-body.dark-mode .btn-close {
-  filter: invert(1) grayscale(100%) brightness(200%) !important;
-}
-
-/* [미니 캘린더] 오늘 날짜 노란 배경 사각형 박멸 & 노란 원형 고정 */
-
-/* 1. 칸 전체 배경은 투명하게 (사각형 제거) */
-html.dark-mode #mini-calendar .fc-day-today {
-  background-color: transparent !important;
-}
-
-/* 2. 숫자 뒤에 노란 원형 고정 (선택 시에도 유지되도록 우선순위 강화) */
-html.dark-mode #mini-calendar .fc-day-today .fc-daygrid-day-number {
-  background-color: #fcc419 !important; /* 꽉 찬 노란 원 */
-  color: #121212 !important; /* 배경이 노랑이니 글자는 검정 */
-  width: 30px !important;
-  height: 30px !important;
-  border-radius: 50% !important; /* 완벽한 원형 */
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  margin: 5px auto !important;
-  box-shadow: 0 2px 8px rgba(252, 196, 25, 0.4) !important; /* 은은한 광채 */
-  z-index: 10 !important; /* 다른 요소보다 위에 띄움 */
-}
-
-/* 3. 오늘 날짜가 선택(Selected)되더라도 파란색 대신 노란색 원 유지 */
-html.dark-mode
-  #mini-calendar
-  .fc-day-today.selected-day
-  .fc-daygrid-day-number {
-  background-color: #fcc419 !important;
-  color: #121212 !important;
+.sort-icon {
+  font-size: 0.8rem;
+  margin-left: 5px;
+  color: #b0b8c1;
 }

@@ -45,78 +45,96 @@
       <div class="main-container">
         <main class="content-body">
           <div class="job-manage-card">
-            <div class="card-header-flex">
+          <div class="card-header-flex">
+            <div class="header-left">
               <h2 class="table-title" th:text="#{job.manage.title}">공고 관리</h2>
+          
+              <div class="total-count-wrapper">
+                <span class="count-label">전체 공고 수</span>
+                <span class="count-badge" th:text="${#lists.size(jobList)}">0</span>
+              </div>
             </div>
+          </div>
 
             <table class="kumo-table">
               <thead>
                 <tr>
-                  <th th:utext="#{job.manage.table.title}">
-                    공고 제목 <i class="bi bi-arrow-down-up sort-icon"></i>
-                  </th>
-                  <th th:utext="#{job.manage.table.task}">업무 <i class="bi bi-arrow-down-up sort-icon"></i></th>
+                  <th th:utext="#{job.manage.table.title}">공고 제목 <i class="bi bi-arrow-down-up sort-icon"></i></th>
+                  <th>지역</th>
                   <th th:utext="#{job.manage.table.wage}">급료 <i class="bi bi-arrow-down-up sort-icon"></i></th>
-                  <th th:text="#{job.manage.table.contact}">연락처</th>
-                  <th th:utext="#{job.manage.table.reg_date}">
-                    등록 날짜 <i class="bi bi-arrow-down-up sort-icon"></i>
-                  </th>
-                  <th th:text="#{job.manage.table.status}">마감여부</th>
-                  <th></th>
+                  <th th:utext="#{job.manage.table.reg_date}">등록 날짜 <i class="bi bi-arrow-down-up sort-icon"></i></th>
+                  <th th:text="#{job.manage.table.status}">상태</th>
+                  <th>관리</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
+                <tr th:each="job : ${jobList}" th:classappend="${job.status == 'CLOSED'} ? 'job-closed-row' : ''">
                   <td>
                     <div class="job-title-cell">
-                      <span class="job-name text-truncate-custom"
-                        >칸테키 다이닝 홀서빙 구합니다</span
-                      >
+                      <span class="job-name text-truncate-custom" th:text="${job.title}">공고 제목</span>
                     </div>
                   </td>
-                  <td>홀</td>
-                  <td><span class="salary-text">일급 9,400엔</span></td>
+                  <td><span class="badge bg-light text-dark border" th:text="${job.regionType}">지역</span></td>
+                  <td><span class="salary-text" th:text="${job.wage}">급여</span></td>
+                  <td><span class="date-text" th:text="${#temporals.format(job.createdAt, 'yyyy-MM-dd')}">등록일</span></td>
                   <td>
-                    <span class="contact-text text-truncate-custom"
-                      >tanakada@sato-inc.com</span
-                    >
+                    <span class="status-badge status-ing" th:if="${job.status == 'RECRUITING'}"
+                      th:text="#{job.manage.status.ing}">모집중</span>
+                    <span class="status-badge status-end" th:if="${job.status == 'CLOSED'}"
+                      th:text="#{job.manage.status.end}">마감됨</span>
                   </td>
-                  <td><span class="date-text">1년 전</span></td>
-                  <td><span class="status-badge status-ing" th:text="#{job.manage.status.ing}">모집중</span></td>
                   <td>
-                    <div class="action-buttons">
-                      <button class="btn-manage" th:text="#{job.manage.btn.manage}">관리</button>
-                      <button class="btn-close-job" th:text="#{job.manage.btn.close}">마감</button>
-                    </div>
+                    <button th:if="${job.status == 'RECRUITING'}" type="button" class="btn-gear"
+                      th:onclick="openJobModal([[${job.id}]], [[${job.datanum}]], [[${job.regionType}]], [[${job.title}]], [[${job.status}]])">
+                      <i class="bi bi-gear-fill"></i>
+                    </button>
+              
+                    <button th:if="${job.status == 'CLOSED'}" type="button" class="btn-close-delete"
+                      th:onclick="deletePosting([[${job.datanum}]], [[${job.regionType == '도쿄' ? 'TOKYO' : 'OSAKA'}]])">
+                      <i class="bi bi-x-lg"></i>
+                    </button>
                   </td>
                 </tr>
-                <tr class="job-closed">
-                  <td>
-                    <div class="job-title-cell">
-                      <span class="job-name text-truncate-custom"
-                        >시부야 라멘집 주방 보조 급구</span
-                      >
-                  </td>
-                  <td>주방</td>
-                  <td>
-                    <span class="salary-text text-muted">시급 1,200엔</span>
-                  </td>
-                  <td>
-                    <span class="contact-text text-truncate-custom"
-                      >shibuya_ramen@info.jp</span
-                    >
-                  </td>
-                  <td><span class="date-text">2개월 전</span></td>
-                  <td><span class="status-badge status-end" th:text="#{job.manage.status.end}">마감됨</span></td>
-                  <td></td>
+              
+                <tr th:if="${#lists.isEmpty(jobList)}">
+                  <td colspan="6" class="text-center py-5 text-muted">등록된 공고가 없습니다.</td>
                 </tr>
               </tbody>
             </table>
-          </div>
-          <footer
-              th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"
-            ></footer>
-        </main>
+            </div>
+            
+            <div class="modal fade" id="jobManageModal" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content job-modal-content">
+                  <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">공고 관리</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body text-center pt-4 pb-4">
+                    <div class="mb-5 mt-2">
+                      <span id="modalRegionBadge" class="badge bg-primary mb-3 px-3 py-2"
+                        style="font-size: 0.8rem; border-radius: 8px;">지역</span>
+                      <h4 id="modalJobTitle" class="text-truncate px-3 fw-bold job-modal-subtitle">공고 제목이 여기에 표시됩니다.</h4>
+                    </div>
+            
+                    <div class="d-flex justify-content-center gap-2">
+                      <button type="button" class="btn-job-view" id="btnViewJob">
+                        <i class="bi bi-eye me-1"></i> 보기
+                      </button>
+                      <button type="button" class="btn-job-edit" id="btnEditJob">
+                        <i class="bi bi-pencil-square me-1"></i> 수정
+                      </button>
+                      <button type="button" class="btn-job-delete" id="btnDeleteJob">
+                        <i class="bi bi-trash3 me-1"></i> 삭제
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <footer th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"></footer>
+            </main>
       </div>
       <div
         th:replace="~{recruiterView/fragments/rightSidebar :: rightSidebarFragment}"
@@ -128,6 +146,130 @@
     <script th:src="@{/js/recruiter/rightSidebar.js}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.10/index.global.min.js"></script>
     <script th:src="@{/js/recruiter/global-calendar.js}"></script>
+    <script>
+      // 모달 열기 함수
+        function openJobModal(id, datanum, regionType, title) {
+          document.getElementById('modalRegionBadge').innerText = regionType;
+          document.getElementById('modalJobTitle').innerText = title;
 
+          // 🌟 1. 한글 지역명을 URL용 영어(TOKYO/OSAKA)로 변환
+          let sourceEn = '';
+          if (regionType === '도쿄') {
+            sourceEn = 'TOKYO';
+          } else if (regionType === '오사카') {
+            sourceEn = 'OSAKA';
+          }
+
+          // 🌟 2. '보기' 버튼 클릭 시 사장님이 원하시는 주소로 이동!
+          document.getElementById('btnViewJob').onclick = () => {
+            location.href = `/map/jobs/detail?id=${id}&source=${sourceEn}&lang=kr`;
+          };
+
+          // (수정과 삭제는 임시 주소 유지, 추후 API 완성 시 변경)
+          document.getElementById('btnEditJob').onclick = () => location.href = `/Recruiter/editJobPosting?id=${id}&region=${sourceEn}`;
+          document.getElementById('btnDeleteJob').onclick = () => deletePosting(datanum, sourceEn);
+
+          // 모달 띄우기
+          const modal = new bootstrap.Modal(document.getElementById('jobManageModal'));
+          modal.show();
+        }
+
+        // 🌟 완성된 삭제 처리 함수
+          function deletePosting(datanum, sourceEn) {
+            Swal.fire({
+              title: '정말 삭제하시겠습니까?',
+              text: "삭제된 공고는 다시 복구할 수 없습니다!",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#ff4d4f', // 붉은색 경고 느낌
+              confirmButtonText: '삭제하기',
+              cancelButtonText: '취소'
+            }).then((result) => {
+              if (result.isConfirmed) {
+
+                // 🌟 백엔드 API로 DELETE 요청 보내기!
+                fetch(`/Recruiter/api/recruiter/postings?datanum=${datanum}&region=${sourceEn}`, {
+                  method: 'DELETE',
+                })
+                  .then(response => {
+                    if (response.ok) {
+                      Swal.fire({
+                        title: '삭제 완료!',
+                        text: '공고가 성공적으로 삭제되었습니다.',
+                        icon: 'success',
+                        confirmButtonColor: '#7abaff'
+                      }).then(() => {
+                        // 🌟 모달 닫고 페이지 새로고침하여 갱신된 리스트 보여주기
+                        location.reload();
+                      });
+                    } else {
+                      response.text().then(msg => Swal.fire('오류 발생', msg, 'error'));
+                    }
+                  })
+                  .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('통신 오류', '서버와 연결할 수 없습니다.', 'error');
+                  });
+
+              }
+            });
+          }
+          document.addEventListener('DOMContentLoaded', () => {
+              const table = document.querySelector('.kumo-table');
+              const headers = table.querySelectorAll('th');
+              const tbody = table.querySelector('tbody');
+
+              headers.forEach((header, index) => {
+                // 지역(1), 상태(4), 관리(5) 칸은 정렬에서 제외
+                if (index === 1 || index === 4 || index === 5) return;
+
+                header.addEventListener('click', () => {
+                  const rows = Array.from(tbody.querySelectorAll('tr:not(.text-center)'));
+                  const isAscending = header.classList.contains('sort-asc');
+
+                  // 모든 헤더 아이콘 초기화
+                  headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+
+                  rows.sort((rowA, rowB) => {
+                    // 🌟 0순위: 상태(Status) 정렬 (RECRUITING 우선)
+                    const statusA = rowA.querySelector('.status-badge').classList.contains('status-ing') ? 0 : 1;
+                    const statusB = rowB.querySelector('.status-badge').classList.contains('status-ing') ? 0 : 1;
+
+                    if (statusA !== statusB) {
+                      return statusA - statusB; // 무조건 '모집중'이 위로!
+                    }
+
+                    // 🌟 1순위: 사용자가 선택한 컬럼 정렬 (같은 상태 내에서만 작동)
+                    let cellA = rowA.children[index].innerText.trim();
+                    let cellB = rowB.children[index].innerText.trim();
+
+                    // [숫자 처리] 급여 (연봉 2000엔 -> 2000)
+                    if (index === 2) {
+                      cellA = parseInt(cellA.replace(/[^0-9]/g, '')) || 0;
+                      cellB = parseInt(cellB.replace(/[^0-9]/g, '')) || 0;
+                    }
+                    // [날짜 처리] 등록일 (2026-02-26)
+                    else if (index === 3) {
+                      cellA = new Date(cellA);
+                      cellB = new Date(cellB);
+                    }
+
+                    // 오름차순/내림차순 토글
+                    if (cellA < cellB) return isAscending ? 1 : -1;
+                    if (cellA > cellB) return isAscending ? -1 : 1;
+                    return 0;
+                  });
+
+                  // 결과 반영 및 아이콘 방향 표시
+                  header.classList.toggle('sort-asc', !isAscending);
+                  header.classList.toggle('sort-desc', isAscending);
+
+                  // 정렬된 행들을 다시 조립
+                  rows.forEach(row => tbody.appendChild(row));
+                });
+              });
+            });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </body>
 </html>
