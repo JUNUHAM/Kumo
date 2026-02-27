@@ -1,0 +1,206 @@
+/* ============================================================
+   🎨 1. 테마 색상 팔레트 정의 (CSS 변수)
+   - 여기서 색상만 바꾸면 사이트 전체가 바뀝니다!
+============================================================ */
+:root {
+    /* 라이트 모드 기본 색상 */
+    --bg-main: #ffffff;
+    --bg-container: #ffffff;
+    --bg-sub: #f9f9f9;
+    --bg-map-none: #f0f0f0;
+
+    --text-main: #333333;
+    --text-sub: #555555;
+    --text-muted: #888888;
+
+    --border-light: #eeeeee;
+    --border-mid: #dddddd;
+    --border-dark: #333333;
+
+    --btn-apply: #8bbbe5;
+    --btn-apply-hover: #7aaad4;
+    --btn-icon-bg: transparent;
+    --btn-icon-border: transparent;
+
+    --shadow-color: rgba(0, 0, 0, 0.05);
+    --modal-overlay: rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode {
+    /* 다크 모드 덮어쓰기 색상 */
+    --bg-main: #121212;
+    --bg-container: #1e1e1e;
+    --bg-sub: #2a2a2a;
+    --bg-map-none: #1e1e1e;
+
+    --text-main: #ffffff;
+    --text-sub: #e0e0e0;
+    --text-muted: #999999;
+
+    --border-light: #333333;
+    --border-mid: #444444;
+    --border-dark: #555555;
+
+    --btn-apply: #4a90e2;
+    --btn-apply-hover: #357abd;
+    --btn-icon-bg: #2a2a2a;
+    --btn-icon-border: #444444;
+
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --modal-overlay: rgba(0, 0, 0, 0.7);
+}
+
+/* ============================================================
+   ☀️ 2. 공통 레이아웃 (변수 적용)
+============================================================ */
+
+/* =========================================
+   공통 요소 부드러운 전환 (스무스 다크모드)
+========================================= */
+body,
+.list-header-wrapper,
+.filter-box,
+.filter-select,
+.filter-input,
+.job-list-table th,
+.job-list-table td,
+.job-title-text {
+    /* 배경색, 글자색, 테두리색이 바뀔 때 0.3초 동안 부드럽게(ease) 변하도록 설정! */
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+body {
+    margin: 0; padding: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    display: flex; flex-direction: column; min-height: 100vh;
+}
+
+/* 🌟 컨테이너: fixed 헤더에 내용이 가려지지 않도록 상단 패딩 100px 유지 */
+.container {
+    max-width: 800px; margin: 0 auto;
+    padding: 100px 20px 60px; /* (중요) 상단 100px 여백이 헤더 공간을 확보해 줍니다 */
+    width: 100%; box-sizing: border-box; flex: 1;
+    background-color: var(--bg-container);
+    box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.map-header-wrapper > div,
+.map-header-wrapper header {
+    width: 100% !important;
+    position: sticky;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between; /* 양쪽 끝으로 로고와 메뉴를 쫙 벌려줍니다 */
+}
+/* ============================================================
+   📝 3. 상세 페이지 요소 디자인
+============================================================ */
+/* 상단 타이틀 */
+.header-section { margin-bottom: 40px; }
+.job-title { font-size: 28px; font-weight: 700; margin-bottom: 10px; line-height: 1.4; color: var(--text-main); }
+.job-meta { font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 10px; }
+
+/* 정보 그리드 */
+.info-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px 40px;
+    border-top: 2px solid var(--border-dark);
+    border-bottom: 1px solid var(--border-mid);
+    padding: 30px 0; margin-bottom: 40px;
+}
+.info-item { display: flex; flex-direction: column; }
+.info-label { font-size: 14px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; }
+.info-value { font-size: 15px; color: var(--text-sub); }
+.text-right { text-align: right; }
+
+/* 지도 & 상세설명 */
+.map-section {
+    width: 100%; height: 300px; margin-bottom: 40px; border-radius: 8px;
+    overflow: hidden; position: relative; z-index: 1;
+    background-color: var(--bg-map-none); border: 1px solid var(--border-light);
+}
+.description-section { margin-bottom: 40px; }
+.section-title { font-size: 18px; font-weight: 700; margin-bottom: 15px; color: var(--text-main); }
+.description-text { font-size: 15px; line-height: 1.8; color: var(--text-sub); white-space: pre-line; }
+
+/* 갤러리 */
+.image-gallery { margin-top: 30px; }
+.gallery-img { width: 100%; max-height: 500px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
+
+/* ============================================================
+   📌 4. 하단 고정 바 & 푸터
+============================================================ */
+.dashboard-footer {
+    width: 100%; margin-top: auto; padding: 20px 0;
+    background-color: var(--bg-sub); border-top: 1px solid var(--border-light);
+}
+.dashboard-footer .footer-container { max-width: 800px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
+
+.fixed-bottom-bar {
+    position: fixed; bottom: 0; left: 0; width: 100%; height: 80px;
+    display: flex; align-items: center; justify-content: center; z-index: 1000;
+    background-color: var(--bg-container);
+    border-top: 1px solid var(--border-light);
+    box-shadow: 0 -4px 15px var(--shadow-color);
+}
+
+.btn-group-owner, .btn-group-seeker { width: 100%; max-width: 800px; display: flex; gap: 15px; }
+.btn-action { height: 50px; border: none; border-radius: 6px; font-size: 16px; font-weight: 700; color: white; cursor: pointer; transition: 0.2s; }
+.btn-action:hover { opacity: 0.9; }
+
+.btn-group-owner .btn-edit { flex: 2; background-color: var(--btn-apply); }
+.btn-group-owner .btn-delete { flex: 1; background-color: #ff9e9e; }
+
+.btn-group-seeker { justify-content: space-between; align-items: center; }
+.btn-apply { flex-grow: 1; margin-right: 20px; background-color: var(--btn-apply); }
+.btn-apply:hover { background-color: var(--btn-apply-hover); }
+
+.icon-actions { display: flex; gap: 20px; align-items: center; }
+.btn-icon {
+    display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0;
+    background-color: var(--btn-icon-bg); border: 1px solid var(--btn-icon-border); border-radius: 50%; width: 40px; height: 40px;
+}
+.btn-icon:hover svg { stroke: var(--text-main); }
+
+/* ============================================================
+   🚨 5. 모달창
+============================================================ */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 2000;
+    background-color: var(--modal-overlay);
+}
+.modal-window {
+    width: 400px; max-width: 90%; padding: 30px; border-radius: 16px; position: relative; animation: fadeIn 0.2s ease-out;
+    background-color: var(--bg-container);
+    box-shadow: 0 4px 20px var(--shadow-color);
+    border: 1px solid var(--border-mid);
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-light); padding-bottom: 10px; }
+.modal-header h3 { margin: 0; font-size: 18px; font-weight: 700; color: var(--text-main); }
+.btn-close-modal { background: none; border: none; font-size: 24px; color: var(--text-muted); cursor: pointer; }
+
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 8px; color: var(--text-main); }
+
+.modal-input, .modal-select, .modal-textarea {
+    width: 100%; padding: 10px 12px; border-radius: 8px; font-size: 14px; outline: none; box-sizing: border-box;
+    background-color: var(--bg-sub);
+    color: var(--text-main);
+    border: 1px solid var(--border-mid);
+}
+.modal-input:focus, .modal-select:focus, .modal-textarea:focus { border-color: var(--btn-apply); }
+.modal-textarea { height: 100px; resize: none; }
+
+.modal-footer { margin-top: 10px; text-align: center; border-top: 1px solid var(--border-light); padding-top: 20px; }
+.btn-submit-report {
+    width: 100%; background-color: #ff9e9e; color: white; border: none; padding: 12px; border-radius: 25px; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s;
+}
+.btn-submit-report:hover { background-color: #ff8585; }
+
+@media (max-width: 600px) {
+    .info-grid { grid-template-columns: 1fr; gap: 20px; }
+    .job-title { font-size: 24px; }
+}

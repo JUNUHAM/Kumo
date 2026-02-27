@@ -1,12 +1,14 @@
 package net.kumo.kumo.controller;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.kumo.kumo.domain.dto.ApplicationDTO;
 import net.kumo.kumo.domain.dto.JobDetailDTO;
 import net.kumo.kumo.domain.dto.JobSummaryDTO;
 import net.kumo.kumo.domain.dto.ReportDTO;
 import net.kumo.kumo.domain.entity.UserEntity;
+import net.kumo.kumo.domain.entity.Enum;
+import net.kumo.kumo.repository.UserRepository;
 import net.kumo.kumo.service.MapService;
 import net.kumo.kumo.service.ScrapService;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @Slf4j
@@ -30,6 +33,7 @@ public class MapController {
 	
     private final MapService mapService;
 	private final ScrapService scrapService; // 🌟 추가: 찜하기 여부 확인용
+    private final UserRepository userRepo;
 
     // --- 화면 반환 (View) ---
 
@@ -67,42 +71,142 @@ public class MapController {
             @RequestParam Long id,
             @RequestParam String source,
             @RequestParam(defaultValue = "kr") String lang,
-            // ★ [테스트용] URL 뒤에 &isOwner=true 를 붙이면 구인자 모드로 전환
-            // 기본값은 false (구직자 모드)
-            @RequestParam(defaultValue = "false") boolean isOwner,
-			HttpSession session, // 26.2.19 추가 <- 로그인 유저 확인용
-
+            Principal principal, // ★ HttpSession session 대신 Spring Security의 Principal 사용
             Model model) {
+
         // 1. 서비스에서 상세 데이터 조회
         JobDetailDTO job = mapService.getJobDetail(id, source, lang);
-	    
-	    // ==========================================
-	    // 🌟 [추가된 로직] 현재 유저의 스크랩(찜하기) 여부 확인
-	    // ==========================================
-	    boolean isScraped = false; // 기본값은 찜하지 않음
-	    Object sessionUser = session.getAttribute("loginUser");
-	    
-	    if (sessionUser instanceof UserEntity) {
-		    Long userId = ((UserEntity) sessionUser).getUserId();
-		    // ScrapService에 해당 유저가 이 공고(id)를 찜했는지 물어봄
-		    isScraped = scrapService.checkIsScraped(userId, id);
-	    }
-	    
-	    model.addAttribute("isScraped", isScraped); // 모델에 담아 HTML로 전송!
-	    // ==========================================
+        boolean isOwner = false;
+        boolean isSeeker = false;
+        UserEntity user;
 
-        // 2. 모델에 담기
+        // ==========================================
+        // 🌟 [수정된 로직] Spring Security 기반 스크랩(찜하기) 여부 확인
+        // ==========================================
+        boolean isScraped = false;
+
+        // principal이 null이 아니면 로그인된 상태
+        if (principal != null) {
+            // principal.getName()은 보통 유저의 로그인 ID(email)를 반환합니다.
+            String loginEmail = principal.getName();
+            user = userRepo.findByEmail(loginEmail).orElse(null);
+
+            if (user != null) {
+                isScraped = scrapService.checkIsScraped(user.getUserId(), id, source);
+
+                // 공고 작성 id와 user의 id 를 비교하여 공고 작성자 동일 여부를 확인
+                // geocoded 테이블 수정 후 코드 사용
+                // isOwner = user.getUserId().equals(job.getUserId());
+
+                isSeeker = (user.getRole() == Enum.UserRole.SEEKER);
+            }
+        }
+
+        model.addAttribute("isScraped", isScraped);
+        // ==========================================
+
         model.addAttribute("job", job);
-        model.addAttribute("googleMapsKey", googleMapKey); // 지도 표시용
-
-        // 로그인 로직 대신, 파라미터로 유저 여부 전달
+        model.addAttribute("googleMapsKey", googleMapKey);
         model.addAttribute("isOwner", isOwner);
-
+        model.addAttribute("isSeeker", isSeeker);
         model.addAttribute("lang", lang);
 
-        // 4. 뷰 반환 (templates/mapView/job_detail.html)
         return "mapView/job_detail";
     }
+
+    /**
+     * 구인 신청 메서드
+     * URL: /map/api/apply
+     */
+    @PostMapping("/api/apply")
+    @ResponseBody
+    public ResponseEntity<String> applyForJob(@RequestBody ApplicationDTO.ApplyRequest dto, Principal principal) {
+        // ★ 타입이 ApplicationDTO.ApplyRequest 로 변경됨!
+
+        // 1. 로그인 검증
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        // 2. 유저 정보 조회
+        String loginEmail = principal.getName();
+        UserEntity user = userRepo.findByEmail(loginEmail).orElse(null);
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 사용자입니다.");
+        }
+
+        // 3. 구직자 권한(SEEKER) 확인
+        if (user.getRole() != Enum.UserRole.SEEKER) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("구직자(SEEKER) 계정만 지원할 수 있습니다.");
+        }
+
+        // 4. 서비스 호출 및 예외 처리
+        try {
+            mapService.applyForJob(user, dto);
+            return ResponseEntity.ok("구인 신청이 완료되었습니다.");
+
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("지원 처리 중 오류 발생: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("지원 처리 중 서버 오류가 발생했습니다.");
+        }
+    }
+
+    /**
+     * [NEW] 공고 삭제 API (작성자 전용)
+     * URL: /map/api/jobs
+     */
+    @DeleteMapping("/api/jobs")
+    @ResponseBody
+    public ResponseEntity<String> deleteJob(
+            @RequestParam Long id,
+            @RequestParam String source,
+            Principal principal) {
+
+        // 1. 로그인 검증
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        // 2. 유저 정보 조회
+        String loginEmail = principal.getName();
+        UserEntity user = userRepo.findByEmail(loginEmail).orElse(null);
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 사용자입니다.");
+        }
+
+        // 3. 서비스 호출 및 삭제 실행
+        try {
+            mapService.deleteJobPost(id, source, user);
+            return ResponseEntity.ok("공고가 성공적으로 삭제되었습니다.");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            // 본인 공고가 아니거나, 공고가 존재하지 않을 때
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("공고 삭제 중 오류 발생: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("공고 삭제 중 오류가 발생했습니다.");
+        }
+    }
+	
+	// ==========================================
+	// [NEW] 검색 리스트 관련 매핑
+	// ==========================================
+	
+	/**
+	 * 1. [VIEW] 검색 리스트 페이지 반환
+	 * URL: /map/search_list
+	 */
+	@GetMapping("/search_list")
+	public String searchListPage() {
+		// resources/templates/mapView/search_job_list.html 을 반환한다고 가정
+		return "mapView/search_job_list";
+	}
+	
+	
+	
 
     // --- 데이터 반환 (API) ---
 
@@ -126,26 +230,42 @@ public class MapController {
      */
     @PostMapping("/api/reports")
     @ResponseBody
-    public ResponseEntity<String> submitReport(@RequestBody ReportDTO reportDTO, HttpSession session) {
+    public ResponseEntity<String> submitReport(@RequestBody ReportDTO reportDTO, Principal principal) { // ★ HttpSession 교체
 
-        // 1. 로그인 체크 (세션에 "loginUser"라는 이름으로 유저 객체가 있다고 가정)
-        // 실제 프로젝트의 세션 키값 확인 필요
-        Object sessionUser = session.getAttribute("loginUser");
-
-        if (sessionUser == null) {
-            // 401 Unauthorized 반환 -> 프론트에서 로그인 페이지로 이동 처리
+        // 1. 로그인 체크
+        if (principal == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
         }
 
-        // 2. 신고자 ID 설정 (User 엔티티 캐스팅)
-        if (sessionUser instanceof UserEntity) {
-            UserEntity user = (UserEntity) sessionUser;
-            reportDTO.setReporterId(user.getUserId()); // User 엔티티의 ID Getter 사용
+        // 2. 신고자 정보 조회
+        String loginEmail = principal.getName();
+        UserEntity user = userRepo.findByEmail(loginEmail).orElse(null);
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 사용자입니다.");
         }
 
-        // 3. 서비스 호출
+        // 3. 신고자 ID 설정 후 서비스 호출
+        reportDTO.setReporterId(user.getUserId());
         mapService.createReport(reportDTO);
 
         return ResponseEntity.ok("신고가 정상적으로 접수되었습니다.");
     }
+	
+	/**
+	 * 2. [API] 검색 조건에 맞는 공고 리스트 데이터 반환
+	 * URL: /map/api/jobs/search
+	 */
+	@GetMapping("/api/jobs/search")
+	@ResponseBody
+	public List<JobDetailDTO> searchJobsApi(
+	                                         @RequestParam(required = false) String keyword,
+	                                         @RequestParam(required = false) String mainRegion,
+	                                         @RequestParam(required = false) String subRegion,
+	                                         @RequestParam(defaultValue = "kr") String lang
+	) {
+		log.info("검색 API 호출됨 - keyword: {}, mainRegion: {}, subRegion: {}", keyword, mainRegion, subRegion);
+		
+		return mapService.searchJobsList(keyword, mainRegion, subRegion, lang);
+	}
 }

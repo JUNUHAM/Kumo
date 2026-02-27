@@ -34,8 +34,15 @@
 	
 	<div class="map-search-floating">
 		<div class="search-bar">
-			<i class="fa-solid fa-bars menu-icon"></i> <input type="text" id="keywordInput" placeholder="검색 내용을 입력하세요."
-			                                                  onkeyup="if(event.key === 'Enter') JobService.searchJobs()">
+			<select id="regionSelect" onchange="MapManager.changeRegion(this.value)">
+				<option value="tokyo" th:text="#{map.region.tokyo}">도쿄</option>
+				<option value="osaka" th:text="#{map.region.osaka}">오사카</option>
+			</select>
+			<div class="divider"></div>
+			
+			<i class="fa-solid fa-bars menu-icon"></i>
+			<input type="text" id="keywordInput" th:placeholder="#{map.region.placeholder}"
+			       onkeyup="if(event.key === 'Enter') JobService.searchJobs()">
 			<button onclick="JobService.searchJobs()">
 				<i class="fa-solid fa-magnifying-glass"></i>
 			</button>
@@ -76,7 +83,6 @@
 		<button type="button" class="btn-close-card">×</button>
 		
 		<div class="card-header-section">
-			<div class="profile-icon">A</div>
 			<div class="profile-info">
 				<div id="card-company" class="company-name">ABC Company</div>
 				<div id="card-manager" class="manager-name">田中 部長</div>
@@ -108,7 +114,7 @@
 	</div>
 	
 	<div class="sheet-content">
-		<h2 style="padding: 0 10px; font-size: 18px;">구직 정보 리스트 📋</h2>
+		<h2 id="sheetTitle" style="padding: 0 10px; font-size: 18px;">구직 정보 리스트 📋</h2>
 		
 		<div class="table-wrapper">
 			<table class="job-table">
@@ -130,6 +136,42 @@
 		</div>
 	</div>
 </div>
+<script th:inline="javascript">
+	
+	// 🌟 [추가] Spring Security를 이용한 로그인 여부 판별
+	const isUserLoggedIn = /*[[${#authorization.expression('isAuthenticated()')}]]*/ false;
+	
+	const MapMessages = {
+		loading: /*[[#{js.map.msg.loading}]]*/ '데이터 로딩 중...',
+		loadFail: /*[[#{js.map.msg.load_fail}]]*/ '로딩 실패',
+		emptyJob: /*[[#{js.map.msg.empty_job}]]*/ '공고 없음',
+		savedFail: /*[[#{js.map.msg.saved_fail}]]*/ '불러오기 실패',
+		fbTitle: /*[[#{js.map.fallback.title}]]*/ '제목 없음',
+		fbCompany: /*[[#{js.map.fallback.company}]]*/ '회사명 미정',
+		fbWage: /*[[#{js.map.fallback.wage}]]*/ '협의',
+		fbManager: /*[[#{js.map.fallback.manager}]]*/ '담당자',
+		fbTime: /*[[#{js.map.fallback.time}]]*/ '방금 전',
+		badgeRecruit: /*[[#{js.map.badge.recruit}]]*/ '구인중',
+		badgeUrgent: /*[[#{js.map.badge.urgent}]]*/ '급구',
+		btnSave: /*[[#{js.map.btn.save}]]*/ '찜',
+		btnSaveCard: /*[[#{js.map.btn.save_card}]]*/ '찜하기',
+		btnDetail: /*[[#{js.map.btn.detail}]]*/ '상세',
+		btnDetailCard: /*[[#{js.map.btn.detail_card}]]*/ '자세히 보기',
+		labelAddress: /*[[#{js.map.label.address}]]*/ '주소: ',
+		titleNearby: /*[[#{js.map.title.nearby}]]*/ '내 주변 구직 정보 📍',
+		titleSaved: /*[[#{js.map.title.saved}]]*/ '즐겨찾기한 구직 정보 ⭐',
+		titleRecent: /*[[#{js.map.title.recent}]]*/ '최근 본 구직 정보 🕒',
+		table: [
+			/*[[#{js.map.table.title}]]*/ '제목',
+			/*[[#{js.map.table.company}]]*/ '상호명',
+			/*[[#{js.map.table.location}]]*/ '근무지',
+			/*[[#{js.map.table.wage}]]*/ '급여',
+			/*[[#{js.map.table.contact}]]*/ '연락처',
+			/*[[#{js.map.table.manager}]]*/ '담당자',
+			/*[[#{js.map.table.manage}]]*/ '관리'
+		]
+	};
+</script>
 
 <script th:src="@{'https://maps.googleapis.com/maps/api/js?key=' + ${googleMapsKey} + '&callback=initMap&loading=async'}"
         async defer></script>

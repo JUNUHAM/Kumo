@@ -29,4 +29,6 @@ public class ScrapDTO {
 	private Long targetPostId;  // JS에서 AJAX로 보낼 때 받을 이름
 	private boolean isScraped;  // JS로 응답(결과)을 돌려줄 때 쓸 이름
 	
+	private String targetSource;
+	
 }

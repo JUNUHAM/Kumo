@@ -26,7 +26,8 @@
 
         <li class="nav-item"
             th:classappend="${currentMenu == 'dataops'} ? 'active' : ''">
-            <span class="nav-icon">🕸️</span> DataOps
+            <span class="nav-icon">🕸️</span>
+            <span th:text="${lang == 'ja' ? 'ログ' : 'Log'}">Log</span>
         </li>
     </ul>
 

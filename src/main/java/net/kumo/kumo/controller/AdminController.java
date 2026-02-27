@@ -51,8 +51,15 @@ public class AdminController {
                                      @RequestParam(value = "role", required = false) String role,
                                      @RequestParam(value = "status", required = false) String status,
                                      @RequestParam(value = "page", defaultValue = "0") int page,
-                                     @RequestParam(value = "size", defaultValue = "10") int size) {
+                                     @RequestParam(value = "size", defaultValue = "10") int size,
+                                     // [추가] 승인 탭을 위한 페이징 및 활성 탭 파라미터
+                                     @RequestParam(value = "pendingPage", defaultValue = "0") int pendingPage,
+                                     @RequestParam(value = "pendingSize", defaultValue = "10") int pendingSize,
+                                     @RequestParam(value = "tab", defaultValue = "all") String tab) {
 
+        // ============================
+        // 1. 전체 회원 관리 탭 처리
+        // ============================
         Pageable pageable = PageRequest.of(page, size);
         Page<UserManageDTO> users = adminService.getAllUsers(lang, searchType, keyword, role, status, pageable);
 
@@ -65,11 +72,7 @@ public class AdminController {
         model.addAttribute("role", role);
         model.addAttribute("status", status);
 
-        // --- 상단 통계 데이터 계산 (전체 데이터 기준) ---
-        // 실제로는 DB 쿼리(countBy...)로 가져오는 게 성능상 좋지만, 여기선 users 객체나 전체 리스트 활용 가정
-        long totalCount = users.getTotalElements(); // 필터링 된 개수지만, 통계용으론 전체 DB 카운트가 맞음 (서비스에 별도 메소드 권장)
-
-        // --- 페이지네이션 로직 ---
+        // 페이지네이션 로직 (users)
         int totalPages = users.getTotalPages();
         if (totalPages == 0) totalPages = 1;
         int pageBlock = 5;
@@ -78,12 +81,24 @@ public class AdminController {
         int endPage = Math.min(totalPages, startPage + pageBlock - 1);
 
         if (endPage - startPage + 1 < pageBlock && totalPages >= pageBlock) {
-            startPage = endPage - pageBlock + 1;
+            startPage = Math.max(1, endPage - pageBlock + 1);
         }
 
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
         model.addAttribute("totalPages", totalPages);
+
+        // ============================
+        // 2. [추가] 구인자 승인 탭 처리
+        // ============================
+        // 기존 서비스 메서드 재활용: role="RECRUITER", status="INACTIVE"로 고정 검색
+        Pageable pendingPageable = PageRequest.of(pendingPage, pendingSize);
+        Page<UserManageDTO> pendingRecruiters = adminService.getAllUsers(lang, null, null, "RECRUITER", "INACTIVE", pendingPageable);
+
+        model.addAttribute("pendingRecruiters", pendingRecruiters);
+
+        // 현재 활성화된 탭 상태 유지
+        model.addAttribute("activeTab", tab);
 
         return "adminView/admin_user";
     }
