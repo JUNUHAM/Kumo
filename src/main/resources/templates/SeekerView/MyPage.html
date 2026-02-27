@@ -71,6 +71,7 @@
                 <div class="info-row">
                     <span class="label" th:text="#{label.email}">이메일</span>
                     <span class="value" th:text="${user.email}">email@email.com</span>
+
                 </div>
                 <div class="info-row">
                     <span class="label" th:text="#{label.address}">주소</span>
@@ -93,7 +94,7 @@
             </div>
 
             <div class="action-buttons">
-                <a th:href="@{/delete-account}" class="btn-delete" th:text="#{btn.delete.account}">회원 탈퇴</a>
+                <button type="button" class="btn-delete" onclick="openDeleteModal()" th:text="#{btn.delete.account}">회원 탈퇴</button>
                 <a th:href="@{/Seeker/ProfileEdit}" class="btn-edit" th:text="#{btn.edit.profile}">회원정보 수정</a>
             </div>
         </div>
@@ -112,6 +113,46 @@
         fileNone: [[#{modal.file.none}]]
     };
 </script>
+
+
+<div id="deleteAccountModal" class="delete-modal-overlay">
+    <div class="delete-modal-content">
+        <div class="delete-modal-header">
+            <h3>회원 탈퇴</h3>
+            <button type="button" class="btn-close-modal" onclick="closeDeleteModal()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="delete-modal-body">
+            <div class="warning-box">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <p class="warning-title">정말 KUMO를 떠나시겠습니까?</p>
+                <ul class="warning-list">
+                    <li>등록된 이력서 및 프로필 정보가 <strong>영구적으로 삭제</strong>됩니다.</li>
+                    <li>진행 중인 모든 <strong>지원 내역이 취소</strong> 처리됩니다.</li>
+                    <li>탈퇴 후에는 데이터를 <strong>절대 복구할 수 없습니다.</strong></li>
+                </ul>
+            </div>
+
+            <div class="delete-input-group">
+                <label for="deleteConfirmPw">본인 확인을 위해 비밀번호를 입력해 주세요.</label>
+                <input type="password" id="deleteConfirmPw" class="custom-modal-input" placeholder="비밀번호 입력" oninput="checkDeleteInput()">
+
+                <label for="deleteConfirmPwCheck" style="margin-top: 15px;">비밀번호 확인</label>
+                <input type="password" id="deleteConfirmPwCheck" class="custom-modal-input" placeholder="비밀번호 다시 입력" oninput="checkDeleteInput()">
+
+                <p id="deleteMismatchMsg" class="error-msg" style="display: none; margin-top: 8px;">비밀번호가 일치하지 않습니다.</p>
+                <p id="deleteErrorMsg" class="error-msg" style="display: none; margin-top: 8px;">비밀번호가 틀렸습니다.</p>
+            </div>
+        </div>
+
+        <div class="delete-modal-footer">
+            <button type="button" class="btn-modal-cancel" onclick="closeDeleteModal()">취소</button>
+            <button type="button" id="btnConfirmDelete" class="btn-modal-danger" onclick="executeDelete()" disabled>탈퇴하기</button>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>

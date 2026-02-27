@@ -38,22 +38,20 @@
             >
               <div class="form-row">
                 <div class="form-col-vertical">
-                  <label class="input-label" th:text="#{profile.label.sei}"
-                    >성</label
-                  >
+                  <label class="input-label" th:text="#{profile.label.sei}">성</label>
                   <input
                     type="text"
+                    name="nameKanjiSei"
                     th:value="${user?.nameKanjiSei}"
                     class="custom-input gray-input"
                     readonly
                   />
                 </div>
                 <div class="form-col-vertical">
-                  <label class="input-label" th:text="#{profile.label.mei}"
-                    >이름</label
-                  >
+                  <label class="input-label" th:text="#{profile.label.mei}">이름</label>
                   <input
                     type="text"
+                    name="nameKanjiMei"
                     th:value="${user?.nameKanjiMei}"
                     class="custom-input gray-input"
                     readonly
@@ -63,22 +61,20 @@
 
               <div class="form-row">
                 <div class="form-col-vertical">
-                  <label class="input-label" th:text="#{profile.label.sei_kana}"
-                    >세이</label
-                  >
+                  <label class="input-label" th:text="#{profile.label.sei_kana}">세이</label>
                   <input
                     type="text"
+                    name="nameKanaSei"
                     th:value="${user?.nameKanaSei}"
                     class="custom-input gray-input"
                     readonly
                   />
                 </div>
                 <div class="form-col-vertical">
-                  <label class="input-label" th:text="#{profile.label.mei_kana}"
-                    >메이</label
-                  >
+                  <label class="input-label" th:text="#{profile.label.mei_kana}">메이</label>
                   <input
                     type="text"
+                    name="nameKanaMei"
                     th:value="${user?.nameKanaMei}"
                     class="custom-input gray-input"
                     readonly
@@ -87,9 +83,7 @@
               </div>
 
               <div class="input-group-vertical">
-                <label class="input-label" th:text="#{profile.label.email}"
-                  >이메일</label
-                >
+                <label class="input-label" th:text="#{profile.label.email}">이메일</label>
                 <input
                   type="email"
                   id="email"
@@ -102,24 +96,25 @@
 
               <div class="form-row">
                 <div class="form-col-vertical" style="flex: 2;">
-                  <label class="input-label" th:text="#{profile.label.birth}"
-                    >생년월일</label
-                  >
+                  <label class="input-label" th:text="#{profile.label.birth}">생년월일</label>
                   <div class="birth-row">
                     <input
                       type="text"
+                      name="birthYear"
                       th:value="${birthYear}"
                       class="custom-input gray-input text-center"
                       readonly
                     />
                     <input
                       type="text"
+                      name="birthMonth"
                       th:value="${birthMonth}"
                       class="custom-input gray-input text-center"
                       readonly
                     />
                     <input
                       type="text"
+                      name="birthDay"
                       th:value="${birthDay}"
                       class="custom-input gray-input text-center"
                       readonly
@@ -127,11 +122,10 @@
                   </div>
                 </div>
                 <div class="form-col-vertical" style="flex: 1;">
-                  <label class="input-label" th:text="#{profile.label.gender}"
-                    >성별</label
-                  >
+                  <label class="input-label" th:text="#{profile.label.gender}">성별</label>
                   <input
                     type="text"
+                    name="gender"
                     th:value="${user?.gender != null ? (user.gender.name() == 'MALE' ? #messages.msg('profile.gender.male') : #messages.msg('profile.gender.female')) : ''}"
                     class="custom-input gray-input text-center"
                     readonly
@@ -142,9 +136,7 @@
               <hr class="edit-divider" />
 
               <div class="input-group-vertical">
-                <label class="input-label" th:text="#{profile.label.nickname}"
-                  >닉네임</label
-                >
+                <label class="input-label" th:text="#{profile.label.nickname}">닉네임</label>
                 <input type="hidden" id="nicknameChecked" value="true" />
                 <div class="action-row">
                   <input
@@ -156,8 +148,8 @@
                   />
                   <button
                     type="button"
+                    id="btnCheckNickname"
                     class="btn-sub-action"
-                    onclick="checkNickname()"
                     th:text="#{profile.btn.check_dup}"
                   >
                     중복확인
@@ -167,9 +159,7 @@
               </div>
 
               <div class="input-group-vertical">
-                <label class="input-label" th:text="#{profile.label.address}"
-                  >주소</label
-                >
+                <label class="input-label" th:text="#{profile.label.address}">주소</label>
                 <div class="action-row mb-2">
                   <input
                     type="text"
@@ -181,8 +171,8 @@
                   />
                   <button
                     type="button"
+                    id="btnSearchAddress"
                     class="btn-sub-action"
-                    onclick="searchAddress()"
                     th:text="#{profile.btn.find_addr}"
                   >
                     주소검색
