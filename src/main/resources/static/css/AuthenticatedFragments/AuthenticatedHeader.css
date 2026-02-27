@@ -1,0 +1,305 @@
+@charset "UTF-8";
+
+/* ============================================================
+   KUMO - 로그인 공통 헤더 (NonLogin 표준 디자인 + 알림창 복구)
+   ============================================================ */
+
+/* 0. 전역 변수 */
+:root {
+    --header-padding: 20px 40px;
+    --nav-gap: 25px;
+    --icon-size: 18px;
+    --text-main: #333333;
+    --text-sub: #666666;
+    --border-color: #eeeeee;
+    --primary-color: #7db4e6;
+    --danger-color: #ff6b6b;
+    --hover-bg: #f8f9fa;
+    --bg-card: #ffffff;
+    --dropdown-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+body.dark-mode {
+    --bg-main: #121212;
+    --bg-card: #1e1e1e;
+    --text-main: #e0e0e0;
+    --text-sub: #aaaaaa;
+    --border-color: #333333;
+    --primary-color: #7db4e6;
+    --hover-bg: #252525;
+    --dropdown-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+/* 1. 헤더 레이아웃 */
+.authenticated-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: var(--header-padding);
+    background-color: transparent;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.authenticated-header.scrolled {
+    background-color: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.nav-menu {
+    display: flex;
+    gap: var(--nav-gap);
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-menu a {
+    text-decoration: none;
+    color: var(--text-main);
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+.nav-menu a:hover { color: var(--primary-color); }
+
+/* 2. 아이콘 버튼 */
+.notification-container,
+.lang-container,
+.profile-container,
+.icon-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--icon-size);
+    cursor: pointer;
+    color: var(--text-main);
+    background: none;
+    border: none;
+    transition: color 0.2s;
+}
+
+.icon-btn:hover,
+.notification-container:hover .icon-btn,
+.lang-container:hover .icon-btn {
+    color: var(--primary-color);
+}
+
+/* 3. 프로필 사진 */
+.user-avatar {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid var(--border-color);
+    flex-shrink: 0;
+    transition: border-color 0.3s;
+}
+.profile-container:hover .user-avatar { border-color: var(--primary-color); }
+
+/* 4. 알림 뱃지 */
+.notify-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: var(--danger-color);
+    color: white;
+    font-size: 9px;
+    font-weight: bold;
+    min-width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 1.5px solid var(--bg-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+/* 5. 드롭다운 공통 스타일 */
+.notify-dropdown,
+.lang-dropdown,
+.profile-dropdown {
+    display: none;
+    position: absolute;
+    top: 35px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--dropdown-shadow);
+    z-index: 2000;
+    overflow: hidden;
+    flex-direction: column;
+}
+
+.notify-dropdown.show,
+.lang-dropdown.show,
+.profile-dropdown.show {
+    display: flex;
+    animation: fadeIn 0.2s ease;
+}
+
+/* 위치 및 크기 조정 */
+.lang-dropdown {
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    min-width: 110px;
+    padding: 6px;
+    border-radius: 14px;
+}
+.notify-dropdown { right: -10px; width: 320px; }
+.profile-dropdown { right: 0; min-width: 200px; }
+
+
+/* 6. 드롭다운 내부 아이템 */
+
+/* 프로필 정보 영역 */
+.profile-info {
+    padding: 15px 20px;
+    background-color: var(--hover-bg);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.user-name { font-size: 15px; font-weight: 700; color: var(--text-main); }
+.user-email { font-size: 11px; color: var(--text-sub); }
+
+/* 언어 & 프로필 아이템 공통 */
+.lang-item,
+.profile-item {
+    padding: 12px 20px;
+    font-size: 14px;
+    color: var(--text-main);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+    border-radius: 8px;
+    margin-bottom: 2px;
+    white-space: nowrap;
+}
+
+.lang-item {
+    justify-content: center;
+    text-align: center;
+    font-weight: 600;
+}
+
+.lang-item:hover,
+.profile-item:hover {
+    background-color: var(--hover-bg);
+    color: var(--primary-color);
+    transform: translateX(2px);
+}
+.lang-item:hover { transform: none; }
+
+.profile-item.logout {
+    color: var(--danger-color);
+    border-top: 1px solid var(--border-color);
+    margin-top: 5px;
+    border-radius: 0 0 8px 8px;
+}
+
+/* ============================================================
+   [복구됨] 알림창(공지) 상세 UI
+   ============================================================ */
+
+/* 알림 헤더 */
+.notify-header {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-card);
+}
+.notify-header span { font-weight: bold; font-size: 14px; color: var(--text-main); }
+
+.header-buttons { display: flex; gap: 8px; }
+.header-btn { font-size: 11px; color: var(--text-sub); background: none; border: none; cursor: pointer; }
+.header-btn:hover { color: var(--text-main); text-decoration: underline; }
+
+/* 알림 내용 영역 */
+.notify-body {
+    max-height: 350px;
+    overflow-y: auto;
+    background-color: var(--bg-card);
+}
+
+/* 알림 아이템 */
+.notify-item {
+    display: flex;
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+    cursor: pointer;
+    text-decoration: none;
+    align-items: flex-start;
+    transition: background 0.2s;
+}
+.notify-item:hover { background-color: var(--hover-bg); }
+.notify-item.unread { background-color: rgba(66, 165, 245, 0.08); } /* 안 읽은 알림 */
+
+.notify-content { flex: 1; }
+.notify-text { font-size: 13px; color: var(--text-main); margin-bottom: 4px; line-height: 1.4; }
+.notify-time { font-size: 11px; color: var(--text-sub); }
+
+/* 삭제 버튼 */
+.delete-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: var(--text-sub);
+    opacity: 0;
+    transition: all 0.2s;
+    padding: 5px;
+}
+.notify-item:hover .delete-btn { opacity: 1; }
+.delete-btn:hover { color: var(--danger-color); }
+
+/* 알림 없음 (Empty State) */
+.notify-empty {
+    padding: 50px 20px;
+    text-align: center;
+    color: var(--text-sub);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+.notify-empty i { font-size: 32px; color: var(--border-color); }
+.notify-empty p { margin: 0; font-size: 13px; }
+
+/* 알림 푸터 */
+.notify-footer {
+    padding: 12px;
+    text-align: center;
+    background-color: var(--bg-card);
+    border-top: 1px solid var(--border-color);
+    font-size: 13px;
+    color: var(--text-sub);
+    cursor: pointer;
+}
+.notify-footer:hover { color: var(--primary-color); background-color: var(--hover-bg); }
+
+
+/* 애니메이션 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInCenter {
+    from { opacity: 0; transform: translate(-50%, -5px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}
+.lang-dropdown.show { animation: fadeInCenter 0.2s ease; }

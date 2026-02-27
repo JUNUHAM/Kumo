@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+	<meta charset="UTF-8">
+	<title>KUMO - 구직 정보 검색</title>
+	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	
+	<link rel="stylesheet" th:href="@{/css/mapView/search_job_list.css}">
+	
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+
+<div class="list-header-wrapper">
+	<div th:replace="~{NonLoginFragments/NonLoginHeader :: headerFragment}" sec:authorize="!isAuthenticated()"></div>
+	<div th:replace="~{AuthenticatedFragments/AuthenticatedHeader :: headerFragment}" sec:authorize="isAuthenticated()"></div>
+</div>
+
+<div class="list-container">
+	<div class="page-top-section">
+		<h1 class="page-title" th:text="#{search.title}">구직 정보</h1>
+		
+		<div class="filter-box">
+			<span class="filter-label">주소 필터</span>
+			<div class="filter-inputs">
+				<select id="mainRegion" class="filter-select">
+					<option value="tokyo" th:text="#{search.region.tokyo}">도쿄도</option>
+					<option value="osaka" th:text="#{search.region.osaka}">오사카부</option>
+				</select>
+				<select id="subRegion" class="filter-select">
+				</select>
+				
+				<input type="text" id="keywordInput" class="filter-input" th:placeholder="#{search.placeholder}">
+				<button id="btnSearch" class="btn-search" th:text="#{search.btn.search}">검색</button>
+			</div>
+		</div>
+	</div>
+	
+	<div class="table-wrapper">
+		<table class="job-list-table">
+			<thead>
+			<tr>
+				<th th:text="#{search.table.title}">제목</th>
+				<th th:text="#{search.table.company}">상호명</th>
+				<th th:text="#{search.table.location}">근무지</th>
+				<th th:text="#{search.table.wage}">급여</th>
+				<th th:text="#{search.table.contact}">연락처</th>
+				<th th:text="#{search.table.author}">작성자</th>
+				<th th:text="#{search.table.manage}">관리</th>
+			</tr>
+			</thead>
+			<tbody id="searchListBody">
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<script th:inline="javascript">
+	/* <![CDATA[ */
+	// 1. 로그인 여부
+	const isUserLoggedIn = /*[[${#authorization.expression('isAuthenticated()')}]]*/ false;
+	
+	// 2. 다국어 텍스트
+	const LIST_MESSAGES = {
+		saveBtn: /*[[#{search.btn.save}]]*/ '찜하기',
+		detailBtn: /*[[#{search.btn.detail}]]*/ '상세보기',
+		loading: /*[[#{search.msg.loading}]]*/ '데이터를 불러오는 중입니다...',
+		empty: /*[[#{search.msg.empty}]]*/ '검색 결과가 없습니다.',
+		error: /*[[#{search.msg.error}]]*/ '데이터를 불러오는데 실패했습니다.',
+		allRegion: /*[[#{search.region.all}]]*/ '전체 구/시',
+		wageType: /*[[#{search.table.wage_type}]]*/ '시급',
+		manager: /*[[#{search.table.manager}]]*/ '담당자'
+	};
+	
+	// 3. 지역 배열 세팅 (콤마 단위로 잘라서 배열로 만듦)
+	const tokyoWardsStr = /*[[#{search.wards.tokyo}]]*/ '';
+	const osakaWardsStr = /*[[#{search.wards.osaka}]]*/ '';
+	
+	const RegionData = {
+		tokyo: tokyoWardsStr ? tokyoWardsStr.split(',') : [],
+		osaka: osakaWardsStr ? osakaWardsStr.split(',') : []
+	};
+	/* ]]> */
+</script>
+
+<script th:src="@{/js/mapView/search_job_list.js}"></script>
+
+</body>
+</html>

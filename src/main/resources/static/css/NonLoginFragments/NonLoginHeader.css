@@ -1,0 +1,163 @@
+@charset "UTF-8";
+
+/* ============================================================
+   KUMO - 비로그인 공통 헤더 (NonLogin 표준 디자인 가이드)
+   ============================================================ */
+
+/* 0. 전역 변수 */
+:root {
+    --header-padding: 20px 40px;
+    --nav-gap: 25px;
+    --icon-size: 18px;
+    --text-main: #333333;
+    --primary-color: #7db4e6;
+    --border-color: #eeeeee;
+    --bg-card: #ffffff;
+    --hover-bg: #f8f9fa;
+}
+
+body.dark-mode {
+    --text-main: #e0e0e0;
+    --border-color: #333333;
+    --bg-card: #1e1e1e;
+    --hover-bg: #252525;
+}
+
+* { box-sizing: border-box; }
+
+/* 1. 헤더 레이아웃 */
+.non-login-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: var(--header-padding);
+    background-color: transparent;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.nav-menu {
+    display: flex;
+    gap: var(--nav-gap);
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* 메뉴 링크 스타일 */
+.non-login-header .nav-menu a {
+    text-decoration: none;
+    color: var(--text-main);
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.non-login-header .nav-menu a:hover {
+    color: var(--primary-color);
+}
+
+/* 아이콘 버튼 공통 */
+/* ★ 중요: position: relative가 있어야 드롭다운이 이 아이콘을 기준으로 정렬됨 */
+.lang-container,
+.icon-btn {
+    font-size: var(--icon-size);
+    cursor: pointer;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: color 0.2s;
+}
+
+.icon-btn:hover {
+    color: var(--primary-color);
+}
+
+/* ==============================
+   2. 언어 선택 드롭다운 (수정됨)
+   ============================== */
+.lang-dropdown {
+    display: none;
+    position: absolute;
+
+    /* 위치: 아이콘 아래 35px */
+    top: 35px;
+
+    /* ★ 핵심 수정: 왼쪽 50%에서 본인 너비의 50%만큼 땡겨서 중앙 정렬 */
+    left: 50%;
+    transform: translateX(-50%);
+    /* 기존의 right: -10px 제거 */
+
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px; /* 조금 더 둥글게 */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+    flex-direction: column;
+
+    /* 너비 최적화 */
+    width: max-content;
+    min-width: 110px;
+
+    z-index: 2000;
+    padding: 6px;
+    overflow: hidden;
+}
+
+.lang-dropdown.show {
+    display: flex;
+    /* 중앙 정렬 전용 애니메이션 적용 */
+    animation: fadeInCenter 0.2s ease;
+}
+
+.lang-item {
+    padding: 10px 15px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-main) !important;
+
+    /* 텍스트 정렬 */
+    text-align: center;
+    justify-content: center;
+
+    border-radius: 8px;
+    transition: background 0.2s;
+    text-decoration: none;
+    display: block; /* 꽉 차게 */
+    white-space: nowrap;
+}
+
+.lang-item:hover {
+    background-color: var(--hover-bg);
+    color: var(--primary-color) !important;
+}
+
+/* 애니메이션 정의 */
+/* 1. 일반 페이드인 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 2. ★ 중앙 정렬 유지 페이드인 (이걸 써야 위치가 안 틀어짐) */
+@keyframes fadeInCenter {
+    from { opacity: 0; transform: translate(-50%, -5px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* 다크모드 그림자 보정 */
+body.dark-mode .lang-dropdown {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}

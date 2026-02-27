@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8" />
+    <title th:text="${job.title}">상세 정보</title>
+    <link rel="stylesheet" th:href="@{/css/NonLoginFooter.css}">
+    <link rel="stylesheet" th:href="@{/css/mapView/job_detail.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script th:src="@{/js/mapView/job_detail.js}"></script>
+</head>
+<body>
+
+<!-- TODO: 다크모드 적용 해야함 현재 헤더 클릭시 다크모드 변환이 안됨 26.2.19 -->
+<div class="map-header-wrapper">
+	<div th:replace="~{NonLoginFragments/NonLoginHeader :: headerFragment}"
+	     sec:authorize="!isAuthenticated()"></div>
+	
+	<div th:replace="~{AuthenticatedFragments/AuthenticatedHeader :: headerFragment}"
+	     sec:authorize="isAuthenticated()"></div>
+</div>
+
+<div class="container">
+    <div class="header-section">
+        <h1 class="job-title" th:text="${job.title}">구인 제목</h1>
+        <div class="job-meta">
+            <span th:text="${job.address} + ' • ' + (${lang == 'ja' ? '住所' : '주소'})">주소</span>
+            <span>•</span>
+            <span>ID: <span th:text="${job.id}">0</span></span>
+        </div>
+    </div>
+
+    <div class="info-grid">
+        <div class="info-item">
+            <span class="info-label" th:text="${lang == 'ja' ? '会社名' : '회사 이름'}">회사 이름</span>
+            <span class="info-value" th:text="${job.companyName}">-</span>
+        </div>
+
+        <div class="info-item text-right">
+            <span class="info-label" th:text="${lang == 'ja' ? '職種' : '업무'}">업무</span>
+            <span class="info-value" th:text="${job.position ?: '-'}">-</span>
+        </div>
+
+        <div class="info-item">
+            <span class="info-label" th:text="${lang == 'ja' ? '給与' : '급여'}">급여</span>
+            <span class="info-value" th:text="${job.wage}">-</span>
+        </div>
+
+        <div class="info-item text-right">
+            <span class="info-label" th:text="${lang == 'ja' ? '仕事内容' : '업무 상세'}">업무 상세</span>
+            <span class="info-value" th:text="${job.jobDescription ?: '-'}">-</span>
+        </div>
+
+        <div class="info-item">
+            <span class="info-label" th:text="${lang == 'ja' ? '連絡先' : '연락처'}">연락처</span>
+            <span class="info-value" th:text="${job.contactPhone}">-</span>
+        </div>
+        <div class="info-item text-right">
+            <span class="info-label" th:text="${lang == 'ja' ? '会社住所' : '회사 주소'}">회사 주소</span>
+            <span class="info-value" th:text="${job.address}">-</span>
+        </div>
+    </div>
+
+    <div class="map-section" th:if="${job.lat != null}">
+        <iframe
+                width="100%"
+                height="100%"
+                frameborder="0" style="border:0"
+                th:src="'https://maps.google.com/maps?q=' + ${job.lat} + ',' + ${job.lng} + '&hl=es;z=14&output=embed'"
+                allowfullscreen="true">
+        </iframe>
+    </div>
+
+    <div class="map-section" th:unless="${job.lat != null}"
+         style="display:flex; align-items:center; justify-content:center; color:#999;"
+         th:text="${lang == 'ja' ? '地図情報がありません。' : '지도 정보가 없는 공고입니다.'}">
+        지도 정보가 없는 공고입니다.
+    </div>
+
+    <div class="description-section">
+        <h3 class="section-title" th:text="${lang == 'ja' ? '詳細情報' : '상세정보'}">상세정보</h3>
+        <div class="description-text" th:text="${job.body}">
+            내용이 없습니다.
+        </div>
+    </div>
+
+    <div class="image-gallery" th:if="${job.imgUrls != null}">
+        <th:block th:each="img : ${#strings.arraySplit(job.imgUrls, ',')}">
+            <img th:src="${img}" class="gallery-img" alt="상세 이미지" />
+        </th:block>
+    </div>
+</div>
+
+<div class="fixed-bottom-bar" th:if="${isOwner}">
+    <div class="btn-group-owner">
+        <button class="btn-action btn-edit"
+                th:data-id="${job.id}"
+                th:data-source="${job.source}"
+                onclick="editJob(this)"
+                th:text="${lang == 'ja' ? '修正' : '공고 수정'}">
+            공고 수정
+        </button>
+
+        <button class="btn-action btn-delete"
+                th:data-id="${job.id}"
+                th:data-source="${job.source}"
+                onclick="deleteJob(this)"
+                th:text="${lang == 'ja' ? '削除' : '삭제'}">
+            삭제
+        </button>
+    </div>
+</div>
+
+<div class="fixed-bottom-bar" th:if="${isSeeker}">
+    <div class="btn-group-seeker">
+        <button class="btn-action btn-apply"
+                th:data-id="${job.id}"
+                th:data-source="${job.source}"
+                th:text="${lang == 'ja' ? '応募する' : '구인 신청'}"
+                onclick="applyForJob(this)">
+            구인 신청
+        </button>
+
+        <div class="icon-actions">
+	        <button class="btn-icon btn-scrap"
+	                th:data-id="${job.id}"
+	                th:data-source="${job.source}"
+	                onclick="toggleScrap(this)">
+		        
+		        <svg width="28" height="28" viewBox="0 0 24 24"
+		             th:fill="${isScraped == true ? '#4285F4' : 'none'}"
+		             th:stroke="${isScraped == true ? '#4285F4' : '#999'}"
+		             stroke-width="1.5">
+			        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+		        </svg>
+	        </button>
+
+            <button class="btn-icon" onclick="openReportModal()">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff4d4f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+            </button>
+
+            <button class="btn-icon" onclick="history.back()">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.5">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="reportModal" class="modal-overlay" style="display: none;">
+    <div class="modal-window">
+        <div class="modal-header">
+            <h3>신고하기</h3>
+            <button class="btn-close-modal" onclick="closeReportModal()">×</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="form-group">
+                <label>글 제목</label>
+                <input type="text" class="modal-input" th:value="${job.title}" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>종류</label>
+                <select class="modal-select" id="reportType">
+                    <option value="">선택해주세요</option>
+                    <option value="spam">스팸 / 부적절한 홍보</option>
+                    <option value="false_info">허위 공고</option>
+                    <option value="abuse">욕설 / 비하 발언</option>
+                    <option value="other">기타</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>상세내용</label>
+                <textarea class="modal-textarea" id="reportDetail" placeholder="신고 사유를 상세히 입력해주세요."></textarea>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-submit-report" onclick="submitReport()">신고하기</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script th:inline="javascript">
+	/* <![CDATA[ */
+	// [수정] Spring Security를 이용한 로그인 여부 판별
+	const isUserLoggedIn = [[${#authorization.expression('isAuthenticated()')}]];
+	
+	// 🌟 2. [추가됨] 서버의 리소스 파일(properties)에서 다국어 메시지를 가져와 JS 객체로 만듭니다.
+	const MESSAGES = {
+		loginRequired: [[#{job.msg.loginRequired}]],
+	reportSuccess: [[#{job.msg.reportSuccess}]],
+	reportError: [[#{job.msg.reportError}]],
+	confirmReport: [[#{job.msg.confirmReport}]],
+	selectReportType: [[#{job.msg.selectReportType}]],
+	applyReady: [[#{job.msg.applyReady}]],
+	processError: [[#{job.msg.processError}]]
+	};
+	/* ]]> */
+</script>
+
+</body>
+</html>

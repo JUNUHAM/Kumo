@@ -1,0 +1,159 @@
+/* ==============================
+   1. 기본 설정 (변수 및 레이아웃)
+   ============================== */
+:root {
+    --primary-color: #7db4e6;   /* 쿠모 블루 */
+    --bg-color: #fcfcfc;        /* 전체 배경 */
+    --text-main: #333333;       /* 기본 글씨 */
+    --text-strong: #000000;     /* 강조 글씨 */
+    --card-bg: #ffffff;         /* 카드 배경 */
+    --card-shadow: rgba(0,0,0,0.05);
+}
+
+/* 다크모드 색상 */
+body.dark-mode {
+    --bg-color: #1a1a1a;
+    --text-main: #e0e0e0;
+    --text-strong: #ffffff;
+    --card-bg: #2d2d2d;
+    --card-shadow: rgba(0,0,0,0.5);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    display: flex; flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* ==============================
+   2. 메인 컨테이너
+   ============================== */
+.join-container {
+    flex: 1; /* 푸터를 바닥으로 밀어냄 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 120px 20px 60px; /* [수정] 상단 여백을 60px에서 120px로 늘림 (고정 헤더 대응) */
+}
+
+/* ==============================
+   3. 상단 타이틀 영역
+   ============================== */
+.join-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+/* 구름 아이콘 */
+.cloud-icon {
+    width: 80px;
+    height: auto;
+    margin-bottom: 20px;
+    opacity: 0.8;
+}
+
+/* "KUMO 회원가입" 텍스트 */
+.join-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text-strong);
+}
+
+.join-title .highlight {
+    color: var(--primary-color); /* KUMO 부분 파란색 */
+}
+
+/* ==============================
+   4. 카드 선택 영역 (핵심!)
+   ============================== */
+.card-wrapper {
+    display: flex;
+    gap: 30px; /* 카드 사이 간격 */
+    flex-wrap: wrap; /* 화면 좁으면 줄바꿈 */
+    justify-content: center;
+}
+
+/* 카드 공통 스타일 */
+.join-card {
+    width: 320px;
+    height: 240px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none; /* 링크 밑줄 제거 */
+    box-shadow: 0 10px 30px var(--card-shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    text-align: center;
+    padding: 20px;
+}
+
+.join-card:hover {
+    transform: translateY(-8px); /* 위로 살짝 뜸 */
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+/* --- [왼쪽] 구직자 카드 (파란 배경) --- */
+.join-card.seeker {
+    background-color: var(--primary-color);
+    color: white; /* 텍스트 흰색 */
+    border: none;
+}
+
+.join-card.seeker .card-title { color: white; }
+.join-card.seeker .card-desc { color: rgba(255,255,255,0.9); }
+.join-card.seeker .card-icon-img {
+    filter: brightness(0) invert(1); /* 흰색 아이콘으로 변경 */
+}
+
+/* --- [오른쪽] 구인자 카드 (흰색 배경) --- */
+.join-card.recruiter {
+    background-color: var(--card-bg);
+    border: 1px solid #eee; /* 얇은 테두리 */
+}
+
+.join-card.recruiter .card-title { color: #003366; /* 진한 남색 */ }
+.join-card.recruiter .card-desc { color: #555; }
+
+/* 다크모드일 때 구인자 카드 */
+body.dark-mode .join-card.recruiter {
+    background-color: var(--card-bg);
+    border-color: #444;
+}
+body.dark-mode .join-card.recruiter .card-title { color: var(--primary-color); }
+body.dark-mode .join-card.recruiter .card-desc { color: #ccc; }
+
+/* 텍스트 스타일 */
+.card-title {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.card-desc {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 25px;
+}
+
+/* 아이콘 이미지 크기 */
+.card-icon-img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+}

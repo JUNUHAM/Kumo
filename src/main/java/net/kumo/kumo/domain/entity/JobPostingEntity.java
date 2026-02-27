@@ -1,6 +1,5 @@
 package net.kumo.kumo.domain.entity;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -88,14 +87,17 @@ public class JobPostingEntity {
     @Column(columnDefinition = "ENUM('RECRUITING', 'CLOSED') DEFAULT 'RECRUITING'")
     private JobStatus status;
 
-    private LocalDate deadline;
+    // [수정 후] 시간까지 저장할 수 있도록 LocalDateTime으로 변경
+    @Column(name = "deadline")
+    private LocalDateTime deadline;
 
     @Column(name = "view_count")
     private Integer viewCount;
 
+    /* write_time 역할을 하는 생성 시간 (숫자가 아닌 날짜 타입으로) */
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt; // 🌟 DB 컬럼 타입을 DATETIME 또는 TIMESTAMP로 자동 설정합니다.
 
     // 기본값 자동 세팅
     @PrePersist

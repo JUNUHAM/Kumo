@@ -1,0 +1,310 @@
+/* [KUMO RECRUITER] 사이드바 레이아웃 최종 통합본 (완전 안정 버전) */
+
+.dashboard-right-sidebar {
+  width: 340px;
+  min-width: 340px;
+  position: fixed;
+  right: 0;
+  top: 80px;
+  height: calc(100vh - 80px);
+
+  background-color: #f8faff;
+
+  padding: 15px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+
+  border-left: 1px solid #f0f3f8;
+
+  z-index: 1000;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+  /* 사이드바 자체 스크롤 방지 */
+
+  opacity: 1;
+  transform: none;
+}
+
+
+/* 애니메이션 */
+.start-animation .dashboard-right-sidebar {
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out 0.6s forwards;
+}
+
+
+/* ========================= */
+/* 공통 패널 */
+/* ========================= */
+
+.side-panel {
+
+  background: #ffffff;
+
+  border-radius: 20px;
+
+  padding: 12px 15px;
+
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.03);
+
+  border: 1px solid #f0f3f8;
+
+  display: flex;
+
+  flex-direction: column;
+
+  position: relative;
+
+  overflow: hidden;
+
+}
+
+
+/* ========================= */
+/* 상단 달력 패널 */
+/* ========================= */
+
+.side-panel:first-of-type {
+
+  flex: 0 0 auto !important;
+
+  min-height: auto !important;
+
+  max-height: 45% !important;
+
+}
+
+
+/* ========================= */
+/* 일정 섹션 (핵심) */
+/* ========================= */
+
+.schedule-section {
+
+  flex: 1 !important;
+
+  display: flex;
+
+  flex-direction: column;
+
+  min-height: 0;
+
+}
+
+
+/* 실제 일정 리스트 */
+#event-list-container {
+
+  flex: 1;
+
+  overflow-y: auto;
+
+  padding-right: 5px;
+
+}
+
+
+/* 스크롤바 디자인 */
+
+#event-list-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+#event-list-container::-webkit-scrollbar-thumb {
+
+  background-color: #e2e8f0;
+
+  border-radius: 10px;
+
+}
+
+
+/* ========================= */
+/* 하단 버튼 영역 */
+/* ========================= */
+
+.side-action-buttons {
+
+  margin-top: auto;
+
+  padding-top: 10px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+
+  flex-shrink: 0 !important;
+
+}
+
+
+.side-action-buttons a {
+
+  display: block;
+
+  width: 100%;
+
+  text-decoration: none !important;
+
+}
+
+
+.side-action-buttons .btn {
+
+  width: 100%;
+
+  margin-bottom: 0;
+
+}
+
+
+/* ========================= */
+/* 패널 헤더 */
+/* ========================= */
+
+.panel-header {
+
+  font-size: 1.05rem;
+
+  font-weight: 800;
+
+  color: #333d4b;
+
+  margin-bottom: 10px !important;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+}
+
+
+/* ========================= */
+/* placeholder */
+/* ========================= */
+
+.panel-placeholder {
+
+  flex: 1;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background-color: #fcfdfe;
+
+  border-radius: 15px;
+
+  color: #b0b8c1;
+
+  font-size: 0.9rem;
+
+  text-align: center;
+
+  border: 1px dashed #e5e8eb;
+
+}
+
+
+/* ========================= */
+/* badge */
+/* ========================= */
+
+.badge-count {
+
+  background: #ff6b6b;
+
+  color: white;
+
+  border-radius: 50%;
+
+  padding: 2px 7px;
+
+  font-size: 0.75rem;
+
+  font-weight: 700;
+
+  position: absolute;
+
+  top: -5px;
+
+  right: -5px;
+
+  border: 2px solid #ffffff;
+
+}
+
+
+/* ========================= */
+/* 버튼 */
+/* ========================= */
+
+.btn-sky-blue {
+
+  background-color: #7abaff !important;
+
+  color: white !important;
+
+  border: none !important;
+
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+
+}
+
+
+.btn-sky-blue:hover {
+
+  background-color: #66aaff !important;
+
+  transform: translateY(-3px);
+
+  box-shadow: 0 8px 20px rgba(122, 186, 255, 0.4) !important;
+
+}
+
+
+.btn-light-blue {
+
+  position: relative;
+
+  background-color: #92ccff !important;
+
+  color: white !important;
+
+  border: none !important;
+
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+
+}
+
+
+.btn-light-blue:hover {
+
+  background-color: #7abaff !important;
+
+  transform: translateY(-3px);
+
+  box-shadow: 0 8px 20px rgba(146, 204, 255, 0.4) !important;
+
+}
+
+
+.btn-sky-blue:active,
+.btn-light-blue:active {
+
+  transform: translateY(-1px);
+
+}

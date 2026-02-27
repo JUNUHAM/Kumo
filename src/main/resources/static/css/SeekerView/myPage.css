@@ -1,0 +1,494 @@
+@charset "UTF-8";
+
+/* 초기화 및 공통 설정 */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+
+    /* ★ 핵심: 화면 전체를 세로 Flex 박스로 만듦 */
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* 화면 꽉 채우기 */
+    overflow: hidden; /* 전체 스크롤 방지 */
+}
+
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+
+/* ============================
+   1. 페이지 레이아웃 (사이드바 + 콘텐츠)
+   ============================ */
+.mypage-container {
+    display: flex;      /* 가로 배치 (사이드바 + 메인) */
+    flex: 1;            /* ★ 남은 높이(헤더, 푸터 제외)를 모두 차지함 */
+    min-height: 0;      /* 내부 스크롤을 위해 필수 */
+    overflow: hidden;   /* 자식 요소 스크롤 제어 */
+}
+
+/* 메인 콘텐츠 영역 */
+.content-area {
+    flex: 1;            /* 사이드바 제외 나머지 너비 차지 */
+    padding: 30px 60px;
+    background-color: #fff;
+    overflow-y: auto;   /* 내용 많으면 여기만 스크롤 */
+}
+
+.content-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    color: #111;
+}
+
+.profile-section {
+    max-width: 800px;
+}
+
+/* ============================
+   2. 프로필 사진 & 버튼
+   ============================ */
+.profile-photo-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: max-content;
+    margin-left: 140px;
+    padding-left: 0;
+    margin-bottom: 50px;
+}
+
+.img-wrapper {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 15px;
+    border: 1px solid #eee;
+}
+
+.img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.btn-upload-photo {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 20px;
+    font-size: 12px;
+    color: #42a5f5;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.2s;
+}
+.btn-upload-photo:hover { border-color: #42a5f5; }
+
+/* ============================
+   3. 정보 리스트
+   ============================ */
+.info-list {
+    margin-bottom: 30px;
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 35px;
+}
+
+.info-row .label {
+    width: 160px; /* 라벨 고정 너비 */
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+    flex-shrink: 0;
+}
+
+.info-row .value {
+    font-size: 14px;
+    color: #555;
+}
+
+/* 토글 스위치 (iOS Style) */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.switch input { opacity: 0; width: 0; height: 0; }
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+}
+
+input:checked + .slider { background-color: #42a5f5; }
+input:checked + .slider:before { transform: translateX(20px); }
+.slider.round { border-radius: 34px; }
+.slider.round:before { border-radius: 50%; }
+
+/* ============================
+   4. 하단 버튼 (탈퇴/수정)
+   ============================ */
+.action-buttons {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 40px;
+    margin-top: 60px;
+    padding-left: 120px;
+}
+
+.btn-delete {
+    font-size: 13px;
+    color: #ff6b6b;
+    font-weight: 500;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.btn-edit {
+    font-size: 13px;
+    color: #333;
+    font-weight: 700;
+    cursor: pointer;
+    margin-left: 20px;
+}
+.btn-edit:hover { color: #42a5f5; }
+
+/* ============================
+   5. 모달 및 파일 업로드
+   ============================ */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+}
+.modal-overlay.show { display: flex; }
+
+.modal-window {
+    background-color: #fff;
+    width: 400px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    overflow: hidden;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.modal-header h3 { font-size: 18px; font-weight: 700; color: #333; margin: 0; }
+.close-btn { font-size: 24px; cursor: pointer; color: #999; }
+.close-btn:hover { color: #333; }
+
+.modal-body {
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.preview-wrapper {
+    width: 150px; height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+}
+.preview-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+.guide-text { font-size: 13px; color: #888; margin-bottom: 15px; }
+
+/* 커스텀 파일 버튼 */
+.file-input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+    width: 100%;
+}
+.hidden-input { display: none; }
+
+.custom-file-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 24px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    color: #555;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.custom-file-btn:hover {
+    background-color: #f0f9ff;
+    border-color: #42a5f5;
+    color: #42a5f5;
+    transform: translateY(-1px);
+}
+.custom-file-btn i { color: #42a5f5; font-size: 16px; }
+.file-name { font-size: 13px; color: #888; max-width: 90%; text-align: center; word-break: break-all; }
+
+.modal-footer {
+    padding: 15px 20px;
+    background-color: #f9f9f9;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn-cancel {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-save {
+    padding: 8px 16px;
+    border: none;
+    background-color: #42a5f5;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+.btn-save:hover { background-color: #1e88e5; }
+
+/* ============================
+   6. 다크모드 대응 (전역 변수 기반)
+   ============================ */
+body.dark-mode {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+}
+body.dark-mode .content-area {
+    background-color: var(--bg-card);
+    border-color: var(--border-color);
+}
+body.dark-mode .content-header h2,
+body.dark-mode .info-row .label { color: var(--text-main); }
+body.dark-mode .info-row .value { color: var(--text-sub); }
+
+body.dark-mode .btn-upload-photo {
+    background-color: var(--bg-main);
+    border-color: var(--border-color);
+    color: var(--primary-color);
+}
+body.dark-mode .img-wrapper { border-color: var(--border-color); }
+body.dark-mode .btn-edit { color: var(--text-main); }
+body.dark-mode .btn-edit:hover { color: var(--primary-color); }
+
+body.dark-mode .modal-window { background-color: var(--bg-card); color: var(--text-main); }
+body.dark-mode .modal-header { border-bottom-color: var(--border-color); }
+body.dark-mode .modal-header h3 { color: var(--text-main); }
+body.dark-mode .close-btn { color: var(--text-sub); }
+body.dark-mode .modal-footer { background-color: var(--bg-main); }
+body.dark-mode .btn-cancel { background-color: var(--bg-card); border-color: var(--border-color); color: var(--text-sub); }
+body.dark-mode .guide-text { color: var(--text-sub); }
+body.dark-mode .custom-file-btn {
+    background-color: var(--bg-main);
+    border-color: var(--border-color);
+    color: var(--text-sub);
+}
+body.dark-mode .custom-file-btn:hover {
+    background-color: var(--bg-card);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+body.dark-mode .file-name { color: var(--text-sub); }
+
+/* [레이아웃 보정] 헤더 높이만큼 여백 확보 */
+.mypage-container {
+    margin-top: var(--header-height);
+    height: calc(100vh - var(--header-height));
+}
+
+footer, .non-login-footer {
+    background-color: var(--bg-card) !important;
+    border-top: 1px solid var(--border-color);
+    margin-top: 0 !important;
+}
+body.dark-mode footer, body.dark-mode .non-login-footer {
+    background-color: var(--bg-card) !important;
+    border-top: 1px solid var(--border-color);
+}
+
+
+/* ============================================================
+   KUMO - 회원 탈퇴 모달 스타일
+   ============================================================ */
+/* 모달 배경 (어두운 오버레이) */
+.delete-modal-overlay {
+    display: none; /* 평소엔 숨김 */
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 3000; /* 헤더(1000)보다 무조건 높게 */
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.2s ease;
+}
+
+/* 모달 본체 */
+.delete-modal-content {
+    background-color: var(--bg-card);
+    width: 100%;
+    max-width: 450px;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+/* 모달 헤더 */
+.delete-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    border-bottom: 1px solid var(--border-color);
+}
+.delete-modal-header h3 {
+    margin: 0; font-size: 18px; font-weight: 700; color: var(--text-main);
+}
+.btn-close-modal {
+    background: none; border: none; font-size: 20px; color: var(--text-sub); cursor: pointer;
+}
+.btn-close-modal:hover { color: var(--danger-color); }
+
+/* 모달 바디 */
+.delete-modal-body { padding: 25px; }
+
+/* 경고 박스 */
+.warning-box {
+    background-color: rgba(255, 107, 107, 0.1);
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+    text-align: center;
+}
+.warning-box i { font-size: 30px; color: var(--danger-color); margin-bottom: 10px; }
+.warning-title { font-size: 16px; font-weight: 700; color: var(--danger-color); margin-bottom: 10px; }
+.warning-list { text-align: left; margin: 0; padding-left: 20px; font-size: 13px; color: var(--text-main); line-height: 1.6; }
+
+/* 입력창 그룹 */
+.delete-input-group label {
+    display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;
+}
+
+/* 모달 푸터 */
+.delete-modal-footer {
+    display: flex; gap: 10px; padding: 20px 25px; background-color: var(--hover-bg); border-top: 1px solid var(--border-color);
+}
+.delete-modal-footer button {
+    flex: 1; height: 48px; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+}
+
+/* 버튼 디자인 */
+.btn-modal-cancel {
+    background-color: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main);
+}
+.btn-modal-cancel:hover { background-color: var(--border-color); }
+
+.btn-modal-danger {
+    background-color: var(--danger-color); border: none; color: #fff;
+}
+/* 비활성화 상태 (비밀번호 입력 전) */
+.btn-modal-danger:disabled {
+    background-color: #ffb3b3; cursor: not-allowed;
+}
+.btn-modal-danger:not(:disabled):hover { filter: brightness(0.9); }
+
+/* ============================================================
+   KUMO - 탈퇴 모달 입력창 상세 스타일
+   ============================================================ */
+.delete-input-group {
+    text-align: left;
+    margin-top: 20px;
+}
+
+.delete-input-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 8px;
+}
+
+/* 모달 전용 꽉 차는 예쁜 입력창 */
+.custom-modal-input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-card);
+    color: var(--text-main);
+    font-size: 14px;
+    box-sizing: border-box; /* 넓이 삐져나감 방지 */
+    transition: all 0.2s;
+}
+
+.custom-modal-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(125, 180, 230, 0.2); /* 파란색 은은한 아웃라인 */
+}
+
+/* 다크모드 입력창 대응 */
+body.dark-mode .custom-modal-input {
+    background-color: #121212;
+    border-color: #333333;
+}
+body.dark-mode .custom-modal-input:focus {
+    border-color: var(--primary-color);
+    background-color: #1a1a1a;
+}
+

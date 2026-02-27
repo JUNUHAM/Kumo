@@ -1,0 +1,315 @@
+@charset "UTF-8";
+
+/* ============================================================
+   [1] 전체 공통 설정 및 레이아웃 (Base & Layout)
+   ============================================================ */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* 지도 화면에서 불필요한 스크롤 방지 */
+    font-family: 'Noto Sans KR', 'Noto Sans JP', sans-serif;
+    background-color: #f0f0f0;
+}
+
+.map-container {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 60px); /* 헤더 높이 제외한 영역 */
+    background-color: #e5e5e5;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+
+/* ============================================================
+   [2] 상단 헤더 영역 (Header)
+   ============================================================ */
+/* ☀️ 라이트 모드 (기본) */
+.map-header-wrapper {
+    position: relative;
+    width: 100%;
+    z-index: 1000;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: background-color 0.3s ease;
+}
+
+.map-header-wrapper .non-login-header,
+.map-header-wrapper .authenticated-header {
+    width: 100% !important;
+    box-sizing: border-box;
+    margin: 0 !important;
+}
+
+/* 🌙 다크 모드 */
+body.dark-mode .map-header-wrapper {
+    background-color: #232323 !important;
+    border-bottom: 1px solid #333;
+}
+
+body.dark-mode .map-header-wrapper .nav-menu a,
+body.dark-mode .map-header-wrapper .icon-btn i {
+    color: #ffffff !important;
+    transition: color 0.3s ease;
+}
+
+
+/* ============================================================
+   [3] 검색바 & 하단 네비게이션 (Search & Nav)
+   ============================================================ */
+/* ☀️ 라이트 모드 (기본) */
+.map-search-floating {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: 90%;
+    max-width: 480px;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 12px 20px;
+    border-radius: 50px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+
+.search-bar .menu-icon { margin-right: 15px; color: #555; cursor: pointer; }
+.search-bar input { border: none; outline: none; background: transparent; flex: 1; font-size: 15px; color: #333; }
+.search-bar button { background: none; border: none; cursor: pointer; color: #4285F4; font-size: 18px; }
+
+.map-bottom-nav {
+    position: absolute;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    width: auto;
+}
+
+.nav-box {
+    display: flex;
+    background: white;
+    padding: 8px 10px;
+    border-radius: 40px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    gap: 10px;
+}
+
+.nav-item {
+    background: none; border: none;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 80px; cursor: pointer; color: #999; transition: all 0.2s;
+}
+.nav-item .icon-box { font-size: 20px; margin-bottom: 4px; position: relative; }
+.nav-item span { font-size: 11px; font-weight: 500; }
+.nav-item.active { color: #4285F4; }
+.nav-item.active .icon-box { transform: translateY(-2px); }
+
+.badge-dot {
+    position: absolute; top: -2px; right: -5px;
+    background: #ff4757; color: white;
+    font-size: 9px; font-weight: bold;
+    padding: 2px 4px; border-radius: 50%; border: 1px solid white;
+}
+
+#regionSelect {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    padding: 0 5px;
+}
+
+.search-bar .divider {
+    width: 1px;
+    height: 18px;
+    background-color: #ddd;
+    margin: 0 15px 0 10px; /* 좌우 여백 */
+}
+
+/* 🌙 다크 모드 */
+body.dark-mode .search-bar,
+body.dark-mode .nav-box { background: #262424; border: 1px solid #444; }
+body.dark-mode .search-bar input { color: white; }
+body.dark-mode .search-bar .menu-icon { color: #aaa; }
+body.dark-mode .nav-item { color: #666; }
+body.dark-mode .nav-item.active { color: #76a9ff; }
+body.dark-mode #regionSelect {
+    color: #ffffff;
+}
+
+body.dark-mode #regionSelect option {
+    background-color: #262424; /* 드롭다운을 펼쳤을 때의 배경색 */
+    color: #ffffff;
+}
+
+body.dark-mode .search-bar .divider {
+    background-color: #555;
+}
+
+
+/* ============================================================
+   [4] 플로팅 카드 (Job Detail Card)
+   ============================================================ */
+/* ☀️ 라이트 모드 (기본) */
+.floating-card {
+    position: absolute;
+    top: 20px; left: 20px; width: 320px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    padding: 20px;
+    z-index: 1200;
+    display: none;
+    animation: slideIn 0.3s ease-out;
+}
+@keyframes slideIn {
+    from { transform: translateX(-20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.btn-close-card {
+    position: absolute; top: 10px; right: 15px;
+    background: none; border: none; font-size: 24px; color: #999; cursor: pointer;
+}
+
+.card-header-section { display: flex; align-items: center; margin-bottom: 15px; }
+.profile-icon {
+    width: 40px; height: 40px; border-radius: 50%;
+    background-color: #89CFF0; color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; margin-right: 10px; font-size: 16px;
+}
+.profile-info { display: flex; flex-direction: column; }
+.company-name { font-size: 14px; font-weight: bold; color: #333; }
+.manager-name { font-size: 12px; color: #666; margin-top: 2px; }
+
+.card-image-wrapper { width: 100%; height: 160px; border-radius: 8px; overflow: hidden; margin-bottom: 15px; background-color: #f5f5f5; }
+.card-image-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+
+.card-body-section { margin-bottom: 20px; }
+.job-title { font-size: 18px; font-weight: bold; margin: 0 0 8px 0; color: #333; }
+.job-address, .job-phone { font-size: 13px; color: #555; margin: 4px 0; }
+
+.card-footer-section { display: flex; gap: 10px; }
+.btn-outline {
+    flex: 1; padding: 8px 0; border: 1px solid #ddd; background: white;
+    border-radius: 20px; color: #555; cursor: pointer; font-size: 13px; transition: background 0.2s;
+}
+.btn-outline:hover { background: #f9f9f9; }
+
+.btn-primary-custom {
+    flex: 1; padding: 8px 0; border: none; background: #89CFF0;
+    border-radius: 20px; color: white; font-weight: bold; cursor: pointer; font-size: 13px; transition: background 0.2s;
+}
+.btn-primary-custom:hover { background: #6CBFE0; }
+
+/* 🌙 다크 모드 */
+body.dark-mode .floating-card { background-color: #1e1e1e; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6); }
+body.dark-mode .btn-close-card { color: #aaaaaa; }
+body.dark-mode .btn-close-card:hover { color: #ffffff; }
+body.dark-mode .floating-card .job-title { color: #ffffff; }
+body.dark-mode .floating-card .company-name,
+body.dark-mode .floating-card .manager-name,
+body.dark-mode .floating-card .job-address,
+body.dark-mode .floating-card .job-phone { color: #cccccc; }
+body.dark-mode .floating-card .btn-outline { border-color: #555; background: transparent; color: #e0e0e0; }
+body.dark-mode .floating-card .btn-outline:hover { background-color: #333; }
+
+
+/* ============================================================
+   [5] 바텀 시트 (Bottom Sheet)
+   ============================================================ */
+/* ☀️ 라이트 모드 (기본) */
+.bottom-sheet {
+    position: fixed;
+    bottom: 0; left: 0; width: 100%; height: 80vh;
+    background-color: white;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    transform: translateY(calc(100% - 60px));
+    z-index: 200;
+}
+.bottom-sheet.active { transform: translateY(0); }
+
+.sheet-handle {
+    height: 60px; width: 100%;
+    display: flex; justify-content: center; align-items: center;
+    cursor: pointer; background-color: white; border-radius: 20px 20px 0 0;
+}
+.handle-bar { width: 50px; height: 5px; background-color: #ddd; border-radius: 5px; }
+
+.sheet-content { height: calc(100% - 60px); overflow-y: auto; padding: 0 20px 20px 20px; box-sizing: border-box; }
+
+/* 🌟 찜해제 버튼 (노란색) */
+.btn-saved {
+    background-color: #ffca28 !important; /* 따뜻한 노란색 */
+    color: #333 !important;
+    border: 1px solid #f5b041 !important;
+    font-weight: bold;
+}
+.btn-saved:hover {
+    background-color: #ffb300 !important;
+}
+
+/* 🌙 다크 모드 */
+body.dark-mode .bottom-sheet { background-color: #1e1e1e; box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.5); }
+body.dark-mode .sheet-handle { background-color: #2c2c2c; }
+body.dark-mode .sheet-handle .handle-bar { background-color: #fff; }
+body.dark-mode .sheet-content h2 { color: #ffffff; }
+body.dark-mode .contact-text { color:#fff; font-size:12px;}
+
+
+/* ============================================================
+   [6] 구직 정보 리스트 테이블 (Job Table)
+   ============================================================ */
+/* ☀️ 라이트 모드 (기본) */
+.table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 10px; }
+.job-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+.job-table th { position: sticky; top: 0; background-color: #f8f9fa; z-index: 10; padding: 12px 10px; text-align: left; font-size: 13px; color: #666; border-bottom: 1px solid #ddd; white-space: nowrap; }
+.job-table td { padding: 14px 10px; border-bottom: 1px solid #eee; vertical-align: middle; font-size: 14px; }
+
+.title-text { font-size: 15px; font-weight: 700; color: #333; margin-bottom: 4px; display: block; }
+.company-text { color: #1976d2; font-weight: 700; text-decoration: none; font-size: 13px; }
+.wage-text { color: #2196f3; font-weight: 700; font-size: 13px; }
+.addr-text { color: #333; font-size: 13px; }
+
+.badge { display: inline-block; padding: 2px 6px; font-size: 10px; border-radius: 4px; margin-right: 3px; font-weight: 500; }
+.bg-blue { background: #e3f2fd; color: #1565c0; }
+.bg-yellow { background: #fff9c4; color: #f9a825; }
+
+.profile-wrap { display: flex; align-items: center; gap: 8px; }
+.profile-img { width: 32px; height: 32px; border-radius: 50%; background: #eee; object-fit: cover; }
+.profile-info div:first-child { font-size: 12px; font-weight: 500; }
+.profile-info div:last-child { font-size: 11px; color: #999; }
+
+.btn-wrap { display: flex; gap: 5px; }
+.btn { border: 1px solid #ddd; background: #fff; padding: 5px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; }
+.btn-view { background: #42a5f5; color: white; border: none; }
+.btn-view:hover { background: #1e88e5; }
+.msg-box { text-align: center; padding: 40px; color: #888; font-size: 14px; }
+
+/* 🌙 다크 모드 */
+body.dark-mode .job-table th { background-color: #2c2c2c; color: #ffffff; border-bottom: 2px solid #444; }
+body.dark-mode .job-table td { border-bottom: 1px solid #333; }
+body.dark-mode .job-table .title-text { color: #ffffff; }
+body.dark-mode .job-table a.company-text { color: #6ba4ff; }
+body.dark-mode .addr-text { color: #e0e0e0; }
+body.dark-mode .profile-info { background-color: transparent !important; }
+body.dark-mode .profile-info div:first-child { color: #ffffff; }
+body.dark-mode .msg-box { color: #999; }

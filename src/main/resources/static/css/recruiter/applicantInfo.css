@@ -1,0 +1,498 @@
+/* applicant_info.css */
+
+.applicant-card {
+  background: white;
+  border-radius: 25px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+  /* ... 기존 배경, 패딩 설정 유지 ... */
+
+  /* [수정] main.css의 margin-left(180px)와 시각적 선을 맞추기 위한 설정 */
+  margin-left: 0; /* 부모 컨테이너가 이미 180px이므로 0으로 설정하여 정렬 */
+  width: 100%;
+  max-width: 1200px; /* 창이 커져도 깨지지 않는 적정 너비 */
+  box-sizing: border-box;
+}
+
+.card-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.table-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin: 0 0 10px 0;
+}
+
+.applicant-count {
+  font-size: 0.9rem;
+  color: #8b95a1;
+}
+
+.count-badge {
+  background-color: #e8f3ff;
+  color: #7abaff;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+/* 필터 버튼 */
+.btn-filter {
+  border: 1px solid #eee;
+  background: white;
+  border-radius: 10px;
+  padding: 8px 15px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* 테이블 스타일 */
+.kumo-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.kumo-table th {
+  text-align: left;
+  padding: 15px;
+  color: #b0b8c1;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border-bottom: 1px solid #f9f9f9;
+}
+
+.kumo-table td {
+  padding: 15px;
+  border-bottom: 1px solid #f9f9f9;
+  font-size: 0.95rem;
+  color: #333d4b;
+}
+
+.sort-icon {
+  font-size: 0.7rem;
+  margin-left: 5px;
+}
+
+/* 유저 프로필 섹션 */
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar-sm {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+}
+
+/* 열람 버튼 (피그마 스타일) */
+.btn-view {
+  background-color: #7abaff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 15px;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+}
+
+.btn-view:hover {
+  background-color: #5a9ce6;
+}
+
+/* 체크박스 커스텀 */
+.kumo-check {
+  width: 18px;
+  height: 18px;
+  accent-color: #7abaff;
+  cursor: pointer;
+}
+
+/* ============================================================
+   [KUMO RECRUITER] 지원자 상세 정보 (Applicant Detail) 통합 마스터
+   ============================================================ */
+
+/* 1. 배경 및 사이드바 공간 확보 (오른쪽 확장 버전) */
+.applicant-detail-bg {
+  background-color: #f8faff !important; /* 부드러운 배경색 */
+  min-height: calc(100vh - 80px);
+  /* 오른쪽 sidebar(350px) 공간을 360px로 최적화하여 카드 확장 */
+  padding: 20px 340px 30px 40px !important;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.applicant-detail-wrapper {
+  max-width: 1150px; /* 사장님 피드백 반영: 가로 너비 확장 */
+  margin: 0;
+}
+
+/* 2. 상단 타이틀 (콤팩트 사이즈) */
+.detail-header-title h2 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #2c3e50;
+  margin-bottom: 25px;
+}
+
+/* 3. 중앙 화이트 보드 (곡률 35px & 부드러운 그림자) */
+.applicant-white-card {
+  background: #ffffff;
+  border-radius: 35px;
+  padding: 45px 60px; /* 내부 여백 최적화 */
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(230, 235, 241, 0.8);
+  position: relative;
+}
+
+/* 4. 카드 내 상단 목록 버튼 (흰색 칸 내부 좌측 상단) */
+.card-top-actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: -5px;
+  margin-left: -5px;
+  margin-bottom: 35px;
+  border-bottom: 1px solid #f1f4f8; /* 구분선 */
+  padding-bottom: 15px;
+}
+
+.btn-back-list {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #f8faff;
+  color: #718096;
+  border: 1px solid #edf2f7;
+  padding: 6px 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-back-list:hover {
+  background-color: #ffffff;
+  color: #7abaff; /* 시그니처 블루 */
+  border-color: #7abaff;
+  transform: translateX(-3px);
+}
+
+.btn-back-list i {
+  font-size: 1.3rem;
+  line-height: 0;
+}
+
+/* 5. 프로필 섹션 (점 현상 해결 및 구조 최적화) */
+.detail-profile-row {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  margin-bottom: 50px;
+}
+
+.profile-avatar-box {
+  /* 고정 크기 확실하게 지정 */
+  width: 135px;
+  height: 135px;
+  flex-shrink: 0; /* 찌그러짐 방지 */
+}
+
+/* [추가] 중간 박스도 부모 크기를 100% 따라가도록 설정 */
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #f0f4f8;
+  border: 5px solid #f8faff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 이미지 스타일: 이제 부모(placeholder)를 기준으로 꽉 찹니다 */
+.avatar-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  /* 로드되면 JS가 opacity: 1로 바꿈 */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* 기본 아이콘 (이미지 없을 때 뒤에 보이는 것) */
+.default-icon {
+  font-size: 3.5rem;
+  color: #b7cce2;
+  z-index: 1;
+}
+
+.name-line h1 {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #2d3748;
+  margin: 0 0 10px 0; /* 마진 정리 */
+}
+
+.name-line span {
+  color: #a0aec0;
+  font-size: 1.1rem;
+}
+
+.contact-line {
+  margin-top: 15px;
+}
+
+.contact-line p {
+  margin: 5px 0;
+  color: #718096;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.contact-line i {
+  color: #7abaff; /* 아이콘 색상 포인트 */
+}
+
+/* 6. 정보 그리드 (3분할 밸런스 조정) */
+.detail-grid-row {
+  display: flex;
+  gap: 50px;
+  margin-bottom: 50px;
+}
+
+.grid-col {
+  flex: 1;
+  min-width: 0;
+}
+
+.grid-col h3 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #2d3748;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.grid-col h3 i {
+  color: #7abaff;
+}
+
+.middle-border {
+  border-left: 1px solid #edf2f7;
+  border-right: 1px solid #edf2f7;
+  padding: 0 50px;
+}
+
+/* 항목별 가로 배치 정렬 */
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.info-item span {
+  color: #8b95a1;
+  font-size: 0.9rem;
+}
+.info-item strong {
+  color: #333d4b;
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+.pr-box {
+  margin-top: 20px;
+  padding: 25px;
+  background: #f8faff;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  line-height: 1.8;
+  color: #4a5568;
+}
+
+/* 7. 하단 액션 버튼 (슬림&웅장 밸런스) */
+.detail-footer-btns {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.btn-action-main,
+.btn-action-sub,
+.btn-action-gray {
+  min-width: 170px;
+  padding: 16px 0;
+  border-radius: 16px;
+  border: none;
+  font-weight: 800;
+  font-size: 1.05rem;
+  transition: all 0.2s ease;
+}
+
+.btn-action-main {
+  background: #7abaff;
+  color: white;
+}
+.btn-action-sub {
+  background: #c3e2ff;
+  color: #4a90e2;
+}
+.btn-action-gray {
+  background: #b7cce2;
+  color: #4a5568;
+}
+
+.btn-action-main:hover,
+.btn-action-sub:hover,
+.btn-action-gray:hover {
+  transform: translateY(-3px);
+  filter: brightness(0.98);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* =========================================
+   🌟 관리 버튼 (톱니바퀴) 가운데 정렬 & 디자인
+========================================= */
+
+/* 1. 6번째 칸(관리)을 완벽한 정중앙으로 세팅 */
+.kumo-table th:nth-child(6),
+.kumo-table td:nth-child(6) {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+/* 2. 톱니바퀴 버튼 배경/테두리 제거 */
+.btn-gear {
+  background: transparent;
+  /* 배경 투명하게 */
+  border: none;
+  /* 테두리 제거 */
+  color: #a0aec0;
+  /* 은은한 회색 */
+  font-size: 1.25rem;
+  /* 아이콘 크기 살짝 키움 */
+  padding: 5px;
+  /* 클릭 영역 확보 */
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+/* 3. 마우스 올렸을 때 효과 (색상 변경 + 회전 애니메이션) */
+.btn-gear:hover {
+  color: #7abaff;
+  /* 사장님 메인 파란색으로 변신 */
+  transform: rotate(90deg);
+  /* 톱니바퀴가 찌잉~ 하고 돌아가는 귀여운 디테일 */
+}
+
+/* ============================================================
+   🌟 [추가] 아코디언 (공고 리스트) 및 지원자 미니 테이블 스타일
+   ============================================================ */
+
+.job-accordion {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border: 1px solid #e9ecef;
+}
+.job-accordion .accordion-item {
+    border: none;
+    border-bottom: 1px solid #f1f3f5;
+}
+.job-accordion .accordion-item:last-child { border-bottom: none; }
+.job-accordion .accordion-button {
+    background-color: #fff;
+    padding: 20px;
+    font-weight: 600;
+    color: #212529;
+}
+.job-accordion .accordion-button:not(.collapsed) {
+    background-color: #f0f1f6;
+    color: #339af0;
+    box-shadow: inset 0 -1px 0 rgba(0,0,0,.125);
+}
+.job-accordion .accordion-button:focus {
+    box-shadow: none;
+    border-color: rgba(0,0,0,.125);
+}
+
+.accordion-body {
+    background-color: #fcfcfc;
+    padding: 15px 30px 25px 30px;
+    border-left: 4px solid #339af0;
+}
+
+.mini-table {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    margin-top: 10px;
+}
+.mini-table th {
+    background-color: #f1f3f5;
+    color: #495057;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-bottom: none;
+}
+.mini-table td {
+    vertical-align: middle;
+    font-size: 0.95rem;
+    border-color: #f0f1f6;
+}
+
+/* 🌟 [추가] 이력서 모달창 스타일 */
+.resume-modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+    background-color: #f0f1f6;
+    padding: 20px;
+}
+.resume-section {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.resume-section h5 {
+    border-bottom: 2px solid #339af0;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    font-weight: bold;
+    color: #212529;
+}
+.spec-item { margin-bottom: 10px; }
+.spec-item .label {
+    font-weight: 600;
+    color: #495057;
+    width: 100px;
+    display: inline-block;
+}

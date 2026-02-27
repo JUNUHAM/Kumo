@@ -1,0 +1,166 @@
+/* jobPosting.css - 최종 통합본 */
+
+/* 1. 전체 카드 레이아웃 (정중앙 정렬 버전) */
+.posting-card {
+  background: #ffffff;
+  max-width: 950px;
+
+  /* [수정] 좌측 60px 밀기를 제거하고 상하 0, 50px / 좌우 auto로 설정 */
+  margin: 0 auto 50px auto !important;
+
+  padding: 40px 50px;
+  border-radius: 25px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.posting-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #333d4b;
+  margin-bottom: 40px;
+}
+
+/* 2. 라벨 및 텍스트 스타일 */
+.form-label {
+  font-weight: 700;
+  color: #4e5968;
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+}
+
+.text-nowrap {
+  white-space: nowrap !important; /* "까지" 줄바꿈 방지 핵심 */
+}
+
+/* 3. 입력창 스타일 (KUMO Style) */
+.kumo-input {
+  background-color: #f2f4f6 !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 14px 18px !important;
+  font-size: 0.95rem;
+  color: #333d4b;
+  transition: all 0.2s ease;
+}
+
+.kumo-input:focus {
+  background-color: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(122, 186, 255, 0.2) !important;
+  outline: none;
+}
+
+/* 마감일 등 작은 입력창 */
+.kumo-input-sm {
+  background-color: #f2f4f6 !important;
+  border: none !important;
+  border-radius: 10px !important;
+  padding: 10px !important;
+  text-align: center;
+}
+
+/* 4. 사진 업로드 영역 */
+.upload-container {
+  display: flex;
+  gap: 15px;
+  padding: 25px;
+  background: #fdfdfe;
+  border: 2px dashed #e5e8eb;
+  border-radius: 20px;
+}
+
+.upload-item {
+  width: 90px;
+  height: 90px;
+  border-radius: 15px;
+  overflow: hidden;
+  position: relative;
+}
+
+.upload-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.upload-item.uploading::after {
+  content: "Uploading";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-btn {
+  width: 90px;
+  height: 90px;
+  background: #f2f4f6;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #b7cce2;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.upload-btn:hover {
+  background-color: #e5e8eb;
+}
+
+/* 5. 버튼 디자인 */
+.kumo-btn-outline {
+  border: 1px solid #e2e8f0 !important;
+  color: #4e5968 !important;
+  border-radius: 8px !important;
+  margin-left: 10px !important;
+}
+
+.kumo-btn-submit {
+  background-color: #7abaff !important; /* 사장님 포인트 컬러 */
+  border: none !important;
+  padding: 15px 80px !important;
+  border-radius: 15px !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem;
+  transition: all 0.2s;
+  color: white;
+}
+
+.kumo-btn-submit:hover {
+  background-color: #66aaff !important;
+  transform: translateY(-2px);
+}
+
+/* 회사 선택 박스 커스텀 */
+.company-selection-box .input-group {
+  background-color: #f2f4f6;
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 5px;
+}
+
+.company-selection-box .form-select {
+  background-color: transparent !important;
+  font-weight: 500;
+  color: #333d4b;
+  height: 45px;
+}
+
+.company-selection-box .form-select:focus {
+  box-shadow: none;
+}
+
+.kumo-btn-outline {
+  background: white !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-left: 5px;
+}

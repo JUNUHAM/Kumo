@@ -1,0 +1,694 @@
+/* ============================================================
+   [KUMO RECRUITER] 다크모드 마스터 CSS
+   ============================================================ */
+
+/* ===================================================
+   0. 기본 배경 설정
+   =================================================== */
+:root {
+  background-color: #ffffff;
+}
+
+html.dark-mode {
+  background-color: #121212 !important;
+}
+
+html,
+body {
+  height: auto !important;
+  overflow-x: hidden !important;
+  overflow-y: visible !important;
+}
+
+/* ===================================================
+   1. 글로벌 배경 및 텍스트
+   =================================================== */
+body.dark-mode {
+  background-color: #121212 !important;
+  color: #ffffff !important;
+}
+
+/* ===================================================
+   2. 헤더
+   =================================================== */
+body.dark-mode .custom-header,
+body.dark-mode .non-login-header {
+  background-color: #121212 !important;
+  border-bottom: 1px solid #2d2d2d !important;
+}
+
+body.dark-mode .header-left-section,
+body.dark-mode .lang-dropdown {
+  background-color: #121212 !important;
+}
+
+body.dark-mode .nav-menu a,
+body.dark-mode .icon-btn,
+body.dark-mode .lang-item {
+  color: #ffffff !important;
+}
+
+/* ===================================================
+   3. 페이지 컨테이너
+   =================================================== */
+body.dark-mode .main-container,
+body.dark-mode .content-body,
+body.dark-mode .dashboard-wrapper,
+body.dark-mode .applicant-detail-bg,
+body.dark-mode .company-mgmt-container,
+body.dark-mode .settings-container {
+  background-color: #121212 !important;
+}
+
+.dashboard-wrapper,
+.main-container,
+.content-body,
+.settings-container {
+  height: auto !important;
+  min-height: calc(100vh - 80px);
+  overflow: visible !important;
+}
+
+/* ===================================================
+   4. 사이드바
+   =================================================== */
+body.dark-mode .sidebar-container {
+  background-color: #1a1a1a !important;
+  border-right: 1px solid #2d2d2d !important;
+}
+
+body.dark-mode .nav-item,
+body.dark-mode .nav-item i {
+  color: #ffffff !important;
+}
+
+body.dark-mode .nav-item.active {
+  background-color: #1e293b !important;
+  color: #7abaff !important;
+  border-left: 4px solid #7abaff !important;
+}
+
+body.dark-mode .nav-item:hover {
+  background-color: #242f3f !important;
+  color: #7abaff !important;
+}
+
+body.dark-mode .logout-btn:hover {
+  background-color: #331a1a !important;
+  color: #ff6b6b !important;
+}
+
+/* ===================================================
+   5. 카드 및 패널
+   =================================================== */
+body.dark-mode .stat-card,
+body.dark-mode .panel,
+body.dark-mode .graph-container,
+body.dark-mode .applicant-card,
+body.dark-mode .applicant-white-card,
+body.dark-mode .info-glass-card,
+body.dark-mode .job-manage-card,
+body.dark-mode .posting-card {
+  background-color: #1e1e1e !important;
+  border: 1px solid #2d2d2d !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4) !important;
+}
+
+body.dark-mode .welcome-section h2,
+body.dark-mode .welcome-section p,
+body.dark-mode .panel-title,
+body.dark-mode .text-muted,
+body.dark-mode .small {
+  color: #ffffff !important;
+}
+
+body.dark-mode .panel-header,
+body.dark-mode .card-top-actions,
+body.dark-mode .myjobs-row,
+body.dark-mode .kumo-table td {
+  border-bottom: 1px solid #2d2d2d !important;
+  color: #ffffff !important;
+}
+
+/* ===================================================
+   6. 테이블 (지원자 관리)
+   =================================================== */
+body.dark-mode .kumo-table th {
+  color: #ffffff !important;
+  border-bottom: 1px solid #333 !important;
+}
+
+body.dark-mode .job-name,
+body.dark-mode .table-title,
+body.dark-mode .name-line h1 {
+  color: #ffffff !important;
+}
+
+body.dark-mode .applicant-count,
+body.dark-mode .info-item span {
+  color: #8b95a1 !important;
+}
+
+body.dark-mode .pr-box {
+  background: #252525 !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .middle-border {
+  border-color: #2d2d2d !important;
+}
+
+body.dark-mode .btn-view,
+body.dark-mode .btn-action-main {
+  background: #7abaff !important;
+  color: #fff !important;
+}
+
+body.dark-mode .btn-gear {
+  color: #718096;
+}
+
+body.dark-mode .btn-gear:hover {
+  color: #7abaff;
+}
+
+
+/* ===================================================
+   7. 공고 관리
+   =================================================== */
+body.dark-mode .status-ing {
+  background-color: rgba(92, 184, 92, 0.2) !important;
+  color: #72d572 !important;
+}
+
+body.dark-mode .status-end {
+  background-color: rgba(255, 92, 92, 0.2) !important;
+  color: #ff8080 !important;
+}
+
+body.dark-mode .salary-text {
+  color: #7abaff !important;
+}
+
+body.dark-mode .job-closed td,
+body.dark-mode .job-closed .job-name {
+  color: #718096 !important;
+}
+
+body.dark-mode .myjobs-head {
+  background-color: #252525 !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .count-label {
+  color: #a0aec0 !important;
+}
+
+body.dark-mode .count-badge {
+  background-color: #2b3a4a !important;
+  color: #7abaff !important;
+}
+
+/* ===================================================
+   8. 입력창 및 폼
+   =================================================== */
+body.dark-mode .nav-pill {
+  background: #252525 !important;
+  color: #ffffff !important;
+  border-color: #333 !important;
+}
+
+body.dark-mode .nav-pill.active {
+  background: #7abaff !important;
+  color: #fff !important;
+}
+
+body.dark-mode .nav-pill:not(.active) {
+  background-color: #2d2d2d !important;
+  color: #aaa !important;
+  border: 1px solid #444 !important;
+}
+
+body.dark-mode .kumo-form-control,
+body.dark-mode .kumo-input,
+body.dark-mode .kumo-input-sm {
+  background: #252525 !important;
+  border: 1px solid #333 !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .kumo-input::placeholder,
+body.dark-mode .kumo-input-sm::placeholder {
+  color: #888 !important;
+  opacity: 1 !important;
+}
+
+body.dark-mode .form-select.kumo-input-sm {
+  background-color: #252525 !important;
+  color: #ffffff !important;
+  border: 1px solid #444 !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  background-size: 16px 12px !important;
+  padding-right: 2.5rem !important;
+}
+
+body.dark-mode .info-label,
+body.dark-mode .form-label {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+
+body.dark-mode .btn-address-search,
+body.dark-mode .upload-btn {
+  background: #333d4b !important;
+  color: #fff !important;
+}
+
+body.dark-mode .upload-container {
+  background-color: #1a1a1a !important;
+  border: 2px dashed #444 !important;
+}
+
+body.dark-mode .upload-btn i {
+  color: #7abaff !important;
+}
+
+body.dark-mode .fw-bold.text-nowrap,
+body.dark-mode .position-absolute.translate-middle-y {
+  color: #7abaff !important;
+}
+
+/* ===================================================
+   9. 캘린더 우측 패널
+   =================================================== */
+body.dark-mode .dashboard-right-sidebar,
+body.dark-mode .calendar-side-area {
+  background-color: #121212 !important;
+  border-left: 1px solid #2d2d2d !important;
+}
+
+body.dark-mode .side-panel,
+body.dark-mode .schedule-full-panel,
+body.dark-mode .calendar-card {
+  background-color: #1e1e1e !important;
+  border: 1px solid #2d2d2d !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .sidebar-card {
+  background-color: #1e1e1e !important;
+  border: 1px solid #2d2d2d !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .event-item-title {
+  color: #ffffff !important;
+}
+
+body.dark-mode .panel-placeholder {
+  background: #1a1a1a !important;
+  border-color: #333 !important;
+  color: #ffffff !important;
+}
+
+/* ===================================================
+   10. 본 캘린더 (#calendar)
+   =================================================== */
+body.dark-mode #calendar,
+body.dark-mode .fc-theme-standard td,
+body.dark-mode .fc-theme-standard th,
+body.dark-mode .fc-scrollgrid {
+  background-color: #1e1e1e !important;
+  border-color: #2d2d2d !important;
+}
+
+body.dark-mode #calendar .fc-event {
+  background-color: #1a2635 !important;
+  border-left: 4px solid #7abaff !important;
+}
+
+/* 날짜 숫자 기본 */
+html.dark-mode #calendar .fc-daygrid-day-number {
+  color: #ccc !important;
+}
+
+/* 오늘 날짜 */
+html.dark-mode #calendar .fc-day-today {
+  background-color: rgba(252, 196, 25, 0.2) !important;
+}
+
+html.dark-mode #calendar .fc-day-today .fc-daygrid-day-number {
+  color: #7abaff !important;
+  background-color: transparent !important;
+}
+
+/* 선택된 날짜: 연파랑 네모 배경 */
+html.dark-mode #calendar .selected-day {
+  background-color: rgba(122, 186, 255, 0.25) !important;
+}
+
+html.dark-mode #calendar .selected-day .fc-daygrid-day-number {
+  background-color: transparent !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+/* 오늘 + 선택 */
+html.dark-mode #calendar .fc-day-today.selected-day {
+  background-color: rgba(122, 186, 255, 0.25) !important;
+}
+
+html.dark-mode #calendar .fc-day-today.selected-day .fc-daygrid-day-number {
+  color: #7abaff !important;
+}
+
+/* 요일 헤더 */
+html.dark-mode .fc-col-header-cell-cushion {
+  color: #aaa !important;
+}
+
+/* 토요일/일요일 */
+html.dark-mode .fc-day-sat .fc-col-header-cell-cushion,
+html.dark-mode #calendar .fc-day-sat .fc-daygrid-day-number {
+  color: #4facfe !important;
+}
+
+html.dark-mode .fc-day-sun .fc-col-header-cell-cushion,
+html.dark-mode #calendar .fc-day-sun .fc-daygrid-day-number {
+  color: #ff6b6b !important;
+}
+
+/* "+more" 링크 */
+html.dark-mode .fc-daygrid-more-link {
+  color: #a2a4f0 !important;
+}
+
+/* ===================================================
+   11. 미니 캘린더 (#mini-calendar)
+   =================================================== */
+body.dark-mode #mini-calendar .fc-daygrid-day-number,
+body.dark-mode #mini-calendar .fc-daygrid-day-top a {
+  color: #ffffff !important;
+  text-decoration: none !important;
+}
+
+body.dark-mode #mini-calendar .fc-col-header-cell-cushion {
+  color: #ffffff !important;
+}
+
+body.dark-mode #mini-calendar .fc-day-other .fc-daygrid-day-number {
+  color: #555555 !important;
+}
+
+/* 오늘 날짜: 노란 원 */
+html.dark-mode #mini-calendar .fc-day-today {
+  background-color: transparent !important;
+}
+
+html.dark-mode #mini-calendar .fc-day-today .fc-daygrid-day-number {
+  background-color: #fcc419 !important;
+  color: #121212 !important;
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto !important;
+  box-shadow: 0 2px 8px rgba(252, 196, 25, 0.4) !important;
+}
+
+/* 선택된 날짜: 파란 원 */
+html.dark-mode #mini-calendar .selected-day {
+  background-color: transparent !important;
+}
+
+html.dark-mode #mini-calendar .selected-day .fc-daygrid-day-number {
+  background-color: #7abaff !important;
+  color: #121212 !important;
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto !important;
+  box-shadow: 0 4px 10px rgba(122, 186, 255, 0.4) !important;
+}
+
+/* 오늘 + 선택: 파란 원 우선 */
+html.dark-mode #mini-calendar .fc-day-today.selected-day .fc-daygrid-day-number {
+  background-color: #7abaff !important;
+  color: #121212 !important;
+  box-shadow: 0 4px 10px rgba(122, 186, 255, 0.4) !important;
+}
+
+/* ===================================================
+   12. 스케줄 모달
+   =================================================== */
+body.dark-mode .schedule-modal-content {
+  background-color: #222222 !important;
+  border-radius: 25px !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .modal-title,
+body.dark-mode .modal-label {
+  color: #ffffff !important;
+}
+
+body.dark-mode .kumo-modal-input,
+body.dark-mode .kumo-modal-textarea {
+  background-color: #2d2d2d !important;
+  border: 1px solid #3d3d3d !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .btn-modal-cancel {
+  background-color: #2d2d2d !important;
+  border-color: #333d4b !important;
+  color: #aaaaaa !important;
+}
+
+body.dark-mode .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%) !important;
+}
+
+body.dark-mode .color-picker-wrapper {
+  flex-wrap: wrap;
+  padding-top: 5px;
+}
+
+/* 시간 선택 (다크) */
+body.dark-mode .time-range-wrapper {
+  background: #2d2d2d !important;
+  border-color: #3d3d3d !important;
+}
+
+body.dark-mode .time-range-wrapper input[type="date"],
+body.dark-mode .custom-time-input select,
+body.dark-mode .custom-time-input span,
+body.dark-mode .time-separator {
+  color: #ffffff !important;
+}
+
+body.dark-mode .btn-modal-delete {
+  background: #3a1a1a !important;
+  color: #ff6b6b !important;
+  border-color: #5a2a2a !important;
+}
+
+body.dark-mode .btn-modal-delete:hover {
+  background: #ff4d4f !important;
+  color: #ffffff !important;
+}
+
+/* ===================================================
+   13. 계정 설정 (settings)
+   =================================================== */
+body.dark-mode .settings-title {
+  color: #ffffff !important;
+}
+
+body.dark-mode .default-profile-icon {
+  background-color: #2d2d2d !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .profile-img-lg {
+  border: 2px solid #333 !important;
+}
+
+body.dark-mode .info-value {
+  color: #ffffff !important;
+}
+
+body.dark-mode .btn-profile-upload {
+  background: #333d4b !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+/* ===================================================
+   14. 회원정보 수정 (profileEdit)
+   =================================================== */
+html.dark-mode .profile-edit-full-bg {
+  background-color: #121212 !important;
+}
+
+html.dark-mode .edit-box {
+  background-color: #1e1e1e !important;
+  border: 1px solid #2d2d2d;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4) !important;
+}
+
+html.dark-mode .edit-title {
+  color: #ffffff !important;
+}
+
+html.dark-mode .input-label {
+  color: #bbbbbb !important;
+}
+
+html.dark-mode .custom-input {
+  background-color: #252525 !important;
+  border-color: #333333 !important;
+  color: #ffffff !important;
+}
+
+html.dark-mode .gray-input {
+  background-color: #1a1a1a !important;
+  color: #555555 !important;
+}
+
+html.dark-mode .btn-sub-action {
+  background-color: #2d2d2d !important;
+  border-color: #3d3d3d !important;
+  color: #aaaaaa !important;
+}
+
+/* ===================================================
+   15. 지원자 상세 (applicantDetail)
+   =================================================== */
+body.dark-mode .btn-back-list {
+  background-color: #2d3748 !important;
+  color: #7abaff !important;
+  border: 1px solid #3e4e63 !important;
+  padding: 8px 15px !important;
+  border-radius: 8px !important;
+}
+
+body.dark-mode .btn-back-list:hover {
+  background-color: #3e4e63 !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .name-line h1,
+body.dark-mode .grid-col h3,
+body.dark-mode .info-item strong {
+  color: #ffffff !important;
+}
+
+body.dark-mode .name-line span,
+body.dark-mode .contact-line p {
+  color: #cbd5e0 !important;
+}
+
+body.dark-mode .grid-col h3 i,
+body.dark-mode .contact-line i {
+  color: #7abaff !important;
+}
+
+body.dark-mode .avatar-placeholder {
+  background-color: #2d2d2d !important;
+  border: 1px solid #444 !important;
+}
+
+body.dark-mode .avatar-placeholder .default-icon {
+  color: #555 !important;
+}
+
+body.dark-mode .btn-action-sub {
+  background-color: #334155 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+body.dark-mode .btn-action-gray {
+  background-color: #1e293b !important;
+  color: #94a3b8 !important;
+  border: 1px solid #334155 !important;
+}
+
+/* ===================================================
+   16. 공고 등록 (jobPosting)
+   =================================================== */
+body.dark-mode .posting-title {
+  color: #ffffff !important;
+  border-bottom: 2px solid #2d3748 !important;
+  padding-bottom: 15px !important;
+}
+
+body.dark-mode .kumo-btn-submit {
+  background-color: #7abaff !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-weight: bold !important;
+  padding: 12px 40px !important;
+}
+
+body.dark-mode .kumo-btn-submit:hover {
+  background-color: #5da5ff !important;
+  transform: translateY(-2px) !important;
+}
+
+/* ===================================================
+   17. SweetAlert2
+   =================================================== */
+body.dark-mode .swal2-popup {
+  background-color: #2b2b2b !important;
+  color: #ffffff !important;
+  border: 1px solid #444 !important;
+}
+
+body.dark-mode .swal2-title {
+  color: #ffffff !important;
+}
+
+body.dark-mode .swal2-html-container {
+  color: #cccccc !important;
+}
+
+body.dark-mode .swal2-cancel {
+  background-color: #555555 !important;
+  color: #ffffff !important;
+}
+
+
+/** 회사 버튼 */
+html.dark-mode .nav-pill:hover {
+  border-color: #b2d7ff;
+}
+
+.kumo-table th {
+  cursor: pointer;
+  user-select: none;
+  /* 드래그 방지 */
+}
+
+.kumo-table th:hover {
+  background-color: rgba(122, 186, 255, 0.05);
+  /* 살짝 강조 */
+}
+
+.sort-icon {
+  font-size: 0.8rem;
+  margin-left: 5px;
+  color: #b0b8c1;
+}
