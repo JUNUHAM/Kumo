@@ -203,6 +203,7 @@ public class UserEntity {
 	}
 
 	// 🌟 1:N 관계 설정: 사장님 한 명이 여러 회사를 가짐(Recruiter 회사 정보)
+	@Builder.Default
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CompanyEntity> companies = new ArrayList<>();
 

@@ -55,14 +55,13 @@ body.dark-mode .non-login-header .icon-btn {
     align-items: center;
     justify-content: center;
     text-align: center;
+    padding-top: 80px; /* [추가] 고정 헤더 높이만큼 여백 확보 */
     padding-bottom: 60px;
 }
 
-/* 구름 아이콘 */
-.main-icon {
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: center;
+/* [수정] 헤더 다크모드 강제 코드는 이제 NonLoginHeader.css에서 변수로 처리하므로 삭제하거나 정리합니다. */
+body.dark-mode .non-login-header {
+    background-color: transparent; /* 투명 유지 확인 */
 }
 
 .cloud-img {

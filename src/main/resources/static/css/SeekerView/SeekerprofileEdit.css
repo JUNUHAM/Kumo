@@ -1,0 +1,214 @@
+@charset "UTF-8";
+
+/* ============================================================
+   KUMO - 회원정보 수정 (헤더/사이드바 간섭 없음, 내부 스타일링 집중)
+   ============================================================ */
+
+/* 1. 스크롤바 커스텀 (메인 컨테이너 내부만 적용) */
+.main-container.profile-edit-full-bg::-webkit-scrollbar { width: 6px; height: 6px; }
+.main-container.profile-edit-full-bg::-webkit-scrollbar-track { background: transparent; }
+.main-container.profile-edit-full-bg::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+.main-container.profile-edit-full-bg::-webkit-scrollbar-thumb:hover { background: #aaa; }
+
+body.dark-mode .main-container.profile-edit-full-bg::-webkit-scrollbar-thumb { background: #444; }
+body.dark-mode .main-container.profile-edit-full-bg::-webkit-scrollbar-thumb:hover { background: #666; }
+
+/* 2. 레이아웃 기본 설정 */
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden; /* 전체 스크롤 방지 */
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    margin: 0;
+}
+
+/* 대시보드 래퍼 */
+.dashboard-wrapper {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* 3. 메인 컨테이너 (여기가 핵심) */
+.main-container.profile-edit-full-bg {
+    flex: 1;
+    background-color: var(--bg-main);
+    overflow-y: auto;
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    /* ★ 헤더(70px) 가림 방지: 70px + 여백 30px = 100px */
+    padding-top: 100px;
+    padding-bottom: 100px;
+    transition: background-color 0.3s ease;
+}
+
+/* 중앙 정렬 래퍼 */
+.profile-edit-centered-wrapper {
+    width: 100%;
+    max-width: 680px; /* 너무 넓지 않게 */
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+/* 4. 수정 박스 디자인 */
+.edit-box {
+    background-color: var(--bg-card);
+    padding: 50px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.edit-title {
+    font-size: 24px;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 40px;
+    color: var(--text-main);
+}
+
+.edit-divider {
+    margin: 30px 0;
+    border: 0;
+    border-top: 1px solid var(--border-color);
+}
+
+/* 폼 레이아웃 */
+.form-row { display: flex; gap: 15px; margin-bottom: 25px; }
+.form-col-vertical, .input-group-vertical { display: flex; flex-direction: column; flex: 1; }
+.input-group-vertical { margin-bottom: 25px; }
+
+.input-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-sub);
+    margin-bottom: 8px;
+    text-align: left;
+    margin-left: 2px;
+}
+
+/* 5. 입력 필드 스타일 */
+.custom-input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    font-size: 15px;
+    color: var(--text-main);
+    height: 50px;
+    transition: all 0.2s;
+}
+
+.custom-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(125, 180, 230, 0.1);
+}
+
+/* 읽기 전용 (스즈키 등) - 라이트모드 기본 */
+.gray-input {
+    background-color: #f2f4f6; /* 연한 회색 */
+    color: #8b95a1;
+    border-color: #f2f4f6;
+    cursor: default;
+}
+
+/* 6. 버튼 스타일 */
+.action-row { display: flex; gap: 10px; }
+
+.btn-sub-action {
+    height: 50px;
+    white-space: nowrap;
+    padding: 0 24px;
+    border-radius: 12px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-sub);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-sub-action:hover {
+    background-color: var(--hover-bg);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.birth-row { display: flex; gap: 10px; }
+.text-center { text-align: center; }
+
+.btn-submit-edit {
+    width: 100%;
+    padding: 18px;
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    margin-top: 40px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-submit-edit:hover {
+    filter: brightness(0.9);
+    transform: translateY(-2px);
+}
+
+.error-msg {
+    font-size: 13px;
+    margin-top: 6px;
+    min-height: 18px;
+    color: var(--danger-color);
+}
+
+/* ============================================================
+   [PART 2] 다크모드 전용 오버라이드 (Deep Dark Inset)
+   - 헤더 변수 시스템을 따르되, 입력창에 깊이감을 줌
+   ============================================================ */
+
+/* 카드 박스 (헤더와 동일한 톤) */
+body.dark-mode .edit-box {
+    background-color: var(--bg-card); /* #1e1e1e */
+    border: 1px solid var(--border-color); /* #333333 */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* 입력 필드 (Inset 스타일: 카드보다 어둡게 파인 느낌) */
+body.dark-mode .custom-input {
+    background-color: #121212; /* 배경색과 동일하게 눌러줌 */
+    border: 1px solid #333333;
+    color: var(--text-main);
+}
+
+body.dark-mode .custom-input:focus {
+    background-color: #1a1a1a;
+    border-color: var(--primary-color);
+    box-shadow: none;
+}
+
+/* 서브 버튼 */
+body.dark-mode .btn-sub-action {
+    background-color: #252525;
+    border-color: #333;
+    color: #aaa;
+}
+
+body.dark-mode .btn-sub-action:hover {
+    background-color: #333;
+    color: #fff;
+}

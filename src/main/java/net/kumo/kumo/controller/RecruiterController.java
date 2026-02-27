@@ -184,7 +184,8 @@ public class RecruiterController {
      */
     @GetMapping("/ProfileEdit") // 습관적으로 앞에 슬래시(/)를 붙여주시면 라우팅 꼬임을 방지할 수 있습니다.
     public String ProfileEdit(Model model) {
-        return "recruiterView/profileEdit";
+    
+		return "recruiterView/profileEdit";
     }
 
     /**

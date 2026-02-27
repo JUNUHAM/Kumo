@@ -46,7 +46,7 @@ body {
     justify-content: center;
     align-items: center;
     width: 100%;
-    padding: 60px 20px;
+    padding: 120px 20px 60px; /* [수정] 상단 여백을 60px에서 120px로 늘림 (고정 헤더 대응) */
 }
 
 /* ==============================
