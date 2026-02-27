@@ -432,3 +432,113 @@ body.dark-mode .btn-job-delete:hover {
   transform: rotate(90deg);
   /* 톱니바퀴가 찌잉~ 하고 돌아가는 귀여운 디테일 */
 }
+
+/* 마감된 공고 행 스타일링 */
+.job-closed-row {
+  opacity: 0.6;
+  /* 흐리게 */
+  background-color: rgba(0, 0, 0, 0.02);
+  /* 살짝 어둡게 */
+}
+
+.job-closed-row .job-name {
+  text-decoration: line-through;
+  /* 제목에 취소선 (선택사항) */
+  color: #8b95a1;
+}
+
+/* 1. 두 버튼의 규격을 완전히 통일 (공통 분모) */
+.btn-gear,
+.btn-close-delete {
+  background: transparent !important;
+  /* 배경 제거 */
+  border: none !important;
+  padding: 0 !important;
+  width: 32px;
+  /* 버튼 전체 크기 */
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border-radius: 8px;
+  /* 은은한 클릭 영역 확보 */
+}
+
+/* 2. X 버튼 개별 스타일 (크기 축소 및 색상) */
+.btn-close-delete {
+  color: #8b95a1;
+  /* 기본 회색 */
+  font-size: 1rem;
+  /* 🌟 아이콘 크기를 살짝 줄임 (기존보다 작게) */
+}
+
+/* 3. 호버 효과: 배경 대신 아이콘 색상만 변경 */
+.btn-close-delete:hover {
+  color: #ff4d4f !important;
+  /* 삭제 암시용 레드 */
+  background-color: rgba(255, 77, 79, 0.05) !important;
+  /* 아주 연한 붉은 광채만 추가 */
+}
+
+/* 4. 다크모드 대응 */
+body.dark-mode .btn-close-delete {
+  color: #555555;
+}
+
+body.dark-mode .btn-close-delete:hover {
+  color: #ff6b6b !important;
+  background-color: rgba(255, 107, 107, 0.1) !important;
+}
+
+/* ===================================================
+   마감된 공고 행(Row) 비활성화 스타일
+   =================================================== */
+
+/* [라이트 모드] */
+.job-closed-row {
+  background-color: #fcfcfc !important;
+  border-bottom: 1px solid #f2f4f6 !important;
+}
+
+.job-closed-row td {
+  opacity: 0.8;
+  /* 🌟 반투명하게 만들어 시선을 피하게 함 */
+  filter: grayscale(0.8);
+  /* 색감을 살짝 뺌 */
+}
+
+.job-closed-row .job-name {
+  color: #adb5bd !important;
+}
+
+/* [다크 모드] */
+body.dark-mode .job-closed-row {
+  background-color: rgba(0, 0, 0, 0.15) !important;
+  border-bottom: 1px solid #252525 !important;
+}
+
+body.dark-mode .job-closed-row td {
+  opacity: 0.7;
+  /* 다크모드에선 더 어둡게 처리 */
+}
+
+body.dark-mode .job-closed-row .job-name {
+  color: #555555 !important;
+}
+
+/* 마감된 줄 호버 시 반응 최소화 */
+.job-closed-row:hover {
+  background-color: rgba(0, 0, 0, 0.02) !important;
+}
+
+/* 🌟 X 버튼은 삭제를 위해 호버 시에만 다시 선명하게! */
+.job-closed-row .btn-close-delete {
+  transition: opacity 0.2s;
+}
+
+.job-closed-row:hover .btn-close-delete {
+  opacity: 1 !important;
+  color: #ff4d4f !important;
+}

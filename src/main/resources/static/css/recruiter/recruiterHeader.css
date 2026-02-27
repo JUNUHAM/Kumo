@@ -287,7 +287,7 @@
   align-items: flex-start;
 }
 .notify-item:hover {
-  background-color: #f8f9fa;
+  background-color: #f0f1f6;
 }
 .notify-item.unread {
   background-color: #f0f7ff;
@@ -369,7 +369,7 @@
 /* 프로필 드롭다운 내부 */
 .profile-info {
   padding: 15px;
-  background: #f8f9fa;
+  background: #f0f1f6;
   border-bottom: 1px solid #eee;
   display: flex;
   flex-direction: column;
