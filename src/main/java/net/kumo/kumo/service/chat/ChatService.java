@@ -108,6 +108,7 @@ public class ChatService {
                 // ★ 핵심 추가: 프론트 날짜 변경선을 위한 "yyyy-MM-dd" 데이터 세팅 ★
                 .createdDate(entity.getCreatedAt().format(
                         java.time.format.DateTimeFormatter.ofPattern("yyyy년 M월 d일 EEEE", java.util.Locale.KOREAN)))
+                .isRead(entity.getIsRead())
                 .build();
     }
 

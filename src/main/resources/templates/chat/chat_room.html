@@ -180,6 +180,8 @@
                 <div th:if="${msg.senderId == userId}" class="msg-row me">
                     <span class="msg-time" th:text="${msg.createdAt}"></span>
 
+                    <span class="unread-count" th:if="${msg.isRead == false}">1</span>
+
                     <th:block th:if="${msg.messageType == 'TEXT'}">
                         <div class="msg-bubble" th:text="${msg.content}">내용</div>
                     </th:block>
@@ -377,7 +379,7 @@
 
             if (isMe) {
                 div.className = "msg-row me";
-                div.innerHTML = `<span class="msg-time">${timeString}</span>${finalContentHtml}`;
+                div.innerHTML = `<span class="msg-time">${timeString}</span><span class="unread-count">1</span>${finalContentHtml}`;
             } else {
                 div.className = "msg-row other";
                 div.innerHTML = `<img src="/images/dog_profile.jpg" class="profile-img">${finalContentHtml}<span class="msg-time">${timeString}</span>`;
