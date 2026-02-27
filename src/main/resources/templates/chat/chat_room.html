@@ -178,9 +178,10 @@
                 </div>
 
                 <div th:if="${msg.senderId == userId}" class="msg-row me">
-                    <span class="msg-time" th:text="${msg.createdAt}"></span>
-
-                    <span class="unread-count" th:if="${msg.isRead == false}">1</span>
+                    <div class="msg-info">
+                        <span class="unread-count" th:if="${msg.isRead == false}">1</span>
+                        <span class="msg-time" th:text="${msg.createdAt}"></span>
+                    </div>
 
                     <th:block th:if="${msg.messageType == 'TEXT'}">
                         <div class="msg-bubble" th:text="${msg.content}">내용</div>
