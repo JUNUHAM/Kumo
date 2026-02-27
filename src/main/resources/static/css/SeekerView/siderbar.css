@@ -1,81 +1,81 @@
 @charset "UTF-8";
 
-/* ============================
-   [공통] 사이드바 스타일
-   ============================ */
+/* ============================================================
+   KUMO - 구직자 사이드바 (디자인 시스템 통합)
+   ============================================================ */
+
 .sidebar {
     width: 260px;
-    background-color: #ffffff;
-    border-right: 1px solid #eee;
-
+    background-color: var(--bg-card); /* 헤더와 동일한 카드 배경 */
+    border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
-
-    /* ★ [수정] 100vh -> 100% 로 변경! */
-    /* 이미 부모(.mypage-container)가 헤더/푸터 뺀 만큼만 크기를 잡고 있음 */
     height: 100%;
-
     padding: 30px 0;
     flex-shrink: 0;
-    overflow-y: auto; /* 메뉴가 너무 많으면 스크롤 */
+    overflow-y: auto;
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .sidebar-nav ul {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
     padding: 0;
     list-style: none;
+
+    /* ▼▼▼▼▼ 여기입니다. 이 한 줄만 추가하세요. ▼▼▼▼▼ */
+    /* 헤더에 가려진 만큼(약 60~80px) 그냥 깡으로 내립니다. */
+    margin-top: 80px;
 }
 
 .sidebar-nav li a {
     display: flex;
     align-items: center;
-    padding: 15px 40px;
+    padding: 14px 40px;
     font-size: 14px;
-    color: #888;
-    transition: all 0.2s;
-    border-left: 4px solid transparent; /* 활성화 바 공간 */
+    font-weight: 500;
+    color: var(--text-sub); /* 보조 글씨색 */
+    transition: all 0.2s ease;
+    border-left: 4px solid transparent;
     text-decoration: none;
 }
 
 .sidebar-nav li a i {
     width: 24px;
-    margin-right: 10px;
+    margin-right: 12px;
     font-size: 16px;
+    text-align: center;
 }
 
-/* 활성화 된 메뉴 (Active) - 피그마의 파란 바 */
+/* 활성화 상태 (Active) */
 .sidebar-nav li.active a {
-    color: #42a5f5; /* KUMO 블루 */
-    background-color: #f0f9ff;
-    border-left-color: #42a5f5;
-    font-weight: 500;
+    color: var(--primary-color);
+    background-color: rgba(125, 180, 230, 0.1); /* 투명도 있는 메인 컬러 배경 */
+    border-left-color: var(--primary-color);
 }
 
+/* 호버 상태 */
 .sidebar-nav li a:hover {
-    color: #42a5f5;
-    background-color: #f0f9ff;
-    border-left: 4px solid #42a5f5;
-    font-weight: 500;
+    color: var(--primary-color);
+    background-color: var(--hover-bg);
 }
 
+/* 사이드바 푸터 (로그아웃) */
 .sidebar-footer {
-    margin-top: auto; /* ★ 이게 있어야 로그아웃 버튼이 맨 아래로 밀림 */
+    margin-top: auto;
     padding: 0;
     margin-bottom: 20px;
 }
 
-/* 로그아웃 버튼 */
 .btn-logout {
     display: flex;
     align-items: center;
     padding: 15px 40px;
     font-size: 14px;
-    font-weight: 500;
-    color: #ff5a5a;          /* 기본 레드 */
-    background-color: #fff5f5;
-    border-left: 4px solid #ff5a5a;
+    font-weight: 600;
+    color: var(--danger-color); /* 위험색(빨간색) */
+    background-color: transparent;
     transition: all 0.2s ease;
     cursor: pointer;
     text-decoration: none;
@@ -83,45 +83,21 @@
 
 .btn-logout i {
     width: 24px;
-    margin-right: 10px;
+    margin-right: 12px;
     font-size: 16px;
 }
 
 .btn-logout:hover {
-    background-color: #ff5a5a;
-    color: #ffffff;
+    background-color: rgba(255, 107, 107, 0.1); /* 빨간색 투명 배경 */
 }
 
-/* ============================
-   [다크모드] 사이드바 대응
-   ============================ */
-body.dark-mode .sidebar {
-    background-color: #1e1e1e;
-    border-color: #333;
-}
-
-body.dark-mode .sidebar-nav li a {
-    color: #ccc;
-}
-
+/* ============================================================
+   다크모드 대응 (전역 변수로 자동 처리되나 보정 필요 시 추가)
+   ============================================================ */
 body.dark-mode .sidebar-nav li.active a {
-    background-color: #2a3441; /* 어두운 파란 배경 */
-    color: #7db4e6;
-}
-
-body.dark-mode .sidebar-nav li a:hover {
-    background-color: #2a3441;
-    color: #7db4e6;
-    border-left-color: #7db4e6;
-}
-
-body.dark-mode .btn-logout {
-    background-color: #2d1f1f;
-    color: #ff6b6b;
-    border-left-color: #ff6b6b;
+    background-color: rgba(125, 180, 230, 0.15); /* 다크모드에선 조금 더 선명하게 */
 }
 
 body.dark-mode .btn-logout:hover {
-    background-color: #ff6b6b;
-    color: #fff;
+    background-color: rgba(255, 107, 107, 0.15);
 }

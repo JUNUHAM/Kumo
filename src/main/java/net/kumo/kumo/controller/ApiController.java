@@ -26,6 +26,7 @@ public class ApiController {
 	private final LoginService LoginService;
 	private final SeekerService seekerService;
 	
+	
 	//회원가입할때 닉네임 중복확인
 	@PostMapping("/api/check/nickname")
 	public ResponseEntity<Boolean> checkNickname(@RequestBody Map<String, String> request) {
@@ -116,6 +117,33 @@ public class ApiController {
 		}catch (Exception e){
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 업로드 실패");
 		}
+	}
+	
+	
+	@PostMapping("/api/user/delete")
+	public ResponseEntity<?> deleteAccount(
+			@RequestBody Map<String,String> request,
+			@AuthenticationPrincipal UserDetails userDetails
+	){
+		String Email = userDetails.getUsername();
+		String rawPassword = request.get("password");
+		
+		log.debug("잘 받앗나 이메일 , 비번 : {},{}",Email,rawPassword );
+		
+		try {
+			boolean IsDeleted = LoginService.deleteAccount(Email,rawPassword);
+			
+			
+			if(!IsDeleted){
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호 일치하지않습니다.");
+			}
+			
+			return ResponseEntity.ok("탈퇴가 완료되었습니다.");
+		}catch (Exception e){
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버오류");
+		}
+		
+		
 	}
 	
 	

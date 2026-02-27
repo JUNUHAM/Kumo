@@ -208,4 +208,21 @@ public class LoginService {
 		
 	
 	}
+	
+	public boolean deleteAccount(String email, String rawPassword) {
+		UserEntity entity = userRepository.findByEmail(email).orElseThrow(()-> new RuntimeException("회원없어요"));
+		
+		String encodedRawPassword = passwordEncoder.encode(rawPassword);
+		
+		if(!passwordEncoder.matches(rawPassword, entity.getPassword())){
+			
+			return false;
+		}
+		else {
+			userRepository.delete(entity);
+			return true;
+		}
+		
+		
+	}
 }

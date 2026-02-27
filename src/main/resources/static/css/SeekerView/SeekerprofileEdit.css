@@ -1,65 +1,31 @@
 @charset "UTF-8";
 
 /* ============================================================
-   KUMO - 회원정보 수정 (스크롤바 커스텀 & 스타일 복구)
+   KUMO - 회원정보 수정 (헤더/사이드바 간섭 없음, 내부 스타일링 집중)
    ============================================================ */
 
-/* [중요] 스크롤바 커스텀 (Chrome, Safari, Edge) */
-/* 1. 스크롤바 너비 최소화 (거의 안 보임) */
-::-webkit-scrollbar {
-    width: 6px;  /* 세로 스크롤바 너비 */
-    height: 6px; /* 가로 스크롤바 너비 */
-}
+/* 1. 스크롤바 커스텀 (메인 컨테이너 내부만 적용) */
+.main-container.profile-edit-full-bg::-webkit-scrollbar { width: 6px; height: 6px; }
+.main-container.profile-edit-full-bg::-webkit-scrollbar-track { background: transparent; }
+.main-container.profile-edit-full-bg::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+.main-container.profile-edit-full-bg::-webkit-scrollbar-thumb:hover { background: #aaa; }
 
-/* 2. 스크롤바 트랙 (배경) - 투명하게 */
-::-webkit-scrollbar-track {
-    background: transparent;
-}
+body.dark-mode .main-container.profile-edit-full-bg::-webkit-scrollbar-thumb { background: #444; }
+body.dark-mode .main-container.profile-edit-full-bg::-webkit-scrollbar-thumb:hover { background: #666; }
 
-/* 3. 스크롤바 핸들 (움직이는 막대) - 아주 연하게 */
-::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 10px;
-}
-
-/* 4. 마우스 올렸을 때만 조금 진하게 */
-::-webkit-scrollbar-thumb:hover {
-    background: #aaa;
-}
-
-/* [다크모드 스크롤바] 어두운 배경에 맞춤 */
-body.dark-mode ::-webkit-scrollbar-thumb {
-    background: #444;
-}
-body.dark-mode ::-webkit-scrollbar-thumb:hover {
-    background: #666;
-}
-
-/* [Firefox 전용 스크롤바 설정] */
-* {
-    scrollbar-width: thin; /* 얇게 */
-    scrollbar-color: #ccc transparent; /* 핸들색 트랙색 */
-}
-body.dark-mode * {
-    scrollbar-color: #444 transparent;
-}
-
-
-/* ------------------------------------------------------------ */
-
-/* 1. 기본 설정 (라이트 모드) */
+/* 2. 레이아웃 기본 설정 */
 body {
     font-family: 'Noto Sans KR', sans-serif;
     display: flex;
     flex-direction: column;
     height: 100vh;
     overflow: hidden; /* 전체 스크롤 방지 */
-
-    background-color: #f9f9f9;
-    color: #333;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    margin: 0;
 }
 
-/* 2. 대시보드 래퍼 */
+/* 대시보드 래퍼 */
 .dashboard-wrapper {
     display: flex;
     flex: 1;
@@ -68,38 +34,39 @@ body {
     overflow: hidden;
 }
 
-/* 3. 메인 컨테이너 (스크롤바 숨김 적용) */
+/* 3. 메인 컨테이너 (여기가 핵심) */
 .main-container.profile-edit-full-bg {
     flex: 1;
-    background-color: #f8faff;
-    overflow-y: auto; /* 내용은 스크롤되지만 */
-    /* overlay 속성은 비표준이라 위에서 만든 커스텀 스크롤바가 적용됨 */
+    background-color: var(--bg-main);
+    overflow-y: auto;
     height: 100%;
 
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    padding-top: 60px;
+
+    /* ★ 헤더(70px) 가림 방지: 70px + 여백 30px = 100px */
+    padding-top: 100px;
     padding-bottom: 100px;
     transition: background-color 0.3s ease;
 }
 
-/* 4. 중앙 정렬 래퍼 */
+/* 중앙 정렬 래퍼 */
 .profile-edit-centered-wrapper {
     width: 100%;
-    max-width: 680px;
+    max-width: 680px; /* 너무 넓지 않게 */
     padding: 0 20px;
     box-sizing: border-box;
 }
 
-/* 5. 수정 박스 (라이트 모드) */
+/* 4. 수정 박스 디자인 */
 .edit-box {
-    background-color: #ffffff;
+    background-color: var(--bg-card);
     padding: 50px;
     border-radius: 20px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
-    border: 1px solid #eef0f2;
-    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .edit-title {
@@ -107,82 +74,67 @@ body {
     font-weight: 800;
     text-align: center;
     margin-bottom: 40px;
-    color: #191f28;
+    color: var(--text-main);
 }
 
 .edit-divider {
     margin: 30px 0;
     border: 0;
-    border-top: 1px solid #eef0f2;
+    border-top: 1px solid var(--border-color);
 }
 
-/* 6. 폼 레이아웃 */
-.form-row {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 25px;
-}
-
-.form-col-vertical,
-.input-group-vertical {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-}
-
-.input-group-vertical {
-    margin-bottom: 25px;
-}
+/* 폼 레이아웃 */
+.form-row { display: flex; gap: 15px; margin-bottom: 25px; }
+.form-col-vertical, .input-group-vertical { display: flex; flex-direction: column; flex: 1; }
+.input-group-vertical { margin-bottom: 25px; }
 
 .input-label {
     font-size: 13px;
     font-weight: 700;
-    color: #4e5968;
+    color: var(--text-sub);
     margin-bottom: 8px;
     text-align: left;
     margin-left: 2px;
 }
 
-/* 7. 입력 필드 */
+/* 5. 입력 필드 스타일 */
 .custom-input {
     width: 100%;
     padding: 14px 16px;
     border-radius: 12px;
-    background-color: #ffffff;
-    border: 1px solid #eef0f2;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
     font-size: 15px;
-    color: #191f28;
+    color: var(--text-main);
     height: 50px;
     transition: all 0.2s;
 }
 
 .custom-input:focus {
     outline: none;
-    border-color: #42a5f5;
-    box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.1);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(125, 180, 230, 0.1);
 }
 
+/* 읽기 전용 (스즈키 등) - 라이트모드 기본 */
 .gray-input {
-    background-color: #f2f4f6 !important;
-    color: #8b95a1 !important;
-    border-color: #f2f4f6 !important;
+    background-color: #f2f4f6; /* 연한 회색 */
+    color: #8b95a1;
+    border-color: #f2f4f6;
     cursor: default;
 }
 
-/* 8. 버튼 스타일 */
-.action-row {
-    display: flex;
-    gap: 10px;
-}
+/* 6. 버튼 스타일 */
+.action-row { display: flex; gap: 10px; }
 
 .btn-sub-action {
     height: 50px;
     white-space: nowrap;
     padding: 0 24px;
     border-radius: 12px;
-    background-color: #ffffff;
-    border: 1px solid #d1d6db;
-    color: #4e5968;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-sub);
     font-weight: 600;
     font-size: 14px;
     cursor: pointer;
@@ -190,20 +142,18 @@ body {
 }
 
 .btn-sub-action:hover {
-    background-color: #f9fafb;
-    border-color: #b0b8c1;
+    background-color: var(--hover-bg);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
 }
 
-.birth-row {
-    display: flex;
-    gap: 10px;
-}
+.birth-row { display: flex; gap: 10px; }
 .text-center { text-align: center; }
 
 .btn-submit-edit {
     width: 100%;
     padding: 18px;
-    background-color: #7abaff;
+    background-color: var(--primary-color);
     color: #ffffff;
     border: none;
     border-radius: 12px;
@@ -215,7 +165,7 @@ body {
 }
 
 .btn-submit-edit:hover {
-    background-color: #5a9fee;
+    filter: brightness(0.9);
     transform: translateY(-2px);
 }
 
@@ -223,59 +173,42 @@ body {
     font-size: 13px;
     margin-top: 6px;
     min-height: 18px;
-    color: #f04452;
+    color: var(--danger-color);
 }
 
 /* ============================================================
-   [PART 2] 다크모드 오버라이드 (MyPage와 색상 통일)
+   [PART 2] 다크모드 전용 오버라이드 (Deep Dark Inset)
+   - 헤더 변수 시스템을 따르되, 입력창에 깊이감을 줌
    ============================================================ */
-body.dark-mode {
-    background-color: #121212; /* 마이페이지와 동일한 딥 블랙 */
-    color: #e0e0e0;
-}
 
-body.dark-mode .main-container.profile-edit-full-bg {
-    background-color: #121212 !important;
-}
-
+/* 카드 박스 (헤더와 동일한 톤) */
 body.dark-mode .edit-box {
-    background-color: #1e1e1e !important; /* 마이페이지 카드와 동일한 진회색 */
-    border: 1px solid #333 !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+    background-color: var(--bg-card); /* #1e1e1e */
+    border: 1px solid var(--border-color); /* #333333 */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
-body.dark-mode .edit-title { color: #ffffff !important; }
-body.dark-mode .edit-divider { border-top-color: #333 !important; }
-body.dark-mode .input-label { color: #bbbbbb !important; }
-
-/* 입력 필드 (마이페이지 스타일) */
+/* 입력 필드 (Inset 스타일: 카드보다 어둡게 파인 느낌) */
 body.dark-mode .custom-input {
-    background-color: #121212 !important;
-    border: 1px solid #3d3d3d !important;
-    color: #e0e0e0 !important;
+    background-color: #121212; /* 배경색과 동일하게 눌러줌 */
+    border: 1px solid #333333;
+    color: var(--text-main);
 }
 
 body.dark-mode .custom-input:focus {
-    background-color: #2a2a2a !important;
-    border-color: #42a5f5 !important;
-    box-shadow: none !important;
+    background-color: #1a1a1a;
+    border-color: var(--primary-color);
+    box-shadow: none;
 }
 
-body.dark-mode .gray-input {
-    background-color: #1e1e1e !important;
-    color: #666 !important;
-    border-color: #2d2d2d !important;
-}
-
+/* 서브 버튼 */
 body.dark-mode .btn-sub-action {
-    background-color: #333 !important;
-    border-color: #444 !important;
-    color: #ccc !important;
+    background-color: #252525;
+    border-color: #333;
+    color: #aaa;
 }
 
 body.dark-mode .btn-sub-action:hover {
-    background-color: #444 !important;
-    color: #ffffff !important;
+    background-color: #333;
+    color: #fff;
 }
-
-body.dark-mode .error-msg { color: #ff6b6b !important; }

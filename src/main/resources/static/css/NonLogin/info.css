@@ -55,7 +55,7 @@ body {
     width: 100%;
     max-width: 1400px;
     margin: 0 auto;
-    padding: 60px 40px;
+    padding: 100px 40px 60px; /* [수정] 상단 여백을 60px에서 100px로 늘림 (고정 헤더 대응) */
     display: flex;
     flex-direction: column;
     align-items: center;
