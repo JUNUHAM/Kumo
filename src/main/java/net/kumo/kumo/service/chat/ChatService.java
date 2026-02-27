@@ -80,8 +80,14 @@ public class ChatService {
     /**
      * 3. 대화 기록 가져오기 (정석 개편: List<DTO> 반환)
      */
-    @Transactional(readOnly = true)
-    public List<ChatMessageDTO> getMessageHistory(Long roomId) {
+    // readOnly = true를 삭제해서 DB 업데이트가 가능하도록 만듭니다.
+    @Transactional
+    public List<ChatMessageDTO> getMessageHistory(Long roomId, Long userId) {
+
+        // ★ 1. 채팅방 대화 기록을 불러오기 직전에, 먼저 '읽음' 처리를 때려줍니다!
+        chatMessageRepository.markMessagesAsRead(roomId, userId);
+
+        // 2. 기존처럼 대화 기록을 쫙 불러와서 화면에 뿌려줍니다.
         return chatMessageRepository.findByRoom_IdOrderByCreatedAtAsc(roomId)
                 .stream()
                 .map(this::convertToDTO)
@@ -122,7 +128,6 @@ public class ChatService {
                 .orElseThrow(() -> new IllegalArgumentException("방이 없습니다."));
     }
 
-    // [수정] 기존 메서드를 지우고 이 코드를 넣으세요.
     @Transactional(readOnly = true)
     public List<ChatRoomListDTO> getChatRoomsForUser(Long userId) {
         // 1. 내가 참여한 방 목록 조회
@@ -135,13 +140,18 @@ public class ChatService {
             // 3. 해당 방의 최신 메시지 1건 조회
             ChatMessageEntity lastMsg = chatMessageRepository.findFirstByRoomOrderByCreatedAtDesc(room);
 
-            // 4. DTO로 변환하여 반환
+            // ★ 4. 안읽음 체크 (이 변수 선언이 빠졌거나 위치가 틀려서 에러가 났던 겁니다!) ★
+            // 내(userId)가 보낸 게 아니고, 읽지 않은(isRead == false) 메시지가 있는지 확인
+            boolean hasUnreadFlag = chatMessageRepository.existsByRoomAndSender_UserIdNotAndIsReadFalse(room, userId);
+
+            // 5. DTO로 변환하여 반환
             return ChatRoomListDTO.builder()
                     .roomId(room.getId())
                     .opponentNickname(opponent.getNickname())
                     .lastMessage(lastMsg != null ? lastMsg.getContent() : "대화 내용이 없습니다.")
                     .lastTime(
                             lastMsg != null ? lastMsg.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm")) : "")
+                    .hasUnread(hasUnreadFlag) // 위에서 만든 변수명을 그대로 넣어줍니다.
                     .build();
         }).collect(Collectors.toList());
     }

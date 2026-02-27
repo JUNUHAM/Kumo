@@ -11,4 +11,5 @@ public class ChatRoomListDTO {
     private String opponentNickname;
     private String lastMessage;
     private String lastTime;
+    private boolean hasUnread;
 }

@@ -31,14 +31,15 @@
 
         <div class="tab-menu">
             <div style="display: flex; gap: 15px; align-items: center;">
-                <button class="tab-btn active">전체</button>
-                <button class="tab-btn">읽지않음</button>
-                <button class="tab-btn">읽음</button>
+                <button class="tab-btn active" onclick="filterRooms('all', this)">전체</button>
+                <button class="tab-btn" onclick="filterRooms('unread', this)">읽지않음</button>
+                <button class="tab-btn" onclick="filterRooms('read', this)">읽음</button>
             </div>
         </div>
 
         <div class="chat-list">
-            <div th:each="room : ${chatRooms}" class="chat-item" th:onclick="|enterRoom(${room.roomId})|">
+            <div th:each="room : ${chatRooms}" th:data-unread="${room.hasUnread}" class="chat-item"
+                th:onclick="|enterRoom(${room.roomId})|">
                 <div class="avatar-wrapper">
                     <img th:src="@{/images/dog_profile.jpg}" class="avatar-img" alt="프로필">
                 </div>
@@ -127,20 +128,28 @@
         });
 
         // 필터링 핵심 함수
-        function filterRooms(value) {
-            let filter = value.toLowerCase().trim();
-            let rooms = document.querySelectorAll('.chat-item');
+        function filterRooms(filterType, clickedTab) {
+            // 1. 탭 버튼 색상 변경 (기존 파란색 알약 디자인 적용)
+            document.querySelectorAll('.tab-btn').forEach(tab => tab.classList.remove('active'));
+            clickedTab.classList.add('active');
+
+            // 2. 정확한 클래스명(.chat-item)으로 리스트 가져오기
+            const rooms = document.querySelectorAll('.chat-item');
 
             rooms.forEach(room => {
-                let nameElement = room.querySelector('.chat-name');
-                if (!nameElement) return;
+                // HTML에 심어둔 안읽음 데이터 가져오기 (만약 값이 없으면 무조건 'false'로 간주)
+                const unreadData = room.getAttribute('data-unread') || 'false';
+                // 문자열 'true'와 정확히 일치하는지 확인하여 진짜 boolean 값으로 변환
+                const isUnread = (unreadData.trim() === 'true');
 
-                let name = nameElement.innerText.toLowerCase().trim();
-
-                if (name.startsWith(filter)) {
-                    room.style.display = 'flex';
-                } else {
-                    room.style.display = 'none';
+                // 3. 필터 조건에 따라 숨기거나 보여주기
+                if (filterType === 'all') {
+                    // '' (빈 칸)을 넣으면 자바스크립트가 건드린 걸 취소하고 원래 CSS대로 예쁘게 나옵니다.
+                    room.style.display = '';
+                } else if (filterType === 'unread') {
+                    room.style.display = isUnread ? '' : 'none';
+                } else if (filterType === 'read') {
+                    room.style.display = !isUnread ? '' : 'none';
                 }
             });
         }

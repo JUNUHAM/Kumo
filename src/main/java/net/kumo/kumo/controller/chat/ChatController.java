@@ -46,7 +46,9 @@ public class ChatController {
         }
 
         ChatRoomEntity room = chatService.getChatRoom(roomId);
-        List<ChatMessageDTO> history = chatService.getMessageHistory(roomId);
+
+        // ★ 바로 이 부분입니다! roomId 옆에 userId를 추가해서 Service로 던져줍니다.
+        List<ChatMessageDTO> history = chatService.getMessageHistory(roomId, userId);
 
         UserEntity opponent;
         if (room.getSeeker().getUserId().equals(userId)) {
