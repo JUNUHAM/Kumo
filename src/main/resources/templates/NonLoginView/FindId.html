@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>KUMO - 아이디 찾기</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" th:href="@{/css/NonLogin/FindId.css}">
+</head>
+<body>
+
+<div th:replace="~{NonLoginFragments/NonLoginHeader :: headerFragment}"></div>
+
+<main class="find-container">
+    <div class="find-box">
+
+        <div class="find-header">
+            <h1 th:text="#{find.id.title}">아이디 찾기</h1>
+
+            <div class="tab-group">
+                <button type="button" class="tab-btn active" onclick="selectRole('SEEKER')"
+                        th:text="#{find.tab.seeker}">구직자 (개인)</button>
+                <button type="button" class="tab-btn" onclick="selectRole('RECRUITER')"
+                        th:text="#{find.tab.recruiter}">구인자 (기업)</button>
+            </div>
+
+            <p class="find-desc" th:text="#{find.id.desc}">회원가입 시 등록한 정보로 찾습니다.</p>
+        </div>
+
+        <form id="findForm" class="form-box">
+            <input type="hidden" id="roleInput" name="role" value="SEEKER">
+
+            <div class="input-group">
+                <label class="input-label" th:text="#{find.label.name}">이름</label>
+                <input type="text" id="name" class="custom-input"
+                       th:placeholder="#{find.placeholder.name}" oninput="clearError('name')">
+            </div>
+            <p id="err-name" class="error-text" style="display: none;" th:text="#{find.error.name_empty}">이름을 입력해 주세요.</p>
+
+
+            <div class="input-group">
+                <label class="input-label" th:text="#{find.label.contact}">연락처</label>
+                <input type="tel" id="contact" class="custom-input"
+                       th:placeholder="#{find.placeholder.contact}" maxlength="13"
+                       oninput="autoHyphen(this); clearError('contact')">
+            </div>
+
+            <p id="err-contact-empty" class="error-text" style="display: none;"
+               th:text="#{find.error.contact_empty}">연락처를 입력해 주세요.</p>
+
+            <p id="err-contact-invalid" class="error-text" style="display: none;"
+               th:text="#{find.error.contact_invalid}">올바른 연락처 형식이 아닙니다.</p>
+
+            <button type="button" id="btn-find" class="btn-submit" onclick="findId()" th:text="#{find.btn.submit}">아이디 찾기</button>
+
+            <input type="hidden" id="msg-fail-default" th:value="#{find.msg.fail_default}">
+        </form>
+
+        <div id="error-msg" style="display: none; margin-top: 20px; text-align: center;">
+            <p id="error-text-content" style="color: #EA4335; font-size: 14px; font-weight: bold;">
+            </p>
+        </div>
+
+        <div id="result-box" class="result-container" style="display: none;">
+            <div class="result-content">
+                <p class="result-title" th:text="#{find.id.result.desc}">회원님의 아이디는 다음과 같습니다.</p>
+
+                <div class="found-email-box">
+                    <i class="fa-regular fa-envelope"></i>
+                    <span id="found-email" class="email-text"></span>
+                </div>
+
+                <div class="result-btn-group">
+                    <a th:href="@{/login}" class="btn-go-login" th:text="#{find.btn.login}">로그인</a>
+                    <a th:href="@{/FindPw}" class="btn-go-pw" th:text="#{find.link.findpw}">비밀번호 찾기</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<div th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"></div>
+
+<script th:src="@{/js/NonLogin/FindId.js}"></script>
+
+</body>
+</html>

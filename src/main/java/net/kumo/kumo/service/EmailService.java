@@ -16,16 +16,16 @@ public class EmailService {
 	
 	public void sendEmail(String toEmail, String title, String text){
 		SimpleMailMessage emailForm = createEmailForm(toEmail, title, text);
+			
+			try {
+				javaMailSender.send(emailForm);
+			} catch (RuntimeException e){
+				e.printStackTrace();
+				throw new RuntimeException("이메일 발송에 실패했습니다" + e.getMessage());
+			}
 		
-		try {
-			javaMailSender.send(emailForm);
-		} catch (RuntimeException e){
-			e.printStackTrace();
-			throw new RuntimeException("이메일 발송에 실패했습니다" + e.getMessage());
 		}
 		
-	}
-	
 	
 	
 	private SimpleMailMessage createEmailForm(String toEmail, String title,String text){

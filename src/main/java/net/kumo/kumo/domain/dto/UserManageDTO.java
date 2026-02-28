@@ -40,12 +40,13 @@ public class UserManageDTO {
         // Status 매핑 (boolean isActive -> String)
         this.status = user.isActive() ? "ACTIVE" : "INACTIVE";
 
-        // [수술 부위: 프로필 이미지 처리 로직 이식]
+        // 프로필 이미지 (없으면 기본값)
         this.profileImage = user.getProfileImage();
         if (this.profileImage == null) {
             this.profileImage = new ProfileImageEntity(); // DTO라면 ProfileImageDTO()
             this.profileImage.setFileUrl("/uploads/default_profile.png");
-        } else if (this.profileImage.getFileUrl() == null || this.profileImage.getFileUrl().isEmpty()) {
+        }
+        else if (this.profileImage.getFileUrl() == null || this.profileImage.getFileUrl().isEmpty()) {
             this.profileImage.setFileUrl("/uploads/default_profile.png");
         }
 
@@ -58,6 +59,7 @@ public class UserManageDTO {
             this.joinedAt = "-";
         }
 
+        // 마지막 활동 (Last Fail 혹은 UpdatedAt 등을 활용, 여기선 UpdatedAt 사용)
         if (user.getUpdatedAt() != null) {
             this.lastActive = user.getUpdatedAt().format(formatter);
         } else {

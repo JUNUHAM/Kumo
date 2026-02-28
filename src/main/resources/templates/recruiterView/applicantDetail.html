@@ -1,0 +1,163 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>KUMO RECRUITER - 지원자 상세 프로필</title>
+    <script th:src="@{/js/recruiter/main.js}"></script>
+    <script th:src="@{/js/recruiter/recruiterHeader.js}"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" th:href="@{/css/recruiter/recruiterHeader.css}" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link rel="stylesheet" th:href="@{/css/recruiter/sidebar.css}" />
+    <link rel="stylesheet" th:href="@{/css/recruiter/main.css}" />
+    <link rel="stylesheet" th:href="@{/css/recruiter/applicantInfo.css}" />
+    <link rel="stylesheet" th:href="@{/css/recruiter/rightSidebar.css}" />
+    <link rel="stylesheet" th:href="@{/css/recruiter/calendar.css}" />
+    <link rel="stylesheet" th:href="@{/css/recruiter/dark-theme.css}" />
+  </head>
+  <body>
+    <header
+      th:replace="~{recruiterView/fragments/recruiterHeader :: headerFragment}"
+    ></header>
+
+    <div class="dashboard-wrapper">
+      <div
+        th:replace="~{recruiterView/fragments/sidebar :: sidebarFragment}"
+      ></div>
+
+      <div class="main-container applicant-detail-bg">
+        <main class="applicant-detail-wrapper">
+          <div class="applicant-white-card">
+            <div class="card-top-actions mb-4">
+              <a th:href="@{/Recruiter/ApplicantInfo}" class="btn-back-list">
+                <i class="bi bi-arrow-left-short"></i>
+                <span th:text="#{detail.btn.back}">목록으로 돌아가기</span>
+              </a>
+            </div>
+            <div class="detail-profile-row">
+              <div class="profile-avatar-box">
+                <div class="avatar-placeholder">
+                  <img
+                    src="/img/sample-avatar.png"
+                    alt="프로필"
+                    onload="this.style.opacity=1"
+                    onerror="this.style.display='none'; this.parentElement.classList.add('no-img');"
+                  />
+                  <i class="bi bi-person-fill default-icon"></i>
+                </div>
+              </div>
+              <div class="profile-info-box">
+                <div class="name-line">
+                  <h1>홍길동</h1>
+                  <span
+                    ><span th:text="#{join.gender.male}">남자</span> 40<span
+                      th:text="#{common.age.unit}"
+                      >세</span
+                    >
+                    / 1899<span th:text="#{common.year.unit}">년생</span></span
+                  >
+                </div>
+                <div class="contact-line">
+                  <p><i class="bi bi-geo-alt-fill"></i> 도쿄도 미나토구</p>
+                  <p><i class="bi bi-telephone-fill"></i> 010-1234-5678</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="detail-grid-row">
+              <div class="grid-col">
+                <h3 th:utext="#{detail.label.info}">
+                  <i class="bi bi-mortarboard"></i> 학력사항
+                </h3>
+                <div class="info-item">
+                  <span th:text="#{detail.sub.edu_final}">최종학력</span
+                  ><strong>고등학교 졸업</strong>
+                </div>
+                <div class="info-item">
+                  <span th:text="#{detail.sub.edu_detail}">학력상세</span
+                  ><strong>검정고시</strong>
+                </div>
+              </div>
+
+              <div class="grid-col middle-border">
+                <h3 th:utext="#{detail.label.condition}">
+                  <i class="bi bi-briefcase"></i> 희망근무조건
+                </h3>
+                <div class="info-item">
+                  <span th:text="#{detail.sub.hope_loc}">희망근무지</span
+                  ><strong>도쿄도 시부야구</strong>
+                </div>
+                <div class="info-item">
+                  <span th:text="#{detail.sub.hope_job}">희망직종</span
+                  ><strong>홀서빙</strong>
+                </div>
+                <div class="info-item">
+                  <span th:text="#{detail.sub.hope_wage}">희망급여</span
+                  ><strong>시급 3,000円</strong>
+                </div>
+                <div class="info-item">
+                  <span th:text="#{detail.sub.hope_term}">희망근무기간</span
+                  ><strong>1개월 미만</strong>
+                </div>
+              </div>
+
+              <div class="grid-col">
+                <h3 th:utext="#{detail.label.pr}">
+                  <i class="bi bi-person-vcard"></i> 자기소개 & PR
+                </h3>
+                <div class="info-item">
+                  <span th:text="#{detail.sub.license}">자격증</span
+                  ><strong>정보처리기사 (Qnet)</strong>
+                </div>
+                <div class="info-item">
+                  <span th:text="#{detail.sub.lang}">어학능력</span
+                  ><strong>스페인어 (상급)</strong>
+                </div>
+                <div class="pr-box">
+                  안녕하세요 40살 홍길동이라 합니다. 현재 일본에서 워홀하고있고
+                  한식당에서 근무한 경력이 있습니다. 잘 부탁드립니다.
+                </div>
+              </div>
+            </div>
+
+            <div class="detail-footer-btns">
+              <button class="btn-action-main" th:text="#{detail.btn.interview}">
+                면접 일정 등록
+              </button>
+              <button class="btn-action-sub" th:text="#{detail.btn.message}">
+                메시지 보내기
+              </button>
+              <button class="btn-action-gray" th:text="#{detail.btn.reject}">
+                반려하기
+              </button>
+            </div>
+          </div>
+          <footer
+            th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"
+          ></footer>
+          <div
+            th:replace="~{recruiterView/fragments/rightSidebar :: rightSidebarFragment}"
+          ></div>
+        </main>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.10/index.global.min.js"></script>
+    <script th:src="@{/js/recruiter/global-calendar.js}"></script>
+  </body>
+</html>

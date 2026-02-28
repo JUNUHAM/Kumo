@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TokyoNoGeocodedRepository extends BaseRepository<TokyoNoGeocodedEntity> {
-	
-	// 특별히 추가할 메소드 없음 (부모 기능만으로 충분)
+
+    // 특별히 추가할 메소드 없음 (부모 기능만으로 충분)
 }

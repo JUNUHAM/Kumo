@@ -1,10 +1,8 @@
 package net.kumo.kumo.controller.chat;
 
 import lombok.RequiredArgsConstructor;
-import net.kumo.kumo.domain.dto.ChatMessageDTO;
-import net.kumo.kumo.domain.dto.ChatRoomListDTO;
-import net.kumo.kumo.domain.entity.ChatRoomEntity;
-import net.kumo.kumo.domain.entity.UserEntity;
+import net.kumo.kumo.domain.entity.ChatMessageEntity; // ★ 최신 Entity
+import net.kumo.kumo.domain.entity.ChatRoomEntity; // ★ 최신 Entity
 import net.kumo.kumo.service.chat.ChatService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,84 +25,86 @@ public class ChatController {
     private final ChatService chatService;
     private final SimpMessagingTemplate messagingTemplate;
 
-    // [이식 포인트] application.properties의 file.upload.chat 값을 가져옵니다.
-    @Value("${file.upload.chat}")
-    private String chatUploadDir;
+    // application.properties에 설정한 파일 저장 경로를 가져옵니다.
+    @Value("${file.upload.dir}")
+    private String uploadDir;
 
     // ======================================================================
     // 1. [화면 연결] 웹 페이지 이동 관련 (HTTP)
     // ======================================================================
 
+    /**
+     * [채팅방 생성 또는 입장]
+     * - ★ 변경: 구인공고 ID(jobPostId)가 필수로 필요합니다!
+     * - (임시로 jobPostId를 1L 등으로 고정하거나, HTML에서 넘겨줘야 합니다.)
+     */
+    @PostMapping("/chat/room")
+    public String createOrEnterRoom(@RequestParam("seekerId") Long seekerId,
+            @RequestParam("recruiterId") Long recruiterId,
+            @RequestParam(value = "jobPostId", defaultValue = "1") Long jobPostId) {
+        // 주의: HTML에서 jobPostId를 안 넘겨주면 에러나므로 일단 기본값 1로 설정함
+
+        ChatRoomEntity room = chatService.createOrGetChatRoom(seekerId, recruiterId, jobPostId);
+
+        // 방이 안 만들어졌으면(null) 에러 페이지나 목록으로 (임시 방어 로직)
+        if (room == null)
+            return "redirect:/chat/list?userId=" + seekerId;
+
+        // 방을 찾았으니 이동 (Entity의 ID 필드명이 'id'이므로 getId() 사용)
+        return "redirect:/chat/room/" + room.getId() + "?userId=" + seekerId;
+    }
+
+    /**
+     * [채팅방 입장 화면]
+     * - ★ 수정됨: 헤더에 표시할 공고 정보(Job)와 상대방 정보(Opponent)를 같이 보냄
+     */
     @GetMapping("/chat/room/{roomId}")
     public String enterRoom(@PathVariable("roomId") Long roomId,
-            @RequestParam(value = "userId", required = false) Long userId,
+            @RequestParam("userId") Long userId,
             Model model) {
 
-        if (userId == null) {
-            return "redirect:/chat/list";
-        }
+        // 1. 채팅방 정보 가져오기 (이 안에 공고, 구직자, 구인자 다 들어있음)
+        // (Service에 getRoom 메서드가 없다면 Repository를 바로 써도 됩니다.
+        // 여기서는 chatService.getRoom(roomId)이 있다고 가정하거나,
+        // chatRoomRepository.findById(roomId).get() 을 사용하세요.)
+        ChatRoomEntity room = chatService.getChatRoom(roomId); // ★ Service에 이 메서드 추가 필요 (아래 참고)
 
-        ChatRoomEntity room = chatService.getChatRoom(roomId);
+        // 2. 대화 기록 가져오기
+        List<ChatMessageEntity> history = chatService.getMessageHistory(roomId);
 
-        // ★ 바로 이 부분입니다! roomId 옆에 userId를 추가해서 Service로 던져줍니다.
-        List<ChatMessageDTO> history = chatService.getMessageHistory(roomId, userId);
-
-        UserEntity opponent;
+        // 3. 상대방(Opponent) 찾기
+        // 내가 구직자(Seeker)면 -> 상대방은 구인자(Recruiter)
+        // 내가 구인자(Recruiter)면 -> 상대방은 구직자(Seeker)
+        net.kumo.kumo.domain.entity.UserEntity opponent;
         if (room.getSeeker().getUserId().equals(userId)) {
             opponent = room.getRecruiter();
         } else {
             opponent = room.getSeeker();
         }
 
+        // 4. 모델에 데이터 담기 (HTML로 배달)
         model.addAttribute("roomId", roomId);
         model.addAttribute("userId", userId);
         model.addAttribute("history", history);
 
-        model.addAttribute("roomName", opponent.getNickname());
-        model.addAttribute("jobTitle", room.getJobPosting().getTitle());
-        model.addAttribute("salary", room.getJobPosting().getSalaryAmount());
-        model.addAttribute("address", room.getJobPosting().getWorkAddress());
+        // ★ 헤더용 데이터 추가
+        model.addAttribute("roomName", opponent.getNickname()); // 상대방 이름 (또는 가게명)
+        model.addAttribute("jobTitle", room.getJobPosting().getTitle()); // 공고 제목
+        model.addAttribute("salary", room.getJobPosting().getSalaryAmount()); // 급여
+        model.addAttribute("address", room.getJobPosting().getWorkAddress()); // 근무지 주소
 
         return "chat/chat_room";
     }
 
-    // ChatController.java
-
+    /**
+     * [내 채팅방 목록 보기]
+     */
     @GetMapping("/chat/list")
-    public String chatList(
-            @RequestParam(value = "userId", required = false) Long userId,
-            Model model) {
+    public String chatList(@RequestParam("userId") Long userId, Model model) {
+        // (임시) 구직자라고 가정하고 목록을 가져옵니다.
+        List<ChatRoomEntity> myRooms = chatService.getSeekerChatRooms(userId);
 
-        // 1. 방어 코드: userId가 없으면 로그인 페이지로 리다이렉트
-        if (userId == null) {
-            return "redirect:/login";
-        }
-
-        // 2. 서비스 호출: 최신 메시지와 시간이 포함된 DTO 리스트 가져오기
-        // (메서드 명은 아까 수정한 getChatRoomsForUser 입니다)
-        List<ChatRoomListDTO> chatRooms = chatService.getChatRoomsForUser(userId);
-
-        // 더미데이터
-        // 2. ★ 가라(Dummy) 데이터 2개 강제 주입
-        // ABC カンパニー 추가
-        chatRooms.add(ChatRoomListDTO.builder()
-                .roomId(999L) // 가짜 ID
-                .opponentNickname("ABC カンパニー")
-                .lastMessage("하나 궁금한게 있습니다")
-                .lastTime("15:40")
-                .build());
-
-        // 오사카 한식당 추가
-        chatRooms.add(ChatRoomListDTO.builder()
-                .roomId(888L) // 가짜 ID
-                .opponentNickname("오사카 한식당")
-                .lastMessage("신청해주셔서 감사합니다. 유감이지만...")
-                .lastTime("12:20")
-                .build());
-
-        // 3. 모델에 담아서 HTML로 전달
-        model.addAttribute("chatRooms", chatRooms);
-        model.addAttribute("userId", userId);
+        model.addAttribute("list", myRooms);
 
         return "chat/chat_list";
     }
@@ -120,41 +119,24 @@ public class ChatController {
             if (file.isEmpty())
                 return ResponseEntity.badRequest().body("파일이 없습니다.");
 
-            // [추가] 일본 시장 대응을 위한 확장자 및 용량 필터링 (기존 로직 보존을 위해 상단에 배치)
+            // 파일명 중복 방지 (UUID)
             String originalFilename = file.getOriginalFilename();
-            if (originalFilename == null)
-                return ResponseEntity.badRequest().body("파일명 오류");
-
-            String ext = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
-            // 이미지(기존) + 문서(추가) + 최신 웹 이미지 포맷(webp, avif) 허용 리스트
-            List<String> allowedExts = Arrays.asList("jpg", "jpeg", "png", "gif", "webp", "avif", "pdf", "docx", "doc",
-                    "xlsx", "xls", "txt");
-
-            if (!allowedExts.contains(ext)) {
-                return ResponseEntity.badRequest().body("업로드 실패: 지원하지 않는 형식입니다.");
-            }
-
-            // [추가] 일본 네트워크 환경 고려: 10MB 제한 (필요시 조절)
-            if (file.getSize() > 10 * 1024 * 1024) {
-                return ResponseEntity.badRequest().body("업로드 실패: 용량 초과 (최대 10MB)");
-            }
-
-            // ================== 여기서부터 기존 로직 (절대 건드리지 않음) ==================
-            String rootPath = System.getProperty("user.dir");
-            String fullPath = rootPath + "/" + chatUploadDir;
-
             String savedFilename = UUID.randomUUID().toString() + "_" + originalFilename;
 
-            File folder = new File(fullPath);
+            // 저장할 폴더가 없으면 생성
+            File folder = new File(uploadDir);
             if (!folder.exists())
                 folder.mkdirs();
 
-            File dest = new File(fullPath + savedFilename);
+            // 파일 저장
+            File dest = new File(uploadDir + savedFilename);
             file.transferTo(dest);
 
-            // WebMvcConfig 설정을 그대로 따름
-            return ResponseEntity.ok("/chat_images/" + savedFilename);
-            // ===========================================================================
+            // 브라우저에서 접근 가능한 URL 반환 (/uploads/파일명)
+            // (WebMvcConfig에서 매핑한 경로와 일치해야 함)
+            return ResponseEntity.ok("/images/uploadFile/" + savedFilename);
+            // 주의: 아까 properties에서 설정한 경로랑 URL 매핑이 맞아야 합니다.
+            // 만약 이미지가 안 뜨면 WebMvcConfig 확인 필요!
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -166,22 +148,23 @@ public class ChatController {
     // 3. [실시간 통신] 메시지 주고 받기 (WebSocket)
     // ======================================================================
 
+    /**
+     * [메시지 전송]
+     * - 클라이언트에서 보낸 JSON 데이터를 ChatMessageEntity 객체로 받음
+     */
     @MessageMapping("/chat/message")
-    public void sendMessage(ChatMessageDTO messageDTO) {
-        ChatMessageDTO savedMessage = chatService.saveMessage(messageDTO);
-        messagingTemplate.convertAndSend("/sub/chat/room/" + savedMessage.getRoomId(), savedMessage);
-    }
+    public void sendMessage(ChatMessageEntity message) {
+        // 1. 메시지 저장 (DB)
+        ChatMessageEntity savedMessage = chatService.saveMessage(message);
 
-    @GetMapping("/chat/create")
-    public String createRoom(
-            @RequestParam("recruiterId") Long recruiterId,
-            @RequestParam(value = "jobPostId", required = false) Long jobPostId,
-            @RequestParam("userId") Long seekerId) { // 현재 로그인한 구직자 ID
+        // 2. 메시지 배달
+        // Entity에서 방 번호를 꺼낼 때는 getRoom().getId()를 써야 합니다.
+        // 하지만 클라이언트에서 room.id만 보냈다면 message.getRoom()이 null일 수 있습니다.
+        // 일단은 안전하게 클라이언트가 보낸 방 번호를 그대로 씁니다. (DTO 사용 권장되지만, 지금은 Entity 직접 사용)
 
-        // 1. 서비스에서 방을 찾거나 생성
-        ChatRoomEntity room = chatService.createOrGetChatRoom(seekerId, recruiterId, jobPostId);
+        // 주의: 클라이언트가 보낼 때 roomId를 잘 넣어서 보내야 함.
+        Long currentRoomId = message.getRoom().getId();
 
-        // 2. 생성된(혹은 찾은) 방으로 즉시 이동
-        return "redirect:/chat/room/" + room.getId() + "?userId=" + seekerId;
+        messagingTemplate.convertAndSend("/sub/chat/room/" + currentRoomId, savedMessage);
     }
 }

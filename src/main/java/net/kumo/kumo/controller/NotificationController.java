@@ -4,6 +4,7 @@ package net.kumo.kumo.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.kumo.kumo.domain.NotificationResponseDTO;
+import net.kumo.kumo.domain.entity.NotificationEntity;
 import net.kumo.kumo.service.NotificationService;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class NotificationController {
 		List<NotificationResponseDTO> dtoList = notificationService.getDtoList(user.getUsername(),locale);
 		
 		return ResponseEntity.ok(dtoList);
-		
+	
 	}
 	
 	// [추가] 모두 읽음 처리 API

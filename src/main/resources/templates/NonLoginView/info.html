@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>KUMO - 회사 정보</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+
+
+    <link rel="stylesheet" th:href="@{/css/NonLoginFragments/NonLoginFooter.css}">
+    <link rel="stylesheet" th:href="@{/css/NonLogin/info.css}">
+</head>
+<body>
+
+<div th:replace="~{NonLoginFragments/NonLoginHeader :: headerFragment}"
+     sec:authorize="!isAuthenticated()"></div>
+
+<div th:replace="~{AuthenticatedFragments/AuthenticatedHeader :: headerFragment}"
+     sec:authorize="isAuthenticated()"></div>
+
+<main class="info-container">
+
+    <section class="info-hero">
+        <div class="cloud-icon-wrapper">
+            <img th:src="@{/images/NonLogin/cloud.png}" alt="구름 아이콘" class="cloud-img-small">
+        </div>
+        <h1 class="main-copy">
+            “<span class="highlight">KUMO</span><span th:utext="#{info.hero.text}">는 일본 1위<br>구인구직 플랫폼입니다.</span>”
+        </h1>
+    </section>
+
+    <section class="service-desc-section">
+        <div class="section-header">
+            <h2 th:text="#{info.sect.title}">서비스 설명</h2>
+            <p th:text="#{info.sect.sub}">개발자들의 코멘트</p>
+        </div>
+
+        <div class="scroller-container">
+            <div class="developer-cards scroller-track">
+
+                <div class="dev-card">
+                    <p class="comment" th:text="#{info.dev1.comment}">일본에서 살던 시절의 경험을 반영해 만들었습니다.</p>
+                    <div class="profile">
+                        <div class="avatar orange"><i class="fa-regular fa-face-smile"></i></div>
+                        <div class="info">
+                            <span class="name" th:text="#{info.dev1.name}">윤병진</span>
+                            <span class="role" th:text="#{info.dev1.role}">Smart Cloud IT Master 48기</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dev-card">
+                    <p class="comment" th:text="#{info.dev2.comment}">더 살기 좋은 세상을 만들기 위해 만들었습니다.</p>
+                    <div class="profile">
+                        <div class="avatar blue"><i class="fa-regular fa-face-smile"></i></div>
+                        <div class="info">
+                            <span class="name" th:text="#{info.dev2.name}">황재연</span>
+                            <span class="role" th:text="#{info.dev2.role}">Smart Cloud IT Master 48기</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dev-card">
+                    <p class="comment" th:text="#{info.dev3.comment}">잘 만들었습니다.</p>
+                    <div class="profile">
+                        <div class="avatar green"><i class="fa-regular fa-face-smile"></i></div>
+                        <div class="info">
+                            <span class="name" th:text="#{info.dev3.name}">함준우</span>
+                            <span class="role" th:text="#{info.dev3.role}">Smart Cloud IT Master 48기</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dev-card">
+                    <p class="comment" th:text="#{info.dev4.comment}">열심히 만들었습니다.</p>
+                    <div class="profile">
+                        <div class="avatar gray"><i class="fa-regular fa-face-smile"></i></div>
+                        <div class="info">
+                            <span class="name" th:text="#{info.dev4.name}">이원우</span>
+                            <span class="role" th:text="#{info.dev4.role}">Smart Cloud IT Master 48기</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dev-card">
+                    <p class="comment" th:text="#{info.dev5.comment}">좋게 만들었습니다</p>
+                    <div class="profile">
+                        <div class="avatar blue"><i class="fa-regular fa-face-smile"></i></div>
+                        <div class="info">
+                            <span class="name" th:text="#{info.dev5.name}">김현우</span>
+                            <span class="role" th:text="#{info.dev5.role}">Smart Cloud IT Master 48기</span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="dev-card">
+                    <p class="comment" th:text="#{info.dev1.comment}">일본에서 살던 시절의 경험을 반영해 만들었습니다.</p>
+                    <div class="profile">
+                        <div class="avatar orange"><i class="fa-regular fa-face-smile"></i></div>
+                        <div class="info">
+                            <span class="name" th:text="#{info.dev1.name}">윤병진</span>
+                            <span class="role" th:text="#{info.dev1.role}">Smart Cloud IT Master 48기</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dev-card">
+                    <p class="comment" th:text="#{info.dev2.comment}">더 살기 좋은 세상을 만들기 위해 만들었습니다.</p>
+                    <div class="profile">
+                        <div class="avatar blue"><i class="fa-regular fa-face-smile"></i></div>
+                        <div class="info">
+                            <span class="name" th:text="#{info.dev2.name}">황재연</span>
+                            <span class="role" th:text="#{info.dev2.role}">Smart Cloud IT Master 48기</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dev-card">
+                    <p class="comment" th:text="#{info.dev3.comment}">잘 만들었습니다.</p>
+                    <div class="profile">
+                        <div class="avatar green"><i class="fa-regular fa-face-smile"></i></div>
+                        <div class="info">
+                            <span class="name" th:text="#{info.dev3.name}">함준우</span>
+                            <span class="role" th:text="#{info.dev3.role}">Smart Cloud IT Master 48기</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dev-card">
+                    <p class="comment" th:text="#{info.dev4.comment}">열심히 만들었습니다.</p>
+                    <div class="profile">
+                        <div class="avatar gray"><i class="fa-regular fa-face-smile"></i></div>
+                        <div class="info">
+                            <span class="name" th:text="#{info.dev4.name}">이원우</span>
+                            <span class="role" th:text="#{info.dev4.role}">Smart Cloud IT Master 48기</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dev-card">
+                    <p class="comment" th:text="#{info.dev5.comment}">좋게 만들었습니다</p>
+                    <div class="profile">
+                        <div class="avatar blue"><i class="fa-regular fa-face-smile"></i></div>
+                        <div class="info">
+                            <span class="name" th:text="#{info.dev5.name}">김현우</span>
+                            <span class="role" th:text="#{info.dev5.role}">Smart Cloud IT Master 48기</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<div th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"></div>
+
+</body>
+</html>

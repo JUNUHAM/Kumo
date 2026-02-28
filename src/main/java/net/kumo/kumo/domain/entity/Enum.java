@@ -30,7 +30,7 @@ public class Enum {
 	}
 
 	public enum MessageType {
-		TEXT, IMAGE, SYSTEM, FILE
+		TEXT, IMAGE, SYSTEM
 	}
 
 	public enum NotificationType {
