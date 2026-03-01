@@ -1,5 +1,10 @@
 <aside th:fragment="sidebarFragment" class="sidebar-container">
-  <div class="sidebar-top">
+    <div class="sidebar-top">
+  
+      <!-- 로고 추가 -->
+      <a th:href="@{/Recruiter/Main}" class="sidebar-logo-link">
+        <img src="/images/recruiter/recruiterLogo.png" alt="KUMO" />
+      </a>
     <nav class="sidebar-nav">
       <a
         th:href="@{/Recruiter/Main}"

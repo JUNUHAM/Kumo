@@ -11,7 +11,7 @@ body {
 .dashboard-wrapper {
   display: flex;
   width: 100%;
-  margin-top: 75px !important; /* 헤더 높이만큼 공간 확보 */
+  margin-top: 25px;
   transition: none !important;
 }
 

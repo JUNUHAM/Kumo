@@ -2,17 +2,20 @@
    사이드바 컨테이너
    ============================== */
 .sidebar-container {
-  width: 240px;
-  height: calc(100vh - 70px);
+    width: 240px;
+      height: 100vh;
+      /* ← calc(100vh - 70px) 에서 100vh로 변경 */
+      top: 0;
+      /* ← 70px에서 0으로 변경 */
+      z-index: 1030;
+      /* ← 헤더보다 높게 */
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 20px 0;
   position: fixed;
-  top: 70px;
   left: 0;
-  z-index: 1000;
   border-right: 1px solid #eee;
   box-sizing: border-box;
   overflow-y: auto;
@@ -160,4 +163,21 @@ body.dark-mode .logout-btn {
 body.dark-mode .logout-btn:hover {
   background-color: #ff6b6b;
   color: #ffffff;
+}
+
+/* --- 사이드바 로고 영역 --- */
+.sidebar-logo-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 🌟 로고를 정중앙으로! */
+  padding: 16px 0;
+  /* 🌟 완벽한 중앙을 위해 좌우 여백 제거 */
+  margin-bottom: 10px;
+  text-decoration: none;
+}
+
+/* 로고 이미지 크기 */
+.sidebar-logo-link img {
+  height: 36px;
 }

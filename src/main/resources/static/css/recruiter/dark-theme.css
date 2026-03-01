@@ -289,7 +289,6 @@ body.dark-mode .position-absolute.translate-middle-y {
 body.dark-mode .dashboard-right-sidebar,
 body.dark-mode .calendar-side-area {
   background-color: #121212 !important;
-  border-left: 1px solid #2d2d2d !important;
 }
 
 body.dark-mode .side-panel,
@@ -691,4 +690,10 @@ html.dark-mode .nav-pill:hover {
   font-size: 0.8rem;
   margin-left: 5px;
   color: #b0b8c1;
+}
+
+body.dark-mode .authenticated-header,
+body.dark-mode .custom-header {
+  background-color: transparent !important;
+  border-bottom: none !important;
 }
