@@ -8,9 +8,11 @@
         <link rel="stylesheet" th:href="@{/css/AuthenticatedFragments/AuthenticatedHeader.css}"
               sec:authorize="isAuthenticated()">
 
-        <a th:href="@{/}" class="logo">
-            <img th:src="@{/images/NonLogin/seekerLogo.png}" alt="KUMO" style="height: 40px;">
-        </a>
+        <div class="sidebar-logo">
+            <a th:href="@{/}" class="logo">
+                <img th:src="@{/images/NonLogin/seekerLogo.png}" alt="KUMO" style="height: 40px;">
+            </a>
+        </div>
 
         <nav>
             <ul class="nav-menu">

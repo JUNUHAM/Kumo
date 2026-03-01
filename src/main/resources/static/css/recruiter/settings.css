@@ -57,20 +57,29 @@
 }
 
 .btn-upload-photo {
-  padding: 8px 18px;
-  background-color: #fff;
+  padding: 8px 16px;
   border: 1px solid #ddd;
+  background: #fff;
   border-radius: 20px;
-  color: #00aaff;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 12px;
+  color: #42a5f5;
   cursor: pointer;
-  transition: all 0.2s;
+  font-weight: 500;
+  transition: 0.2s;
 }
 
 .btn-upload-photo:hover {
-  background-color: #f9f9f9;
-  border-color: #00aaff;
+  border-color: #42a5f5;
+}
+
+body.dark-mode .btn-upload-photo {
+  background-color: #121212;
+  border-color: #eeeeee;
+  color: #7db4e6;
+}
+
+body.dark-mode .btn-upload-photo:hover {
+  border-color: #42a5f5;
 }
 
 /* 정보 리스트 (Seeker 스타일 행) */
@@ -216,20 +225,6 @@ html.dark-mode .btn-edit {
   height: 110px;
   border-radius: 50%;
   object-fit: cover;
-}
-
-.btn-upload-photo {
-  padding: 8px 18px;
-  border-radius: 20px;
-  border: 1px solid #ddd;
-  background: #fff;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.btn-upload-photo:hover {
-  border-color: #7abaff;
-  color: #7abaff;
 }
 
 /* =========================================

@@ -116,7 +116,7 @@
                 <div class="color-dot" style="background-color: #ffbb33;" data-color="#ffbb33"></div>
                 <div class="color-dot" style="background-color: #ccff33;" data-color="#ccff33"></div>
                 <div class="color-dot" style="background-color: #33ff66;" data-color="#33ff66"></div>
-                <div class="color-dot" style="background-color: #7abaff;" data-color="#7abaff"></div>
+                <div class="color-dot" style="background-color: #7db4e6;" data-color="#7db4e6"></div>
                 <div class="color-dot" style="background-color: #555abf;" data-color="#555abf"></div>
                 <div class="color-dot" style="background-color: #cc66ff;" data-color="#cc66ff"></div>
               </div>
@@ -208,7 +208,7 @@
         description: info.event.extendedProps.description || "",
         start: formatDateTime(info.event.start),
         end: info.event.end ? formatDateTime(info.event.end) : formatDateTime(info.event.start),
-        color: info.event.backgroundColor || info.event.color || "#7abaff"
+        color: info.event.backgroundColor || info.event.color || "#7db4e6"
       };
 
       $.ajax({
@@ -379,7 +379,7 @@
         $('#endMin').val(endM);
       }
 
-      const eventColor = event.backgroundColor || event.color || "#7abaff";
+      const eventColor = event.backgroundColor || event.color || "#7db4e6";
       $('.color-dot').removeClass('active');
       $(`.color-dot[data-color="${eventColor}"]`).addClass('active');
 
@@ -417,7 +417,7 @@
       }
 
       if (startVal >= endVal) {
-        Swal.fire({ icon: 'warning', title: 'Oops!', text: calMsg.errorTimeRange, confirmButtonColor: '#7abaff' });
+        Swal.fire({ icon: 'warning', title: 'Oops!', text: calMsg.errorTimeRange, confirmButtonColor: '#7db4e6' });
         return;
       }
 
@@ -427,7 +427,7 @@
         description: $('#scheduleDescription').val(),
         start: date + "T" + (startVal || "09:00") + ":00",
         end: date + "T" + (endVal || "10:00") + ":00",
-        color: $('.color-dot.active').data('color') || "#7abaff"
+        color: $('.color-dot.active').data('color') || "#7db4e6"
       };
 
       $.ajax({
@@ -474,7 +474,7 @@
           $('#scheduleModal').modal('hide');
           mainCal.refetchEvents();
           updateAll($('#scheduleDate').val() || getLocalDateString(new Date()), mainCal);
-          Swal.fire({ title: calMsg.deleteSuccess, text: calMsg.deleteSuccessText, icon: 'success', confirmButtonColor: '#7abaff' });
+          Swal.fire({ title: calMsg.deleteSuccess, text: calMsg.deleteSuccessText, icon: 'success', confirmButtonColor: '#7db4e6' });
         },
         error: function () {
           Swal.fire(calMsg.errorTitle, calMsg.errorDelete, 'error');
@@ -495,7 +495,7 @@
       evs.forEach(e => {
         const card = document.createElement("div");
         card.className = "sidebar-card";
-        card.style.setProperty("border-left-color", e.backgroundColor || e.color || "#7abaff", "important");
+        card.style.setProperty("border-left-color", e.backgroundColor || e.color || "#7db4e6", "important");
         card.style.cursor = "pointer";
         card.onclick = () => openEditModal(e);
 

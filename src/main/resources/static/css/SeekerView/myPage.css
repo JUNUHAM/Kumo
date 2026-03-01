@@ -13,6 +13,7 @@ body {
     flex-direction: column;
     height: 100vh; /* 화면 꽉 채우기 */
     overflow: hidden; /* 전체 스크롤 방지 */
+    margin-top: 50px;
 }
 
 a { text-decoration: none; color: inherit; }
@@ -21,11 +22,47 @@ ul { list-style: none; }
 /* ============================
    1. 페이지 레이아웃 (사이드바 + 콘텐츠)
    ============================ */
+
 .mypage-container {
     display: flex;      /* 가로 배치 (사이드바 + 메인) */
     flex: 1;            /* ★ 남은 높이(헤더, 푸터 제외)를 모두 차지함 */
     min-height: 0;      /* 내부 스크롤을 위해 필수 */
     overflow: hidden;   /* 자식 요소 스크롤 제어 */
+    margin-left: 240px;
+}
+
+/* 1. 타이틀을 감싸는 박스: 밑줄과 하단 여백 추가 */
+.content-header {
+    margin-top: 50px;
+    width: 100%;
+    max-width: 800px;
+    /* 🌟 프로필 섹션 너비와 맞추면 더 깔끔합니다 */
+    margin: 0 auto 30px auto;
+    /* 글자와 줄 사이 간격 */
+    border-bottom: 1px solid #eee;
+    /* 🌟 이게 바로 그 '회색 줄'입니다! */
+    display: flex;
+    justify-content: flex-start;
+}
+
+/* 2. '내 계정' 글자 스타일 */
+.setting-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+    /* 기본 마진 제거 */
+}
+
+/* 🌙 다크모드일 때 밑줄 색상 보정 */
+body.dark-mode .content-header {
+    border-bottom-color: #f4f4f4;
+    /* 다크모드에선 줄을 조금 더 어둡게 */
+}
+
+body.dark-mode .setting-title {
+    color: #fff;
+    /* 다크모드 글자색 */
 }
 
 /* 메인 콘텐츠 영역 */
@@ -37,7 +74,7 @@ ul { list-style: none; }
 }
 
 .content-header h2 {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 700;
     margin-bottom: 30px;
     color: #111;
@@ -45,6 +82,13 @@ ul { list-style: none; }
 
 .profile-section {
     max-width: 800px;
+    margin-left: 230px;
+}
+
+.settings-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #333;
 }
 
 /* ============================
@@ -318,9 +362,14 @@ body.dark-mode .info-row .value { color: var(--text-sub); }
 
 body.dark-mode .btn-upload-photo {
     background-color: var(--bg-main);
-    border-color: var(--border-color);
+    border-color: #eeeeee;
     color: var(--primary-color);
 }
+
+body.dark-mode .btn-upload-photo:hover {
+    border-color: #42a5f5;
+}
+
 body.dark-mode .img-wrapper { border-color: var(--border-color); }
 body.dark-mode .btn-edit { color: var(--text-main); }
 body.dark-mode .btn-edit:hover { color: var(--primary-color); }
@@ -491,4 +540,3 @@ body.dark-mode .custom-modal-input:focus {
     border-color: var(--primary-color);
     background-color: #1a1a1a;
 }
-

@@ -179,7 +179,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const card = document.createElement("div");
         card.className = "sidebar-card";
 
-        const eventColor = e.backgroundColor || e.color || "#7abaff";
+        const eventColor = e.backgroundColor || e.color || "#7db4e6";
         card.style.setProperty("border-left-color", eventColor, "important");
 
         const timeStr = e.start.toLocaleTimeString([], {

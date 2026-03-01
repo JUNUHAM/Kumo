@@ -93,15 +93,25 @@
   padding-bottom: 20px;
 }
 
+/* ==============================
+   하단 영역 (로그아웃 버튼)
+   ============================== */
+.sidebar-bottom {
+  padding-bottom: 20px;
+}
+
 .logout-btn {
   display: flex;
   align-items: center;
   padding: 15px 25px;
   font-size: 14px;
   font-weight: 500;
-  color: #ff5a5a;
-  background-color: #fff5f5;
-  border-left: 4px solid #ff5a5a;
+  /* 🌟 평소에는 다른 메뉴들과 결을 맞춥니다 */
+  color: #727385;
+  background-color: transparent;
+  /* 배경 투명하게 */
+  border-left: 4px solid transparent;
+  /* 테두리 숨기기 */
   transition: all 0.2s ease;
   cursor: pointer;
   text-decoration: none;
@@ -113,12 +123,36 @@
   margin-right: 10px;
   font-size: 16px;
   text-align: center;
+  color: #bbb !important;
+  /* 아이콘 색상도 통일 */
 }
 
+/* 🌟 마우스를 올렸을 때(Hover)만 디자인 변화! */
 .logout-btn:hover {
   background-color: #ff5a5a;
+  /* 배경은 빨간색으로 */
   color: #ffffff;
+  /* 글자는 흰색으로 */
   border-left-color: #ff5a5a;
+}
+
+.logout-btn:hover i {
+  color: #ffffff !important;
+  /* 호버 시 아이콘도 흰색으로 */
+}
+
+/* ==============================
+   다크모드 대응 (로그아웃 버튼)
+   ============================= */
+body.dark-mode .logout-btn {
+  color: #ccc;
+  /* 다크모드 평상시 글자색 */
+  background-color: transparent;
+}
+
+body.dark-mode .logout-btn:hover {
+  background-color: #ff6b6b;
+  color: #ffffff;
 }
 
 /* ==============================
@@ -152,17 +186,6 @@ body.dark-mode .nav-item:hover {
 body.dark-mode .nav-item.active i,
 body.dark-mode .nav-item:hover i {
   color: #7db4e6;
-}
-
-body.dark-mode .logout-btn {
-  background-color: #2d1f1f;
-  color: #ff6b6b;
-  border-left-color: #ff6b6b;
-}
-
-body.dark-mode .logout-btn:hover {
-  background-color: #ff6b6b;
-  color: #ffffff;
 }
 
 /* --- 사이드바 로고 영역 --- */

@@ -200,14 +200,14 @@
   flex-shrink: 0;
 }
 .btn-manage {
-  background-color: #7abaff;
+  background-color: #7db4e6;
 }
 .btn-close-job {
   background-color: #b0b8c1;
 }
 
 .salary-text {
-  color: #7abaff;
+  color: #7db4e6;
   font-weight: 700;
 }
 .contact-text,
@@ -292,7 +292,7 @@
 
 /* 수정 버튼 (제출/강조 버튼 느낌) */
 .btn-job-edit {
-  background: #7abaff;
+  background: #7db4e6;
   color: #ffffff;
   border: none;
 }
@@ -389,7 +389,7 @@ body.dark-mode .btn-job-delete:hover {
 
 .count-badge {
   background-color: #e8f3ff;
-  color: #7abaff;
+  color: #7db4e6;
   padding: 0px 8px;
   border-radius: 8px;
   font-weight: 700;
@@ -427,7 +427,7 @@ body.dark-mode .btn-job-delete:hover {
 
 /* 3. 마우스 올렸을 때 효과 (색상 변경 + 회전 애니메이션) */
 .btn-gear:hover {
-  color: #7abaff;
+  color: #7db4e6;
   /* 사장님 메인 파란색으로 변신 */
   transform: rotate(90deg);
   /* 톱니바퀴가 찌잉~ 하고 돌아가는 귀여운 디테일 */

@@ -41,9 +41,9 @@
 }
 
 .nav-pill.active {
-  background: #7abaff;
+  background: #7db4e6;
   color: #ffffff;
-  border-color: #7abaff;
+  border-color: #7db4e6;
   box-shadow: 0 4px 14px rgba(122, 186, 255, 0.3);
 }
 
@@ -65,8 +65,8 @@
 }
 
 .nav-pill-add:hover {
-  border-color: #7abaff;
-  color: #7abaff;
+  border-color: #7db4e6;
+  color: #7db4e6;
   background: #ffffff;
 }
 
@@ -102,7 +102,7 @@
 
 .kumo-form-control:focus {
   outline: none;
-  border-color: #7abaff;
+  border-color: #7db4e6;
   background-color: #ffffff;
   box-shadow: 0 0 0 4px rgba(122, 186, 255, 0.1);
 }
@@ -149,7 +149,7 @@
 }
 
 .btn-save {
-  background-color: #7abaff;
+  background-color: #7db4e6;
   color: #ffffff;
   border: none;
   padding: 18px 50px;

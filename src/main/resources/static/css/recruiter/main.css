@@ -138,7 +138,7 @@ footer {
 }
 
 .footer-links a:hover {
-  color: #7abaff;
+  color: #7db4e6;
 }
 
 .copyright strong {
@@ -187,7 +187,7 @@ footer {
 }
 
 .btn-sky-blue {
-  background-color: #7abaff;
+  background-color: #7db4e6;
   color: white;
 }
 .btn-light-blue {
@@ -302,7 +302,7 @@ footer {
 }
 
 .btn-detail {
-  color: #7abaff;
+  color: #7db4e6;
   background: #e8f3ff;
   padding: 5px 10px;
   border-radius: 8px;
@@ -342,7 +342,7 @@ footer {
 }
 
 .panel-link:hover {
-  color: #7abaff; /* 호버 시에만 사장님 포인트 컬러(하늘색)로 변경 */
+  color: #7db4e6; /* 호버 시에만 사장님 포인트 컬러(하늘색)로 변경 */
   text-decoration: underline; /* 호버 시에만 살짝 밑줄 */
 }
 
@@ -436,8 +436,8 @@ body.dark-mode .myjobs-row:hover {
 
 /* 2. 다크모드 전용: 고급스러운 호버 효과 */
 body.dark-mode .btn-detail:hover {
-  /* 🌟 색상은 사장님 포인트 컬러(7abaff)를 조금 더 확실하게 사용 */
-  background-color: #7abaff !important;
+  /* 🌟 색상은 사장님 포인트 컬러(7db4e6)를 조금 더 확실하게 사용 */
+  background-color: #7db4e6 !important;
   color: #ffffff !important;
 
   /* 🌟 고급짐의 핵심 1: 아주 살짝 위로 띄우기 (-2px) */
