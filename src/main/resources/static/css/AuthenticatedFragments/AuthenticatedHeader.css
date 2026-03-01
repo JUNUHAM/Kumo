@@ -4,6 +4,17 @@
    KUMO - 로그인 공통 헤더 (NonLogin 표준 디자인 + 알림창 복구)
    ============================================================ */
 
+/* 쿠모 로고*/
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* 🌟 로고를 정중앙으로! */
+    margin-left: 25px;
+    margin-bottom: 10px;
+    text-decoration: none;
+}
+
 /* 0. 전역 변수 */
 :root {
     --header-padding: 20px 40px;
@@ -21,9 +32,9 @@
 
 body.dark-mode {
     --bg-main: #121212;
-    --bg-card: #1e1e1e;
+    --bg-card: #121212;
     --text-main: #e0e0e0;
-    --text-sub: #aaaaaa;
+    --text-sub: #cbcbcb;
     --border-color: #333333;
     --primary-color: #7db4e6;
     --hover-bg: #252525;

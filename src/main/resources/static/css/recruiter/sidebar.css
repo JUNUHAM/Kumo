@@ -2,17 +2,20 @@
    사이드바 컨테이너
    ============================== */
 .sidebar-container {
-  width: 240px;
-  height: calc(100vh - 70px);
+    width: 240px;
+      height: 100vh;
+      /* ← calc(100vh - 70px) 에서 100vh로 변경 */
+      top: 0;
+      /* ← 70px에서 0으로 변경 */
+      z-index: 1030;
+      /* ← 헤더보다 높게 */
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 20px 0;
   position: fixed;
-  top: 70px;
   left: 0;
-  z-index: 1000;
   border-right: 1px solid #eee;
   box-sizing: border-box;
   overflow-y: auto;
@@ -90,15 +93,25 @@
   padding-bottom: 20px;
 }
 
+/* ==============================
+   하단 영역 (로그아웃 버튼)
+   ============================== */
+.sidebar-bottom {
+  padding-bottom: 20px;
+}
+
 .logout-btn {
   display: flex;
   align-items: center;
   padding: 15px 25px;
   font-size: 14px;
   font-weight: 500;
-  color: #ff5a5a;
-  background-color: #fff5f5;
-  border-left: 4px solid #ff5a5a;
+  /* 🌟 평소에는 다른 메뉴들과 결을 맞춥니다 */
+  color: #727385;
+  background-color: transparent;
+  /* 배경 투명하게 */
+  border-left: 4px solid transparent;
+  /* 테두리 숨기기 */
   transition: all 0.2s ease;
   cursor: pointer;
   text-decoration: none;
@@ -110,12 +123,36 @@
   margin-right: 10px;
   font-size: 16px;
   text-align: center;
+  color: #bbb !important;
+  /* 아이콘 색상도 통일 */
 }
 
+/* 🌟 마우스를 올렸을 때(Hover)만 디자인 변화! */
 .logout-btn:hover {
   background-color: #ff5a5a;
+  /* 배경은 빨간색으로 */
   color: #ffffff;
+  /* 글자는 흰색으로 */
   border-left-color: #ff5a5a;
+}
+
+.logout-btn:hover i {
+  color: #ffffff !important;
+  /* 호버 시 아이콘도 흰색으로 */
+}
+
+/* ==============================
+   다크모드 대응 (로그아웃 버튼)
+   ============================= */
+body.dark-mode .logout-btn {
+  color: #ccc;
+  /* 다크모드 평상시 글자색 */
+  background-color: transparent;
+}
+
+body.dark-mode .logout-btn:hover {
+  background-color: #ff6b6b;
+  color: #ffffff;
 }
 
 /* ==============================
@@ -151,13 +188,19 @@ body.dark-mode .nav-item:hover i {
   color: #7db4e6;
 }
 
-body.dark-mode .logout-btn {
-  background-color: #2d1f1f;
-  color: #ff6b6b;
-  border-left-color: #ff6b6b;
+/* --- 사이드바 로고 영역 --- */
+.sidebar-logo-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 🌟 로고를 정중앙으로! */
+  padding: 16px 0;
+  /* 🌟 완벽한 중앙을 위해 좌우 여백 제거 */
+  margin-bottom: 10px;
+  text-decoration: none;
 }
 
-body.dark-mode .logout-btn:hover {
-  background-color: #ff6b6b;
-  color: #ffffff;
+/* 로고 이미지 크기 */
+.sidebar-logo-link img {
+  height: 36px;
 }

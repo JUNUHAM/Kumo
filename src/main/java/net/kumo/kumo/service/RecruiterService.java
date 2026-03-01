@@ -33,33 +33,43 @@ public class RecruiterService {
 
     /**
      * 유저의 프로필 이미지 경로를 업데이트합니다.
-     * * @param email 유저 식별용 이메일
      * 
+     * @param email            유저 식별용 이메일
      * @param imagePath        저장된 이미지의 웹 접근 경로
-     * @param originalFileName 원본 파일명 (추가!)
-     * @param storedFileName   UUID가 붙은 저장 파일명 (추가!)
-     * @param fileSize         파일 크기 (추가!)
+     * @param originalFileName 원본 파일명
+     * @param storedFileName   UUID가 붙은 저장 파일명
+     * @param fileSize         파일 크기
      */
-    @org.springframework.transaction.annotation.Transactional // 🌟 DB 수정 시 안전벨트(필수)
+    @org.springframework.transaction.annotation.Transactional
     public void updateProfileImage(String email, String imagePath, String originalFileName, String storedFileName,
             Long fileSize) {
+
         // 1. 이메일로 유저 정보를 가져옵니다.
         UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("해당 이메일을 가진 유저를 찾을 수 없습니다: " + email));
 
-        // 🌟 2. DB가 간절히 원하던 3가지 정보를 Builder에 꽉꽉 채워줍니다!
-        ProfileImageEntity profileImageEntity = ProfileImageEntity.builder()
-                .fileUrl(imagePath)
-                .originalFileName(originalFileName) // 추가!
-                .storedFileName(storedFileName) // 추가!
-                .fileSize(fileSize) // 추가!
-                .user(user) // (선택) ProfileImage 쪽에 user_id 외래키가 있다면 이것도 묶어주세요!
-                .build();
+        // 🌟 2. 유저가 이미 가지고 있는 프로필 사진이 있는지 꺼내봅니다.
+        ProfileImageEntity existingImage = user.getProfileImage();
 
-        // 3. 새로운 이미지 경로를 세팅합니다. (엔티티의 setter 사용)
-        user.setProfileImage(profileImageEntity);
+        if (existingImage != null) {
+            // 🟢 [Case A] 기존 프사가 있는 경우 -> 새로운 정보로 내용물만 덮어쓰기 (UPDATE)
+            existingImage.setFileUrl(imagePath);
+            existingImage.setOriginalFileName(originalFileName);
+            existingImage.setStoredFileName(storedFileName);
+            existingImage.setFileSize(fileSize);
+        } else {
+            // 🔵 [Case B] 기존 프사가 아예 없는 경우 -> 새로 만들어서 연결해주기 (INSERT)
+            ProfileImageEntity newImage = ProfileImageEntity.builder()
+                    .fileUrl(imagePath)
+                    .originalFileName(originalFileName)
+                    .storedFileName(storedFileName)
+                    .fileSize(fileSize)
+                    .user(user)
+                    .build();
+            user.setProfileImage(newImage);
+        }
 
-        // 4. 변경 사항을 저장합니다. (JPA Cascade가 설정되어 있다면 연관된 profileImageEntity도 함께 저장됩니다)
+        // 3. 변경 사항을 저장합니다. (JPA의 더티 체킹 덕분에 알아서 UPDATE나 INSERT 쿼리가 나갑니다!)
         userRepository.save(user);
     }
 

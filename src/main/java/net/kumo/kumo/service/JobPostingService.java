@@ -1,13 +1,10 @@
 package net.kumo.kumo.service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import net.kumo.kumo.domain.dto.JobApplicantGroupDTO;
-import net.kumo.kumo.domain.entity.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,6 +12,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import net.kumo.kumo.domain.dto.JobManageListDTO;
 import net.kumo.kumo.domain.dto.JobPostingRequestDTO;
+import net.kumo.kumo.domain.entity.CompanyEntity;
+import net.kumo.kumo.domain.entity.OsakaGeocodedEntity;
+import net.kumo.kumo.domain.entity.TokyoGeocodedEntity;
+import net.kumo.kumo.domain.entity.UserEntity;
 // TODO: 머지 후 적용!!!
 // import net.kumo.kumo.domain.dto.JobApplicantGroupDTO;
 // import net.kumo.kumo.domain.dto.ApplicationDTO;
@@ -23,8 +24,6 @@ import net.kumo.kumo.domain.enums.JobStatus;
 import net.kumo.kumo.repository.CompanyRepository;
 import net.kumo.kumo.repository.OsakaGeocodedRepository;
 import net.kumo.kumo.repository.TokyoGeocodedRepository;
-import java.util.ArrayList;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -317,6 +316,7 @@ public class JobPostingService {
                     .title(o.getTitle())
                     .regionType("오사카") // 라벨링
                     .wage(displayWage)
+                    .wageJp(o.getWageJp())
                     .createdAt(o.getCreatedAt())
                     .status(o.getStatus() != null ? o.getStatus().name() : "RECRUITING")
                     .build());
@@ -339,6 +339,7 @@ public class JobPostingService {
                     .title(t.getTitle())
                     .regionType("도쿄") // 라벨링
                     .wage(displayWage)
+                    .wageJp(t.getWageJp())
                     .createdAt(t.getCreatedAt())
                     .status(t.getStatus() != null ? t.getStatus().name() : "RECRUITING")
                     .build());
@@ -531,94 +532,107 @@ public class JobPostingService {
     }
 
     /*
-    // ==========================================
-    // TODO: 머지 후 적용!!!
-    // 지원자 관리 탭 : 내 공고별 지원자 목록 가져오기
-    // ==========================================
-    @Transactional(readOnly = true)
-    public List<JobApplicantGroupDTO> getGroupedApplicantsForRecruiter(UserEntity user) {
-        List<JobApplicantGroupDTO> groupedList = new ArrayList<>();
-        String email = user.getEmail();
-
-        // ------------------------------------------
-        // 1. 오사카 공고 조회 및 지원자 매핑
-        // ------------------------------------------
-        List<OsakaGeocodedEntity> osakaJobs = osakaGeocodedRepository.findByUser_Email(email);
-        if (!osakaJobs.isEmpty()) {
-            List<Long> osakaJobIds = osakaJobs.stream().map(OsakaGeocodedEntity::getId).toList();
-
-            // 이 구인자의 오사카 공고들에 지원한 모든 지원서 한 번에 조회
-            List<ApplicationEntity> osakaApps = applicationRepository.findByTargetSourceAndTargetPostIdIn("OSAKA", osakaJobIds);
-
-            // 공고 ID(targetPostId)를 기준으로 지원서들을 그룹화 (Map 형태로 분리)
-            Map<Long, List<ApplicationEntity>> appMap = osakaApps.stream()
-                    .collect(Collectors.groupingBy(ApplicationEntity::getTargetPostId));
-
-            // 각 공고별로 DTO 조립
-            for (OsakaGeocodedEntity job : osakaJobs) {
-                // 해당 공고에 달린 지원서 리스트 꺼내기 (없으면 빈 리스트)
-                List<ApplicationEntity> appsForThisJob = appMap.getOrDefault(job.getId(), new ArrayList<>());
-
-                // 엔티티 -> DTO 변환 및 최신 지원순 정렬
-                List<ApplicationDTO.ApplicantResponse> appResponses = appsForThisJob.stream()
-                        .map(app -> ApplicationDTO.ApplicantResponse.from(app, job.getTitle()))
-                        .sorted((a, b) -> b.getAppId().compareTo(a.getAppId()))
-                        .toList();
-
-                groupedList.add(JobApplicantGroupDTO.builder()
-                        .jobId(job.getId())
-                        .source("OSAKA")
-                        .jobTitle(job.getTitle())
-                        .status(job.getStatus() != null ? job.getStatus().name() : "RECRUITING")
-                        .createdAt(job.getCreatedAt())
-                        .applicantCount(appResponses.size())
-                        .applicants(appResponses) // 🌟 지원자 목록 쏙!
-                        .build());
-            }
-        }
-
-        // ------------------------------------------
-        // 2. 도쿄 공고 조회 및 지원자 매핑
-        // ------------------------------------------
-        List<TokyoGeocodedEntity> tokyoJobs = tokyoGeocodedRepository.findByUser_Email(email);
-        if (!tokyoJobs.isEmpty()) {
-            List<Long> tokyoJobIds = tokyoJobs.stream().map(TokyoGeocodedEntity::getId).toList();
-
-            // 도쿄 공고 지원서 조회
-            List<ApplicationEntity> tokyoApps = applicationRepository.findByTargetSourceAndTargetPostIdIn("TOKYO", tokyoJobIds);
-
-            Map<Long, List<ApplicationEntity>> appMap = tokyoApps.stream()
-                    .collect(Collectors.groupingBy(ApplicationEntity::getTargetPostId));
-
-            for (TokyoGeocodedEntity job : tokyoJobs) {
-                List<ApplicationEntity> appsForThisJob = appMap.getOrDefault(job.getId(), new ArrayList<>());
-
-                List<ApplicationDTO.ApplicantResponse> appResponses = appsForThisJob.stream()
-                        .map(app -> ApplicationDTO.ApplicantResponse.from(app, job.getTitle()))
-                        .sorted((a, b) -> b.getAppId().compareTo(a.getAppId()))
-                        .toList();
-
-                groupedList.add(JobApplicantGroupDTO.builder()
-                        .jobId(job.getId())
-                        .source("TOKYO")
-                        .jobTitle(job.getTitle())
-                        .status(job.getStatus() != null ? job.getStatus().name() : "RECRUITING")
-                        .createdAt(job.getCreatedAt())
-                        .applicantCount(appResponses.size())
-                        .applicants(appResponses) // 🌟 지원자 목록 쏙!
-                        .build());
-            }
-        }
-
-        // ------------------------------------------
-        // 3. 최신 공고가 아코디언 맨 위에 뜨도록 정렬
-        // ------------------------------------------
-        groupedList.sort((a, b) -> {
-            if (a.getCreatedAt() == null) return 1;
-            if (b.getCreatedAt() == null) return -1;
-            return b.getCreatedAt().compareTo(a.getCreatedAt());
-        });
-
-        return groupedList;
-    } */
+     * // ==========================================
+     * // TODO: 머지 후 적용!!!
+     * // 지원자 관리 탭 : 내 공고별 지원자 목록 가져오기
+     * // ==========================================
+     * 
+     * @Transactional(readOnly = true)
+     * public List<JobApplicantGroupDTO> getGroupedApplicantsForRecruiter(UserEntity
+     * user) {
+     * List<JobApplicantGroupDTO> groupedList = new ArrayList<>();
+     * String email = user.getEmail();
+     * 
+     * // ------------------------------------------
+     * // 1. 오사카 공고 조회 및 지원자 매핑
+     * // ------------------------------------------
+     * List<OsakaGeocodedEntity> osakaJobs =
+     * osakaGeocodedRepository.findByUser_Email(email);
+     * if (!osakaJobs.isEmpty()) {
+     * List<Long> osakaJobIds =
+     * osakaJobs.stream().map(OsakaGeocodedEntity::getId).toList();
+     * 
+     * // 이 구인자의 오사카 공고들에 지원한 모든 지원서 한 번에 조회
+     * List<ApplicationEntity> osakaApps =
+     * applicationRepository.findByTargetSourceAndTargetPostIdIn("OSAKA",
+     * osakaJobIds);
+     * 
+     * // 공고 ID(targetPostId)를 기준으로 지원서들을 그룹화 (Map 형태로 분리)
+     * Map<Long, List<ApplicationEntity>> appMap = osakaApps.stream()
+     * .collect(Collectors.groupingBy(ApplicationEntity::getTargetPostId));
+     * 
+     * // 각 공고별로 DTO 조립
+     * for (OsakaGeocodedEntity job : osakaJobs) {
+     * // 해당 공고에 달린 지원서 리스트 꺼내기 (없으면 빈 리스트)
+     * List<ApplicationEntity> appsForThisJob = appMap.getOrDefault(job.getId(), new
+     * ArrayList<>());
+     * 
+     * // 엔티티 -> DTO 변환 및 최신 지원순 정렬
+     * List<ApplicationDTO.ApplicantResponse> appResponses = appsForThisJob.stream()
+     * .map(app -> ApplicationDTO.ApplicantResponse.from(app, job.getTitle()))
+     * .sorted((a, b) -> b.getAppId().compareTo(a.getAppId()))
+     * .toList();
+     * 
+     * groupedList.add(JobApplicantGroupDTO.builder()
+     * .jobId(job.getId())
+     * .source("OSAKA")
+     * .jobTitle(job.getTitle())
+     * .status(job.getStatus() != null ? job.getStatus().name() : "RECRUITING")
+     * .createdAt(job.getCreatedAt())
+     * .applicantCount(appResponses.size())
+     * .applicants(appResponses) // 🌟 지원자 목록 쏙!
+     * .build());
+     * }
+     * }
+     * 
+     * // ------------------------------------------
+     * // 2. 도쿄 공고 조회 및 지원자 매핑
+     * // ------------------------------------------
+     * List<TokyoGeocodedEntity> tokyoJobs =
+     * tokyoGeocodedRepository.findByUser_Email(email);
+     * if (!tokyoJobs.isEmpty()) {
+     * List<Long> tokyoJobIds =
+     * tokyoJobs.stream().map(TokyoGeocodedEntity::getId).toList();
+     * 
+     * // 도쿄 공고 지원서 조회
+     * List<ApplicationEntity> tokyoApps =
+     * applicationRepository.findByTargetSourceAndTargetPostIdIn("TOKYO",
+     * tokyoJobIds);
+     * 
+     * Map<Long, List<ApplicationEntity>> appMap = tokyoApps.stream()
+     * .collect(Collectors.groupingBy(ApplicationEntity::getTargetPostId));
+     * 
+     * for (TokyoGeocodedEntity job : tokyoJobs) {
+     * List<ApplicationEntity> appsForThisJob = appMap.getOrDefault(job.getId(), new
+     * ArrayList<>());
+     * 
+     * List<ApplicationDTO.ApplicantResponse> appResponses = appsForThisJob.stream()
+     * .map(app -> ApplicationDTO.ApplicantResponse.from(app, job.getTitle()))
+     * .sorted((a, b) -> b.getAppId().compareTo(a.getAppId()))
+     * .toList();
+     * 
+     * groupedList.add(JobApplicantGroupDTO.builder()
+     * .jobId(job.getId())
+     * .source("TOKYO")
+     * .jobTitle(job.getTitle())
+     * .status(job.getStatus() != null ? job.getStatus().name() : "RECRUITING")
+     * .createdAt(job.getCreatedAt())
+     * .applicantCount(appResponses.size())
+     * .applicants(appResponses) // 🌟 지원자 목록 쏙!
+     * .build());
+     * }
+     * }
+     * 
+     * // ------------------------------------------
+     * // 3. 최신 공고가 아코디언 맨 위에 뜨도록 정렬
+     * // ------------------------------------------
+     * groupedList.sort((a, b) -> {
+     * if (a.getCreatedAt() == null) return 1;
+     * if (b.getCreatedAt() == null) return -1;
+     * return b.getCreatedAt().compareTo(a.getCreatedAt());
+     * });
+     * 
+     * return groupedList;
+     * }
+     */
 }

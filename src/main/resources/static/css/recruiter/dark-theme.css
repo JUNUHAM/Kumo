@@ -84,13 +84,13 @@ body.dark-mode .nav-item i {
 
 body.dark-mode .nav-item.active {
   background-color: #1e293b !important;
-  color: #7abaff !important;
-  border-left: 4px solid #7abaff !important;
+  color: #7db4e6 !important;
+  border-left: 4px solid #7db4e6 !important;
 }
 
 body.dark-mode .nav-item:hover {
   background-color: #242f3f !important;
-  color: #7abaff !important;
+  color: #7db4e6 !important;
 }
 
 body.dark-mode .logout-btn:hover {
@@ -161,7 +161,7 @@ body.dark-mode .middle-border {
 
 body.dark-mode .btn-view,
 body.dark-mode .btn-action-main {
-  background: #7abaff !important;
+  background: #7db4e6 !important;
   color: #fff !important;
 }
 
@@ -170,7 +170,7 @@ body.dark-mode .btn-gear {
 }
 
 body.dark-mode .btn-gear:hover {
-  color: #7abaff;
+  color: #7db4e6;
 }
 
 
@@ -188,7 +188,7 @@ body.dark-mode .status-end {
 }
 
 body.dark-mode .salary-text {
-  color: #7abaff !important;
+  color: #7db4e6 !important;
 }
 
 body.dark-mode .job-closed td,
@@ -207,7 +207,7 @@ body.dark-mode .count-label {
 
 body.dark-mode .count-badge {
   background-color: #2b3a4a !important;
-  color: #7abaff !important;
+  color: #7db4e6 !important;
 }
 
 /* ===================================================
@@ -220,7 +220,7 @@ body.dark-mode .nav-pill {
 }
 
 body.dark-mode .nav-pill.active {
-  background: #7abaff !important;
+  background: #7db4e6 !important;
   color: #fff !important;
 }
 
@@ -275,12 +275,12 @@ body.dark-mode .upload-container {
 }
 
 body.dark-mode .upload-btn i {
-  color: #7abaff !important;
+  color: #7db4e6 !important;
 }
 
 body.dark-mode .fw-bold.text-nowrap,
 body.dark-mode .position-absolute.translate-middle-y {
-  color: #7abaff !important;
+  color: #7db4e6 !important;
 }
 
 /* ===================================================
@@ -289,7 +289,6 @@ body.dark-mode .position-absolute.translate-middle-y {
 body.dark-mode .dashboard-right-sidebar,
 body.dark-mode .calendar-side-area {
   background-color: #121212 !important;
-  border-left: 1px solid #2d2d2d !important;
 }
 
 body.dark-mode .side-panel,
@@ -329,7 +328,7 @@ body.dark-mode .fc-scrollgrid {
 
 body.dark-mode #calendar .fc-event {
   background-color: #1a2635 !important;
-  border-left: 4px solid #7abaff !important;
+  border-left: 4px solid #7db4e6 !important;
 }
 
 /* 날짜 숫자 기본 */
@@ -343,7 +342,7 @@ html.dark-mode #calendar .fc-day-today {
 }
 
 html.dark-mode #calendar .fc-day-today .fc-daygrid-day-number {
-  color: #7abaff !important;
+  color: #7db4e6 !important;
   background-color: transparent !important;
 }
 
@@ -365,7 +364,7 @@ html.dark-mode #calendar .fc-day-today.selected-day {
 }
 
 html.dark-mode #calendar .fc-day-today.selected-day .fc-daygrid-day-number {
-  color: #7abaff !important;
+  color: #7db4e6 !important;
 }
 
 /* 요일 헤더 */
@@ -430,7 +429,7 @@ html.dark-mode #mini-calendar .selected-day {
 }
 
 html.dark-mode #mini-calendar .selected-day .fc-daygrid-day-number {
-  background-color: #7abaff !important;
+  background-color: #7db4e6 !important;
   color: #121212 !important;
   width: 26px !important;
   height: 26px !important;
@@ -444,7 +443,7 @@ html.dark-mode #mini-calendar .selected-day .fc-daygrid-day-number {
 
 /* 오늘 + 선택: 파란 원 우선 */
 html.dark-mode #mini-calendar .fc-day-today.selected-day .fc-daygrid-day-number {
-  background-color: #7abaff !important;
+  background-color: #7db4e6 !important;
   color: #121212 !important;
   box-shadow: 0 4px 10px rgba(122, 186, 255, 0.4) !important;
 }
@@ -578,7 +577,7 @@ html.dark-mode .btn-sub-action {
    =================================================== */
 body.dark-mode .btn-back-list {
   background-color: #2d3748 !important;
-  color: #7abaff !important;
+  color: #7db4e6 !important;
   border: 1px solid #3e4e63 !important;
   padding: 8px 15px !important;
   border-radius: 8px !important;
@@ -602,7 +601,7 @@ body.dark-mode .contact-line p {
 
 body.dark-mode .grid-col h3 i,
 body.dark-mode .contact-line i {
-  color: #7abaff !important;
+  color: #7db4e6 !important;
 }
 
 body.dark-mode .avatar-placeholder {
@@ -636,7 +635,7 @@ body.dark-mode .posting-title {
 }
 
 body.dark-mode .kumo-btn-submit {
-  background-color: #7abaff !important;
+  background-color: #7db4e6 !important;
   border: none !important;
   color: #ffffff !important;
   font-weight: bold !important;
@@ -691,4 +690,10 @@ html.dark-mode .nav-pill:hover {
   font-size: 0.8rem;
   margin-left: 5px;
   color: #b0b8c1;
+}
+
+body.dark-mode .authenticated-header,
+body.dark-mode .custom-header {
+  background-color: transparent !important;
+  border-bottom: none !important;
 }

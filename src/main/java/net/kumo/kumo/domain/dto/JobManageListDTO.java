@@ -18,6 +18,7 @@ public class JobManageListDTO {
     private String position; // 🌟 추가! (이게 있어야 메인에 직무가 나옴)
     private String regionType;
     private String wage;
+    private String wageJp;
     private String contactPhone; // 🌟 추가! (이게 있어야 메인에 연락처가 나옴)
     private LocalDateTime createdAt;
     private String status;

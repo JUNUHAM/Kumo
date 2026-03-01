@@ -1,5 +1,5 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
   <head>
     <meta charset="UTF-8" />
     <title>KUMO RECRUITER - 대시보드</title>
@@ -190,12 +190,25 @@
                   <div class="job-title" style="flex: 2;">
                     <div class="job-name text-truncate" th:text="${job.title}">공고명</div>
                   </div>
-                  <div style="flex: 1;" th:text="${job.regionType}">지역</div>
-                  <div style="flex: 1.5;" th:text="${job.wage}">급여</div>
+                
+                  <div style="flex: 1;">
+                    <span th:if="${job.regionType == '도쿄'}" th:text="#{region.tokyo}">도쿄</span>
+                    <span th:if="${job.regionType == '오사카'}" th:text="#{region.osaka}">오사카</span>
+                  </div>
+                
+                  <div style="flex: 1.5;">
+                    <span th:if="${#locale.language == 'ko'}" th:text="${job.wage}">급여(한글)</span>
+                    <span th:if="${#locale.language == 'ja'}" th:text="${job.wageJp}">給与(일어)</span>
+                    <span th:if="${#locale.language != 'ko' and #locale.language != 'ja'}" th:text="${job.wage}">급여(기본)</span>
+                  </div>
+                
                   <div style="flex: 1.2;" th:text="${#temporals.format(job.createdAt, 'yyyy-MM-dd')}">등록일</div>
                   <div style="flex: 1;">
-                      <a class="btn-detail" th:href="@{/Recruiter/editJobPosting(id=${job.id}, region=${job.regionType == '도쿄' ? 'TOKYO' : 'OSAKA'})}" th:text="#{main.myjobs.btn.edit}">공고 수정</a>
+                    <a class="btn-detail"
+                      th:href="@{/Recruiter/editJobPosting(id=${job.id}, region=${job.regionType == '도쿄' ? 'TOKYO' : 'OSAKA'})}"
+                      th:text="#{main.myjobs.btn.edit}">공고 수정</a>
                   </div>
+                </div>
                 </div>
               </div>
             </section>

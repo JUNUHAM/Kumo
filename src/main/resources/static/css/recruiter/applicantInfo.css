@@ -34,7 +34,7 @@
 
 .count-badge {
   background-color: #e8f3ff;
-  color: #7abaff;
+  color: #7db4e6;
   padding: 2px 8px;
   border-radius: 8px;
   font-weight: 700;
@@ -96,7 +96,7 @@
 
 /* 열람 버튼 (피그마 스타일) */
 .btn-view {
-  background-color: #7abaff;
+  background-color: #7db4e6;
   color: white;
   border: none;
   border-radius: 8px;
@@ -113,7 +113,7 @@
 .kumo-check {
   width: 18px;
   height: 18px;
-  accent-color: #7abaff;
+  accent-color: #7db4e6;
   cursor: pointer;
 }
 
@@ -182,8 +182,8 @@
 
 .btn-back-list:hover {
   background-color: #ffffff;
-  color: #7abaff; /* 시그니처 블루 */
-  border-color: #7abaff;
+  color: #7db4e6; /* 시그니처 블루 */
+  border-color: #7db4e6;
   transform: translateX(-3px);
 }
 
@@ -269,7 +269,7 @@
 }
 
 .contact-line i {
-  color: #7abaff; /* 아이콘 색상 포인트 */
+  color: #7db4e6; /* 아이콘 색상 포인트 */
 }
 
 /* 6. 정보 그리드 (3분할 밸런스 조정) */
@@ -295,7 +295,7 @@
 }
 
 .grid-col h3 i {
-  color: #7abaff;
+  color: #7db4e6;
 }
 
 .middle-border {
@@ -353,7 +353,7 @@
 }
 
 .btn-action-main {
-  background: #7abaff;
+  background: #7db4e6;
   color: white;
 }
 .btn-action-sub {
@@ -405,7 +405,7 @@
 
 /* 3. 마우스 올렸을 때 효과 (색상 변경 + 회전 애니메이션) */
 .btn-gear:hover {
-  color: #7abaff;
+  color: #7db4e6;
   /* 사장님 메인 파란색으로 변신 */
   transform: rotate(90deg);
   /* 톱니바퀴가 찌잉~ 하고 돌아가는 귀여운 디테일 */
