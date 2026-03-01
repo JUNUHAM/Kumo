@@ -90,7 +90,7 @@ public class CompanyController {
     /**
      * 삭제 프로세스
      */
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/api/company/delete/{id}")
     public ResponseEntity<?> deleteCompany(@PathVariable Long id) {
         try {
             companyService.deleteCompany(id);
