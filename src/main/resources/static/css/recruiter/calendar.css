@@ -652,3 +652,21 @@
   background-color: #5a9aee !important;
   border-color: #5a9aee !important;
 }
+
+/* 캘린더 버튼 분리 */
+.fc .fc-button-group {
+  gap: 6px !important;
+  overflow: visible !important;
+}
+
+.fc .fc-button-group>.fc-button {
+  border-radius: 12px !important;
+  margin: 0 !important;
+  overflow: visible !important;
+}
+
+/* FullCalendar가 강제로 붙이는 직각 모서리 덮어쓰기 */
+.fc .fc-button-group>.fc-button:not(:first-child),
+.fc .fc-button-group>.fc-button:not(:last-child) {
+  border-radius: 12px !important;
+}
