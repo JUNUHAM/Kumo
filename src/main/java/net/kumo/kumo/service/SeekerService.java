@@ -87,6 +87,8 @@ public class SeekerService {
             profileImageRepository.save(newImage);
         }
         return fileUrl;
+		
+		
     }
 
     public void updateProfile(JoinSeekerDTO dto) {
