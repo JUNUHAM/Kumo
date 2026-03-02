@@ -63,6 +63,10 @@ $(document).ready(function() {
         $this.addClass('active');
         UIManager.switchTab(tabName);
     })
+
+    if ($('#chatWidget')){
+        ChatWidgetManager.initDraggable();
+    }
 });
 
 // ============================================================
@@ -654,7 +658,7 @@ const UIManager = {
             }
         }
         else if (tabName === 'chat') {
-            location.href = '/chat/room';
+            ChatWidgetManager.open();
         }
     },
 
@@ -857,5 +861,77 @@ const Utils = {
 
     deg2rad: function(deg) {
         return deg * (Math.PI / 180);
+    }
+};
+
+// ============================================================
+// [🌟 채팅 팝업 관리자]
+// ============================================================
+const ChatWidgetManager = {
+
+    // 채팅창 열기 (초간단!)
+    open: function() {
+        const widget = document.getElementById('chatWidget');
+
+        console.log("✅ 채팅 팝업 열기 (이미 iframe은 로드되어 있음!)");
+
+        // 그냥 숨김 클래스만 제거하면 됩니다.
+        widget.classList.remove('hidden');
+        widget.classList.remove('minimized');
+    },
+
+    // 채팅창 닫기
+    close: function() {
+        document.getElementById('chatWidget').classList.add('hidden');
+
+        // 네비게이션 탭 상태 원상복구
+        if (typeof $ !== 'undefined') {
+            $('.nav-item').removeClass('active');
+            $('.nav-item[data-tab="nearby"]').addClass('active');
+        }
+    },
+
+    // 최소화 토글
+    toggleMinimize: function() {
+        document.getElementById('chatWidget').classList.toggle('minimized');
+    },
+
+    // 🌟 드래그 앤 드롭 마법!
+    initDraggable: function() {
+        const widget = document.getElementById('chatWidget');
+        const header = document.querySelector('.chat-widget-header');
+        const iframe = document.getElementById('chatIframe');
+
+        let isDragging = false;
+        let offsetX, offsetY;
+
+        header.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            const rect = widget.getBoundingClientRect();
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+
+            // 드래그 중 iframe 안으로 마우스가 들어가면 끊기는 현상 방지
+            iframe.style.pointerEvents = 'none';
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+
+        function onMouseMove(e) {
+            if (!isDragging) return;
+            // 팝업을 마우스 따라다니게 좌표 이동
+            widget.style.left = `${e.clientX - offsetX}px`;
+            widget.style.top = `${e.clientY - offsetY}px`;
+            widget.style.bottom = 'auto'; // bottom 고정 해제
+            widget.style.right = 'auto';  // right 고정 해제
+        }
+
+        function onMouseUp() {
+            isDragging = false;
+            iframe.style.pointerEvents = 'auto'; // 드래그 끝나면 iframe 클릭 원상복구
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        }
     }
 };
