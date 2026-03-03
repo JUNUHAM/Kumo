@@ -611,9 +611,20 @@ public class JobPostingService {
         }
 
         // ------------------------------------------
-        // 3. 최신 공고가 아코디언 맨 위에 뜨도록 정렬
+        // 3. 정렬 로직:
+        // 1순위: 진행중인 공고가 위로, 마감된 공고는 맨 아래로
+        // 2순위: 같은 상태라면 최신순(createdAt)으로 정렬
         // ------------------------------------------
         groupedList.sort((a, b) -> {
+            // "RECRUITING" 상태 여부 확인
+            boolean aIsRecruiting = "RECRUITING".equals(a.getStatus());
+            boolean bIsRecruiting = "RECRUITING".equals(b.getStatus());
+
+            // 1순위: 상태별 정렬 (진행중(a)이고 마감(b)이면 a를 위로)
+            if (aIsRecruiting && !bIsRecruiting) return -1;
+            if (!aIsRecruiting && bIsRecruiting) return 1;
+
+            // 2순위: 상태가 같다면, 최신 등록일(createdAt) 순으로 내림차순 정렬
             if (a.getCreatedAt() == null) return 1;
             if (b.getCreatedAt() == null) return -1;
             return b.getCreatedAt().compareTo(a.getCreatedAt());
