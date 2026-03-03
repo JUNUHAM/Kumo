@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", function () {
   if (calendarEl && typeof FullCalendar !== "undefined") {
     try {
       const calendar = new FullCalendar.Calendar(calendarEl, {
+        height: 'auto',        /* 🌟 전체 높이를 자동으로! */
+    expandRows: true,    /* 🌟 칸들을 화면에 꽉 차게 배분 */
         // 🌟 사진처럼 주별 보기를 기본으로 하고 싶다면 'timeGridWeek'로 설정
         initialView: "dayGridMonth", 
         headerToolbar: {
