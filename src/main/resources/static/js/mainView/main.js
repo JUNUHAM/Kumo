@@ -567,20 +567,44 @@ const MarkerManager = {
         AppState.jobMarkers = [];
     },
 
-    // 클러스터 스타일 정의 (파란색 큰 원)
+
+
+    // 클러스터 스타일 정의 (🌟 첨부해주신 이미지 스타일의 플랫 구름!)
     getClusterRenderer: function() {
         return {
             render: ({ count, position }) => {
+
+                // 1. 밑바닥이 평평하고(Z), 4개의 둥근 봉우리가 있는 구름 Path
+                const cloudPath = "M 10 22 C 2 22, 2 12, 9 13 C 9 3, 23 3, 23 11 C 25 5, 34 7, 31 14 C 38 14, 38 22, 30 22 Z";
+
+                // 2. 구름 색상 (올려주신 이미지의 예쁜 파스텔 블루톤 적용)
+                let cloudColor = "#4285F4"; // 기본: 파스텔 블루
+                if (count >= 10) cloudColor = "#4285F4"; // 10개 이상: 조금 더 진한 블루
+                if (count >= 50) cloudColor = "#4285F4"; // 50개 이상: 구글 맵 기본 블루
+
                 return new google.maps.Marker({
-                    label: { text: String(count), color: "white", fontSize: "14px", fontWeight: "bold" },
+                    // 텍스트(숫자) 설정
+                    label: {
+                        text: String(count),
+                        color: "white", // 파스텔톤 위에서는 흰색 글씨가 예쁩니다
+                        fontSize: "14px",
+                        fontWeight: "bold"
+                    },
                     position,
+                    // 아이콘 디자인
                     icon: {
-                        path: google.maps.SymbolPath.CIRCLE,
-                        scale: 25,
-                        fillColor: "#4285F4",
-                        fillOpacity: 0.9,
-                        strokeWeight: 4,
-                        strokeColor: "rgba(255, 255, 255, 0.5)"
+                        path: cloudPath,
+                        scale: 1.8,                 // 🌟 구름 크기 조절 (필요시 1.5 ~ 2.0 사이로 조절해보세요)
+                        fillColor: cloudColor,
+                        fillOpacity: 0.95,
+
+                        // 🌟 올려주신 이미지처럼 깔끔하게 보이도록 테두리 두께를 줄였습니다
+                        strokeWeight: 1.5,
+                        strokeColor: "#ffffff",
+
+                        // 밑바닥이 평평한 구름의 시각적 정중앙 좌표(19, 14)로 텍스트 위치 완벽 정렬
+                        anchor: new google.maps.Point(19, 14),
+                        labelOrigin: new google.maps.Point(19, 14)
                     },
                     zIndex: Number(google.maps.Marker.MAX_ZINDEX) + count,
                 });

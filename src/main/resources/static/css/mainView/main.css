@@ -46,6 +46,16 @@ html, body {
     margin: 0 !important;
 }
 
+.map-header-wrapper .nav-menu a,
+.map-header-wrapper .icon-btn i {
+    color: #ffffff;
+    transition: color 0.3s ease;
+}
+
+.map-header-wrapper .nav-menu .lang-item{
+    color: #2d2d2d;
+}
+
 /* 🌙 다크 모드 */
 body.dark-mode .map-header-wrapper {
     background-color: #232323 !important;
@@ -54,7 +64,7 @@ body.dark-mode .map-header-wrapper {
 
 body.dark-mode .map-header-wrapper .nav-menu a,
 body.dark-mode .map-header-wrapper .icon-btn i {
-    color: #ffffff !important;
+    color: #ffffff;
     transition: color 0.3s ease;
 }
 
@@ -89,7 +99,7 @@ body.dark-mode .map-header-wrapper .icon-btn i {
 
 .map-bottom-nav {
     position: absolute;
-    bottom: 90px;
+    bottom: 3%;
     left: 50%;
     transform: translateX(-50%);
     z-index: 100;
