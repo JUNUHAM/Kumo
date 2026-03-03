@@ -12,7 +12,6 @@ function enterRoom(roomId) {
     }
 }
 
-// DOMContentLoaded 이벤트 (검색바 + 탭 메뉴)
 // DOMContentLoaded 이벤트 (검색바 + 탭 메뉴 + 진짜 이름 검색 로직)
 document.addEventListener("DOMContentLoaded", function () {
     const searchIcon = document.getElementById('searchIcon');
@@ -34,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
         };
     }
 
-    // ★★★ 날아갔던 진짜 '이름 검색' 로직 복구 ★★★
+    // 2. 진짜 '이름 검색' 로직 복구
     if (searchInput) {
         searchInput.addEventListener('input', function () {
             const keyword = this.value.trim().toLowerCase();
@@ -73,7 +72,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // 필터링 핵심 함수
 function filterRooms(filterType, clickedTab) {
-    // 탭 버튼 색상 변경 (clickedTab이 존재할 때만 실행)
     if (clickedTab) {
         document.querySelectorAll('.tab-btn').forEach(tab => tab.classList.remove('active'));
         clickedTab.classList.add('active');
@@ -173,5 +171,103 @@ function deleteRoom(event, element) {
         }
     } else {
         document.querySelectorAll('.options-dropdown.show').forEach(m => m.classList.remove('show'));
+    }
+} // ★ 여기서 deleteRoom 함수가 완전히 끝납니다!
+
+
+// ====================================================================
+// ★★★ [LIVE] 채팅 리스트 실시간 동기화 (웹소켓 엔진) ★★★
+// ====================================================================
+
+var stompListClient = null;
+
+// DOMContentLoaded 안에서 호출할 수 있도록 세팅
+document.addEventListener("DOMContentLoaded", function () {
+    connectChatList();
+});
+
+function connectChatList() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const myUserId = urlParams.get('userId');
+
+    if (!myUserId) return; // 유저 아이디 없으면 연결 안 함
+
+    var socket = new SockJS('/ws-stomp');
+    stompListClient = Stomp.over(socket);
+
+    // 콘솔창 더러워지는 것 방지
+    stompListClient.debug = null;
+
+    stompListClient.connect({}, function (frame) {
+        console.log('✅ [LIVE] 로비(목록) 웹소켓 연결 완료!');
+
+        // ★ 핵심: 백엔드가 '나(myUserId)'에게 보내는 전용 알림 파이프를 구독합니다.
+        const myLobbyTopic = '/sub/chat/user/' + myUserId;
+
+        stompListClient.subscribe(myLobbyTopic, function (messageOutput) {
+            var newMsg = JSON.parse(messageOutput.body);
+            updateChatListUI(newMsg);
+        });
+
+    }, function (error) {
+        console.error('❌ [LIVE] 로비 연결 끊김! 3초 후 재연결...', error);
+        setTimeout(connectChatList, 3000);
+    });
+}
+
+// ==========================================================
+// ★ 완벽 조준 완료된 실시간 목록 갱신 함수 ★
+// ==========================================================
+function updateChatListUI(newMsg) {
+    const chatItems = document.querySelectorAll('.chat-item');
+    let targetRoom = null;
+
+    chatItems.forEach(item => {
+        const onclickAttr = item.getAttribute('onclick');
+        if (onclickAttr && onclickAttr.includes(`enterRoom(${newMsg.roomId})`)) {
+            targetRoom = item;
+        }
+    });
+
+    if (targetRoom) {
+        // ★ 범인 검거: .chat-recent-msg 가 아니라 .chat-preview 였습니다!
+        const recentMsgSpan = targetRoom.querySelector('.chat-preview');
+        const timeSpan = targetRoom.querySelector('.chat-time');
+
+        // 1. 메시지 내용 찰칵! 덮어쓰기
+        if (recentMsgSpan) {
+            if (newMsg.messageType === 'IMAGE') recentMsgSpan.innerText = '(사진)';
+            else if (newMsg.messageType === 'FILE') recentMsgSpan.innerText = '(파일)';
+            else recentMsgSpan.innerText = newMsg.content;
+        }
+
+        // 2. 시간 찰칵! 덮어쓰기 (HH:mm 형태로 잘라서 예쁘게 넣기)
+        if (timeSpan && newMsg.createdAt) {
+            let timeStr = newMsg.createdAt;
+            // 만약 서버 시간이 "2026-03-03 15:40" 처럼 길게 온다면 "15:40"만 자르기
+            if (timeStr.includes(' ')) timeStr = timeStr.split(' ')[1].substring(0, 5);
+            else if (timeStr.includes('T')) timeStr = timeStr.split('T')[1].substring(0, 5);
+
+            timeSpan.innerText = timeStr;
+        }
+
+        // 3. 방을 맨 위로 훅! 끌어올리기 (고정핀 방이 아닐 때만)
+        if (!targetRoom.classList.contains('is-pinned')) {
+            const chatListContainer = document.querySelector('.chat-list');
+            const firstUnpinned = chatListContainer.querySelector('.chat-item:not(.is-pinned)');
+
+            // ★ 라이브의 맛: 새 메시지 오면 KUMO 스타일 연노랑 불빛이 1초간 켜집니다!
+            targetRoom.style.transition = 'background-color 0.4s ease';
+            targetRoom.style.backgroundColor = 'rgba(255, 184, 0, 0.15)';
+            setTimeout(() => targetRoom.style.backgroundColor = '', 1000);
+
+            if (firstUnpinned) {
+                chatListContainer.insertBefore(targetRoom, firstUnpinned);
+            } else {
+                chatListContainer.appendChild(targetRoom);
+            }
+        }
+    } else {
+        console.log("목록에 없는 완전히 새로운 방입니다! (페이지 새로고침 필요)");
     }
 }

@@ -166,10 +166,34 @@ public class ChatController {
     // 3. [실시간 통신] 메시지 주고 받기 (WebSocket)
     // ======================================================================
 
+    // ======================================================================
+    // 3. [실시간 통신] 메시지 주고 받기 (WebSocket)
+    // ======================================================================
+
     @MessageMapping("/chat/message")
     public void sendMessage(ChatMessageDTO messageDTO) {
+        // 1. DB에 메시지 저장
         ChatMessageDTO savedMessage = chatService.saveMessage(messageDTO);
+
+        // 2. 채팅방 '안'에 있는 사람들에게 쏘기 (기존)
         messagingTemplate.convertAndSend("/sub/chat/room/" + savedMessage.getRoomId(), savedMessage);
+
+        // ==========================================================
+        // ★ 3. 채팅방 '밖(목록)'에 있는 두 사람의 개인 채널로도 알림 쏘기! ★
+        // ==========================================================
+        try {
+            // 방 정보를 가져와서 구직자와 구인자 ID를 알아냅니다.
+            ChatRoomEntity room = chatService.getChatRoom(savedMessage.getRoomId());
+            Long seekerId = room.getSeeker().getUserId();
+            Long recruiterId = room.getRecruiter().getUserId();
+
+            // 두 사람의 전용 로비(Lobby) 파이프로 방금 저장된 메시지를 똑같이 배달합니다!
+            messagingTemplate.convertAndSend("/sub/chat/user/" + seekerId, savedMessage);
+            messagingTemplate.convertAndSend("/sub/chat/user/" + recruiterId, savedMessage);
+
+        } catch (Exception e) {
+            System.out.println("🚨 목록 실시간 갱신용 알림 발송 실패: " + e.getMessage());
+        }
     }
 
     @GetMapping("/chat/create")

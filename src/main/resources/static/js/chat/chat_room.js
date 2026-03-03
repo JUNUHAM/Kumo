@@ -6,18 +6,46 @@ var lastChatDate = null;
 
 connect();
 
+// ==========================================
+// 1. 강철 멘탈 자동 재연결 기능이 추가된 connect()
+// ==========================================
 function connect() {
     var socket = new SockJS('/ws-stomp');
     stompClient = Stomp.over(socket);
 
+    // 콘솔창에 STOMP 기본 로그가 너무 많이 찍히는 걸 방지 (선택 사항)
+    // stompClient.debug = null; 
+
     stompClient.connect({}, function (frame) {
-        console.log('Connected: ' + frame);
+        console.log('✅ [LIVE] 웹소켓 방 입장 완료: ' + frame);
+
+        // 메시지 수신 파이프 연결
         stompClient.subscribe('/sub/chat/room/' + roomId, function (messageOutput) {
             showMessage(JSON.parse(messageOutput.body));
         });
+
         scrollToBottom();
+
+    }, function (error) {
+        // ★ 핵심: 터널 통과 등 인터넷 끊김 시 자동 재연결 시도!
+        console.error('❌ [LIVE] 웹소켓 연결 끊김! 3초 후 좀비처럼 재연결 시도...', error);
+        setTimeout(connect, 3000);
     });
 }
+
+// ==========================================
+// 3. 메모리 누수 방지용 수동 탈출 함수 (신규 추가)
+// ==========================================
+function disconnect() {
+    if (stompClient !== null && stompClient.connected) {
+        stompClient.disconnect(function () {
+            console.log("🛑 [LIVE] 방 탈출 성공! 웹소켓 연결 안전하게 해제됨 (메모리 누수 방지)");
+        });
+    }
+}
+
+// 브라우저 탭 닫기, 새로고침 시 무조건 파이프 끊기
+window.addEventListener('beforeunload', disconnect);
 
 function sendMessage() {
     var msgInput = document.getElementById("msgInput");
@@ -341,5 +369,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 iconBox.style.color = '#95a5a6';
             }
         }
-    });
-});
+    }); // <-- file-bubble forEach 끝나는 곳
+
+    // ==========================================
+    // ★ 바로 이곳! 뒤로가기 버튼 누를 때 웹소켓 안전하게 끊기 ★
+    // ==========================================
+    const backBtn = document.querySelector('.header-back-btn');
+    if (backBtn) {
+        backBtn.addEventListener('click', function () {
+            if (typeof disconnect === 'function') {
+                disconnect(); // 웹소켓 탈출!
+            }
+        });
+    }
+}); // <-- DOMContentLoaded 완전히 끝나는 곳
