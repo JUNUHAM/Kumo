@@ -214,10 +214,10 @@ public class RecruiterController {
             // 🌟 [수정] 서비스로 5가지 정보를 꽉꽉 채워서 보냅니다!
             rs.updateProfileImage(userEmail, webPath, originalFileName, storedFileName, fileSize);
 
-            return ResponseEntity.ok().body(Map.of("success", true, "imageUrl", webPath));
+            return ResponseEntity.ok().body(webPath);
         } catch (Exception e) {
             e.printStackTrace(); // 콘솔에 상세 에러 출력
-            return ResponseEntity.status(500).body(Map.of("success", false, "message", e.getMessage()));
+            return ResponseEntity.status(500).body("업로드 실패: " + e.getMessage());
         }
     }
 
