@@ -6,18 +6,41 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import net.kumo.kumo.domain.dto.*;
-import net.kumo.kumo.domain.entity.*;
-import net.kumo.kumo.repository.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
-import net.kumo.kumo.domain.dto.JobApplicantGroupDTO;
 import net.kumo.kumo.domain.dto.ApplicationDTO;
+import net.kumo.kumo.domain.dto.JobApplicantGroupDTO;
+import net.kumo.kumo.domain.dto.JobManageListDTO;
+import net.kumo.kumo.domain.dto.JobPostingRequestDTO;
+import net.kumo.kumo.domain.dto.ResumeResponseDTO;
 import net.kumo.kumo.domain.entity.ApplicationEntity;
+import net.kumo.kumo.domain.entity.CompanyEntity;
+import net.kumo.kumo.domain.entity.OsakaGeocodedEntity;
+import net.kumo.kumo.domain.entity.SeekerCareerEntity;
+import net.kumo.kumo.domain.entity.SeekerCertificateEntity;
+import net.kumo.kumo.domain.entity.SeekerDesiredConditionEntity;
+import net.kumo.kumo.domain.entity.SeekerDocumentEntity;
+import net.kumo.kumo.domain.entity.SeekerEducationEntity;
+import net.kumo.kumo.domain.entity.SeekerLanguageEntity;
+import net.kumo.kumo.domain.entity.SeekerProfileEntity;
+import net.kumo.kumo.domain.entity.TokyoGeocodedEntity;
+import net.kumo.kumo.domain.entity.UserEntity;
 import net.kumo.kumo.domain.enums.JobStatus;
+import net.kumo.kumo.repository.ApplicationRepository;
+import net.kumo.kumo.repository.CompanyRepository;
+import net.kumo.kumo.repository.OsakaGeocodedRepository;
+import net.kumo.kumo.repository.SeekerCareerRepository;
+import net.kumo.kumo.repository.SeekerCertificateRepository;
+import net.kumo.kumo.repository.SeekerDesiredConditionRepository;
+import net.kumo.kumo.repository.SeekerDocumentRepository;
+import net.kumo.kumo.repository.SeekerEducationRepository;
+import net.kumo.kumo.repository.SeekerLanguageRepository;
+import net.kumo.kumo.repository.SeekerProfileRepository;
+import net.kumo.kumo.repository.TokyoGeocodedRepository;
+import net.kumo.kumo.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -551,7 +574,8 @@ public class JobPostingService {
             List<Long> osakaJobIds = osakaJobs.stream().map(OsakaGeocodedEntity::getId).toList();
 
             // 이 구인자의 오사카 공고들에 지원한 모든 지원서 한 번에 조회
-            List<ApplicationEntity> osakaApps = applicationRepository.findByTargetSourceAndTargetPostIdIn("OSAKA", osakaJobIds);
+            List<ApplicationEntity> osakaApps = applicationRepository.findByTargetSourceAndTargetPostIdIn("OSAKA",
+                    osakaJobIds);
 
             // 공고 ID(targetPostId)를 기준으로 지원서들을 그룹화 (Map 형태로 분리)
             Map<Long, List<ApplicationEntity>> appMap = osakaApps.stream()
@@ -565,7 +589,21 @@ public class JobPostingService {
                 // 엔티티 -> DTO 변환 및 최신 지원순 정렬
                 List<ApplicationDTO.ApplicantResponse> appResponses = appsForThisJob.stream()
                         .map(app -> ApplicationDTO.ApplicantResponse.from(app, job.getTitle()))
-                        .sorted((a, b) -> b.getAppId().compareTo(a.getAppId()))
+                        .sorted((a, b) -> {
+                            // 1순위: APPLIED(검토중)가 위로, 처리된 것(PASSED/REJECTED)은 아래로
+                            boolean aIsProcessed = "PASSED".equals(a.getStatus().name())
+                                    || "FAILED".equals(a.getStatus().name());
+                            boolean bIsProcessed = "PASSED".equals(b.getStatus().name())
+                                    || "FAILED".equals(b.getStatus().name());
+
+                            if (!aIsProcessed && bIsProcessed)
+                                return -1;
+                            if (aIsProcessed && !bIsProcessed)
+                                return 1;
+
+                            // 2순위: 최신 지원순
+                            return b.getAppId().compareTo(a.getAppId());
+                        })
                         .toList();
 
                 groupedList.add(JobApplicantGroupDTO.builder()
@@ -588,7 +626,8 @@ public class JobPostingService {
             List<Long> tokyoJobIds = tokyoJobs.stream().map(TokyoGeocodedEntity::getId).toList();
 
             // 도쿄 공고 지원서 조회
-            List<ApplicationEntity> tokyoApps = applicationRepository.findByTargetSourceAndTargetPostIdIn("TOKYO", tokyoJobIds);
+            List<ApplicationEntity> tokyoApps = applicationRepository.findByTargetSourceAndTargetPostIdIn("TOKYO",
+                    tokyoJobIds);
 
             Map<Long, List<ApplicationEntity>> appMap = tokyoApps.stream()
                     .collect(Collectors.groupingBy(ApplicationEntity::getTargetPostId));
@@ -624,12 +663,16 @@ public class JobPostingService {
             boolean bIsRecruiting = "RECRUITING".equals(b.getStatus());
 
             // 1순위: 상태별 정렬 (진행중(a)이고 마감(b)이면 a를 위로)
-            if (aIsRecruiting && !bIsRecruiting) return -1;
-            if (!aIsRecruiting && bIsRecruiting) return 1;
+            if (aIsRecruiting && !bIsRecruiting)
+                return -1;
+            if (!aIsRecruiting && bIsRecruiting)
+                return 1;
 
             // 2순위: 상태가 같다면, 최신 등록일(createdAt) 순으로 내림차순 정렬
-            if (a.getCreatedAt() == null) return 1;
-            if (b.getCreatedAt() == null) return -1;
+            if (a.getCreatedAt() == null)
+                return 1;
+            if (b.getCreatedAt() == null)
+                return -1;
             return b.getCreatedAt().compareTo(a.getCreatedAt());
         });
 
@@ -656,12 +699,12 @@ public class JobPostingService {
                 .map(ResumeResponseDTO.CareerDTO::from)
                 .collect(Collectors.toList());
 
-        // 4. 학력 (1:N 리스트)
+        // 4. 학력 (1:1)
         SeekerEducationEntity eduEntities = educationRepository.findByUser_UserId(seekerId);
-		ResumeResponseDTO.EducationDTO eduDTO = null;
-		if (eduEntities != null) {
-			eduDTO = ResumeResponseDTO.EducationDTO.from(eduEntities);
-		}
+        ResumeResponseDTO.EducationDTO eduDTO = null;
+        if (eduEntities != null) {
+            eduDTO = ResumeResponseDTO.EducationDTO.from(eduEntities);
+        }
 
         // 5. 자격증 (1:N 리스트)
         List<SeekerCertificateEntity> certEntities = certificateRepository.findByUser_UserId(seekerId);
@@ -699,5 +742,13 @@ public class JobPostingService {
                 .languages(langDTOs)
                 .documents(docDTOs) // 특별 처리된 문서 DTO 리스트 장착!
                 .build();
+    }
+
+    // 지원서 상태(합격/불합격) 업데이트
+    @Transactional
+    public void updateApplicationStatus(Long appId, net.kumo.kumo.domain.entity.Enum.ApplicationStatus status) {
+        ApplicationEntity application = applicationRepository.findById(appId)
+                .orElseThrow(() -> new IllegalArgumentException("지원서를 찾을 수 없습니다."));
+        application.setStatus(status);
     }
 }
