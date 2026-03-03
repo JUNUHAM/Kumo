@@ -1,0 +1,108 @@
+/* history.css */
+.history-container {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    margin-top: 20px;
+    transition: background-color 0.3s;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.job-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.job-table th {
+    background: #f8f9fa;
+    padding: 15px 10px;
+    text-align: left;
+    font-size: 14px;
+    color: #666;
+    border-bottom: 2px solid #eee;
+    white-space: nowrap;
+}
+
+.job-table td {
+    padding: 15px 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    vertical-align: middle;
+    color: #333;
+}
+
+.job-title-link {
+    font-weight: 700;
+    color: #1a1f27;
+    text-decoration: none;
+    cursor: pointer;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.job-title-link:hover {
+    color: #7db4e6;
+    text-decoration: underline;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.status-applied { background: #e6f7ff; color: #1890ff; }
+.status-viewed { background: #f6ffed; color: #52c41a; }
+.status-passed { background: #f9f0ff; color: #722ed1; }
+.status-failed { background: #fff1f0; color: #f5222d; }
+
+.btn-cancel-app {
+    background: #ff4d4f;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.btn-cancel-app:hover {
+    background: #ff7875;
+    transform: translateY(-1px);
+}
+
+/* Dark Mode */
+body.dark-mode .history-container {
+    background: #1e1e1e;
+    border: 1px solid #2d2d2d;
+}
+
+body.dark-mode .job-table th {
+    background: #252525;
+    color: #888;
+    border-bottom-color: #333;
+}
+
+body.dark-mode .job-table td {
+    border-bottom-color: #2d2d2d;
+    color: #e5e8eb;
+}
+
+body.dark-mode .job-title-link {
+    color: #ffffff;
+}
+
+body.dark-mode .status-applied {
+    background: #111d2c;
+    color: #177ddc;
+}
