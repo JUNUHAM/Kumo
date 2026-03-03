@@ -13,6 +13,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Value("${file.upload.dir}")
     private String uploadDir;
 
+    // 추가: 채팅 업로드 폴더 (예: chat_uploads/)
+    @Value("${file.upload.chat}")
+    private String chatUploadDir;
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // 1. 브라우저에서 접근하는 URL 패턴: /images/uploadFile/**
@@ -20,5 +24,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
         registry.addResourceHandler("/images/uploadFile/**")
                 .addResourceLocations("file:" + uploadDir); // 'file:' 접두어가 중요합니다!
+
+        // 추가: 채팅방 전용 이미지/파일 불러오기 길 열기
+        registry.addResourceHandler("/chat_images/**")
+                .addResourceLocations("file:" + chatUploadDir);
     }
 }

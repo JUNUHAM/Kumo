@@ -156,4 +156,10 @@ public class ChatService {
                     .build();
         }).collect(Collectors.toList());
     }
+
+    @Transactional
+    public void processLiveReadSignal(Long roomId, Long readerId) {
+        // readerId(읽은 사람)를 기준으로 안 읽은 메시지들을 싹 다 읽음 처리!
+        chatMessageRepository.markMessagesAsRead(roomId, readerId);
+    }
 }
