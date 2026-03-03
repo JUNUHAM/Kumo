@@ -166,10 +166,34 @@ public class ChatController {
     // 3. [실시간 통신] 메시지 주고 받기 (WebSocket)
     // ======================================================================
 
+    // ======================================================================
+    // 3. [실시간 통신] 메시지 주고 받기 (WebSocket)
+    // ======================================================================
+
     @MessageMapping("/chat/message")
     public void sendMessage(ChatMessageDTO messageDTO) {
+        // 1. DB에 메시지 저장
         ChatMessageDTO savedMessage = chatService.saveMessage(messageDTO);
+
+        // 2. 채팅방 '안'에 있는 사람들에게 쏘기 (기존)
         messagingTemplate.convertAndSend("/sub/chat/room/" + savedMessage.getRoomId(), savedMessage);
+
+        // ==========================================================
+        // ★ 3. 채팅방 '밖(목록)'에 있는 두 사람의 개인 채널로도 알림 쏘기! ★
+        // ==========================================================
+        try {
+            // 방 정보를 가져와서 구직자와 구인자 ID를 알아냅니다.
+            ChatRoomEntity room = chatService.getChatRoom(savedMessage.getRoomId());
+            Long seekerId = room.getSeeker().getUserId();
+            Long recruiterId = room.getRecruiter().getUserId();
+
+            // 두 사람의 전용 로비(Lobby) 파이프로 방금 저장된 메시지를 똑같이 배달합니다!
+            messagingTemplate.convertAndSend("/sub/chat/user/" + seekerId, savedMessage);
+            messagingTemplate.convertAndSend("/sub/chat/user/" + recruiterId, savedMessage);
+
+        } catch (Exception e) {
+            System.out.println("🚨 목록 실시간 갱신용 알림 발송 실패: " + e.getMessage());
+        }
     }
 
     @GetMapping("/chat/create")
@@ -183,5 +207,17 @@ public class ChatController {
 
         // 2. 생성된(혹은 찾은) 방으로 즉시 이동
         return "redirect:/chat/room/" + room.getId() + "?userId=" + seekerId;
+    }
+
+    // ======================================================================
+    // ★ [LIVE] 상대방이 방에 들어오거나 메시지를 읽었을 때 '1' 지우기 ★
+    // ======================================================================
+    @MessageMapping("/chat/read")
+    public void processRead(ChatMessageDTO readSignal) {
+        // 1. DB 업데이트: 읽음 신호를 보낸 사람이 밀린 메시지를 다 읽었다고 DB에 반영
+        chatService.processLiveReadSignal(readSignal.getRoomId(), readSignal.getSenderId());
+
+        // 2. 채팅방 안에 있는 두 사람에게 "방금 다 읽었대! 1 지워!" 하고 브로드캐스팅
+        messagingTemplate.convertAndSend("/sub/chat/room/" + readSignal.getRoomId(), readSignal);
     }
 }

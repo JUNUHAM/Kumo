@@ -16,6 +16,8 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
+  height: 100%;
+    /* 🌟 부모 높이만큼 쫙! */
 }
 
 #calendar {
@@ -26,6 +28,16 @@
   width: 100%;
   box-sizing: border-box;
   font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif !important;
+  /* 🌟 하얀 상자를 밑바닥까지 밀어버립니다 */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 3. 🌟 (가장 중요) FullCalendar 알맹이를 하얀 상자에 꽉 채움 */
+#calendar .fc {
+  flex: 1;
+  height: 100% !important;
 }
 
 /* ===================================================
@@ -669,3 +681,4 @@
 .fc .fc-button-group>.fc-button:not(:last-child) {
   border-radius: 12px !important;
 }
+

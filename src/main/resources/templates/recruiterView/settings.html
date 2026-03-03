@@ -139,12 +139,51 @@
               </div>
         
               <div class="action-buttons">
-                <button type="button" class="btn-quit" th:text="#{set.btn.quit}">회원 탈퇴</button>
+                <button type="button" class="btn-quit" th:text="#{set.btn.quit}" onclick="openDeleteModal()">회원 탈퇴</button>
                 <a th:href="@{/Recruiter/ProfileEdit}" class="btn-edit" th:text="#{set.btn.edit}">회원정보 수정</a>
               </div>
             </div>
           </div>
         </main>
+      </div>
+    </div>
+
+    <!-- 회원 탈퇴 모달 (기존 유지) -->
+    <div id="deleteAccountModal" class="delete-modal-overlay">
+      <div class="delete-modal-content">
+        <div class="delete-modal-header">
+          <h3>회원 탈퇴</h3>
+          <button type="button" class="btn-close-modal" onclick="closeDeleteModal()">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="delete-modal-body">
+          <div class="warning-box">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <p class="warning-title">정말 KUMO를 떠나시겠습니까?</p>
+            <ul class="warning-list">
+              <li>등록된 회사 정보 및 프로필 정보가 <strong>영구적으로 삭제</strong>됩니다.</li>
+              <li>진행 중인 모든 <strong>공고가 취소</strong> 처리됩니다.</li>
+              <li>탈퇴 후에는 데이터를 <strong>절대 복구할 수 없습니다.</strong></li>
+            </ul>
+          </div>
+          <div class="delete-input-group">
+            <label for="deleteConfirmPw">본인 확인을 위해 비밀번호를 입력해 주세요.</label>
+            <input type="password" id="deleteConfirmPw" class="custom-modal-input" placeholder="비밀번호 입력"
+              oninput="checkDeleteInput()">
+            <label for="deleteConfirmPwCheck" style="margin-top: 15px;">비밀번호 확인</label>
+            <input type="password" id="deleteConfirmPwCheck" class="custom-modal-input" placeholder="비밀번호 다시 입력"
+              oninput="checkDeleteInput()">
+            <p id="deleteMismatchMsg" class="error-msg" style="display: none; margin-top: 8px;">비밀번호가 일치하지 않습니다.
+            </p>
+            <p id="deleteErrorMsg" class="error-msg" style="display: none; margin-top: 8px;">비밀번호가 틀렸습니다.</p>
+          </div>
+        </div>
+        <div class="delete-modal-footer">
+          <button type="button" class="btn-modal-cancel" onclick="closeDeleteModal()">취소</button>
+          <button type="button" id="btnConfirmDelete" class="btn-modal-danger" onclick="executeDelete()"
+            disabled>탈퇴하기</button>
+        </div>
       </div>
     </div>
 
@@ -286,10 +325,102 @@
           if (cancelBtn) cancelBtn.onclick = closeModal;
 
           window.onclick = (e) => {
-            if (e.target === modal) closeModal();
+            if (e.target === modal) closeModal(); // 프로필 모달 닫기
+            if (e.target === deleteModal) closeDeleteModal(); // 🌟 회원 탈퇴 모달 닫기 추가!
           };
 
         });
+
+        // =========================
+          // 회원 탈퇴 모달 관련 함수들
+          // =========================
+          const deleteModal = document.getElementById('deleteAccountModal');
+          const deletePwInput = document.getElementById('deleteConfirmPw');
+          const deletePwCheckInput = document.getElementById('deleteConfirmPwCheck');
+          const mismatchMsg = document.getElementById('deleteMismatchMsg');
+          const errorMsg = document.getElementById('deleteErrorMsg');
+          const btnConfirmDelete = document.getElementById('btnConfirmDelete');
+
+          // 1. 모달 열기
+          function openDeleteModal() {
+            if (deleteModal) {
+              deleteModal.style.display = 'flex'; // 화면에 표시
+
+              // 열릴 때마다 입력창 깔끔하게 초기화
+              deletePwInput.value = '';
+              deletePwCheckInput.value = '';
+              mismatchMsg.style.display = 'none';
+              if (errorMsg) errorMsg.style.display = 'none';
+              btnConfirmDelete.disabled = true;
+            }
+          }
+
+          // 2. 모달 닫기
+          function closeDeleteModal() {
+            if (deleteModal) {
+              deleteModal.style.display = 'none';
+            }
+          }
+
+          // 3. 비밀번호 입력 시 일치 여부 실시간 확인
+          function checkDeleteInput() {
+            const pw = deletePwInput.value;
+            const pwCheck = deletePwCheckInput.value;
+
+            if (errorMsg) errorMsg.style.display = 'none'; // 타이핑 시작하면 기존 에러메시지 숨김
+
+            // 둘 중 하나라도 비어있으면 버튼 비활성화
+            if (pw === '' || pwCheck === '') {
+              mismatchMsg.style.display = 'none';
+              btnConfirmDelete.disabled = true;
+              return;
+            }
+
+            // 비밀번호가 다르면 경고 문구 띄우고 버튼 막기
+            if (pw !== pwCheck) {
+              mismatchMsg.style.display = 'block';
+              btnConfirmDelete.disabled = true;
+            } else {
+              // 일치하면 경고 문구 숨기고 탈퇴 버튼 활성화!
+              mismatchMsg.style.display = 'none';
+              btnConfirmDelete.disabled = false;
+            }
+          }
+
+        // 탈퇴 실행 (서버로 데이터 전송)
+          function executeDelete() {
+            const password = document.getElementById('deleteConfirmPw').value;
+            const errorMsg = document.getElementById('deleteErrorMsg');
+
+
+            // AJAX (Fetch API) 요청
+            fetch('/api/user/delete', { // 실제 백엔드 컨트롤러 URL에 맞게 수정하세요.
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                // CSRF 토큰이 필요하다면 여기에 추가
+              },
+              body: JSON.stringify({ password: password })
+            })
+              .then(response => {
+                if (response.ok) {
+                  alert("회원 탈퇴가 정상적으로 처리되었습니다. 그동안 이용해 주셔서 감사합니다.");
+                  window.location.href = "/logout"; // 성공 시 로그아웃 및 메인으로 이동
+                } else if (response.status === 401 || response.status === 400) {
+                  // 비밀번호 틀림
+                  if (errorMsg) {
+                    errorMsg.style.display = 'block';
+                    errorMsg.innerText = "비밀번호가 일치하지 않습니다.";
+                  }
+                } else {
+                  alert("오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+                }
+              })
+              .catch(error => {
+                console.error('Error:', error);
+                alert("서버와 통신 중 문제가 발생했습니다.");
+              });
+          }
     /* ]]> */
   </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

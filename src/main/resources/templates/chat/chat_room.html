@@ -114,6 +114,15 @@
             </th:block>
         </div>
 
+        <script>
+            (function () {
+                var chatBox = document.getElementById('msgArea');
+                if (chatBox) {
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }
+            })();
+        </script>
+
         <div class="input-area">
             <i class="fa-solid fa-plus btn-plus" onclick="openMainMenu()" style="cursor: pointer;"></i>
             <input type="file" id="fileInput" style="display: none;" accept="image/*" onchange="uploadImage()">
@@ -171,7 +180,6 @@
             onchange="uploadFile()">
 
     </div>
-
     <dialog id="templateMenu" class="std-dialog-clear" style="margin-bottom: 0;">
         <div class="template-box" onclick="event.stopPropagation()">
             <div class="template-header">
@@ -188,7 +196,7 @@
         </div>
     </dialog>
 
-    <script th:src="@{/js/chat_room.js(v='1.0')}"></script>
+    <script th:src="@{/js/chat/chat_room.js(v='1.0')}"></script>
 
 </body>
 
