@@ -55,9 +55,6 @@ public class TokyoGeocodedEntity extends BaseEntity {
 
 	@Column(name = "wage_jp")
 	private String wageJp;
-	
-	@Column(name = "notes", columnDefinition = "TEXT")
-	private String notes;
 
 	// 추가된 notes 필드 (원문)
 	@Column(name = "notes", columnDefinition = "TEXT")
