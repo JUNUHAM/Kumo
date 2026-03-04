@@ -31,14 +31,14 @@
 }
 
 body.dark-mode {
-    --bg-main: #1e1e1e;
+    --bg-main: #1e1f21;
     --bg-card: #2d2d2d;
     /* ← 검정 → 회색으로 */
-    --text-main: #e0e0e0;
+    --text-main: #e3e5e8;
     --text-sub: #aaaaaa;
-    --border-color: #2d2d2d;
+    --border-color: #37393d;
     --primary-color: #7db4e6;
-    --hover-bg: #383838;
+    --hover-bg: #2f3033
     /* ← 회색 계열로 */
     --dropdown-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
 }

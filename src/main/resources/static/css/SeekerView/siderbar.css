@@ -78,17 +78,20 @@ aside.sidebar {
 }
 
 /* 🌟 선택된 메뉴 (li.active) 및 호버 상태 */
+
 .sidebar-nav ul li.active a,
 .sidebar-nav ul li a:hover {
-    background-color: #f0f9ff;
-    color: #42a5f5;
-    border-left: 4px solid #42a5f5;
+    background-color: #f0f7ff;
+    /* #f0f9ff → 약간 더 차분하게 */
+    color: #7db4e6;
+    /* #42a5f5 → KUMO 시그니처 블루 */
+    border-left: 4px solid #7db4e6;
     font-weight: 500;
 }
 
 .sidebar-nav ul li.active a i,
 .sidebar-nav ul li a:hover i {
-    color: #42a5f5 !important;
+    color: #7db4e6 !important;
 }
 
 /* 3. 하단 영역 (로그아웃 버튼) */
@@ -140,9 +143,9 @@ aside.sidebar {
 
 /* 4. 다크모드 대응 (Dark Mode) */
 body.dark-mode aside.sidebar {
-    background-color: #1a1a1a !important;
+    background-color: #1e1f21 !important;
     /* 사장님이 원하신 찐다크 */
-    border-right-color: #333;
+    border-right-color: #37393d;
 }
 
 body.dark-mode .sidebar-nav ul li a {
@@ -155,7 +158,8 @@ body.dark-mode .sidebar-nav ul li a i {
 
 body.dark-mode .sidebar-nav ul li.active a,
 body.dark-mode .sidebar-nav ul li a:hover {
-    background-color: #2a3441;
+    background-color: #2e3035 !important;
+    /* #2a3441 → #2e3035 */
     color: #7db4e6;
     border-left-color: #7db4e6;
 }

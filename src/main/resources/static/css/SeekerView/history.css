@@ -140,9 +140,8 @@
    🌙 Dark Mode (완전 럭셔리하게 리뉴얼)
    ========================================= */
 body.dark-mode .history-container {
-    background: #1e1e24;
-    /* 너무 까만색보단 고급스러운 진회색 */
-    border: 1px solid #2a2a35;
+    background-color: #2a2b2e !important;
+        border: 1px solid #37393d !important;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 

@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title>KUMO - 스카우트 현황</title>
     <!-- 🌟 외부 CSS 연결 -->
+        <link rel="stylesheet" th:href="@{/css/SeekerView/myPage.css}">
     <link rel="stylesheet" th:href="@{/css/SeekerView/scout.css}">
-    <link rel="stylesheet" th:href="@{/css/SeekerView/myPage.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -18,31 +18,33 @@
         <div class="content-header">
             <h2 th:text="#{sidebar.scout}">스카우트 현황</h2>
         </div>
-        
-        <div class="scout-list">
-            <!-- 목록이 비었을 때 -->
-            <div th:if="${offers == null or #lists.isEmpty(offers)}" class="text-center py-5">
-                <p class="text-muted">받은 스카우트 제의가 없습니다.</p>
-            </div>
-            
-            <!-- 목록 아이템 -->
-            <div class="scout-card" th:each="o : ${offers}">
-                <div class="recruiter-info">
-                    <img class="recruiter-img" th:src="${o.recruiter.profileImage?.fileUrl ?: '/images/common/default_profile.png'}" alt="avatar">
-                    <div>
-                        <div class="biz-name" th:text="${o.recruiter.nickname} + ' 사장님'">사장님 이름</div>
-                        <div class="offer-date" th:text="${#temporals.format(o.createdAt, 'yyyy-MM-dd HH:mm')}">2024-03-02</div>
-                    </div>
+        <div class="scout-container">
+            <div class="scout-list">
+                <!-- 목록이 비었을 때 -->
+                <div th:if="${offers == null or #lists.isEmpty(offers)}" class="text-center py-5">
+                    <p class="text-muted">받은 스카우트 제의가 없습니다.</p>
                 </div>
-                
-                <div class="scout-action">
-                    <button class="btn-chat" th:onclick="|location.href='/chat/room'|">
-                        <i class="fa-solid fa-comments me-2"></i>대화하기
-                    </button>
-                    <!-- 🌟 data-id 속성에 ID 저장 (JS에서 사용) -->
-                    <button type="button" class="btn-delete-scout" th:data-id="${o.scoutId}" title="제의 삭제">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
+            
+                <!-- 목록 아이템 -->
+                <div class="scout-card" th:each="o : ${offers}">
+                    <div class="recruiter-info">
+                        <img class="recruiter-img"
+                            th:src="${o.recruiter.profileImage?.fileUrl ?: '/images/common/default_profile.png'}" alt="avatar">
+                        <div>
+                            <div class="biz-name" th:text="${o.recruiter.nickname} + ' 사장님'">사장님 이름</div>
+                            <div class="offer-date" th:text="${#temporals.format(o.createdAt, 'yyyy-MM-dd HH:mm')}">2024-03-02</div>
+                        </div>
+                    </div>
+            
+                    <div class="scout-action">
+                        <button class="btn-chat" th:onclick="|location.href='/chat/room'|">
+                            <i class="fa-solid fa-comments me-2"></i>대화하기
+                        </button>
+                        <!-- 🌟 data-id 속성에 ID 저장 (JS에서 사용) -->
+                        <button type="button" class="btn-delete-scout" th:data-id="${o.scoutId}" title="제의 삭제">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
