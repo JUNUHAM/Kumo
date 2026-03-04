@@ -1,11 +1,25 @@
 package net.kumo.kumo.domain.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "chat_rooms")
@@ -44,52 +58,52 @@ public class ChatRoomEntity {
 
     private LocalDateTime lastMessageAt;
 
-    @CreatedDate
-    @Column(updatable = false)
+    @CreationTimestamp // 🌟 저장 시점에 자동으로 현재 시간 주입!
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 }
 
-//package net.kumo.kumo.domain.entity;
+// package net.kumo.kumo.domain.entity;
 //
-//import jakarta.persistence.*;
-//import lombok.*;
-//import org.hibernate.annotations.CreationTimestamp;
+// import jakarta.persistence.*;
+// import lombok.*;
+// import org.hibernate.annotations.CreationTimestamp;
 //
-//import java.time.LocalDateTime;
+// import java.time.LocalDateTime;
 //
-//@Entity
-//@Table(name = "chat_rooms")
-//@Getter
-//@Setter
-//@NoArgsConstructor
-//@AllArgsConstructor
-//@Builder
-//public class ChatRoomEntity {
+// @Entity
+// @Table(name = "chat_rooms")
+// @Getter
+// @Setter
+// @NoArgsConstructor
+// @AllArgsConstructor
+// @Builder
+// public class ChatRoomEntity {
 //
-//	@Id
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
-//	@Column(name = "room_id")
-//	private Long id;
+// @Id
+// @GeneratedValue(strategy = GenerationType.IDENTITY)
+// @Column(name = "room_id")
+// private Long id;
 //
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@JoinColumn(name = "job_post_id", nullable = false)
-//	private JobPostingEntity jobPosting;
+// @ManyToOne(fetch = FetchType.LAZY)
+// @JoinColumn(name = "job_post_id", nullable = false)
+// private JobPostingEntity jobPosting;
 //
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@JoinColumn(name = "seeker_id", nullable = false)
-//	private UserEntity seeker;
+// @ManyToOne(fetch = FetchType.LAZY)
+// @JoinColumn(name = "seeker_id", nullable = false)
+// private UserEntity seeker;
 //
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@JoinColumn(name = "recruiter_id", nullable = false)
-//	private UserEntity recruiter;
+// @ManyToOne(fetch = FetchType.LAZY)
+// @JoinColumn(name = "recruiter_id", nullable = false)
+// private UserEntity recruiter;
 //
-//	@Column(name = "last_message", length = 500)
-//	private String lastMessage;
+// @Column(name = "last_message", length = 500)
+// private String lastMessage;
 //
-//	@Column(name = "last_message_at")
-//	private LocalDateTime lastMessageAt;
+// @Column(name = "last_message_at")
+// private LocalDateTime lastMessageAt;
 //
-//	@CreationTimestamp
-//	@Column(name = "created_at", updatable = false)
-//	private LocalDateTime createdAt;
-//}
+// @CreationTimestamp
+// @Column(name = "created_at", updatable = false)
+// private LocalDateTime createdAt;
+// }
