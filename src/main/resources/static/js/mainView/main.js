@@ -23,9 +23,9 @@ const AppState = {
 // ============================================================
 // [2] 초기화 및 이벤트 바인딩 (Init & Events)
 // ============================================================
-$(document).ready(function() {
+$(document).ready(function () {
     // 바텀 시트 핸들 클릭 이벤트
-    $('.sheet-handle').on('click', function() {
+    $('.sheet-handle').on('click', function () {
         const $sheet = $('#bottomSheet');
         $sheet.toggleClass('active');
 
@@ -64,7 +64,7 @@ $(document).ready(function() {
         UIManager.switchTab(tabName);
     })
 
-    if ($('#chatWidget')){
+    if ($('#chatWidget')) {
         ChatWidgetManager.initDraggable();
     }
 });
@@ -73,7 +73,7 @@ $(document).ready(function() {
 // [3] 지도 관리자 (Map Manager)
 // ============================================================
 const MapManager = {
-    init: function() {
+    init: function () {
         const mapElement = document.getElementById('map');
         if (!mapElement) return;
 
@@ -101,14 +101,14 @@ const MapManager = {
         MapManager.observeThemeChange();
     },
 
-    bindMapEvents: function() {
+    bindMapEvents: function () {
         const map = AppState.map;
 
         // 🌟 [복구] 이 부분(이벤트 리스너)이 빠져 있었습니다!
         // 지도가 멈출 때(idle)마다 실행한다는 명령이 없어서 동작을 안 했던 겁니다.
         map.addListener("idle", () => {
-// 🌟 [핵심 변경] 강제 이동 중(ignoreIdle)이거나 필터 모드(isFilterMode)일 때는 갱신 정지!
-            if(AppState.ignoreIdle || AppState.isFilterMode){
+            // 🌟 [핵심 변경] 강제 이동 중(ignoreIdle)이거나 필터 모드(isFilterMode)일 때는 갱신 정지!
+            if (AppState.ignoreIdle || AppState.isFilterMode) {
                 return;
             }
 
@@ -134,7 +134,7 @@ const MapManager = {
     },
 
     // 내 위치로 이동 (GPS)
-    moveToCurrentLocation: function() {
+    moveToCurrentLocation: function () {
         if (!navigator.geolocation) {
             alert("브라우저가 위치 정보를 지원하지 않습니다.");
             return;
@@ -168,7 +168,7 @@ const MapManager = {
 
                 // 🌟 [핵심 수정] 이동이 끝난 직후(idle) 즉시 데이터 로딩
                 // 일반적인 idle 리스너는 0.5초 딜레이가 있지만, 여기서는 즉시 실행합니다.
-                google.maps.event.addListenerOnce(AppState.map, 'idle', function() {
+                google.maps.event.addListenerOnce(AppState.map, 'idle', function () {
 
                     // 전역 idle 리스너에 의해 중복 실행되는 것을 방지하기 위해 타이머 취소
                     clearTimeout(AppState.debounceTimer);
@@ -188,7 +188,7 @@ const MapManager = {
     },
 
     // 마스킹(배경 어둡게) 그리기
-    drawMasking: function() {
+    drawMasking: function () {
         const worldCoords = [
             { lat: 85, lng: -180 }, { lat: 85, lng: 0 }, { lat: 85, lng: 180 },
             { lat: -85, lng: 180 }, { lat: -85, lng: 0 }, { lat: -85, lng: -180 },
@@ -218,7 +218,7 @@ const MapManager = {
 
 
     // 🌟 [NEW] 테마 변경 실시간 감지 함수
-    observeThemeChange: function() {
+    observeThemeChange: function () {
         // MutationObserver: HTML 요소의 변화를 감시하는 기능
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
@@ -235,7 +235,7 @@ const MapManager = {
     },
 
     // 🌟 [NEW] 지도 스타일 갈아끼우기 함수
-    setMapStyle: function(isDark) {
+    setMapStyle: function (isDark) {
         if (!AppState.map) return;
 
         const newStyle = isDark ? MapStyles.dark : MapStyles.light;
@@ -257,14 +257,14 @@ const MapManager = {
         const boundaryColor = isDark ? '#FF6B6B' : '#fB0000';
 
         return {
-            strokeColor : boundaryColor,
+            strokeColor: boundaryColor,
             strokeOpacity: 1.0,
             strokeWeight: 2
         }
     },
 
     // 🌟 [NEW] 지역 변경 함수
-    changeRegion: function(regionCode) {
+    changeRegion: function (regionCode) {
         if (!AppState.map) return;
 
         // 1. 지도가 휙 이동하는 동안 쓸데없는 API 요청이 가지 않도록 스위치 ON
@@ -299,7 +299,7 @@ const MapManager = {
     },
 
     // 🌟 [NEW] 시트에서 리스트 클릭 시 해당 위치로 지도 슉~ 이동하기
-    moveToJobLocation: function(lat, lng) {
+    moveToJobLocation: function (lat, lng) {
         if (!AppState.map || !lat || !lng) return;
 
         // 1. 지도가 휙 이동하는 동안 새 데이터 불러오기(idle) 방지 스위치 ON!
@@ -311,7 +311,7 @@ const MapManager = {
         AppState.map.setZoom(18); // 상세히 볼 수 있게 줌 레벨 조정
 
         // 3. 이동이 완전히 끝났을 때의 처리
-        google.maps.event.addListenerOnce(AppState.map, "idle", function() {
+        google.maps.event.addListenerOnce(AppState.map, "idle", function () {
             setTimeout(() => {
                 // 현재 이동한 위치를 '마지막 위치'로 강제 저장해둬서
                 // 스위치를 끈 직후에 데이터 갱신이 또 일어나는 것을 완벽 차단!
@@ -337,7 +337,7 @@ const MapManager = {
 // [4] 데이터 서비스 (Job Service - AJAX)
 // ============================================================
 const JobService = {
-    loadJobs: function(bounds) {
+    loadJobs: function (bounds) {
         if (!AppState.map) return;
 
         // 🌟 삼항 연산자 대신 MapMessages 사용
@@ -357,10 +357,10 @@ const JobService = {
             method: 'GET',
             data: params,
             dataType: 'json',
-            success: function(data) {
+            success: function (data) {
                 JobService.processData(data);
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 if (status !== 'abort') {
                     console.error("AJAX Error:", error);
                     $('#listBody').html(`<tr><td colspan="7" class="msg-box">${MapMessages.loadFail}</td></tr>`);
@@ -369,7 +369,7 @@ const JobService = {
         });
     },
 
-    prepareParams: function(bounds) {
+    prepareParams: function (bounds) {
         const params = {};
         if (bounds) {
             const ne = bounds.getNorthEast();
@@ -391,7 +391,7 @@ const JobService = {
         return params;
     },
 
-    processData: function(data) {
+    processData: function (data) {
         let filteredData = data; // 기본적으로는 서버에서 온 데이터를 그대로 씀
 
         // 🌟 [핵심 로직] 내 주변 모드이고, 내 GPS 위치를 아는 상태라면?
@@ -422,14 +422,14 @@ const JobService = {
     },
 
     // 🌟 [저장된 공고] DB에서 스크랩 내역 가져오기
-    loadSavedJobs: function() {
+    loadSavedJobs: function () {
         const currentLang = new URLSearchParams(window.location.search).get('lang') === 'ja' ? 'ja' : 'kr'; // 언어 확인
 
         $.ajax({
             url: `/api/scraps?lang=${currentLang}`, // 🌟 URL에 언어 추가
             method: 'GET',
             dataType: 'json',
-            success: function(data) {
+            success: function (data) {
                 UIManager.renderList(data, true);
                 MarkerManager.renderMarkers(data);
 
@@ -440,7 +440,7 @@ const JobService = {
                 // (선택) 찜한 마커들이 한눈에 보이게 카메라 조절 원하시면 주석 해제
                 // MapManager.fitBoundsToData(data);
             },
-            error: function(err) {
+            error: function (err) {
                 console.error("찜한 목록 불러오기 실패:", err);
                 $('#listBody').html(`<tr><td colspan="7" class="msg-box">${MapMessages.savedFail}</td></tr>`);
             }
@@ -448,7 +448,7 @@ const JobService = {
     },
 
     // 🌟 [최근 본 공고] 브라우저 로컬 스토리지에서 가져오기
-    loadRecentJobs: function() {
+    loadRecentJobs: function () {
         const recentJobsJson = localStorage.getItem('kumo_recent_jobs');
         let recentJobs = [];
 
@@ -473,7 +473,7 @@ const JobService = {
         // MapManager.fitBoundsToData(recentJobs, false);
     },
 
-    addRecentJob: function(jobData) {
+    addRecentJob: function (jobData) {
         if (!jobData || !jobData.id) return;
 
         // 1. 기존 데이터 꺼내오기 (없으면 빈 배열)
@@ -498,7 +498,7 @@ const JobService = {
     },
 
     // 🌟 [추가] 검색바에서 검색 실행 시 새 창으로 이동하는 로직
-    searchJobs: function() {
+    searchJobs: function () {
         const keyword = $('#keywordInput').val().trim();
         const currentLang = new URLSearchParams(window.location.search).get('lang') || 'kr';
 
@@ -516,7 +516,7 @@ const JobService = {
 // [5] 마커 관리자 (Marker Manager - Clustering)
 // ============================================================
 const MarkerManager = {
-    renderMarkers: function(jobs) {
+    renderMarkers: function (jobs) {
         if (!jobs || jobs.length === 0) return;
 
         const map = AppState.map;
@@ -560,7 +560,7 @@ const MarkerManager = {
         }
     },
 
-    clearMarkers: function() {
+    clearMarkers: function () {
         if (AppState.markerCluster) {
             AppState.markerCluster.clearMarkers();
         }
@@ -570,7 +570,7 @@ const MarkerManager = {
 
 
     // 클러스터 스타일 정의 (🌟 첨부해주신 이미지 스타일의 플랫 구름!)
-    getClusterRenderer: function() {
+    getClusterRenderer: function () {
         return {
             render: ({ count, position }) => {
 
@@ -614,7 +614,7 @@ const MarkerManager = {
 
     // 🌟 [추가] 마커용 SVG 아이콘을 생성하는 헬퍼 함수
     // color: 마커 배경색 (예: #4285F4)
-    createCustomMarkerIcon: function(color) {
+    createCustomMarkerIcon: function (color) {
         // 사진과 비슷한 둥근 물방울(핀) 모양의 SVG 패스입니다.
         const svgPath = 'M 12,0 C 5.373,0 0,5.373 0,12 c 0,7.194 10.74,22.25 11.31,23.03 l 0.69,0.97 l 0.69,-0.97 C 13.26,34.25 24,19.194 24,12 C 24,5.373 18.627,0 12,0 Z';
 
@@ -637,7 +637,7 @@ const UIManager = {
     // 🔄 [NEW] 하단 탭 전환 함수
     // 🔄 [Refactored] 탭 기능 분기 처리
     // 🔄 [Refactored] 탭 기능 분기 처리
-    switchTab: function(tabName) {
+    switchTab: function (tabName) {
         console.log(`탭 전환 기능 실행: ${tabName}`);
 
         const $sheetTitle = $('#sheetTitle');
@@ -687,7 +687,7 @@ const UIManager = {
     },
 
     // 🌟 [핵심 수정] jobs 옆에 isSavedMode = false 를 꼭 넣어주셔야 합니다!
-    renderList: function(jobs, isSavedMode = false) {
+    renderList: function (jobs, isSavedMode = false) {
         const $tbody = $('#listBody');
         const currentLang = new URLSearchParams(window.location.search).get('lang') === 'ja' ? 'ja' : 'kr';
 
@@ -764,7 +764,7 @@ const UIManager = {
         UIManager.updateTableHeader();
     },
 
-    openJobCard: function(job) {
+    openJobCard: function (job) {
         const currentLang = new URLSearchParams(window.location.search).get('lang') === 'ja' ? 'ja' : 'kr';
         const detailUrl = `/map/jobs/detail?id=${job.id}&source=${job.source}&lang=${currentLang}`;
         const $card = $('#jobDetailCard');
@@ -782,9 +782,9 @@ const UIManager = {
 
         const $img = $('#card-img');
         $img.attr('src', job.thumbnailUrl || 'https://placehold.co/300');
-        $img.off('error').on('error', function() { $(this).attr('src', 'https://placehold.co/300?text=No+Image'); });
+        $img.off('error').on('error', function () { $(this).attr('src', 'https://placehold.co/300?text=No+Image'); });
 
-        $('#btn-detail').off('click').on('click', function() {
+        $('#btn-detail').off('click').on('click', function () {
             window.location.href = detailUrl;
         });
 
@@ -794,21 +794,21 @@ const UIManager = {
         JobService.addRecentJob(job);
     },
 
-    closeJobCard: function() {
+    closeJobCard: function () {
         $('#jobDetailCard').hide();
     },
 
     // 🌟 테이블 헤더 언어 변경 함수도 엄청나게 짧아집니다!
-    updateTableHeader: function() {
+    updateTableHeader: function () {
         const headers = $('#tableHeader th');
         // HTML에서 선언한 MapMessages.table 배열을 그대로 입혀줍니다.
-        headers.each(function(index) {
-            if(MapMessages.table[index]) $(this).text(MapMessages.table[index]);
+        headers.each(function (index) {
+            if (MapMessages.table[index]) $(this).text(MapMessages.table[index]);
         });
     },
 
     // 🌟 [NEW] 리스트 테이블 안에서 직접 찜하기/해제를 누를 때 작동하는 함수
-    toggleListScrap: function(btnElement, isSavedMode) {
+    toggleListScrap: function (btnElement, isSavedMode) {
         const $btn = $(btnElement);
         const jobId = $btn.data('id');
         const source = $btn.data('source');
@@ -819,7 +819,7 @@ const UIManager = {
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({ targetPostId: jobId, targetSource: source }),
-            success: function(response) {
+            success: function (response) {
                 if (response.isScraped) {
                     // 찜 등록 시 노란색으로 변경
                     $btn.addClass('btn-saved').text(currentLang === 'ja' ? '保存解除' : '찜해제');
@@ -827,7 +827,7 @@ const UIManager = {
                     // 🌟 찜 해제 시!
                     if (isSavedMode) {
                         // 저장된 공고 탭에서 해제했다면, 리스트에서 스르륵 사라지게 만듭니다 (고급 UX)
-                        $btn.closest('tr').fadeOut(300, function() {
+                        $btn.closest('tr').fadeOut(300, function () {
                             $(this).remove();
                             // 다 지워서 남은 게 없으면 '공고 없음' 메시지 띄우기
                             if ($('#listBody tr').length === 0) {
@@ -840,7 +840,7 @@ const UIManager = {
                     }
                 }
             },
-            error: function() {
+            error: function () {
                 alert("처리 중 오류가 발생했습니다.");
             }
         });
@@ -852,7 +852,7 @@ const UIManager = {
 // ============================================================
 const Utils = {
     // GeoJSON -> Google Maps Paths
-    getPathsFromGeoJson: function(json, specificIndex = -1) {
+    getPathsFromGeoJson: function (json, specificIndex = -1) {
         const paths = [];
         if (!json) return paths;
         const features = (json.type === "FeatureCollection") ? json.features : [json];
@@ -872,7 +872,7 @@ const Utils = {
     },
 
     // 거리 계산 (km)
-    getDistanceFromLatLonInKm: function(lat1, lon1, lat2, lon2) {
+    getDistanceFromLatLonInKm: function (lat1, lon1, lat2, lon2) {
         const R = 6371;
         const dLat = Utils.deg2rad(lat2 - lat1);
         const dLon = Utils.deg2rad(lon2 - lon1);
@@ -883,7 +883,7 @@ const Utils = {
         return R * c;
     },
 
-    deg2rad: function(deg) {
+    deg2rad: function (deg) {
         return deg * (Math.PI / 180);
     }
 };
@@ -894,7 +894,7 @@ const Utils = {
 const ChatWidgetManager = {
 
     // 채팅창 열기 (초간단!)
-    open: function() {
+    open: function () {
         const widget = document.getElementById('chatWidget');
 
         console.log("✅ 채팅 팝업 열기 (이미 iframe은 로드되어 있음!)");
@@ -905,7 +905,7 @@ const ChatWidgetManager = {
     },
 
     // 채팅창 닫기
-    close: function() {
+    close: function () {
         document.getElementById('chatWidget').classList.add('hidden');
 
         // 네비게이션 탭 상태 원상복구
@@ -916,12 +916,12 @@ const ChatWidgetManager = {
     },
 
     // 최소화 토글
-    toggleMinimize: function() {
+    toggleMinimize: function () {
         document.getElementById('chatWidget').classList.toggle('minimized');
     },
 
     // 🌟 드래그 앤 드롭 마법!
-    initDraggable: function() {
+    initDraggable: function () {
         const widget = document.getElementById('chatWidget');
         const header = document.querySelector('.chat-widget-header');
         const iframe = document.getElementById('chatIframe');

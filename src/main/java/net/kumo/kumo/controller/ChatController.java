@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -72,40 +73,26 @@ public class ChatController {
     // ChatController.java
 
     @GetMapping("/chat/list")
-    public String chatList(
-            @RequestParam(value = "userId", required = false) Long userId,
-            Model model) {
+    public String chatList(Principal principal, Model model) { // ★ Principal 추가
 
-        // 1. 방어 코드: userId가 없으면 로그인 페이지로 리다이렉트
-        if (userId == null) {
+        // 1. 로그인한 유저의 이메일(혹은 ID) 가져오기
+        if (principal == null) {
             return "redirect:/login";
         }
 
-        // 2. 서비스 호출: 최신 메시지와 시간이 포함된 DTO 리스트 가져오기
-        // (메서드 명은 아까 수정한 getChatRoomsForUser 입니다)
-        List<ChatRoomListDTO> chatRooms = chatService.getChatRoomsForUser(userId);
+        // 현우님의 User 서비스에서 이메일로 실제 PK(Long)를 찾아오는 과정이 필요할 수 있습니다.
+        // 만약 현재 세션에서 바로 Long ID를 가져올 수 없다면, 우선 테스트를 위해 '임시 ID'를 넣어보세요.
+        // Long myId = userService.findByEmail(principal.getName()).getUserId();
 
-        // 더미데이터
-        // 2. ★ 가라(Dummy) 데이터 2개 강제 주입
-        // ABC カンパニー 추가
-        chatRooms.add(ChatRoomListDTO.builder()
-                .roomId(999L) // 가짜 ID
-                .opponentNickname("ABC カンパニー")
-                .lastMessage("하나 궁금한게 있습니다")
-                .lastTime("15:40")
-                .build());
+        Long myId = 6L; // ★ 우선 하드코딩으로 6을 넣어서 페이지가 뜨는지 확인해봅시다!
 
-        // 오사카 한식당 추가
-        chatRooms.add(ChatRoomListDTO.builder()
-                .roomId(888L) // 가짜 ID
-                .opponentNickname("오사카 한식당")
-                .lastMessage("신청해주셔서 감사합니다. 유감이지만...")
-                .lastTime("12:20")
-                .build());
+        // 2. 서비스 호출 (myId 사용)
+        List<ChatRoomListDTO> chatRooms = chatService.getChatRoomsForUser(myId);
 
-        // 3. 모델에 담아서 HTML로 전달
+        // ... 가라 데이터 추가 로직 그대로 유지 ...
+
         model.addAttribute("chatRooms", chatRooms);
-        model.addAttribute("userId", userId);
+        model.addAttribute("userId", myId);
 
         return "chat/chat_list";
     }

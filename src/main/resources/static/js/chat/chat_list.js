@@ -1,14 +1,21 @@
 /* --- src/main/resources/static/js/chat_list.js --- */
 
 // 방 입장 함수
+// 방 입장 함수
 function enterRoom(roomId) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const userId = urlParams.get('userId');
+    // ❌ (삭제) 더 이상 촌스럽게 주소창을 뒤지지 않습니다!
+    // const urlParams = new URLSearchParams(window.location.search);
+    // const userId = urlParams.get('userId');
+
+    // 🟢 (추가) 아까 HTML에 몰래 숨겨둔 '진짜 ID'를 쏙 빼옵니다!
+    const userIdInput = document.getElementById('currentUserId');
+    const userId = userIdInput ? userIdInput.value : null;
 
     if (userId) {
+        // ID를 무사히 찾았다면 채팅방으로 돌격!
         location.href = '/chat/room/' + roomId + '?userId=' + userId;
     } else {
-        alert("로그인 정보(userId)가 없습니다! URL을 확인해주세요.");
+        alert("로그인 정보(userId)가 없습니다! 다시 로그인해주세요.");
     }
 }
 

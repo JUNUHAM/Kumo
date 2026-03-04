@@ -50,6 +50,32 @@
 			</div>
 		</div>
 
+		<div id="jobDetailCard" class="floating-card" style="display: none; z-index: 99999;">
+			<button type="button" class="btn-close-card">×</button>
+
+			<div class="card-header-section">
+				<div class="profile-info">
+					<div id="card-company" class="company-name">ABC Company</div>
+					<div id="card-manager" class="manager-name">田中 部長</div>
+				</div>
+			</div>
+
+			<div class="card-image-wrapper">
+				<img id="card-img" src="" alt="Office View" onerror="this.src='https://placehold.co/300'">
+			</div>
+
+			<div class="card-body-section">
+				<h3 id="card-title" class="job-title">비서 구합니다</h3>
+				<p class="job-address">주소: <span id="card-address">...</span></p>
+				<p class="job-phone" id="card-phone">010-xxxx-xxxx</p>
+			</div>
+
+			<div class="card-footer-section">
+				<button class="btn-outline">찜하기</button>
+				<button id="btn-detail" class="btn-primary-custom">자세히 보기</button>
+			</div>
+		</div>
+
 		<div class="map-bottom-nav">
 			<div class="nav-box">
 				<button class="nav-item active" data-tab="nearby">
@@ -78,31 +104,6 @@
 						<span th:text="#{nav.chat}">채팅</span>
 					</button>
 				</th:block>
-			</div>
-			<div id="jobDetailCard" class="floating-card">
-				<button type="button" class="btn-close-card">×</button>
-
-				<div class="card-header-section">
-					<div class="profile-info">
-						<div id="card-company" class="company-name">ABC Company</div>
-						<div id="card-manager" class="manager-name">田中 部長</div>
-					</div>
-				</div>
-
-				<div class="card-image-wrapper">
-					<img id="card-img" src="" alt="Office View" onerror="this.src='https://placehold.co/300'">
-				</div>
-
-				<div class="card-body-section">
-					<h3 id="card-title" class="job-title">비서 구합니다</h3>
-					<p class="job-address">주소: <span id="card-address">...</span></p>
-					<p class="job-phone" id="card-phone">010-xxxx-xxxx</p>
-				</div>
-
-				<div class="card-footer-section">
-					<button class="btn-outline">찜하기</button>
-					<button id="btn-detail" class="btn-primary-custom">자세히 보기</button>
-				</div>
 			</div>
 		</div>
 
@@ -138,7 +139,6 @@
 			</div>
 		</div>
 
-		<!-- 채팅 리스트 iFrame 작업 시작  2026/03/02-->
 		<div id="chatWidget" class="chat-widget hidden">
 			<div class="chat-widget-header">
 				<span class="widget-title">
@@ -181,13 +181,13 @@
 				titleSaved: /*[[#{js.map.title.saved}]]*/ '즐겨찾기한 구직 정보 ⭐',
 				titleRecent: /*[[#{js.map.title.recent}]]*/ '최근 본 구직 정보 🕒',
 				table: [
-			/*[[#{js.map.table.title}]]*/ '제목',
-			/*[[#{js.map.table.company}]]*/ '상호명',
-			/*[[#{js.map.table.location}]]*/ '근무지',
-			/*[[#{js.map.table.wage}]]*/ '급여',
-			/*[[#{js.map.table.contact}]]*/ '연락처',
-			/*[[#{js.map.table.manager}]]*/ '담당자',
-			/*[[#{js.map.table.manage}]]*/ '관리'
+            /*[[#{js.map.table.title}]]*/ '제목',
+            /*[[#{js.map.table.company}]]*/ '상호명',
+            /*[[#{js.map.table.location}]]*/ '근무지',
+            /*[[#{js.map.table.wage}]]*/ '급여',
+            /*[[#{js.map.table.contact}]]*/ '연락처',
+            /*[[#{js.map.table.manager}]]*/ '담당자',
+            /*[[#{js.map.table.manage}]]*/ '관리'
 				]
 			};
 		</script>
