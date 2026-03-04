@@ -50,7 +50,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 						.requestMatchers("/map_non_login_view", "/FindId", "/FindPw", "/findIdProc", "/nickname",
 								"/changePw", "/map/main", "/map/job-list-view")
 						.permitAll()
-						
+
 						// (3) 권한별 접근 제한
 						.requestMatchers("/Recruiter/**").hasRole("RECRUITER")
 						.requestMatchers("/Seeker/**").hasRole("SEEKER")
@@ -78,12 +78,10 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 						.logoutSuccessUrl("/")
 						.invalidateHttpSession(true)
 						.deleteCookies("JSESSIONID"))
-				
-				
+
 				// 5. 채팅창 팝업 출력관련 (iframe 허용)
 				.headers((headers) -> headers
-						.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
-				); // 🌟 여기에 세미콜론(;) 추가!
+						.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)); // 🌟 여기에 세미콜론(;) 추가!
 
 		return http.build();
 	}
@@ -91,8 +89,8 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 	// 비밀번호 암호화 빈
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-//		return new BCryptPasswordEncoder();
+		// return new BCryptPasswordEncoder();
 		return org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance();
-		
+
 	}
 }

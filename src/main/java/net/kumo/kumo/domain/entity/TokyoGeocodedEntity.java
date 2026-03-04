@@ -13,28 +13,28 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class TokyoGeocodedEntity extends BaseEntity {
-	
+
 	@Column(name = "row_no")
 	private Integer rowNo;
-	
+
 	@Column(name = "datanum", unique = true)
 	private Long datanum;
-	
+
 	@Column(name = "title", length = 200)
 	private String title;
-	
+
 	@Column(name = "href", length = 500)
 	private String href;
-	
+
 	@Column(name = "write_time")
 	private String writeTime;
-	
+
 	@Column(name = "img_urls", length = 1000)
 	private String imgUrls;
-	
+
 	@Column(name = "body", columnDefinition = "TEXT")
 	private String body;
-	
+
 	@Column(name = "company_name", length = 150)
 	private String companyName;
 
@@ -55,11 +55,7 @@ public class TokyoGeocodedEntity extends BaseEntity {
 
 	@Column(name = "wage_jp")
 	private String wageJp;
-	
-	@Column(name = "notes", columnDefinition = "TEXT")
-	private String notes;
 
-	// 추가된 notes 필드 (원문)
 	@Column(name = "notes", columnDefinition = "TEXT")
 	private String notes;
 
@@ -107,22 +103,23 @@ public class TokyoGeocodedEntity extends BaseEntity {
 	private String wardCityJp;
 
 	@Column(name = "ward_city_kr", length = 150)
-	private String wardCityKr;	
+	private String wardCityKr;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private UserEntity user;
 
-	@ManyToOne(fetch = FetchType.LAZY)	@JoinColumn(name = "company_id")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "company_id")
 	private CompanyEntity company;
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(columnDefinition = "ENUM('RECRUITING', 'CLOSED') DEFAULT 'RECRUITING'")
 	private JobStatus status;
-	
+
 	@CreationTimestamp
 	@Column(name = "created_at", updatable = false)
 	private LocalDateTime createdAt;
-	
+
 	@PrePersist
 	public void prePersist() {
 		if (this.status == null)
@@ -130,10 +127,10 @@ public class TokyoGeocodedEntity extends BaseEntity {
 		if (this.viewCount == null)
 			this.viewCount = 0;
 	}
-	
+
 	@Column(name = "salary_type")
 	private String salaryType;
-	
+
 	@Column(name = "salary_amount")
 	private Integer salaryAmount;
 
