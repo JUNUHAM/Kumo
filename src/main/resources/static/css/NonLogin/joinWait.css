@@ -1,38 +1,74 @@
+@charset "UTF-8";
+
+/* 🌟 1. 기본 여백 초기화 (헤더 깨짐/가로 스크롤 방지) */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff;
+    transition: background-color 0.3s ease;
+}
+
+/* 🌟 2. 다크모드 시 배경색 자연스럽게 전환 */
+body.dark-mode {
+    background-color: #121212;
+}
+
 .wait-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 100px 20px;
-            text-align: center;
-            min-height: 60vh;
-        }
-        .icon-box {
-            font-size: 80px;
-            color: #7db4e6; /* 쿠모 블루 */
-            margin-bottom: 30px;
-        }
-        .wait-title {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: #333;
-        }
-        .wait-desc {
-            font-size: 16px;
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 40px;
-        }
-        .btn-home {
-            padding: 12px 30px;
-            background-color: #7db4e6;
-            color: white;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        .btn-home:hover {
-            background-color: #5a9bc4;
-        }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* 🌟 3. 헤더가 고정(fixed)되어 있으므로 top 패딩을 150px로 넉넉하게 주어 겹침 방지 */
+    padding: 150px 20px 100px;
+    text-align: center;
+    /* 화면 전체 높이에서 헤더/푸터 영역을 뺀 만큼 꽉 채워서 완벽한 중앙 정렬 */
+    min-height: calc(100vh - 100px);
+}
+
+.icon-box {
+    font-size: 80px;
+    color: #7db4e6; /* 쿠모 블루 */
+    margin-bottom: 30px;
+}
+
+.wait-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #333333;
+    transition: color 0.3s ease; /* 부드러운 다크모드 전환 효과 */
+}
+
+.wait-desc {
+    font-size: 16px;
+    color: #666666;
+    line-height: 1.6;
+    margin-bottom: 40px;
+    transition: color 0.3s ease;
+}
+
+.btn-home {
+    padding: 12px 30px;
+    background-color: #7db4e6;
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.btn-home:hover {
+    background-color: #5a9bc4;
+}
+
+/* ==========================================
+   🌟 4. 다크모드 지원 (글자색 반전)
+   헤더에서 달 버튼을 누르면 body에 .dark-mode 가 붙는 것을 이용
+   ========================================== */
+body.dark-mode .wait-title {
+    color: #e0e0e0;
+}
+
+body.dark-mode .wait-desc {
+    color: #aaaaaa;
+}
