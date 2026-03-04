@@ -29,9 +29,11 @@ public abstract class BaseEntity {
     private String writeTime;
 
     @Lob
+    @Column(name = "img_urls", columnDefinition = "LONGTEXT")
     private String imgUrls;
 
     @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String body;
 
     private String companyName;
