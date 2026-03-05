@@ -109,27 +109,31 @@ public class ChatController {
     }
 
     // ======================================================================
-    // 🌟 3. 채팅 목록 보기
+    // 🌟 3. 채팅 목록 보기 (자동 유저 인식 기능 완벽 적용)
     // ======================================================================
     @GetMapping("/chat/list")
     public String chatList(
             @RequestParam(value = "userId", required = false) Long userId,
+            @org.springframework.security.core.annotation.AuthenticationPrincipal net.kumo.kumo.security.AuthenticatedUser authUser,
             Model model) {
 
+        // 🌟 1. URL에 userId가 넘어오지 않았다면? 현재 시큐리티 로그인 세션에서 아이디를 뽑아옵니다!
+        if (userId == null && authUser != null) {
+            UserEntity currentUser = userRepository.findByEmail(authUser.getEmail())
+                    .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+            userId = currentUser.getUserId();
+        }
+
+        // 🌟 2. 로그인도 안 되어 있고, 아이디도 없으면 튕겨냅니다.
         if (userId == null) {
             return "redirect:/login";
         }
 
+        // 🌟 3. 더미 데이터 없이 실제 내 채팅방 목록만 가져오기
         List<ChatRoomListDTO> chatRooms = chatService.getChatRoomsForUser(userId);
 
-        // 테스트용 더미 데이터
-        chatRooms.add(ChatRoomListDTO.builder()
-                .roomId(999L).opponentNickname("ABC カンパニー").lastMessage("하나 궁금한게 있습니다").lastTime("15:40").build());
-        chatRooms.add(ChatRoomListDTO.builder()
-                .roomId(888L).opponentNickname("오사카 한식당").lastMessage("신청해주셔서 감사합니다.").lastTime("12:20").build());
-
         model.addAttribute("chatRooms", chatRooms);
-        model.addAttribute("userId", userId);
+        model.addAttribute("userId", userId); // HTML로 넘겨줘서 계속 쓸 수 있게 함
 
         return "chat/chat_list";
     }
@@ -202,5 +206,23 @@ public class ChatController {
     public void processRead(ChatMessageDTO readSignal) {
         chatService.processLiveReadSignal(readSignal.getRoomId(), readSignal.getSenderId());
         messagingTemplate.convertAndSend("/sub/chat/room/" + readSignal.getRoomId(), readSignal);
+    }
+
+    // 읽지 않은 메시지 개수 반환
+    @GetMapping("/api/chat/unread-count")
+    @ResponseBody // 화면 이동이 아니라 숫자 데이터만 반환하도록 설정
+    public ResponseEntity<Integer> getUnreadCount(
+            @org.springframework.security.core.annotation.AuthenticationPrincipal net.kumo.kumo.security.AuthenticatedUser authUser) {
+
+        if (authUser == null) {
+            return ResponseEntity.status(401).build(); // 로그인 안됨
+        }
+
+        UserEntity currentUser = userRepository.findByEmail(authUser.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
+
+        int unreadCount = chatService.getUnreadMessageCount(currentUser.getUserId());
+
+        return ResponseEntity.ok(unreadCount); // 안 읽은 개수 리턴
     }
 }

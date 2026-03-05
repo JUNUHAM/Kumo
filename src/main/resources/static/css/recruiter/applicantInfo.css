@@ -177,8 +177,10 @@ body.dark-mode .table-title {
 }
 
 .badge.bg-secondary {
-  background-color: #f0f1f6 !important;
-  color: #868e96 !important;
+  background-color: #fff5f5 !important;
+  /* 부드럽고 연한 핑크베이지 배경 */
+  color: #ff6b6b !important;
+  /* 눈이 편안한 차분한 파스텔 레드 */
 }
 
 .badge.bg-primary {
@@ -307,13 +309,19 @@ body.dark-mode .table-title {
 
 /* 모달 버튼 */
 .modal-footer .btn-outline-secondary {
-  border-color: #dee2e6;
-  color: #6c757d;
+  border-color: #ff6b6b;
+  color: #ff6b6b;
   border-radius: 10px;
   font-weight: 600;
   font-size: 13px;
   padding: 8px 20px;
   transition: all 0.2s;
+}
+
+.modal-footer .btn-outline-secondary:hover {
+  background-color: #ff6b6b;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.35);
 }
 
 .modal-footer .btn-primary {
@@ -579,15 +587,21 @@ body.dark-mode .modal-footer {
   border-top: 1px solid #37393d !important;
 }
 
+body.dark-mode .badge.bg-secondary {
+  background-color: rgba(255, 107, 107, 0.1) !important;
+  color: #ff6b6b !important;
+  border: 1px solid rgba(255, 107, 107, 0.3) !important;
+}
+
 body.dark-mode .modal-footer .btn-outline-secondary {
-  border-color: #37393d !important;
-  color: #91959b !important;
-  background-color: #2a2b2e !important;
+  border-color: #ff6b6b !important;
+  color: #ff6b6b !important;
+  background-color: transparent !important;
 }
 
 body.dark-mode .modal-footer .btn-outline-secondary:hover {
-  background-color: #37393d !important;
-  color: #e3e5e8 !important;
+  background-color: rgba(255, 107, 107, 0.15) !important;
+  color: #ff6b6b !important;
 }
 
 body.dark-mode .modal-footer .btn-primary {
@@ -618,3 +632,38 @@ body.dark-mode .spinner-border {
   color: #7db4e6 !important;
 }
 
+/* 🌙 다크모드에서 클래스가 없는 기본 행(검토중 등)의 배경색 해결 */
+body.dark-mode .mini-table tbody tr td {
+  background-color: transparent !important;
+  /* 부트스트랩이 강제로 넣는 화이트 배경을 제거합니다 */
+}
+
+.total-count-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 0.9rem;
+    color: #8b95a1;
+    margin-top: 13px;
+}
+
+.total-count-badge {
+  background-color: #e8f3ff;
+  color: #7db4e6;
+  padding: 2px 10px;
+  border-radius: 8px;
+  min-width: 28px;
+  text-align: center;
+      font-weight: 700;
+}
+
+/* 다크모드 */
+body.dark-mode .total-count-row {
+  color: #91959b;
+}
+
+body.dark-mode .total-count-badge {
+  background-color: rgba(125, 180, 230, 0.15);
+  color: #7db4e6;
+}

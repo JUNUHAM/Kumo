@@ -454,9 +454,12 @@ body.dark-mode .icon-btn:hover {
 body.dark-mode .notify-dropdown,
 body.dark-mode .lang-dropdown,
 body.dark-mode .profile-dropdown {
-  background-color: #2d2d2d;
-  border-color: #444;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  /* 메인 카드/컨테이너 색상과 맞춰서 통일감 부여 */
+  background-color: #2a2b2e;
+  /* 기존 #444보다 푸른기가 살짝 섞인 은은한 테두리 */
+  border-color: #3e3f42;
+  /* 드롭다운이 더 잘 떠보이도록 부드럽고 넓은 그림자 */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 body.dark-mode .notify-header span,
@@ -480,8 +483,9 @@ body.dark-mode .profile-info,
 body.dark-mode .notify-header,
 body.dark-mode .notify-footer,
 body.dark-mode .notify-body {
-  background-color: #383838;
-  border-color: #444;
+  /* 드롭다운 내의 헤더나 아이템 영역은 1단계 더 밝게 포인트! */
+  background-color: #323336;
+  border-color: #3e3f42;
 }
 
 body.dark-mode .notify-item.unread {

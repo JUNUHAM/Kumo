@@ -10,8 +10,17 @@ body.dark-mode .content-area {
     padding: 30px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     margin-top: 20px;
+
+    /* 🌟 이 두 줄이 사이드바와 헤더를 살리는 핵심입니다! */
+    max-width: 1000px;
+    /* resume.css처럼 확실한 숫자를 주세요 (표니까 1000px 추천) */
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+
     transition: background-color 0.3s;
 }
+
 
 body.dark-mode .scout-container {
     background-color: #2a2b2e !important;

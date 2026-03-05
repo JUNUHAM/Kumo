@@ -33,6 +33,7 @@ public class ChatRoomEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     // 🌟 변경된 코드 (이 두 줄을 추가하세요!)
