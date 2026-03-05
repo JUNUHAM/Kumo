@@ -44,19 +44,6 @@
                 </div>
             </div>
         </div>
-
-        <div style="background: #111; color: #0f0; padding: 15px; margin-bottom: 10px; font-family: monospace; z-index: 9999; position: relative;">
-            <h4 style="color: #fff; margin-top: 0;">🛠️ 타임리프 DTO 데이터 덤프</h4>
-            <p>총 데이터 개수: <span th:text="${chatHistory != null ? chatHistory.size() : '0'}"></span>개</p>
-            <ul>
-                <li th:each="msg : ${chatHistory}">
-                    [발신자ID]: <span th:text="${msg.senderId != null ? msg.senderId : 'NULL'}"></span> /
-                    [타입]: <span th:text="${msg.messageType != null ? msg.messageType : 'NULL'}"></span> /
-                    [내용]: <span th:text="${msg.content != null ? msg.content : 'NULL'}"></span>
-                </li>
-            </ul>
-        </div>
-
         <div class="msg-area" id="msgArea">
             <th:block th:each="msg, stat : ${chatHistory}">
 
