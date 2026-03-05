@@ -1,5 +1,4 @@
 <aside th:fragment="rightSidebarFragment" class="dashboard-right-sidebar">
-
   <div class="side-panel calendar-section">
     <div id="mini-calendar" class="mini-calendar-container"></div>
   </div>
@@ -19,101 +18,14 @@
         등록</button>
     </a>
 
-    <button id="chatToggleButton" class="btn btn-common-action btn-light-blue w-100 chat-badge-wrapper" type="button"
-      onclick="toggleChatModal(6)" style="position: relative; transition: all 0.3s ease;">
+    <button class="btn btn-common-action btn-light-blue w-100 chat-badge-wrapper" type="button"
+      onclick="openGlobalChatList()" style="position: relative;">
+      <i class="bi bi-chat-dots-fill me-2"></i>
+      <span th:text="#{main.sidebar.chat}">채팅</span>
 
-      <div id="chatDefaultState" style="display: flex; align-items: center; justify-content: center; width: 100%;">
-        <i class="bi bi-chat-dots-fill me-2"></i>
-        <span th:text="#{main.sidebar.chat}">채팅</span>
-
-        <span class="unread-badge" id="side-unread-badge" style="display: none;"></span>
-      </div>
-
-      <div id="chatActiveState" style="display: none; align-items: center; justify-content: center; width: 100%;">
-        <i class="bi bi-box-arrow-right me-2" style="font-size: 1.2rem;"></i>
-        <span>나가기</span>
-      </div>
+      <span class="unread-badge" id="side-unread-badge" style="display: none;"></span>
     </button>
   </div>
 
-  <div id="kumoChatModal" class="kumo-cloud-animation"
-    style="display:none; position:fixed; bottom:79px; right:12px; width:420px; height:calc(100vh - 150px); max-height:850px; min-height:500px; background:white; border-radius:24px; box-shadow: 0 15px 40px rgba(0,0,0,0.25); z-index:999999 !important; overflow:hidden; border: 1px solid #f0f0f0;">
-
-    <iframe id="chatIframe" src=""
-      style="width:100%; height:100%; border:none; display:block; background-color: #f8faff;"></iframe>
-  </div>
-
-  <script>
-    // ==========================================
-    // 1. 기존 채팅 모달 띄우는 함수
-    // ==========================================
-    function toggleChatModal(userId) {
-      var modal = document.getElementById('kumoChatModal');
-      var iframe = document.getElementById('chatIframe');
-
-      var btn = document.getElementById('chatToggleButton');
-      var defaultState = document.getElementById('chatDefaultState');
-      var activeState = document.getElementById('chatActiveState');
-
-      if (modal.parentElement !== document.body) {
-        document.body.appendChild(modal);
-      }
-
-      if (modal.style.display === 'none' || modal.style.display === '') {
-        iframe.src = "/chat/list?userId=" + userId;
-        modal.style.display = 'block';
-
-        setTimeout(function () {
-          modal.classList.add('cloud-show');
-        }, 10);
-
-        defaultState.style.display = 'none';
-        activeState.style.display = 'flex';
-        btn.style.backgroundColor = '#b0b8c1';
-        btn.style.boxShadow = 'inset 0 3px 6px rgba(0,0,0,0.15)';
-      } else {
-        modal.classList.remove('cloud-show');
-
-        setTimeout(function () {
-          modal.style.display = 'none';
-          iframe.src = "";
-        }, 500);
-
-        defaultState.style.display = 'flex';
-        activeState.style.display = 'none';
-        btn.style.backgroundColor = '';
-        btn.style.boxShadow = '';
-      }
-    }
-
-    // ==========================================
-    // ★ 2. 새로 추가된 빨간 뱃지 생명 부여 스크립트!
-    // ==========================================
-    function updateSidebarBadge() {
-      fetch('/api/chat/unread-count')
-        .then(res => {
-          if (!res.ok) throw new Error("서버 응답 오류 (로그인 안됨)");
-          return res.json();
-        })
-        .then(count => {
-          const badge = document.getElementById('side-unread-badge');
-          if (badge) {
-            if (count > 0) {
-              badge.textContent = count;       // 빨간 원 안에 숫자 넣기
-              badge.style.display = 'flex';    // 빨간 원 짠! 하고 나타나기
-            } else {
-              badge.style.display = 'none';    // 0개면 안 보이게 숨기기
-            }
-          }
-        })
-        .catch(err => console.log("알림 뱃지 갱신 대기 중...", err));
-    }
-
-    // 페이지가 다 로드되면 무조건 1번 실행!
-    document.addEventListener("DOMContentLoaded", updateSidebarBadge);
-
-    // 10초마다 백엔드 몰래 찔러서 숫자 갱신하기 (새로고침 안해도 알림이 뜸!)
-    setInterval(updateSidebarBadge, 10000);
-
-  </script>
+  <script th:src="@{/js/recruiter/rightSidebar.js}"></script>
 </aside>
