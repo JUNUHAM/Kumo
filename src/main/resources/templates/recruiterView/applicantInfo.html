@@ -43,7 +43,10 @@
                         <h2 class="table-title mb-0 fw-bold" th:text="#{app.info.title}">내 공고 및 지원자 관리</h2>
                         <div class="total-count-row">
                             <span th:text="#{app.info.total.label}">총 진행 중인 공고</span>
-                            <span class="total-count-badge" th:text="${groupedList != null ? groupedList.size() : 0}">0</span>
+                            <span class="total-count-badge"
+                                th:text="${groupedList != null ? groupedList.?[status.toString() == 'RECRUITING'].size() : 0}">
+                                0
+                            </span>
                         </div>
                     </div>
                 </div>
