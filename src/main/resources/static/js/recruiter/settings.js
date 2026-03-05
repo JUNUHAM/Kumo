@@ -142,7 +142,7 @@ function closeDeleteModal() {
             modal.style.display = 'none';
             modal.classList.remove('closing');
             document.body.style.overflow = ''; // 스크롤 복구
-            
+
             // 입력 필드 초기화
             document.getElementById('deleteConfirmPw').value = '';
             document.getElementById('deleteConfirmPwCheck').value = '';
@@ -230,3 +230,17 @@ function executeDelete() {
         }
     });
 }
+    toggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isDark = document.documentElement.classList.contains('dark-mode');
+        Swal.fire({
+            title: msgSnsTitle,   // ← 변수로 교체
+            text: msgSnsText,     // ← 변수로 교체
+            icon: 'info',
+            confirmButtonColor: '#7db4e6',
+            background: isDark ? '#2a2b2e' : '#fff',
+            color: isDark ? '#e3e5e8' : '#333'
+        });
+    });
+});
+});

@@ -149,6 +149,46 @@
     </div>
 
     <!-- 회원 탈퇴 모달 (기존 유지) -->
+  <div id="deleteAccountModal" class="delete-modal-overlay">
+    <div class="delete-modal-content">
+      <div class="delete-modal-header">
+        <h3 th:text="#{set.btn.quit}">회원 탈퇴</h3>
+        <button type="button" class="btn-close-modal" onclick="closeDeleteModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="delete-modal-body">
+        <div class="warning-box">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <p class="warning-title" th:text="#{set.delete.warning.title}">정말 KUMO를 떠나시겠습니까?</p>
+          <ul class="warning-list">
+            <li th:text="#{set.delete.warning.1}">등록된 회사 정보 및 프로필 정보가 영구적으로 삭제됩니다.</li>
+            <li th:text="#{set.delete.warning.2}">진행 중인 모든 공고가 취소 처리됩니다.</li>
+            <li th:text="#{set.delete.warning.3}">탈퇴 후에는 데이터를 절대 복구할 수 없습니다.</li>
+          </ul>
+        </div>
+        <div class="delete-input-group">
+          <label for="deleteConfirmPw" th:text="#{set.delete.label.pw}">본인 확인을 위해 비밀번호를 입력해 주세요.</label>
+          <input type="password" id="deleteConfirmPw" class="custom-modal-input" th:placeholder="#{join.placeholder.pw}"
+            oninput="checkDeleteInput()">
+  
+          <label for="deleteConfirmPwCheck" style="margin-top: 15px;" th:text="#{join.label.pw_check}">비밀번호 확인</label>
+          <input type="password" id="deleteConfirmPwCheck" class="custom-modal-input"
+            th:placeholder="#{join.placeholder.pw_check}" oninput="checkDeleteInput()">
+  
+          <p id="deleteMismatchMsg" class="error-msg" style="display: none; margin-top: 8px;"
+            th:text="#{join.error.pw_mismatch}">비밀번호가 일치하지 않습니다.</p>
+          <p id="deleteErrorMsg" class="error-msg" style="display: none; margin-top: 8px;"
+            th:text="#{set.delete.error.wrong_pw}">비밀번호가 틀렸습니다.</p>
+        </div>
+      </div>
+      <div class="delete-modal-footer">
+        <button type="button" class="btn-modal-cancel" onclick="closeDeleteModal()" th:text="#{btn.cancel}">취소</button>
+        <button type="button" id="btnConfirmDelete" class="btn-modal-danger" onclick="executeDelete()" disabled
+          th:text="#{set.btn.quit}">탈퇴하기</button>
+      </div>
+    </div>
+  </div>
     <div id="deleteAccountModal" class="delete-modal-overlay">
       <div class="delete-modal-content">
         <div class="delete-modal-header">
@@ -187,6 +227,24 @@
       </div>
     </div>
 
+  <script th:inline="javascript">
+    /* <![CDATA[ */
+    const settingsMsg = {
+      fileNone:      /*[[#{set.swal.file_none}]]*/ '선택된 파일 없음',
+      noPhoto:       /*[[#{set.swal.no_photo}]]*/ '사진을 선택해주세요.',
+      uploadSuccess: /*[[#{set.swal.upload_success}]]*/ '프로필 사진이 업로드 되었습니다.',
+      uploadFail:    /*[[#{set.swal.upload_fail}]]*/ '업로드 실패'
+    };
+    const msgSwalTitle = /*[[#{set.swal.del_title}]]*/ '탈퇴하시겠습니까?';
+    const msgSwalText = /*[[#{set.swal.del_text}]]*/ '데이터가 삭제됩니다.';
+    const msgSwalConfirm = /*[[#{set.swal.btn_confirm}]]*/ '탈퇴하기';
+    const msgSwalCancel = /*[[#{set.swal.btn_cancel}]]*/ '취소';
+    const msgSwalSuccess = /*[[#{set.swal.success_title}]]*/ '탈퇴 완료';
+    const msgSwalSuccessText = /*[[#{set.swal.success_text}]]*/ '감사합니다.';
+    const msgSnsTitle = /*[[#{set.swal.sns_title}]]*/ 'Service Notice';
+    const msgSnsText = /*[[#{set.swal.sns_text}]]*/ '아직 서비스 준비 중입니다.';
+    /* ]]> */
+  </script>
     <script th:src="@{/js/recruiter/settings.js}"></script>
     <script th:inline="javascript">
         const snsMsg = {

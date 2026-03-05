@@ -158,20 +158,22 @@
 
     <script th:src="@{/js/SeekerView/MyPage.js}"></script>
     <script th:inline="javascript">
-        // SNS 토글 모달용 메시지 (JS에서 참조)
-            const snsMsg = {
-                snsTitle: /*[[#{set.swal.sns_title}]]*/ 'Service Notice',
-                snsText:  /*[[#{set.swal.sns_text}]]*/ '아직 서비스 준비 중입니다.',
-            };
-
+	    /* <![CDATA[ */
+	    const snsMsg = {
+		    snsTitle: /*[[#{set.swal.sns_title}]]*/ 'Service Notice',
+		    snsText:  /*[[#{set.swal.sns_text}]]*/ '아직 서비스 준비 중입니다.'
+	    };
+        
         const msg = {
-            selectPhoto: [[#{ msg.select.photo }]],
-            uploadSuccess: [[#{ msg.upload.success }]],
-            error: [[#{ msg.error }]],
-            notService: [[#{ msg.not.service }]],
-            fileNone: [[#{ modal.file.none }]]
+	        selectPhoto:   /*[[#{msg.select.photo}]]*/ '사진을 선택해주세요.',
+	        uploadSuccess: /*[[#{msg.upload.success}]]*/ '프로필 사진이 업로드 되었습니다.',
+	        error:         /*[[#{msg.error}]]*/ '오류가 발생했습니다.',
+	        notService:    /*[[#{msg.not.service}]]*/ '아직 서비스 준비 중입니다.',
+	        fileNone:      /*[[#{modal.file.none}]]*/ '선택된 파일 없음'
         };
-
+      
+        
+        
         const delMsg = {
             confirmTitle: [[#{delete.swal.confirm.title}]],
             confirmText: [[#{delete.swal.confirm.text}]],
@@ -182,7 +184,9 @@
             btnDelete: [[#{delete.swal.btn.delete}]],
             btnCancel: [[#{delete.swal.btn.cancel}]]
         };
+	    /* ]]> */
     </script>
+    
 </body>
 
 </html>
