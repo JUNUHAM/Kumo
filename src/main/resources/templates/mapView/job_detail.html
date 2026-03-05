@@ -112,10 +112,19 @@
         <div class="btn-group-seeker">
 
             <div class="seeker-left">
-                <button class="btn-icon-chat"
-                    th:onclick="${job.userId != null} ? |location.href='@{/chat/create(recruiterId=${job.userId}, jobPostId=${job.id}, userId=${loginUserId})}'| : 'alert(\'작성자 정보가 없는 공고라 채팅이 불가능합니다.\')'"
+                <button class="btn-icon" id="chatToggleBtn"
+                    th:onclick="${job.userId != null} ? |toggleChatColor(this, '${job.userId}', '${job.id}', '${loginUserId}')| : 'alert(\'작성자 정보가 없는 공고라 채팅이 불가능합니다.\')'"
                     title="1:1 채팅하기">
-                    <i class="fa-solid fa-comment-dots"></i>
+
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 21a9 9 0 1 0-8.5-5.6L2 22l6.6-1.6A9 9 0 0 0 12 21z"></path>
+
+                        <circle cx="8.5" cy="11.5" r="1" fill="#999" stroke="none"></circle>
+                        <circle cx="12" cy="11.5" r="1" fill="#999" stroke="none"></circle>
+                        <circle cx="15.5" cy="11.5" r="1" fill="#999" stroke="none"></circle>
+                    </svg>
+
                 </button>
             </div>
 
@@ -208,6 +217,23 @@
             processError:  /*[[#{job.msg.processError}]]*/ '처리 중 오류가 발생했습니다.'
         };
         /* ]]> */
+
+        // 채팅 버튼 클릭 시 하늘색으로 토글 후 채팅방으로 이동하는 함수
+        function toggleChatColor(btn, recruiterId, jobPostId, userId) {
+            const svg = btn.querySelector('svg');
+            const dots = svg.querySelectorAll('circle'); // 안쪽 꽉 찬 점 3개 찾기
+
+            // 1. 겉 테두리 색상을 프로젝트 테마 하늘색으로 변경
+            svg.setAttribute('stroke', '#8bbbe5');
+
+            // 2. 안쪽 꽉 찬 점 3개 색상도 하늘색으로 같이 변경!
+            dots.forEach(dot => dot.setAttribute('fill', '#8bbbe5'));
+
+            // 0.2초 뒤 채팅방으로 슝
+            setTimeout(() => {
+                location.href = `/chat/create?recruiterId=${recruiterId}&jobPostId=${jobPostId}&userId=${userId}`;
+            }, 200);
+        }
     </script>
 
 </body>

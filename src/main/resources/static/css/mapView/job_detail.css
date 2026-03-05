@@ -362,8 +362,14 @@ body {
     height: 40px;
 }
 
+/* 1. 겉 테두리(말풍선) 반응 */
 .btn-icon:hover svg {
-    stroke: var(--text-main);
+    stroke: var(--text-main) !important;
+}
+
+/* 2. 속 꽉 찬 점 3개 반응 */
+.btn-icon:hover svg circle {
+    fill: var(--text-main) !important;
 }
 
 /* ============================================================
