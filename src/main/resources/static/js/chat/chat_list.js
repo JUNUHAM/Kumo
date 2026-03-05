@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (searchBar.classList.contains('active')) {
                 setTimeout(() => searchInput.focus(), 200);
             } else {
+                // 검색창 닫을 때 검색어 지우고 '전체' 탭으로 초기화
                 searchInput.value = '';
                 const allTabBtn = document.querySelector('.tab-btn');
                 if (allTabBtn) filterRooms('all', allTabBtn);
@@ -38,6 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const keyword = this.value.trim().toLowerCase();
             const rooms = document.querySelectorAll('.chat-item');
 
+            // 검색할 때는 '전체' 탭 기준으로 모든 방을 보여준 상태에서 필터링
             document.querySelectorAll('.tab-btn').forEach(tab => tab.classList.remove('active'));
             const allTabBtn = document.querySelector('.tab-btn');
             if (allTabBtn) allTabBtn.classList.add('active');
@@ -46,6 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const nameElement = room.querySelector('.chat-name');
                 if (nameElement) {
                     const name = nameElement.innerText.toLowerCase();
+                    // 이름에 검색어가 포함되어 있으면 보여주고, 없으면 숨김
                     if (name.startsWith(keyword)) {
                         room.style.display = '';
                     } else {
@@ -193,6 +196,7 @@ function connectChatList() {
     stompListClient.connect({}, function (frame) {
         console.log('✅ [LIVE] 로비(목록) 웹소켓 연결 완료!');
 
+        // ★ 핵심: 백엔드가 '나(myUserId)'에게 보내는 전용 알림 파이프를 구독합니다.
         const myLobbyTopic = '/sub/chat/user/' + myUserId;
 
         stompListClient.subscribe(myLobbyTopic, function (messageOutput) {

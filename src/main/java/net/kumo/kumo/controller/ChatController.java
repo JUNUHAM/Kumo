@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -34,6 +35,7 @@ public class ChatController {
     private final UserRepository userRepository;
     private final MapService mapService;
 
+    // [이식 포인트] application.properties의 file.upload.chat 값을 가져옵니다.
     @Value("${file.upload.chat}")
     private String chatUploadDir;
 

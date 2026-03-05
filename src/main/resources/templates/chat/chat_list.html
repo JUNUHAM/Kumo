@@ -25,7 +25,8 @@
         <div class="chat-header"
             style="position: relative; display: flex; justify-content: space-between; align-items: center;">
 
-            <i class="fa-solid fa-map-location-dot header-icon" id="mapIcon" style="cursor: pointer;"></i>
+            <i class="fa-solid fa-map-location-dot header-icon" id="mapIcon" style="cursor: pointer;"
+                onclick="window.top.location.href='/map/main'"></i>
 
             <img th:src="@{/images/chatLogo.png}" class="header-logo" alt="KUMO"
                 style="position: absolute; left: 50%; transform: translateX(-50%);">
@@ -88,6 +89,8 @@
         </div>
 
     </div>
+
+    <input type="hidden" id="currentUserId" th:value="${userId}" />
 
     <script th:src="@{/js/chat/chat_list.js(v='1.0')}"></script>
 
