@@ -18,24 +18,13 @@
 
 <input type="hidden" id="roomId" th:value="${roomId}">
 <input type="hidden" id="myId" th:value="${userId}">
-<input type="hidden" id="opponentImg" th:value="${opponentProfileImg}"> <div class="store-profile-row">
-    <img th:src="${opponentProfileImg}" class="header-store-img" style="object-fit: cover;"> <span class="header-store-name" th:text="${roomName}">상대방 이름</span>
-</div>
+<!--<input type="hidden" id="opponentImg" th:value="${opponentProfileImg}"> <div class="store-profile-row">-->
+<!--    <img th:src="${opponentProfileImg}" class="header-store-img" style="object-fit: cover;"> <span class="header-store-name" th:text="${roomName}">상대방 이름</span>-->
+<!--</div>-->
 
 <div th:if="${strSenderId != strUserId}" class="msg-row other">
     <img th:src="${opponentProfileImg}" class="profile-img" style="object-fit: cover;"> ...
 </div>
-
-<script th:inline="javascript">
-    window.CHAT_LANG = {
-        openFile: /*[[#{chat.room.file.open}]]*/ '파일 열기',
-        uploadFail: /*[[#{chat.room.msg.uploadFail}]]*/ '파일 업로드에 실패했습니다.',
-        emptyMsg: /*[[#{chat.room.msg.empty}]]*/ '메시지를 입력하세요.',
-        sendFail: /*[[#{chat.room.msg.sendFail}]]*/ '메시지 전송에 실패했습니다.',
-        reconnecting: /*[[#{chat.room.msg.reconnecting}]]*/ '채팅방 연결이 끊어졌습니다. 재연결 중...',
-        notImplement: /*[[#{chat.room.msg.notImplement}]]*/ '추후에 구현 예정이에요!'
-    };
-</script>
 
 <div class="mobile-container">
     <div class="chat-header">
@@ -140,7 +129,7 @@
         <input type="file" id="fileInput" style="display: none;" accept="image/*" onchange="uploadImage()">
         <img th:src="@{/images/icons/chat_room_images.svg}" class="btn-img-upload" alt="사진첨부"
              onclick="document.getElementById('fileInput').click()">
-        <textarea class="input-field" id="msgInput" th:placeholder="#{chat.room.input.placeholder}" placeholder="메시지 입력..." rows="1" onkeydown="handleEnter(event)"
+        <textarea class="input-field" id="msgInput" th:placeholder="#{chat.room.input.placeholder}" rows="1" onkeydown="handleEnter(event)"
                   oninput="autoResize(this)"></textarea>
         <button class="btn-send" onclick="sendMessage()" th:text="#{chat.room.btn.send}">전송</button>
     </div>
@@ -207,6 +196,19 @@
         </div>
     </div>
 </dialog>
+
+
+<script th:inline="javascript">
+	window.CHAT_LANG = {
+		openFile: /*[[#{chat.room.file.open}]]*/ '파일 열기',
+		salary: /*[[#{chat.room.header.salary}]]*/ '급료',
+		uploadFail: /*[[#{chat.room.msg.uploadFail}]]*/ '파일 업로드에 실패했습니다.',
+		emptyMsg: /*[[#{chat.room.msg.empty}]]*/ '메시지를 입력하세요.',
+		sendFail: /*[[#{chat.room.msg.sendFail}]]*/ '메시지 전송에 실패했습니다.',
+		reconnecting: /*[[#{chat.room.msg.reconnecting}]]*/ '채팅방 연결이 끊어졌습니다. 재연결 중...',
+		notImplement: /*[[#{chat.room.msg.notImplement}]]*/ '추후에 구현 예정이에요!'
+	};
+</script>
 
 <script th:src="@{/js/chat/chat_room.js(v='1.0')}"></script>
 
