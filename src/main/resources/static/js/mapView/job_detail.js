@@ -204,9 +204,8 @@ function editJob(btnElement) {
         return;
     }
 
-    // TODO: 나중에 실제 공고 수정 폼 페이지 URL로 변경하세요.
-    // 기존 공고의 id와 source를 달아서 보내면, 수정 페이지 컨트롤러에서 이 값을 받아 기존 데이터를 폼에 채워줄 수 있습니다.
-    const editUrl = `/map/jobs/edit?id=${postId}&source=${source}`;
+    // RecruiterController의 주소와 파라미터명(region)에 완벽하게 일치시킵니다!
+    const editUrl = `/Recruiter/editJobPosting?id=${postId}&region=${source}`;
     window.location.href = editUrl;
 }
 

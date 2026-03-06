@@ -106,8 +106,9 @@ public class MapController {
                 isScraped = scrapService.checkIsScraped(user.getUserId(), id, source);
 
                 // 공고 작성 id와 user의 id 를 비교하여 공고 작성자 동일 여부를 확인
-                // geocoded 테이블 수정 후 코드 사용
-                // isOwner = user.getUserId().equals(job.getUserId());
+                if (job.getUserId() != null) {
+                    isOwner = user.getUserId().equals(job.getUserId());
+                }
 
                 isSeeker = (user.getRole() == Enum.UserRole.SEEKER);
             }
