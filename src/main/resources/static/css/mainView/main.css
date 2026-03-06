@@ -98,7 +98,7 @@ html, body {
     background-color: rgb(255 255 255 / 89%);
     /* box-shadow: 0 0 4px rgba(255, 255, 255, 1.0); */
     border-radius: 19px;
-    padding: 3px 12px 3px 12px;
+    padding: 5px 12px 5px 12px;
 }
 
 body.dark-mode .map-header-wrapper .nav-menu {
@@ -347,3 +347,7 @@ body.dark-mode .map-header-wrapper .nav-menu {
 .close-btn:hover { color: #ff4d4d; }
 
 .chat-iframe { width: 100%; flex: 1; border: none; }
+
+body.dark-mode .map-header-wrapper .nav-menu {
+    background-color: rgba(44, 40, 40, 0.89);
+}
