@@ -166,9 +166,9 @@ const SearchService = {
                 <td>
                     <div class="job-title-cell">
                         <span class="job-title-text">${job.title || '제목 없음'}</span>
-                        <div class="badges">
-                            <span class="badge badge-green">식품제조</span>
-                        </div>
+<!--                        <div class="badges">-->
+<!--                            <span class="badge badge-green">식품제조</span>-->
+<!--                        </div>-->
                     </div>
                 </td>
                 <td class="text-blue font-weight-bold">${job.companyName || '-'}</td>

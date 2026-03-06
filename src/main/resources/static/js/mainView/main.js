@@ -420,11 +420,17 @@ const JobService = {
         sessionStorage.setItem('kumo_recent_jobs', JSON.stringify(recentJobs));
     },
 
+    // 🌟 [수정] 검색바에서 검색 실행 시 지역(mainRegion)도 같이 달고 새 창으로 이동!
     searchJobs: function() {
         const keyword = $('#keywordInput').val().trim();
         const currentLang = new URLSearchParams(window.location.search).get('lang') || 'kr';
 
-        let url = `/map/search_list?lang=${currentLang}`;
+        // 1. 현재 화면의 셀렉트 박스(도쿄/오사카)에서 선택된 값을 가져옵니다.
+        const currentRegion = $('#regionSelect').val() || 'tokyo';
+
+        // 2. URL에 lang과 mainRegion을 모두 담아줍니다!
+        let url = `/map/search_list?lang=${currentLang}&mainRegion=${currentRegion}`;
+
         if (keyword) {
             url += `&keyword=${encodeURIComponent(keyword)}`;
         }
