@@ -86,21 +86,20 @@
         </div>
     </div>
 
-    <div class="image-gallery" th:if="${job.imgUrls != null}">
-        <th:block th:if="${#strings.contains(job.imgUrls, 'http')}">
-            <div th:with="pureUrl=${job.imgUrls.replaceAll('[\[\]\s\r\n\t]', '')}">
+    <div class="image-gallery" th:if="${job.imgUrls != null and not #strings.isEmpty(job.imgUrls)}">
+        <div th:with="pureUrl=${job.imgUrls.replaceAll('[\[\]\s\r\n\t]', '')}">
 
-                <th:block th:each="singleUrl : ${pureUrl.split(',')}">
-                    <img th:if="${#strings.length(singleUrl) > 10}"
-                         th:src="${singleUrl}"
-                         class="gallery-img"
-                         alt="상세 이미지"
-                         referrerpolicy="no-referrer"
-                         onerror="this.style.display='none'"
-                         style="display: block; width: 100%; margin-bottom: 15px; border-radius: 8px; min-height: 100px; background-color: #f8f8f8;" />
-                </th:block>
-            </div>
-        </th:block>
+            <th:block th:each="singleUrl : ${pureUrl.split(',')}">
+                <img th:if="${#strings.length(singleUrl) > 3}"
+                     th:src="${singleUrl}"
+                     class="gallery-img"
+                     alt="상세 이미지"
+                     referrerpolicy="no-referrer"
+                     onerror="this.style.display='none'"
+                     style="display: block; width: 100%; margin-bottom: 15px; border-radius: 8px; min-height: 100px; background-color: #f8f8f8;" />
+            </th:block>
+
+        </div>
     </div>
 </div>
 
