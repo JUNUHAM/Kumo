@@ -508,23 +508,24 @@ const MarkerManager = {
         return {
             render: ({ count, position }) => {
                 const cloudPath = "M 10 22 C 2 22, 2 12, 9 13 C 9 3, 23 3, 23 11 C 25 5, 34 7, 31 14 C 38 14, 38 22, 30 22 Z";
-                let cloudColor = "#4285F4";
+                let cloudColor = "#ffffff";
+                let cloudFontColor = "#4285F4";
 
                 return new google.maps.Marker({
                     label: {
                         text: String(count),
-                        color: "white",
+                        color: cloudFontColor,
                         fontSize: "14px",
                         fontWeight: "bold"
                     },
                     position,
                     icon: {
                         path: cloudPath,
-                        scale: 1.8,
+                        scale: 2.5,
                         fillColor: cloudColor,
                         fillOpacity: 0.95,
-                        strokeWeight: 1.5,
-                        strokeColor: "#ffffff",
+                        strokeWeight: 2.0,
+                        strokeColor: cloudFontColor,
                         anchor: new google.maps.Point(19, 14),
                         labelOrigin: new google.maps.Point(19, 14)
                     },
