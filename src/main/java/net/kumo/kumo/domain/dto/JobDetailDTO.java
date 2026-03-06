@@ -18,6 +18,7 @@ public class JobDetailDTO {
     private String position; // 업무
     private String jobDescription; // 업무 상세 요약
     private String body; // 상세 정보 (본문 전체)
+    private String notes; // 추가 정보
 
     private String imgUrls; // 이미지
     private Double lat; // 지도용 위도
@@ -46,19 +47,15 @@ public class JobDetailDTO {
         this.wage = resolveText(isJp, entity.getWageJp(), entity.getWage());
         this.position = resolveText(isJp, entity.getPositionJp(), entity.getPosition());
 
-        // 4. 상세 내용 (Body) 처리 로직
+        // 4. 상세 내용 (Job_description) 처리 로직
         String desc = resolveText(isJp, entity.getJobDescriptionJp(), entity.getJobDescription());
-        String notes = resolveText(isJp, entity.getNotesJp(), entity.getNotes());
-
-        if (hasText(desc)) {
-            this.body = desc;
-        } else if (hasText(notes)) {
-            this.body = notes;
-        } else {
-            this.body = entity.getBody(); // 최후의 수단
-        }
-
-        this.jobDescription = this.body;
+        this.jobDescription = desc;
+        
+        // Body
+        this.body = entity.getBody();
+        
+        // notes
+	    this.notes = resolveText(isJp, entity.getNotesJp(), entity.getNotes());
 
         // 5. ★ [수정됨] 좌표 데이터 추출 및 사장님 ID(userId) 안전하게 추출!
         if (entity instanceof OsakaGeocodedEntity) {
