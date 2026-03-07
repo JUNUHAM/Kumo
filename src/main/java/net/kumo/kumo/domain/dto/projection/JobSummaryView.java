@@ -1,11 +1,21 @@
 package net.kumo.kumo.domain.dto.projection;
 
 import net.kumo.kumo.domain.enums.JobStatus;
+import org.springframework.beans.factory.annotation.Value;
 
 public interface JobSummaryView {
 
     Long getId();
     String getImgUrls(); // 이미지 원본
+    
+    // ==========================================
+    // 🌟 [핵심 추가] 작성자 ID와 진짜 이름(닉네임) 가져오기!
+    // ==========================================
+    Long getUserId();
+    
+    // target(공고 엔티티)에 연결된 user가 있으면 nickname을 가져오고, 없으면 null 반환
+    @Value("#{target.user != null ? target.user.nickname : null}")
+    String getManagerName();
     
     // 🌟 [추가] 상태값을 가져오기 위해 선언! (이제 빨간 줄이 사라집니다)
     JobStatus getStatus();

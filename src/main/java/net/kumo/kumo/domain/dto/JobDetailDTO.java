@@ -29,6 +29,9 @@ public class JobDetailDTO {
 
     // ★ [추가] 사장님(구인자)의 고유 ID를 담을 그릇!
     private Long userId;
+    
+    // ★ [추가] 사장님(구인자)의 고유 이름을 담을 그릇!
+    private String managerName;
 
     // 조회수용
     private Integer viewCount;
@@ -74,6 +77,7 @@ public class JobDetailDTO {
             // 자식 주머니에서 사장님 번호 꺼내기
             if (osaka.getUser() != null) {
                 this.userId = osaka.getUser().getUserId();
+                this.managerName = osaka.getUser().getNickname();
             }
         } else if (entity instanceof TokyoGeocodedEntity) {
             TokyoGeocodedEntity tokyo = (TokyoGeocodedEntity) entity;
@@ -82,6 +86,7 @@ public class JobDetailDTO {
             // 자식 주머니에서 사장님 번호 꺼내기
             if (tokyo.getUser() != null) {
                 this.userId = tokyo.getUser().getUserId();
+                this.managerName = tokyo.getUser().getNickname();
             }
         } else {
             // NoGeocoded 테이블은 좌표 없음

@@ -420,12 +420,29 @@
   background-color: #f5f7fa;
   color: #7db4e6;
 }
+
 .profile-item.logout {
   color: #ff6b6b;
+  border-top: 1px solid var(--border-color, #eeeeee);
+  margin-top: 5px;
+  border-radius: 0 0 8px 8px;
 }
+
+body.dark-mode .profile-item.logout {
+  color: #ff6b6b;
+  border-top-color: #3e3f42;
+}
+
+/* ✅ logout 전용 hover - 빨간색 계열로 */
 .profile-item.logout:hover {
-  background-color: #fff5f5;
-  color: #ff4757;
+  background-color: rgba(255, 107, 107, 0.08);
+  color: #ff4d4d !important;
+  transform: translateX(2px);
+}
+
+body.dark-mode .profile-item.logout:hover {
+  background-color: rgba(255, 107, 107, 0.12);
+  color: #ff6b6b !important;
 }
 
 .profile-dropdown hr {
@@ -499,13 +516,6 @@ body.dark-mode .lang-item:hover,
 body.dark-mode .profile-item:hover {
   background-color: #454545;
   color: #7db4e6 !important;
-}
-
-body.dark-mode .profile-item.logout {
-  color: #ff6b6b !important;
-}
-body.dark-mode .profile-item.logout:hover {
-  background-color: #3d2525 !important;
 }
 
 body.dark-mode .notify-badge {

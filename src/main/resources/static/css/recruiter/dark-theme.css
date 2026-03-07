@@ -919,3 +919,22 @@ body.dark-mode .kumo-btn-submit:active {
   transform: translateY(0) scale(0.96) !important;
   /* 누를 때 쫀득하게 들어감 */
 }
+
+/* ✅ logout은 항상 빨간색으로 예외 처리 */
+body.dark-mode .profile-item.logout {
+  color: #ff6b6b !important;
+}
+
+body.dark-mode .profile-item.logout:hover {
+  background-color: rgba(255, 107, 107, 0.12) !important;
+  color: #ff6b6b !important;
+}
+
+.profile-item.logout {
+  color: #ff6b6b !important;
+}
+
+.profile-item.logout:hover {
+  background-color: rgba(255, 107, 107, 0.08) !important;
+  color: #ff4d4d !important;
+}

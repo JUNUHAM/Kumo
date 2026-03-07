@@ -27,8 +27,6 @@ import net.kumo.kumo.domain.entity.SeekerEducationEntity;
 import net.kumo.kumo.domain.entity.SeekerLanguageEntity;
 import net.kumo.kumo.domain.entity.SeekerProfileEntity;
 import net.kumo.kumo.domain.entity.TokyoGeocodedEntity;
-import net.kumo.kumo.domain.entity.Enum.ApplicationStatus;
-import net.kumo.kumo.domain.entity.Enum.NotificationType;
 import net.kumo.kumo.domain.entity.UserEntity;
 import net.kumo.kumo.domain.enums.JobStatus;
 import net.kumo.kumo.repository.ApplicationRepository;
@@ -564,18 +562,18 @@ public class JobPostingService {
         }
 
         // 🌟 [알림 추가] 이 공고에 지원한 모든 지원자에게 마감 알림 발송
-        List<ApplicationEntity> applications = applicationRepository.findByTargetSourceAndTargetPostIdOrderByAppliedAtDesc(region.toUpperCase(), datanum);
+        List<ApplicationEntity> applications = applicationRepository
+                .findByTargetSourceAndTargetPostIdOrderByAppliedAtDesc(region.toUpperCase(), datanum);
         for (ApplicationEntity app : applications) {
             // 이미 처리된 지원자(합격/불합격) 외에 대기 중인 지원자들에게 알림
-            if (app.getStatus() == net.kumo.kumo.domain.entity.Enum.ApplicationStatus.APPLIED || 
-                app.getStatus() == net.kumo.kumo.domain.entity.Enum.ApplicationStatus.VIEWED) {
-                
+            if (app.getStatus() == net.kumo.kumo.domain.entity.Enum.ApplicationStatus.APPLIED ||
+                    app.getStatus() == net.kumo.kumo.domain.entity.Enum.ApplicationStatus.VIEWED) {
+
                 notificationService.sendJobClosedNotification(
-                    app.getSeeker(),
-                    title,
-                    datanum,
-                    region.toUpperCase()
-                );
+                        app.getSeeker(),
+                        title,
+                        datanum,
+                        region.toUpperCase());
             }
         }
     }
@@ -595,35 +593,26 @@ public class JobPostingService {
         if (!osakaJobs.isEmpty()) {
             List<Long> osakaJobIds = osakaJobs.stream().map(OsakaGeocodedEntity::getId).toList();
 
-            // 이 구인자의 오사카 공고들에 지원한 모든 지원서 한 번에 조회
             List<ApplicationEntity> osakaApps = applicationRepository.findByTargetSourceAndTargetPostIdIn("OSAKA",
                     osakaJobIds);
 
-            // 공고 ID(targetPostId)를 기준으로 지원서들을 그룹화 (Map 형태로 분리)
             Map<Long, List<ApplicationEntity>> appMap = osakaApps.stream()
                     .collect(Collectors.groupingBy(ApplicationEntity::getTargetPostId));
 
-            // 각 공고별로 DTO 조립
             for (OsakaGeocodedEntity job : osakaJobs) {
-                // 해당 공고에 달린 지원서 리스트 꺼내기 (없으면 빈 리스트)
                 List<ApplicationEntity> appsForThisJob = appMap.getOrDefault(job.getId(), new ArrayList<>());
 
-                // 엔티티 -> DTO 변환 및 최신 지원순 정렬
                 List<ApplicationDTO.ApplicantResponse> appResponses = appsForThisJob.stream()
                         .map(app -> ApplicationDTO.ApplicantResponse.from(app, job.getTitle()))
                         .sorted((a, b) -> {
-                            // 1순위: APPLIED(검토중)가 위로, 처리된 것(PASSED/REJECTED)은 아래로
-                            boolean aIsProcessed = "PASSED".equals(a.getStatus().name())
-                                    || "FAILED".equals(a.getStatus().name());
-                            boolean bIsProcessed = "PASSED".equals(b.getStatus().name())
-                                    || "FAILED".equals(b.getStatus().name());
+                            // 상태별 우선순위: APPLIED(0) → PASSED(1) → FAILED(2)
+                            int priorityA = getApplicantPriority(a.getStatus().name());
+                            int priorityB = getApplicantPriority(b.getStatus().name());
 
-                            if (!aIsProcessed && bIsProcessed)
-                                return -1;
-                            if (aIsProcessed && !bIsProcessed)
-                                return 1;
-
-                            // 2순위: 최신 지원순
+                            if (priorityA != priorityB) {
+                                return Integer.compare(priorityA, priorityB);
+                            }
+                            // 같은 상태끼리는 최신 지원순
                             return b.getAppId().compareTo(a.getAppId());
                         })
                         .toList();
@@ -635,7 +624,7 @@ public class JobPostingService {
                         .status(job.getStatus() != null ? job.getStatus().name() : "RECRUITING")
                         .createdAt(job.getCreatedAt())
                         .applicantCount(appResponses.size())
-                        .applicants(appResponses) // 🌟 지원자 목록 쏙!
+                        .applicants(appResponses)
                         .build());
             }
         }
@@ -647,7 +636,6 @@ public class JobPostingService {
         if (!tokyoJobs.isEmpty()) {
             List<Long> tokyoJobIds = tokyoJobs.stream().map(TokyoGeocodedEntity::getId).toList();
 
-            // 도쿄 공고 지원서 조회
             List<ApplicationEntity> tokyoApps = applicationRepository.findByTargetSourceAndTargetPostIdIn("TOKYO",
                     tokyoJobIds);
 
@@ -659,7 +647,17 @@ public class JobPostingService {
 
                 List<ApplicationDTO.ApplicantResponse> appResponses = appsForThisJob.stream()
                         .map(app -> ApplicationDTO.ApplicantResponse.from(app, job.getTitle()))
-                        .sorted((a, b) -> b.getAppId().compareTo(a.getAppId()))
+                        .sorted((a, b) -> {
+                            // 상태별 우선순위: APPLIED(0) → PASSED(1) → FAILED(2)
+                            int priorityA = getApplicantPriority(a.getStatus().name());
+                            int priorityB = getApplicantPriority(b.getStatus().name());
+
+                            if (priorityA != priorityB) {
+                                return Integer.compare(priorityA, priorityB);
+                            }
+                            // 같은 상태끼리는 최신 지원순
+                            return b.getAppId().compareTo(a.getAppId());
+                        })
                         .toList();
 
                 groupedList.add(JobApplicantGroupDTO.builder()
@@ -669,28 +667,25 @@ public class JobPostingService {
                         .status(job.getStatus() != null ? job.getStatus().name() : "RECRUITING")
                         .createdAt(job.getCreatedAt())
                         .applicantCount(appResponses.size())
-                        .applicants(appResponses) // 🌟 지원자 목록 쏙!
+                        .applicants(appResponses)
                         .build());
             }
         }
 
         // ------------------------------------------
-        // 3. 정렬 로직:
-        // 1순위: 진행중인 공고가 위로, 마감된 공고는 맨 아래로
-        // 2순위: 같은 상태라면 최신순(createdAt)으로 정렬
+        // 3. 공고 정렬:
+        // 1순위: 진행중(RECRUITING) 위로, 마감(CLOSED) 아래로
+        // 2순위: 같은 상태라면 최신 등록일(createdAt) 내림차순
         // ------------------------------------------
         groupedList.sort((a, b) -> {
-            // "RECRUITING" 상태 여부 확인
             boolean aIsRecruiting = "RECRUITING".equals(a.getStatus());
             boolean bIsRecruiting = "RECRUITING".equals(b.getStatus());
 
-            // 1순위: 상태별 정렬 (진행중(a)이고 마감(b)이면 a를 위로)
             if (aIsRecruiting && !bIsRecruiting)
                 return -1;
             if (!aIsRecruiting && bIsRecruiting)
                 return 1;
 
-            // 2순위: 상태가 같다면, 최신 등록일(createdAt) 순으로 내림차순 정렬
             if (a.getCreatedAt() == null)
                 return 1;
             if (b.getCreatedAt() == null)
@@ -699,6 +694,25 @@ public class JobPostingService {
         });
 
         return groupedList;
+    }
+
+    /**
+     * 지원자 상태별 정렬 우선순위
+     * APPLIED(검토중) = 0 → 맨 위
+     * PASSED(합격) = 1 → 중간
+     * FAILED(불합격) = 2 → 맨 아래
+     */
+    private int getApplicantPriority(String status) {
+        switch (status) {
+            case "APPLIED":
+                return 0;
+            case "PASSED":
+                return 1;
+            case "FAILED":
+                return 2;
+            default:
+                return 1;
+        }
     }
 
     // ==========================================
@@ -774,15 +788,17 @@ public class JobPostingService {
         application.setStatus(status);
 
         // 🌟 [알림 추가] 합격/불합격 상태 변경 시 구직자에게 알림 발송
-        if (status == net.kumo.kumo.domain.entity.Enum.ApplicationStatus.PASSED || 
-            status == net.kumo.kumo.domain.entity.Enum.ApplicationStatus.FAILED) {
-            
+        if (status == net.kumo.kumo.domain.entity.Enum.ApplicationStatus.PASSED ||
+                status == net.kumo.kumo.domain.entity.Enum.ApplicationStatus.FAILED) {
+
             // 공고 제목 가져오기
             String jobTitle = "공고";
             if ("TOKYO".equalsIgnoreCase(application.getTargetSource())) {
-                jobTitle = tokyoGeocodedRepository.findById(application.getTargetPostId()).map(TokyoGeocodedEntity::getTitle).orElse("공고");
+                jobTitle = tokyoGeocodedRepository.findById(application.getTargetPostId())
+                        .map(TokyoGeocodedEntity::getTitle).orElse("공고");
             } else if ("OSAKA".equalsIgnoreCase(application.getTargetSource())) {
-                jobTitle = osakaGeocodedRepository.findById(application.getTargetPostId()).map(OsakaGeocodedEntity::getTitle).orElse("공고");
+                jobTitle = osakaGeocodedRepository.findById(application.getTargetPostId())
+                        .map(OsakaGeocodedEntity::getTitle).orElse("공고");
             }
 
             notificationService.sendAppStatusNotification(application.getSeeker(), status, jobTitle);

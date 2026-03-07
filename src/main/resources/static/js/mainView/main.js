@@ -613,7 +613,7 @@ const UIManager = {
             const wage = job.wage || MapMessages.fbWage;
             const address = job.address || '-';
             const contact = job.contactPhone || '-';
-            let manager = job.manager;
+            let manager = job.managerName;
             if (job.userId === 9999 || !manager) {
                 manager = "Admin";
             }

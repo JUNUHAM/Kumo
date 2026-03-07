@@ -165,7 +165,7 @@ const SearchService = {
             // ==========================================
             // 🌟 [핵심 추가] 어드민 판별 로직! (main.js와 완벽하게 동일)
             // ==========================================
-            let managerName = job.manager;
+            let managerName = job.managerName;
             if (job.userId === 9999 || !managerName) {
                 managerName = "Admin";
             }

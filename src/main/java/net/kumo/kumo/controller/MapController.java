@@ -213,7 +213,7 @@ public class MapController {
      */
     @GetMapping("/search_list")
     public String searchListPage() {
-        // resources/templates/mapView/search_job_list.html 을 반환한다고 가정
+        // resources/templates/mapView/search_job_list.html 을 반환
         return "mapView/search_job_list";
     }
 

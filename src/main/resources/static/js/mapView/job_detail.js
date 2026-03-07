@@ -1,12 +1,14 @@
-/** ?????????????????????????
+/**
  * job_detail.js
- * - HTML에서 선언된 'isUserLoggedIn'과 'MESSAGES' 객체를 바로 사용합니다!
- * - 삼항 연산자와 URL 파라미터 파싱 로직은 완전히 삭제되었습니다.
+ * * 공고 상세 페이지에서 사용되는 프론트엔드 로직을 담당합니다.
+ * HTML에서 선언된 'isUserLoggedIn'과 'MESSAGES' 객체를 전역으로 활용하며,
+ * 다국어(언어) 감지 시 외부 함수의 로드 실패를 대비한 안전장치(Fallback)가 적용되어 있습니다.
  */
 
-// =========================================
-// [기능 1] 신고 모달 관련 로직
-// =========================================
+/**
+ * 신고 모달창을 엽니다.
+ * 비로그인 상태일 경우 로그인 페이지로 이동할지 묻습니다.
+ */
 function openReportModal() {
     if (!isUserLoggedIn) {
         if (confirm(MESSAGES.loginRequired)) location.href = '/login';
@@ -16,6 +18,9 @@ function openReportModal() {
     document.body.style.overflow = 'hidden';
 }
 
+/**
+ * 신고 모달창을 닫고 입력 폼을 초기화합니다.
+ */
 function closeReportModal() {
     document.getElementById('reportModal').style.display = 'none';
     document.body.style.overflow = 'auto';
@@ -23,11 +28,14 @@ function closeReportModal() {
     document.getElementById('reportDetail').value = "";
 }
 
+/**
+ * 서버로 신고 데이터를 전송합니다.
+ * 유효성 검사 후 POST 요청을 수행하며, 처리 결과에 따라 알림을 표시합니다.
+ */
 function submitReport() {
     const type = document.getElementById('reportType').value;
     const detail = document.getElementById('reportDetail').value;
 
-    // 리소스에서 가져온 메시지 사용
     if (!type) {
         alert(MESSAGES.selectReportType);
         return;
@@ -60,7 +68,7 @@ function submitReport() {
                     alert(MESSAGES.reportSuccess);
                     closeReportModal();
                 } else if (response.status === 401) {
-                    if(confirm(MESSAGES.loginRequired)) location.href = '/login';
+                    if (confirm(MESSAGES.loginRequired)) location.href = '/login';
                 } else {
                     return response.text().then(text => { throw new Error(text) });
                 }
@@ -72,17 +80,17 @@ function submitReport() {
     }
 }
 
-// =========================================
-// 🌟 [기능 2] 구인 신청 관련 로직 (수정됨)
-// =========================================
+/**
+ * 구직자가 공고에 구인 신청(지원)을 수행합니다.
+ * 언어 설정에 따른 다국어 알림을 지원하며, 중복 지원 및 서버 에러를 처리합니다.
+ * * @param {HTMLElement} btnElement 클릭된 지원하기 버튼 요소
+ */
 function applyForJob(btnElement) {
-    // 1. 로그인 여부 체크
     if (!isUserLoggedIn) {
         if (confirm(MESSAGES.loginRequired)) location.href = '/login';
         return;
     }
 
-    // 2. 버튼에 심어둔 공고 정보 가져오기
     const postId = btnElement.getAttribute('data-id');
     const source = btnElement.getAttribute('data-source');
 
@@ -91,22 +99,19 @@ function applyForJob(btnElement) {
         return;
     }
 
-    // 3. 지원 확인 메시지 (다국어 처리를 위해 lang 변수 확인, 기본값 kr)
-    // HTML에 선언된 언어 변수가 없다면 기본 한국어로 동작합니다.
-    const lang = typeof currentLang !== 'undefined' ? currentLang : 'kr';
+    // 전역 언어 감지 함수가 로드되지 않았을 경우를 대비한 안전장치
+    const lang = (typeof window.getKumoLang === 'function') ? window.getKumoLang() : 'kr';
     const confirmMsg = lang === 'ja' ? "この求人に応募しますか？" : "이 공고에 지원하시겠습니까?";
 
     if (!confirm(confirmMsg)) {
-        return; // 취소 누르면 함수 종료
+        return;
     }
 
-    // 4. 백엔드로 보낼 JSON 데이터 포장 (ApplicationDTO.ApplyRequest 규격에 맞춤)
     const payload = {
         targetPostId: parseInt(postId),
         targetSource: source
     };
 
-    // 5. 서버로 POST 요청 쏘기
     fetch('/map/api/apply', {
         method: 'POST',
         headers: {
@@ -115,14 +120,11 @@ function applyForJob(btnElement) {
         body: JSON.stringify(payload)
     })
         .then(async response => {
-            // 서버에서 보낸 메시지 추출
             const message = await response.text();
 
             if (response.ok) {
-                // 성공 (200 OK)
-                alert(message); // 서버가 보낸 "구인 신청이 완료되었습니다."
+                alert(message);
 
-                // UX 향상: 버튼 비활성화 및 스타일 변경
                 btnElement.disabled = true;
                 btnElement.innerText = lang === 'ja' ? '応募完了' : '지원 완료';
                 btnElement.style.backgroundColor = '#6c757d';
@@ -130,10 +132,8 @@ function applyForJob(btnElement) {
                 btnElement.style.cursor = 'not-allowed';
 
             } else if (response.status === 401) {
-                // 세션 만료 등으로 인한 비로그인 상태
                 if (confirm(MESSAGES.loginRequired)) location.href = '/login';
             } else {
-                // 실패 (400 중복 지원, 403 권한 없음 등 백엔드에서 던진 에러 메시지)
                 alert(message);
             }
         })
@@ -143,9 +143,10 @@ function applyForJob(btnElement) {
         });
 }
 
-// ==========================================
-// [기능 3] 즐겨찾기 (스크랩) 기능 구현
-// ==========================================
+/**
+ * 공고를 스크랩(즐겨찾기) 하거나 취소합니다.
+ * * @param {HTMLElement} btnElement 클릭된 스크랩 버튼 요소
+ */
 function toggleScrap(btnElement) {
     if (!isUserLoggedIn) {
         if (confirm(MESSAGES.loginRequired)) location.href = '/login';
@@ -154,13 +155,11 @@ function toggleScrap(btnElement) {
 
     const $btn = $(btnElement);
     const jobId = $btn.data('id');
-    const $svg = $btn.find('svg');
-    // 🌟 [핵심 추가] 버튼의 data-source 속성에서 TOKYO, OSAKA 등의 값을 꺼내옵니다!
     const source = $btn.data('source');
+    const $svg = $btn.find('svg');
 
-    // 만약 값이 제대로 안 읽힌다면 에러 방지
     if (!jobId || !source) {
-        console.error("찜하기 실패: ID 또는 Source 값을 찾을 수 없습니다.", {jobId, source});
+        console.error("찜하기 실패: ID 또는 Source 값을 찾을 수 없습니다.", { jobId, source });
         return;
     }
 
@@ -168,10 +167,8 @@ function toggleScrap(btnElement) {
         url: '/api/scraps',
         method: 'POST',
         contentType: 'application/json',
-        data: JSON.stringify({ targetPostId: jobId , targetSource: source}),
-        success: function(response) {
-
-            // 🌟 [핵심 변경] 스프링이 is를 빼고 보냈을 경우(scraped)까지 완벽하게 체크합니다!
+        data: JSON.stringify({ targetPostId: jobId, targetSource: source }),
+        success: function (response) {
             const isScrapedResult = response.isScraped !== undefined ? response.isScraped : response.scraped;
 
             if (isScrapedResult) {
@@ -180,7 +177,7 @@ function toggleScrap(btnElement) {
                 $svg.attr('fill', 'none').attr('stroke', '#999');
             }
         },
-        error: function(xhr) {
+        error: function (xhr) {
             if (xhr.status === 401) {
                 if (confirm(MESSAGES.loginRequired)) location.href = '/login';
             } else {
@@ -190,11 +187,10 @@ function toggleScrap(btnElement) {
     });
 }
 
-// ==========================================
-// [기능 4] 공고 수정 및 삭제 (작성자 전용)
-// ==========================================
-
-// 1. 공고 수정 페이지로 이동
+/**
+ * 구인자가 본인이 작성한 공고의 수정 페이지로 이동합니다.
+ * * @param {HTMLElement} btnElement 클릭된 수정 버튼 요소
+ */
 function editJob(btnElement) {
     const postId = btnElement.getAttribute('data-id');
     const source = btnElement.getAttribute('data-source');
@@ -204,12 +200,15 @@ function editJob(btnElement) {
         return;
     }
 
-    // RecruiterController의 주소와 파라미터명(region)에 완벽하게 일치시킵니다!
     const editUrl = `/Recruiter/editJobPosting?id=${postId}&region=${source}`;
     window.location.href = editUrl;
 }
 
-// 2. 공고 완전 삭제
+/**
+ * 구인자가 본인이 작성한 공고를 삭제합니다.
+ * 다국어 지원 및 외부 JS 로드 실패에 대한 안전장치가 포함되어 있습니다.
+ * * @param {HTMLElement} btnElement 클릭된 삭제 버튼 요소
+ */
 function deleteJob(btnElement) {
     const postId = btnElement.getAttribute('data-id');
     const source = btnElement.getAttribute('data-source');
@@ -219,27 +218,31 @@ function deleteJob(btnElement) {
         return;
     }
 
-    const lang = typeof currentLang !== 'undefined' ? currentLang : 'kr';
+    // 전역 언어 감지 함수가 로드되지 않았을 경우를 대비한 안전장치
+    const lang = (typeof window.getKumoLang === 'function') ? window.getKumoLang() : 'kr';
     const confirmMsg = lang === 'ja' ? "本当にこの求人を削除しますか？\n(削除すると元に戻せません)" : "정말로 이 공고를 삭제하시겠습니까?\n(삭제 후 복구할 수 없습니다.)";
 
-    // 사용자 확인
     if (!confirm(confirmMsg)) {
         return;
     }
 
-    // 서버로 DELETE 요청 전송
+    // 삭제 전 CSRF 토큰 확인 로직 추가 (필요 시 주석 해제하여 사용)
+    // const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+    // const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+    // const headers = {};
+    // if (csrfToken && csrfHeader) headers[csrfHeader] = csrfToken;
+
     fetch(`/map/api/jobs?id=${postId}&source=${source}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        // headers: headers
     })
         .then(async response => {
             const message = await response.text();
 
             if (response.ok) {
                 alert(lang === 'ja' ? "削除が完了しました。" : "삭제가 완료되었습니다.");
-                // 삭제 성공 시, 공고 목록(메인) 페이지로 튕겨내기
                 window.location.href = '/Recruiter/JobManage';
             } else {
-                // 권한 없음 등의 에러
                 alert(message);
             }
         })
