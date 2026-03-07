@@ -159,10 +159,15 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // [3-3] 전체 삭제
+// [3-3] 전체 삭제
   if (deleteAllBtn) {
     deleteAllBtn.addEventListener("click", () => {
-      if (!confirm("모든 알림을 삭제하시겠습니까?")) return;
+      
+      // 🌟 타임리프가 넘겨준 번역 메시지 가져오기 (없으면 기본 한글 출력)
+      const confirmMsg = window.NOTI_MSG ? window.NOTI_MSG.deleteAllConfirm : "모든 알림을 삭제하시겠습니까?";
+      
+      if (!confirm(confirmMsg)) return; // 🌟 번역된 변수를 쏙 넣습니다!
+      
       fetch("/api/notifications", { method: "DELETE" }).then((res) => {
         if (res.ok) {
           renderEmptyState();

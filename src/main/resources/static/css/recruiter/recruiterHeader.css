@@ -266,15 +266,21 @@
   color: #ddd;
 }
 
-/* 알림 바디 */
+/* 기본: 2개 완전히 보이게, 스크롤 없음 */
 .notify-body {
-  max-height: 320px;
-  overflow-y: auto;
+  max-height: 185px;
+  overflow-y: hidden;
+  /* 기본은 스크롤 없음 */
   background: #fff;
   transition: max-height 0.4s ease-in-out;
 }
+
+/* 더보기 클릭 시: 살짝 더 늘어나고 스크롤 활성화 */
 .notify-body.expanded {
-  max-height: 600px !important;
+  max-height: 280px !important;
+  /* 3개 정도 높이 */
+  overflow-y: auto !important;
+  /* 스크롤 활성화 */
 }
 
 /* 알림 없음 */
