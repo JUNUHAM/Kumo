@@ -240,8 +240,8 @@
     // [수정] Spring Security를 이용한 로그인 여부 판별
     const isUserLoggedIn = /*[[${#authorization.expression('isAuthenticated()')}]]*/ false;
 
-    // 🌟 JS 파일들이 주소창(URL)을 읽어서 언어를 세팅합니다. (html lang="ko"와 무관하게 작동함!)
-    const currentLang = window.getKumoLang();
+    // 🌟 [수정] 함수가 로드되지 않았을 경우를 대비한 철통 방어 (에러 방지!)
+    const currentLang = (typeof window.getKumoLang === 'function') ? window.getKumoLang() : 'ko';
 
     // 서버 사이드 다국어 메시지 바인딩
     const MESSAGES = {
@@ -259,7 +259,7 @@
     function handleChatClick(btn) {
         const hasUser = btn.getAttribute('data-has-user') === 'true';
 
-        // 작성자가 없는 공고(크롤링 데이터 등)일 경우 차단 (JS 내에서 언어 분기)
+        // 작성자가 없는 공고(크롤링 데이터 등)일 경우 차단
         if (!hasUser) {
             alert(currentLang === 'ja' ? '作成者情報がない求人のため、チャットは利用できません。' : '작성자 정보가 없는 공고라 채팅이 불가능합니다.');
             return;
@@ -287,7 +287,7 @@
                 return;
             }
 
-            // 🌟 URL 조립 시 맨 끝에 &lang=${currentLang} 를 완벽하게 붙여줍니다!
+            // 🌟 URL 조립 시 맨 끝에 &lang=${currentLang} 적용
             chatFrame.src = `/chat/create?recruiterId=${recruiterId}&jobPostId=${jobPostId}&userId=${userId}&jobSource=${jobSource}&lang=${currentLang}`;
 
             chatContainer.style.display = 'flex';
