@@ -33,6 +33,9 @@ public class JobDetailDTO {
     // ★ [추가] 사장님(구인자)의 고유 이름을 담을 그릇!
     private String managerName;
 
+    // ★ [추가] 사장님(구인자)의 프로필 이미지를 담을 그릇!
+    private String profileImageUrl;
+
     // 조회수용
     private Integer viewCount;
 
@@ -78,6 +81,9 @@ public class JobDetailDTO {
             if (osaka.getUser() != null) {
                 this.userId = osaka.getUser().getUserId();
                 this.managerName = osaka.getUser().getNickname();
+                if (osaka.getUser().getProfileImage() != null) {
+                    this.profileImageUrl = osaka.getUser().getProfileImage().getFileUrl();
+                }
             }
         } else if (entity instanceof TokyoGeocodedEntity) {
             TokyoGeocodedEntity tokyo = (TokyoGeocodedEntity) entity;
@@ -87,6 +93,9 @@ public class JobDetailDTO {
             if (tokyo.getUser() != null) {
                 this.userId = tokyo.getUser().getUserId();
                 this.managerName = tokyo.getUser().getNickname();
+                if (tokyo.getUser().getProfileImage() != null) {
+                    this.profileImageUrl = tokyo.getUser().getProfileImage().getFileUrl();
+                }
             }
         } else {
             // NoGeocoded 테이블은 좌표 없음

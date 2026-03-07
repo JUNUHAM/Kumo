@@ -192,7 +192,7 @@ const SearchService = {
                 <td class="text-muted">${job.contactPhone || '-'}</td>
                 <td>
                     <div class="author-box">
-                        <img src="${job.thumbnailUrl || 'https://placehold.co/30'}" class="author-img">
+                        <img src="${job.profileImageUrl || '/images/common/default_profile.png'}" class="author-img">
                         <div class="author-info">
                             <span class="author-name">${managerName}</span>
                         </div>

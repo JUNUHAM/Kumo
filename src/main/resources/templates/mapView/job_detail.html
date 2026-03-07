@@ -95,10 +95,6 @@
         <div class="description-text" th:text="${job.body}">
             내용이 없습니다.
         </div>
-        <h3 class="section-title" th:text="${lang == 'ja' ? '支援者条件' : '지원자 조건'}">지원자 조건</h3>
-        <div class="description-text" th:text="${job.notes}">
-            내용이 없습니다.
-        </div>
     </div>
 
     <div class="image-gallery" th:if="${job.imgUrls != null and not #strings.isEmpty(job.imgUrls)}">

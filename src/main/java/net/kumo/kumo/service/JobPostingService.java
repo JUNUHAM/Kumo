@@ -61,6 +61,41 @@ public class JobPostingService {
     private final SeekerDocumentRepository documentRepository;
     private final NotificationService notificationService; // 🌟 알림 서비스 주입
 
+    // application.properties에서 설정한 업로드 경로를 가져옵니다.
+    @org.springframework.beans.factory.annotation.Value("${file.upload.dir}")
+    private String uploadDir;
+
+    /**
+     * 이미지 파일을 실제 폴더에 저장하고 DB에 저장할 웹 경로를 반환합니다.
+     */
+    private String saveImage(MultipartFile file) {
+        if (file == null || file.isEmpty()) return null;
+
+        try {
+            // 1. 폴더 생성
+            java.io.File directory = new java.io.File(uploadDir);
+            if (!directory.exists()) directory.mkdirs();
+
+            // 2. 파일명 중복 방지 (UUID)
+            String originalName = file.getOriginalFilename();
+            String extension = "";
+            if (originalName != null && originalName.contains(".")) {
+                extension = originalName.substring(originalName.lastIndexOf("."));
+            }
+            String savedName = java.util.UUID.randomUUID().toString() + extension;
+
+            // 3. 실제 저장
+            java.io.File dest = new java.io.File(uploadDir + savedName);
+            file.transferTo(dest);
+
+            // 4. WebMvcConfig에서 설정한 웹 접근 경로 반환
+            return "/images/uploadFile/" + savedName;
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     @Transactional
     public void saveJobPosting(JobPostingRequestDTO dto, List<MultipartFile> images, UserEntity user) {
 
@@ -78,12 +113,13 @@ public class JobPostingService {
         String cityJp = company.getAddrCity();
         String wardJp = company.getAddrTown();
 
-        // 2. 이미지 URL 처리
+        // 2. 이미지 URL 처리 (실제 저장 포함)
         String imgUrls = "";
         if (images != null && !images.isEmpty()) {
             imgUrls = images.stream()
                     .filter(f -> !f.isEmpty())
-                    .map(f -> "/uploads/" + f.getOriginalFilename())
+                    .map(this::saveImage) // 🌟 여기서 실제 파일 저장 및 경로 생성
+                    .filter(java.util.Objects::nonNull)
                     .collect(Collectors.joining(","));
         }
 
@@ -93,40 +129,16 @@ public class JobPostingService {
 
         // 급여 기준 별 임시 변수 저장
         switch (dto.getSalaryType()) {
-            case "HOURLY":
-                salaryType = "시급";
-                salaryTypeJp = "時給";
-                break;
-
-            case "DAILY":
-                salaryType = "일급";
-                salaryTypeJp = "日給";
-                break;
-
-            case "MONTHLY":
-                salaryType = "월급";
-                salaryTypeJp = "月給";
-                break;
-
-            case "SALARY":
-                salaryType = "연봉";
-                salaryTypeJp = "年収";
-                break;
-
-            default:
-                salaryType = "미정";
-                salaryTypeJp = "未定";
-                break;
+            case "HOURLY" -> { salaryType = "시급"; salaryTypeJp = "時給"; }
+            case "DAILY" -> { salaryType = "일급"; salaryTypeJp = "日給"; }
+            case "MONTHLY" -> { salaryType = "월급"; salaryTypeJp = "月給"; }
+            case "SALARY" -> { salaryType = "연봉"; salaryTypeJp = "年収"; }
+            default -> { salaryType = "미정"; salaryTypeJp = "未定"; }
         }
 
         // 3. 급여 문자열 및 공통 데이터 세팅
-        String wage = (dto.getSalaryType() != null && dto.getSalaryAmount() != null)
-                ? salaryType + " " + dto.getSalaryAmount() + "엔"
-                : "";
-
-        String wageJp = (dto.getSalaryType() != null && dto.getSalaryAmount() != null)
-                ? salaryTypeJp + " " + dto.getSalaryAmount() + "円"
-                : "";
+        String wage = (dto.getSalaryAmount() != null) ? salaryType + " " + dto.getSalaryAmount() + "엔" : "";
+        String wageJp = (dto.getSalaryAmount() != null) ? salaryTypeJp + " " + dto.getSalaryAmount() + "円" : "";
 
         long datanum = System.currentTimeMillis();
         LocalDateTime now = LocalDateTime.now();
@@ -139,7 +151,6 @@ public class JobPostingService {
             saveToTokyo(dto, user, company, companyName, address, lat, lng, prefJp, cityJp, wardJp, imgUrls, wage,
                     wageJp, datanum, now, writeTime);
         } else {
-            // 기본값은 오사카로 처리 (大阪府이거나 다른 지역일 경우 일단 오사카 DB로)
             saveToOsaka(dto, user, company, companyName, address, lat, lng, prefJp, cityJp, wardJp, imgUrls, wage,
                     wageJp, datanum, now, writeTime);
         }
