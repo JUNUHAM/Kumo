@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://readme-typing-svg.demolab.com/?font=Noto+Sans+KR&weight=800&size=30&pause=2000&color=4A90E2&center=true&vCenter=true&width=800&height=80&lines=☁️+KUMO+:+Location-Based+Job+Platform;☁️+지도+기반+한%2F일+구인구직+매칭+플랫폼;☁️+地図基盤の韓%2F日グローバル求人求職プラットフォーム" alt="Typing SVG" />
+<img src="https://readme-typing-svg.demolab.com/?font=Noto+Sans+KR&weight=800&size=30&pause=2000&color=4A90E2&center=true&vCenter=true&width=800&height=80&lines=☁️+KUMO+:+Location-Based+Job+Platform;☁️+지도+기반+한%2F일+구인구직+매칭+플랫폼;☁️+地図基盤の韓%2F日グローバル求人求職プラットフォーム" alt="# ☁️ KUMO : Location-Based Job Platform" />
 
 **지도 기반 한/일 글로벌 구인구직 매칭 플랫폼** <br>
 **地図基盤の韓/日グローバル求人求職マッチングプラットフォーム**
