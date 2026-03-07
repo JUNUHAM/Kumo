@@ -89,22 +89,25 @@ public class ChatController {
 
     /**
      * 특정 채팅방에 입장하여 과거 대화 기록 및 공고 정보를 모델에 담아 반환합니다.
-     * 접속한 사용자의 언어(쿠키 기반)를 감지하여 급여(wage)와 날짜 포맷을 다국어로 분기합니다.
+     * URL을 통해 전달된 파라미터(lang)를 최우선으로 감지하여 다국어 포맷을 적용합니다.
      *
      * @param roomId 입장할 채팅방 ID
      * @param userId 현재 접속하는 사용자의 ID
-     * @param model 뷰에 전달할 데이터를 담는 모델 객체
+     * @param lang   URL로 전달된 사용자 언어 설정 (기본값: "ko")
+     * @param model  뷰에 전달할 데이터를 담는 모델 객체
      * @return 채팅방 HTML 뷰 이름
      */
     @GetMapping("/chat/room/{roomId}")
     public String enterRoom(@PathVariable Long roomId,
                             @RequestParam("userId") Long userId,
+                            @RequestParam(value = "lang", defaultValue = "ko") String lang, // 🌟 파라미터 추가!
                             Model model) {
 
         ChatRoomEntity room = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
 
-        String currentLang = org.springframework.context.i18n.LocaleContextHolder.getLocale().getLanguage();
+        // 🌟 핵심 수정: 느린 쿠키(LocaleContextHolder)를 버리고 확실하게 전달받은 lang 파라미터를 바로 사용!
+        String currentLang = lang;
 
         UserEntity opponent = room.getSeeker().getUserId().equals(userId) ? room.getRecruiter() : room.getSeeker();
         model.addAttribute("roomName", opponent.getNickname());

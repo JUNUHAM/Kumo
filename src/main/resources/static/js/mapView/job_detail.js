@@ -83,7 +83,7 @@ function submitReport() {
 /**
  * 구직자가 공고에 구인 신청(지원)을 수행합니다.
  * 언어 설정에 따른 다국어 알림을 지원하며, 중복 지원 및 서버 에러를 처리합니다.
- * * @param {HTMLElement} btnElement 클릭된 지원하기 버튼 요소
+ * @param {HTMLElement} btnElement 클릭된 지원하기 버튼 요소
  */
 function applyForJob(btnElement) {
     if (!isUserLoggedIn) {
@@ -99,8 +99,8 @@ function applyForJob(btnElement) {
         return;
     }
 
-    // 전역 언어 감지 함수가 로드되지 않았을 경우를 대비한 안전장치
-    const lang = (typeof window.getKumoLang === 'function') ? window.getKumoLang() : 'kr';
+    // 전역 언어 감지
+    const lang = (typeof window.getKumoLang === 'function') ? window.getKumoLang() : 'ko';
     const confirmMsg = lang === 'ja' ? "この求人に応募しますか？" : "이 공고에 지원하시겠습니까?";
 
     if (!confirm(confirmMsg)) {
@@ -120,10 +120,11 @@ function applyForJob(btnElement) {
         body: JSON.stringify(payload)
     })
         .then(async response => {
-            const message = await response.text();
+            // 서버에서 보낸 메시지는 읽기만 하고 알림창에는 직접 번역된 텍스트를 넣습니다.
+            await response.text();
 
-            if (response.ok) {
-                alert(message);
+            if (response.ok) { // 200 성공
+                alert(lang === 'ja' ? '求人の応募が完了しました。' : '구인 신청이 완료되었습니다.');
 
                 btnElement.disabled = true;
                 btnElement.innerText = lang === 'ja' ? '応募完了' : '지원 완료';
@@ -131,15 +132,17 @@ function applyForJob(btnElement) {
                 btnElement.style.borderColor = '#6c757d';
                 btnElement.style.cursor = 'not-allowed';
 
-            } else if (response.status === 401) {
+            } else if (response.status === 400) { // 400 중복 지원 (MapController에서 IllegalStateException 발생 시)
+                alert(lang === 'ja' ? 'すでに応募した求人です。' : '이미 지원하신 공고입니다.');
+            } else if (response.status === 401) { // 401 비로그인
                 if (confirm(MESSAGES.loginRequired)) location.href = '/login';
-            } else {
-                alert(message);
+            } else { // 기타 서버 에러
+                alert(lang === 'ja' ? '処理中にエラーが発生しました。' : '처리 중 서버 오류가 발생했습니다.');
             }
         })
         .catch(error => {
             console.error("지원 처리 에러:", error);
-            alert(MESSAGES.processError || "처리 중 오류가 발생했습니다. 다시 시도해 주세요.");
+            alert(lang === 'ja' ? '処理中にエラーが発生しました。' : '처리 중 오류가 발생했습니다. 다시 시도해 주세요.');
         });
 }
 
