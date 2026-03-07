@@ -266,22 +266,18 @@
   color: #ddd;
 }
 
-/* 기본: 2개 완전히 보이게, 스크롤 없음 */
+
+/* 알림 바디 */
 .notify-body {
-  max-height: 185px;
-  overflow-y: hidden;
-  /* 기본은 스크롤 없음 */
+  max-height: 350px;
+  overflow-y: auto;
   background: #fff;
-  transition: max-height 0.4s ease-in-out;
+  transition: max-height 0.3s ease;
+}
+.notify-body.expanded {
+  max-height: 800px !important;
 }
 
-/* 더보기 클릭 시: 살짝 더 늘어나고 스크롤 활성화 */
-.notify-body.expanded {
-  max-height: 280px !important;
-  /* 3개 정도 높이 */
-  overflow-y: auto !important;
-  /* 스크롤 활성화 */
-}
 
 /* 알림 없음 */
 .notify-empty {
@@ -377,7 +373,8 @@
   color: #666;
   font-size: 13px;
   cursor: pointer;
-  gap: 5px;
+  gap: 8px;
+  transition: background 0.2s, color 0.2s;
 }
 .notify-footer:hover {
   background-color: #f5f7fa;
