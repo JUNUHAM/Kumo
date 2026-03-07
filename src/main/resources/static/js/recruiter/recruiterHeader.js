@@ -171,7 +171,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // [3-3] 전체 삭제
+
   if (deleteAllBtn) {
     deleteAllBtn.addEventListener("click", () => {
       const confirmMsg = deleteAllBtn.getAttribute("data-confirm") || "모든 알림을 삭제하시겠습니까?";
@@ -184,6 +184,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
   }
+  
 
   // [3-4] 알림 로드 및 렌더링
   function loadNotifications() {

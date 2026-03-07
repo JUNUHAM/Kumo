@@ -45,11 +45,12 @@
     </div>
 
     <div class="tab-menu">
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <button class="tab-btn active" data-filter="all" onclick="filterRooms('all', this)" th:text="#{chat.list.tab.all}">전체</button>
-            <button class="tab-btn" data-filter="unread" onclick="filterRooms('unread', this)" th:text="#{chat.list.tab.unread}">읽지않음</button>
-            <button class="tab-btn" data-filter="read" onclick="filterRooms('read', this)" th:text="#{chat.list.tab.read}">읽음</button>
-        </div>
+        <button class="tab-btn active" data-filter="all" onclick="filterRooms('all', this)"
+            th:text="#{chat.list.tab.all}">전체</button>
+        <button class="tab-btn" data-filter="unread" onclick="filterRooms('unread', this)"
+            th:text="#{chat.list.tab.unread}">읽지않음</button>
+        <button class="tab-btn" data-filter="read" onclick="filterRooms('read', this)"
+            th:text="#{chat.list.tab.read}">읽음</button>
     </div>
 
     <div class="chat-list">

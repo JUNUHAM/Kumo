@@ -106,22 +106,29 @@ button {
 }
 
 /* --- 4. 탭 메뉴 (전체/읽지않음/읽음) --- */
-/* [교체] 기존 .tab-menu를 아래로 변경 */
 .tab-menu {
     display: flex;
     justify-content: flex-start;
-    /* 버튼들 왼쪽 정렬 유지 */
+    align-items: center;
     gap: 10px;
-    padding: 0 5px 25px 5px;
-    /* 하단 패딩을 늘려 구름 곡선 공간 확보 */
-
-    /* 구름 모양 경계선 추가 */
-    border-bottom: 2px solid #f8faff;
-    border-radius: 0 0 30px 30px;
-    box-shadow: 0 12px 15px -10px rgba(138, 191, 255, 0.15);
-    background-color: #fff;
+    padding: 12px 5px;
+    border-bottom: 2px solid #f0f4f8;
+    /* 심플한 구분선만 */
+    background-color: transparent;
+    /* ✅ 배경 투명 */
+    border-radius: 0;
+    /* ✅ 곡률 제거 */
+    box-shadow: none;
+    /* ✅ 그림자 제거 */
     position: relative;
     z-index: 10;
+}
+
+body.dark-mode .tab-menu {
+    background-color: transparent !important;
+    border-bottom: 2px solid #37393d !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
 }
 
 /* 탭 버튼 스타일 */
@@ -129,20 +136,27 @@ button {
     font-size: 16px;
     font-weight: 700;
     color: #333;
-    padding: 8px 15px;
+    padding: 0 15px;
     cursor: pointer;
     transition: 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 38px;
+    /* ✅ 높이 고정 */
+    line-height: 1;
 }
 
 .tab-btn.active {
     background-color: #8abfff;
-    /* 활성화 파란색 */
     color: #fff;
     border-radius: 20px;
-    /* 알약 모양 */
-    padding: 8px 25px;
-    /* 활성화 시 좌우 여백 더 넓게 */
+    padding: 0 25px;
+    /* ✅ 상하 패딩 제거, 좌우만 */
+    height: 38px;
+    /* ✅ 동일한 높이 고정 */
     box-shadow: 0 4px 10px rgba(138, 191, 255, 0.4);
+    line-height: 1;
 }
 
 /* [수정] .chat-list 내부에 아래 줄만 추가하세요 */
@@ -523,13 +537,6 @@ body.dark-mode {
 
 body.dark-mode .mobile-container {
     background-color: #1e1f21 !important;
-}
-
-/* 탭 메뉴 */
-body.dark-mode .tab-menu {
-    background-color: #1e1f21 !important;
-    border-bottom: 2px solid #37393d !important;
-    box-shadow: 0 12px 15px -10px rgba(0, 0, 0, 0.4) !important;
 }
 
 body.dark-mode .tab-btn {
