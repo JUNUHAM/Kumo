@@ -29,6 +29,10 @@ import net.kumo.kumo.repository.UserRepository;
 import net.kumo.kumo.service.ChatService;
 import net.kumo.kumo.service.MapService;
 
+/**
+ * 채팅방 관리 및 웹소켓 메시지 라우팅을 담당하는 컨트롤러입니다.
+ * HTTP 요청(채팅방 입장, 파일 업로드 등)과 STOMP 기반의 웹소켓 메시지를 함께 처리합니다.
+ */
 @Controller
 @RequiredArgsConstructor
 public class ChatController {
@@ -39,19 +43,28 @@ public class ChatController {
     private final UserRepository userRepository;
     private final MapService mapService;
 
-    // [이식 포인트] application.properties의 file.upload.chat 값을 가져옵니다.
     @Value("${file.upload.chat}")
     private String chatUploadDir;
 
-    // ======================================================================
-    // 🌟 1. 방 생성 (오사카/도쿄 출처 연동 완벽 적용)
-    // ======================================================================
+    /**
+     * 공고나 스카우트 제안을 통해 새로운 채팅방을 생성하거나 기존 방으로 리다이렉트합니다.
+     * 언어(lang) 파라미터를 리다이렉트 URL에 포함하여 다국어 상태를 유지합니다.
+     *
+     * @param targetSeekerId 대상 구직자 ID (옵션)
+     * @param targetRecruiterId 대상 구인자 ID (옵션)
+     * @param jobPostId 대상 공고 ID
+     * @param jobSource 공고 출처 (예: OSAKA, TOKYO)
+     * @param lang 사용자 언어 설정 (기본값: "kr")
+     * @param authUser 현재 로그인된 사용자 정보
+     * @return 생성된 채팅방 입장 URL로의 리다이렉트 문자열
+     */
     @GetMapping("/chat/create")
     public String createRoom(
             @RequestParam(value = "seekerId", required = false) Long targetSeekerId,
             @RequestParam(value = "recruiterId", required = false) Long targetRecruiterId,
             @RequestParam("jobPostId") Long jobPostId,
             @RequestParam("jobSource") String jobSource,
+            @RequestParam(value = "lang", defaultValue = "kr") String lang,
             @org.springframework.security.core.annotation.AuthenticationPrincipal net.kumo.kumo.security.AuthenticatedUser authUser) {
 
         UserEntity currentUser = userRepository.findByEmail(authUser.getEmail())
@@ -71,93 +84,101 @@ public class ChatController {
 
         ChatRoomEntity room = chatService.createOrGetChatRoom(finalSeekerId, finalRecruiterId, jobPostId, jobSource);
 
-        return "redirect:/chat/room/" + room.getId() + "?userId=" + myId;
+        return "redirect:/chat/room/" + room.getId() + "?userId=" + myId + "&lang=" + lang;
     }
 
-    // ======================================================================
-    // 🌟 2. 방 입장 (공고 상세정보 매핑 완벽 적용)
-    // ======================================================================
+    /**
+     * 특정 채팅방에 입장하여 과거 대화 기록 및 공고 정보를 모델에 담아 반환합니다.
+     * 접속한 사용자의 언어(쿠키 기반)를 감지하여 급여(wage)와 날짜 포맷을 다국어로 분기합니다.
+     *
+     * @param roomId 입장할 채팅방 ID
+     * @param userId 현재 접속하는 사용자의 ID
+     * @param model 뷰에 전달할 데이터를 담는 모델 객체
+     * @return 채팅방 HTML 뷰 이름
+     */
     @GetMapping("/chat/room/{roomId}")
     public String enterRoom(@PathVariable Long roomId,
-            @RequestParam("userId") Long userId,
-            Model model) {
+                            @RequestParam("userId") Long userId,
+                            Model model) {
 
         ChatRoomEntity room = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
 
-        // ChatController.java 내부 enterRoom 메서드
+        String currentLang = org.springframework.context.i18n.LocaleContextHolder.getLocale().getLanguage();
+
         UserEntity opponent = room.getSeeker().getUserId().equals(userId) ? room.getRecruiter() : room.getSeeker();
+        model.addAttribute("roomName", opponent.getNickname());
 
-        // 🌟 엔티티 구조에 맞춘 안전한 경로 추출
-        String oppImgUrl = "/images/common/default_profile.png"; // 기본값
-
-        // profileImage가 null이 아니고, 그 안의 fileUrl도 있을 때만 교체
+        String oppImgUrl = "/images/common/default_profile.png";
         if (opponent.getProfileImage() != null && opponent.getProfileImage().getFileUrl() != null) {
             oppImgUrl = opponent.getProfileImage().getFileUrl();
         }
-
         model.addAttribute("opponentProfileImg", oppImgUrl);
 
-        // =========================================================
-        // 🌟 수정된 부분: 대화 기록 불러오기 & 모델에 담기 (읽음 처리도 자동 수행됨!)
-        // =========================================================
-        List<net.kumo.kumo.domain.dto.ChatMessageDTO> history = chatService.getMessageHistory(roomId, userId);
+        List<net.kumo.kumo.domain.dto.ChatMessageDTO> history = chatService.getMessageHistory(roomId, userId, currentLang);
         model.addAttribute("chatHistory", history);
-        // =========================================================
 
         try {
             net.kumo.kumo.domain.dto.JobDetailDTO jobDetail = mapService.getJobDetail(room.getTargetPostId(),
-                    room.getTargetSource(), "ko");
+                    room.getTargetSource(), currentLang);
 
             model.addAttribute("jobTitle", jobDetail.getTitle());
-            model.addAttribute("salary", jobDetail.getWage());
-            model.addAttribute("salaryJp", jobDetail.getWageJp());
             model.addAttribute("address", jobDetail.getAddress());
+
+            String displayWage = "ja".equals(currentLang) ? jobDetail.getWageJp() : jobDetail.getWage();
+            model.addAttribute("displaySalary", (displayWage != null) ? displayWage : "-");
+
         } catch (Exception e) {
             model.addAttribute("jobTitle", "삭제되거나 마감된 공고입니다.");
-            model.addAttribute("salary", "-");
+            model.addAttribute("displaySalary", "-");
             model.addAttribute("address", "-");
         }
 
         model.addAttribute("roomId", roomId);
         model.addAttribute("userId", userId);
+        model.addAttribute("lang", currentLang);
 
         return "chat/chat_room";
     }
 
-    // ======================================================================
-    // 🌟 3. 채팅 목록 보기 (자동 유저 인식 기능 완벽 적용)
-    // ======================================================================
+    /**
+     * 로그인된 사용자의 소속된 모든 채팅방 목록 화면을 반환합니다.
+     *
+     * @param userId 사용자 ID (명시되지 않을 경우 Security Context에서 추출)
+     * @param authUser 현재 로그인된 사용자 정보
+     * @param model 뷰에 전달할 모델 객체
+     * @return 채팅 목록 HTML 뷰 이름
+     */
     @GetMapping("/chat/list")
     public String chatList(
             @RequestParam(value = "userId", required = false) Long userId,
             @org.springframework.security.core.annotation.AuthenticationPrincipal net.kumo.kumo.security.AuthenticatedUser authUser,
             Model model) {
 
-        // 🌟 1. URL에 userId가 넘어오지 않았다면? 현재 시큐리티 로그인 세션에서 아이디를 뽑아옵니다!
         if (userId == null && authUser != null) {
             UserEntity currentUser = userRepository.findByEmail(authUser.getEmail())
                     .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
             userId = currentUser.getUserId();
         }
 
-        // 🌟 2. 로그인도 안 되어 있고, 아이디도 없으면 튕겨냅니다.
         if (userId == null) {
             return "redirect:/login";
         }
 
-        // 🌟 3. 더미 데이터 없이 실제 내 채팅방 목록만 가져오기
         List<ChatRoomListDTO> chatRooms = chatService.getChatRoomsForUser(userId);
 
         model.addAttribute("chatRooms", chatRooms);
-        model.addAttribute("userId", userId); // HTML로 넘겨줘서 계속 쓸 수 있게 함
+        model.addAttribute("userId", userId);
 
         return "chat/chat_list";
     }
 
-    // ======================================================================
-    // 🌟 4. 사진 업로드 API (Ajax)
-    // ======================================================================
+    /**
+     * 채팅창 내에서 전송된 이미지 및 문서 파일을 서버 디렉토리에 저장합니다.
+     *
+     * @param file 업로드된 MultipartFile 객체
+     * @return 성공 시 저장된 파일의 URL, 실패 시 에러 메시지를 포함한 ResponseEntity
+     */
     @PostMapping("/chat/upload")
     @ResponseBody
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
@@ -200,9 +221,12 @@ public class ChatController {
         }
     }
 
-    // ======================================================================
-    // 🌟 5. 메시지 전송 (WebSocket)
-    // ======================================================================
+    /**
+     * 웹소켓을 통해 클라이언트로부터 수신된 채팅 메시지를 저장하고,
+     * 해당 방에 참여 중인 클라이언트 및 로비(목록 갱신용) 구독자들에게 브로드캐스팅합니다.
+     *
+     * @param messageDTO 클라이언트가 전송한 메시지 데이터 객체
+     */
     @MessageMapping("/chat/message")
     public void sendMessage(ChatMessageDTO messageDTO) {
         ChatMessageDTO savedMessage = chatService.saveMessage(messageDTO);
@@ -220,23 +244,32 @@ public class ChatController {
         }
     }
 
-    // ======================================================================
-    // 🌟 6. 읽음 처리 (WebSocket)
-    // ======================================================================
+    /**
+     * 상대방이 채팅방에 들어왔을 때 전송되는 '읽음' 신호를 처리하고
+     * 같은 방의 클라이언트들에게 브로드캐스팅하여 UI(안 읽음 뱃지 등)를 갱신합니다.
+     *
+     * @param readSignal 클라이언트가 전송한 읽음 신호 DTO
+     */
     @MessageMapping("/chat/read")
     public void processRead(ChatMessageDTO readSignal) {
         chatService.processLiveReadSignal(readSignal.getRoomId(), readSignal.getSenderId());
         messagingTemplate.convertAndSend("/sub/chat/room/" + readSignal.getRoomId(), readSignal);
     }
 
-    // 읽지 않은 메시지 개수 반환
+    /**
+     * 현재 로그인된 사용자의 읽지 않은 총 메시지 개수를 반환하는 API입니다.
+     * 메인 페이지나 네비게이션 바 등의 전역 알림 표시에 사용됩니다.
+     *
+     * @param authUser 현재 로그인된 사용자 정보
+     * @return 읽지 않은 메시지 개수 정수값
+     */
     @GetMapping("/api/chat/unread-count")
-    @ResponseBody // 화면 이동이 아니라 숫자 데이터만 반환하도록 설정
+    @ResponseBody
     public ResponseEntity<Integer> getUnreadCount(
             @org.springframework.security.core.annotation.AuthenticationPrincipal net.kumo.kumo.security.AuthenticatedUser authUser) {
 
         if (authUser == null) {
-            return ResponseEntity.status(401).build(); // 로그인 안됨
+            return ResponseEntity.status(401).build();
         }
 
         UserEntity currentUser = userRepository.findByEmail(authUser.getEmail())
@@ -244,6 +277,6 @@ public class ChatController {
 
         int unreadCount = chatService.getUnreadMessageCount(currentUser.getUserId());
 
-        return ResponseEntity.ok(unreadCount); // 안 읽은 개수 리턴
+        return ResponseEntity.ok(unreadCount);
     }
 }
