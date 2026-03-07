@@ -266,6 +266,7 @@
   color: #ddd;
 }
 
+
 /* 알림 바디 */
 .notify-body {
   max-height: 350px;
@@ -276,6 +277,7 @@
 .notify-body.expanded {
   max-height: 800px !important;
 }
+
 
 /* 알림 없음 */
 .notify-empty {

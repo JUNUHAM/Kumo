@@ -911,3 +911,38 @@ body.dark-mode ::-webkit-scrollbar-thumb:hover {
 footer strong {
     color: #8fa1b3;
 }
+
+/* SweetAlert2 다크모드 */
+body.dark-mode .swal2-popup {
+    background-color: #2a2b2e !important;
+    border: 1px solid #37393d !important;
+    color: #e3e5e8 !important;
+}
+
+body.dark-mode .swal2-title {
+    color: #e3e5e8 !important;
+}
+
+body.dark-mode .swal2-html-container {
+    color: #91959b !important;
+}
+
+body.dark-mode .swal2-cancel {
+    background-color: #37393d !important;
+    color: #e3e5e8 !important;
+}
+
+body.dark-mode .swal2-warning {
+    border-color: #f0a500 !important;
+    color: #f0a500 !important;
+}
+
+body.dark-mode .swal2-success {
+    border-color: #7db4e6 !important;
+    color: #7db4e6 !important;
+}
+
+body.dark-mode .swal2-error {
+    border-color: #ff6b6b !important;
+    color: #ff6b6b !important;
+}
