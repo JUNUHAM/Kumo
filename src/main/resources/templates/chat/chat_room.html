@@ -47,7 +47,7 @@
                 </div>
             </th:block>
 
-            <div th:unless="${#strings.equals(msg.senderId, userId)}" class="msg-row other">
+            <div th:if="${msg.senderId != userId}" class="msg-row other">
                 <img th:src="${opponentProfileImg}" class="profile-img" style="object-fit: cover;">
 
                 <th:block th:if="${msg.messageType == 'TEXT' or msg.messageType == 'TALK'}">
@@ -75,7 +75,7 @@
                 <span class="msg-time" th:text="${msg.createdAt}"></span>
             </div>
 
-            <div th:if="${#strings.equals(msg.senderId, userId)}" class="msg-row me">
+            <div th:if="${msg.senderId == userId}" class="msg-row me">
                 <div class="msg-info">
                     <span class="unread-count" th:if="${msg.isRead == false}">1</span>
                     <span class="msg-time" th:text="${msg.createdAt}"></span>
@@ -104,7 +104,7 @@
                 </th:block>
             </div>
 
-        </th:block>
+            </th:block> </th:block>
     </div>
 
     <script>

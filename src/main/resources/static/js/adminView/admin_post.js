@@ -62,12 +62,16 @@ function submitEdit() {
 // ----------------------------------------------------
 // 신고 확인 및 상태 변경 로직
 // ----------------------------------------------------
-function openReportModal(id, email, category, desc, status) {
+function openReportModal(id, email, category, desc, status, targetSource, targetPostId) {
     document.getElementById('reportIdVal').value = id;
     document.getElementById('reportEmailVal').innerText = email;
     document.getElementById('reportCategoryVal').innerText = category;
     document.getElementById('reportDescVal').innerText = desc;
     document.getElementById('reportStatusSelect').value = status || 'PENDING';
+    
+    // 🌟 추가: 게시글 정보 저장
+    document.getElementById('reportTargetSource').value = targetSource || '';
+    document.getElementById('reportTargetPostId').value = targetPostId || '';
 
     document.getElementById('reportModal').style.display = 'flex';
 }
@@ -79,9 +83,46 @@ function closeReportModal() {
 function submitReportStatus() {
     const reportId = document.getElementById('reportIdVal').value;
     const newStatus = document.getElementById('reportStatusSelect').value;
+    const targetSource = document.getElementById('reportTargetSource').value;
+    const targetPostId = document.getElementById('reportTargetPostId').value;
 
     const msg = currentLang === 'ja' ? "申告状態を変更しますか？" : "신고 상태를 변경하시겠습니까?";
     if(confirm(msg)) {
+        // 🌟 [추가] 차단됨 선택 시 게시글 삭제 및 신고 내역 즉시 삭제(리스트에서 제거)
+        if (newStatus === 'BLOCKED') {
+            const deleteMsg = currentLang === 'ja' 
+                ? "「遮断済み」として処理し、この申告内容と掲示物を削除しますか？" 
+                : "'차단됨'으로 처리하며, 이 신고 내역과 원본 게시글을 리스트에서 완전히 삭제하시겠습니까?";
+            
+            if (confirm(deleteMsg)) {
+                // 1. 원본 게시글 삭제 (비동기)
+                if (targetSource && targetPostId) {
+                    fetch('/admin/post/delete', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ids: [targetSource + "_" + targetPostId] })
+                    });
+                }
+
+                // 2. 신고 내역 삭제 API 호출 (edit 대신 delete 호출)
+                fetch('/admin/report/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids: [parseInt(reportId)] })
+                }).then(res => {
+                    if(res.ok) {
+                        alert(currentLang === 'ja' ? "遮断および削除가 완료되었습니다." : "차단 및 삭제 처리가 완료되었습니다.");
+                        location.reload();
+                    } else {
+                        alert("Error during deletion");
+                    }
+                });
+                
+                closeReportModal();
+                return; 
+            }
+        }
+
         fetch('/admin/report/edit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -108,7 +149,7 @@ function submitReportStatus() {
 // 삭제 로직
 // ----------------------------------------------------
 function deleteOnePost(source, id) {
-    const msg = currentLang === 'ja' ? "本当にこの求人を削除しますか？" : "정말 이 공고를 삭제하시겠습니까?";
+    const msg = currentLang === 'ja' ? "本当にこの求인을 削除しますか？" : "정말 이 공고를 삭제하시겠습니까?";
     if(!confirm(msg)) return;
 
     fetch('/admin/post/delete', {
