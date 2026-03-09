@@ -14,7 +14,7 @@ public class JobPostingRequestDTO {
     private String position; // 직책
     private String jobDescription;// 🌟 [업무 상세] 이름 통일
     private String contactPhone; // 연락처
-    private String body; // 🌟 [상세정보] 이름 통일
+    private String notes; // 🌟 [상세정보] 이름 통일
     private String salaryType; // HOURLY, DAILY 등
     private Integer salaryAmount; // 금액
     private Long companyId; // 회사 ID
