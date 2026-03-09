@@ -189,7 +189,7 @@ public class JobPostingService {
         entity.setHref("/Recruiter/posting/" + datanum);
         entity.setPosition(dto.getPosition());
         entity.setJobDescription(dto.getJobDescription());
-        entity.setBody(dto.getBody());
+        entity.setNotes(dto.getNotes());
         entity.setWage(wage);
         entity.setWageJp(wageJp);
         entity.setImgUrls(imgUrls.isEmpty() ? null : imgUrls);
@@ -230,7 +230,7 @@ public class JobPostingService {
         entity.setHref("/Recruiter/posting/" + datanum);
         entity.setPosition(dto.getPosition());
         entity.setJobDescription(dto.getJobDescription());
-        entity.setBody(dto.getBody());
+        entity.setNotes(dto.getNotes());
         entity.setWage(wage);
         entity.setWageJp(wageJp);
         entity.setImgUrls(imgUrls.isEmpty() ? null : imgUrls);
@@ -465,7 +465,7 @@ public class JobPostingService {
             dto.setPosition(e.getPosition());
             dto.setContactPhone(e.getContactPhone());
             dto.setJobDescription(e.getJobDescription());
-            dto.setBody(e.getBody());
+            dto.setNotes(e.getNotes());
             dto.setSalaryType(e.getSalaryType());
             dto.setSalaryAmount(e.getSalaryAmount());
             if (e.getCompany() != null)
@@ -479,7 +479,7 @@ public class JobPostingService {
             dto.setPosition(e.getPosition());
             dto.setContactPhone(e.getContactPhone());
             dto.setJobDescription(e.getJobDescription());
-            dto.setBody(e.getBody());
+            dto.setNotes(e.getNotes());
             dto.setSalaryType(e.getSalaryType());
             dto.setSalaryAmount(e.getSalaryAmount());
             if (e.getCompany() != null)
@@ -528,7 +528,7 @@ public class JobPostingService {
             e.setPosition(dto.getPosition());
             e.setContactPhone(dto.getContactPhone());
             e.setJobDescription(dto.getJobDescription());
-            e.setBody(dto.getBody());
+            e.setNotes(dto.getNotes());
             e.setSalaryType(dto.getSalaryType());
             e.setSalaryAmount(dto.getSalaryAmount());
             e.setWage(wage);
@@ -545,7 +545,7 @@ public class JobPostingService {
             e.setPosition(dto.getPosition());
             e.setContactPhone(dto.getContactPhone());
             e.setJobDescription(dto.getJobDescription());
-            e.setBody(dto.getBody());
+            e.setNotes(dto.getNotes());
             e.setSalaryType(dto.getSalaryType());
             e.setSalaryAmount(dto.getSalaryAmount());
             e.setWage(wage);
