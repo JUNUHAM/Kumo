@@ -6,7 +6,7 @@
 let currentRole = 'SEEKER';
 
 /* ★ 연락처 정규식 (010-0000-0000 형식) */
-const contactRegex = /^01([0|1|6|7|8|9])-?([0-9]{3,4})-?([0-9]{4})$/;
+const contactRegex = /^0\d{1,4}-\d{1,4}-\d{4}$/;
 
 /* 1. 역할 선택 */
 function selectRole(role) {
@@ -51,10 +51,21 @@ function autoHyphen(target) {
     // 입력 중에는 에러 지워줌 (UX 향상)
     clearError('contact');
 
-    target.value = target.value
-        .replace(/[^0-9]/g, '')
-        .replace(/^(\d{0,3})(\d{0,4})(\d{0,4})$/g, "$1-$2-$3")
-        .replace(/(\-{1,2})$/g, "");
+    let val = target.value.replace(/[^0-9]/g, "");
+    let formatted = "";
+
+    if (val.length <= 3) {
+        formatted = val;
+    } else if (val.length <= 7) {
+        formatted = val.slice(0, 3) + "-" + val.slice(3);
+    } else {
+        if (val.length === 10) {
+            formatted = val.slice(0, 3) + "-" + val.slice(3, 6) + "-" + val.slice(6);
+        } else {
+            formatted = val.slice(0, 3) + "-" + val.slice(3, 7) + "-" + val.slice(7, 11);
+        }
+    }
+    target.value = formatted;
 }
 
 /* ==============================

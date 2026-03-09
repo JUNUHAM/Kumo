@@ -64,7 +64,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const contactInput = document.getElementById('contact');
     if(contactInput) {
         contactInput.addEventListener('input', function() {
-            this.value = this.value.replace(/[^0-9-]/g, '');
+            let val = this.value.replace(/[^0-9]/g, "");
+            let formatted = "";
+
+            if (val.length <= 3) {
+                formatted = val;
+            } else if (val.length <= 7) {
+                formatted = val.slice(0, 3) + "-" + val.slice(3);
+            } else {
+                // 10자리 또는 11자리 대응
+                if (val.length === 10) {
+                    // 예: 03-1234-5678 (일본 일반전화는 보통 지역번호가 2~4자리지만 3-3-4로 임시 처리하거나 
+                    // 사용자가 편하게 입력하게 유도. 여기서는 3-3-4 패턴 위주)
+                    formatted = val.slice(0, 3) + "-" + val.slice(3, 6) + "-" + val.slice(6);
+                } else {
+                    // 예: 080-1234-5678
+                    formatted = val.slice(0, 3) + "-" + val.slice(3, 7) + "-" + val.slice(7, 11);
+                }
+            }
+            this.value = formatted;
         });
     }
 

@@ -50,6 +50,28 @@ document.addEventListener('DOMContentLoaded', () => {
             checkboxes.forEach(cb => cb.checked = this.checked);
         });
     }
+
+    // 4. 전화번호 포맷팅
+    const contactInput = document.getElementById('contact');
+    if(contactInput) {
+        contactInput.addEventListener('input', function() {
+            let val = this.value.replace(/[^0-9]/g, "");
+            let formatted = "";
+
+            if (val.length <= 3) {
+                formatted = val;
+            } else if (val.length <= 7) {
+                formatted = val.slice(0, 3) + "-" + val.slice(3);
+            } else {
+                if (val.length === 10) {
+                    formatted = val.slice(0, 3) + "-" + val.slice(3, 6) + "-" + val.slice(6);
+                } else {
+                    formatted = val.slice(0, 3) + "-" + val.slice(3, 7) + "-" + val.slice(7, 11);
+                }
+            }
+            this.value = formatted;
+        });
+    }
 });
 
 /* ==========================================
