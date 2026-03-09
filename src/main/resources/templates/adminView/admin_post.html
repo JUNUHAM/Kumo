@@ -194,8 +194,8 @@
                     </td>
                     <td>
                         <button class="btn-detail" type="button"
-                                th:onclick="openReportModal([[${report.reportId}]], [[${report.reporterEmail}]], [[${report.reasonCategory}]], [[${report.description}]], [[${report.status}]])"
-                                th:text="${lang == 'ja' ? '内容確認' : '내용 확인'}">내용 확인</button>
+                                th:onclick="openReportModal([[${report.reportId}]], [[${report.reporterEmail}]], [[${report.reasonCategory}]], [[${report.description}]], [[${report.status}]], [[${report.targetSource}]], [[${report.targetPostId}]])"
+                                th:text="${lang == 'ja' ? '内容확인' : '내용 확인'}">내용 확인</button>
                     </td>
                 </tr>
                 </tbody>
@@ -254,6 +254,9 @@
         <h3 th:text="${lang == 'ja' ? '申告内容の確認' : '신고 내용 확인'}">신고 내용 확인</h3>
 
         <input type="hidden" id="reportIdVal">
+        <!-- 🌟 추가: 원본 게시글 삭제를 위한 정보 저장용 -->
+        <input type="hidden" id="reportTargetSource">
+        <input type="hidden" id="reportTargetPostId">
 
         <div class="report-info-group">
             <span class="label" th:text="${lang == 'ja' ? '申告者' : '신고자 이메일'}">신고자 이메일</span>

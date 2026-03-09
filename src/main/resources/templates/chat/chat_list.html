@@ -16,6 +16,7 @@
 
     <script th:inline="javascript">
         window.MY_USER_ID = [[${userId}]];
+        window.CURRENT_LANG = [[${lang}]] || 'kr';
         window.CHAT_LANG = {
             pin: /*[[#{chat.list.option.pin}]]*/ '고정',
             unpin: /*[[#{chat.list.option.unpin}]]*/ '해제',
@@ -54,7 +55,8 @@
     </div>
 
     <div class="chat-list">
-        <div th:each="room : ${chatRooms}" th:data-unread="${room.hasUnread}" class="chat-item"
+        <div th:each="room : ${chatRooms}" th:data-unread="${room.hasUnread}" 
+             th:data-room-id="${room.roomId}" class="chat-item"
              th:onclick="|enterRoom(${room.roomId})|">
             <div class="avatar-wrapper">
                 <img th:src="${room.opponentProfileImg ?: '/images/common/default_profile.png'}"
