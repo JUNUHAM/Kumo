@@ -266,4 +266,27 @@ public class ChatController {
 
         return ResponseEntity.ok(unreadCount);
     }
+
+    /**
+     * [추가됨] 채팅방 나가기 (삭제) API
+     * 프론트엔드에서 넘어오는 /chat/room/exit/{roomId} POST 요청을 처리합니다.
+     * * @param roomId 삭제할 채팅방 ID
+     * @param userId 요청한 사용자 ID
+     */
+    @PostMapping("/chat/room/exit/{roomId}")
+    @ResponseBody
+    public ResponseEntity<String> exitChatRoom(
+            @PathVariable Long roomId,
+            @RequestParam Long userId) {
+        try {
+            // 채팅방 엔티티 삭제
+            // (DB 설계 시 ON DELETE CASCADE가 적용되어 있어, 방을 지우면 소속된 메시지도 자동 삭제됩니다.)
+            chatRoomRepository.deleteById(roomId);
+
+            return ResponseEntity.ok("채팅방이 성공적으로 삭제되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("채팅방 삭제 중 오류가 발생했습니다.");
+        }
+    }
 }

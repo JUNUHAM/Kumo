@@ -348,75 +348,123 @@ function sendReadSignal() {
     });
 });
 
-async function translateAllMessages() {
-    console.log("🚀 [DEBUG] 번역 프로세스 시작");
+let isTranslating = false; // 연타 방지 플래그
 
-    const translateBtn = document.querySelector('.header-translate-btn');
+async function translateAllMessages() {
+    if (isTranslating) return; // 이미 번역 중이면 무시 (중복 렌더링 완벽 차단)
+
+    console.log("🚀 [DEBUG] 교차 번역 프로세스 시작");
+
     const bubbles = document.querySelectorAll('.msg-bubble');
 
-    const textsToTranslate = [];
-    const targetBubbles = [];
+    // 🌟 한글을 일본어로 바꿀 대기열과, 일본어를 한글로 바꿀 대기열을 분리합니다.
+    const toJapaneseQueue = [];
+    const toKoreanQueue = [];
 
     bubbles.forEach(bubble => {
+        // 이미 번역된 텍스트(.translated-text)가 없는 버블만 수집
         if (!bubble.querySelector('.translated-text')) {
-            const txt = bubble.innerText.trim();
+
+            let originalText = '';
+            // HTML 태그를 제외한 순수 텍스트만 추출
+            bubble.childNodes.forEach(node => {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    originalText += node.nodeValue;
+                }
+            });
+
+            const txt = originalText.trim();
             if (txt) {
-                textsToTranslate.push(txt);
-                targetBubbles.push(bubble);
+                // 🌟 핵심 로직: 텍스트 안에 한글이 하나라도 있는지 검사
+                const hasKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(txt);
+
+                if (hasKorean) {
+                    // 한글이 있으면 -> 일본어로 번역 요청
+                    toJapaneseQueue.push({ text: txt, element: bubble });
+                } else {
+                    // 한글이 없으면(일본어 등) -> 한국어로 번역 요청
+                    toKoreanQueue.push({ text: txt, element: bubble });
+                }
             }
         }
     });
 
-    if (textsToTranslate.length === 0) {
+    if (toJapaneseQueue.length === 0 && toKoreanQueue.length === 0) {
         console.log("⚠️ 번역할 메시지가 없습니다.");
         return;
     }
 
+    isTranslating = true; // 버튼 잠금
+
     try {
-        const isKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(textsToTranslate[0]);
-        const targetLang = isKorean ? 'JA' : 'KO';
-
-        console.log(`📡 서버에 ${textsToTranslate.length}개 문장 번역 요청 중...`);
-
-        const response = await fetch('/api/translate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                text: textsToTranslate,
-                target_lang: targetLang
-            })
-        });
-
-        if (!response.ok) throw new Error(`서버 응답 실패: ${response.status}`);
-
-        const data = await response.json();
-        console.log("✅ 서버 응답 수신:", data);
-
-        if (data && data.translations) {
-            data.translations.forEach((item, index) => {
-                const bubble = targetBubbles[index];
-                if (!bubble) return;
-
-                const hr = document.createElement('hr');
-                hr.style.margin = '5px 0';
-                hr.style.border = '0.5px solid rgba(0,0,0,0.1)';
-
-                const div = document.createElement('div');
-                div.className = 'translated-text';
-                div.style.fontSize = '0.85em';
-                div.style.color = '#555';
-                div.innerText = '🌐 ' + item.text;
-
-                bubble.appendChild(hr);
-                bubble.appendChild(div);
+        // 1. 상대방의 일본어 -> 한국어로 번역
+        if (toKoreanQueue.length > 0) {
+            console.log(`📡 일본어 -> 한국어 번역 요청 중... (${toKoreanQueue.length}건)`);
+            const resKO = await fetch('/api/translate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    text: toKoreanQueue.map(item => item.text),
+                    target_lang: 'KO'
+                })
             });
-            console.log("🎉 모든 번역이 완료되었습니다!");
+            if (resKO.ok) {
+                const dataKO = await resKO.json();
+                if (dataKO && dataKO.translations) {
+                    dataKO.translations.forEach((t, i) => {
+                        appendTranslation(toKoreanQueue[i].element, t.text);
+                    });
+                }
+            }
         }
+
+        // 2. 나의 한국어 -> 일본어로 번역
+        if (toJapaneseQueue.length > 0) {
+            console.log(`📡 한국어 -> 일본어 번역 요청 중... (${toJapaneseQueue.length}건)`);
+            const resJA = await fetch('/api/translate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    text: toJapaneseQueue.map(item => item.text),
+                    target_lang: 'JA'
+                })
+            });
+            if (resJA.ok) {
+                const dataJA = await resJA.json();
+                if (dataJA && dataJA.translations) {
+                    dataJA.translations.forEach((t, i) => {
+                        appendTranslation(toJapaneseQueue[i].element, t.text);
+                    });
+                }
+            }
+        }
+
+        console.log("🎉 모든 교차 번역이 완료되었습니다!");
     } catch (err) {
         console.error("❌ 번역 중 에러 발생:", err);
-        // 🌟 다국어 변수 (translateFail이 있으면 사용, 없으면 기본 메시지)
         alert(window.CHAT_LANG && window.CHAT_LANG.translateFail ? window.CHAT_LANG.translateFail : "번역 처리 중 문제가 발생했습니다.");
+    } finally {
+        isTranslating = false; // 버튼 잠금 해제
     }
+}
+
+// 번역된 텍스트를 버블 안에 추가해주는 헬퍼 함수
+function appendTranslation(bubble, translatedText) {
+    // 혹시 모를 중복 렌더링 2차 방어
+    if (bubble.querySelector('.translated-text')) return;
+
+    const hr = document.createElement('hr');
+    hr.style.margin = '5px 0';
+    hr.style.border = '0.5px solid rgba(0,0,0,0.1)';
+
+    const div = document.createElement('div');
+    div.className = 'translated-text';
+    div.style.fontSize = '0.85em';
+    div.style.color = '#555';
+    div.innerText = '🌐 ' + translatedText;
+
+    bubble.appendChild(hr);
+    bubble.appendChild(div);
 }
 
 document.addEventListener("DOMContentLoaded", function () {
