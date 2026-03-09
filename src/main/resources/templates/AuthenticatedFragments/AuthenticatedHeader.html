@@ -9,14 +9,14 @@
               sec:authorize="isAuthenticated()">
 
         <div class="sidebar-logo">
-            <a th:href="@{/}" class="logo">
+            <a th:href="@{/(lang=${#locale.language})}" class="logo">
                 <img th:src="@{/images/NonLogin/seekerLogo.png}" alt="KUMO" style="height: 40px;">
             </a>
         </div>
 
         <nav>
             <ul class="nav-menu">
-                <li><a th:href="@{/info}" th:text="#{header.company}">회사 정보</a></li>
+                <li><a th:href="@{/info(lang=${#locale.language})}" th:text="#{header.company}">회사 정보</a></li>
 
                 <li class="icon-btn notification-container" id="notifyBtn">
                     <i class="fa-regular fa-bell"></i>
@@ -72,24 +72,24 @@
                             <span class="user-email" th:text="${#authentication.name}">email@test.com</span>
                         </div>
                         <hr>
-                        <a th:href="@{/Seeker/MyPage}" class="profile-item">
+                        <a th:href="@{/Seeker/MyPage(lang=${#locale.language})}" class="profile-item">
                             <i class="fa-regular fa-user"></i>
                             <span th:text="#{profile.mypage}">마이페이지</span>
                         </a>
-                        <a th:href="@{/Seeker/resume}" class="profile-item">
+                        <a th:href="@{/Seeker/resume(lang=${#locale.language})}" class="profile-item">
                             <i class="fa-regular fa-file-lines"></i>
                             <span th:text="#{profile.resume}">내 이력서</span>
                         </a>
-                        <a th:href="@{/Seeker/history}" class="profile-item">
+                        <a th:href="@{/Seeker/history(lang=${#locale.language})}" class="profile-item">
                             <i class="fa-regular fa-bell"></i>
                             <span th:text="#{profile.history}">지원 내역 확인</span>
                         </a>
-                        <a th:href="@{/Seeker/scout}" class="profile-item">
+                        <a th:href="@{/Seeker/scout(lang=${#locale.language})}" class="profile-item">
                             <i class="fa-solid fa-envelope-open-text"></i>
                             <span th:text="#{sidebar.scout}">스카우트 현황</span>
                         </a>
                         <hr>
-                        <a th:href="@{/logout}" class="profile-item logout">
+                        <a th:href="@{/logout(lang=${#locale.language})}" class="profile-item logout">
                             <i class="fa-solid fa-right-from-bracket"></i>
                             <span th:text="#{profile.logout}">로그아웃</span>
                         </a>
