@@ -30,17 +30,17 @@ public class OsakaGeocodedEntity extends BaseEntity {
 	private Long datanum;
 	
 	// 2. 기본 정보 (CSV: title, href, write_time)
-	@Column(name = "title", length = 200)
+	@Column(name = "title", length = 50)
 	private String title;
 	
-	@Column(name = "href", length = 500)
+	@Column(name = "href", length = 200)
 	private String href;
 	
 	@Column(name = "write_time")
 	private String writeTime; // CSV의 write_time 필드
 	
 	// 3. 사진 및 본문 (CSV: img_urls, body)
-	@Column(name = "img_urls", length = 1000)
+	@Column(name = "img_urls", length = 500)
 	private String imgUrls;
 	
 	@Lob
@@ -48,13 +48,13 @@ public class OsakaGeocodedEntity extends BaseEntity {
 	private String body;
 	
 	// 4. 회사 및 연락처 (CSV: company_name, address, contact_phone)
-	@Column(name = "company_name", length = 150)
+	@Column(name = "company_name", length = 50)
 	private String companyName;
 	
-	@Column(name = "address", length = 300)
+	@Column(name = "address", length = 50)
 	private String address;
 	
-	@Column(name = "contact_phone", length = 200)
+	@Column(name = "contact_phone", length = 100)
 	private String contactPhone;
 	
 	// 5. 직무 상세 (CSV: position, job_description, wage, notes)
@@ -71,10 +71,10 @@ public class OsakaGeocodedEntity extends BaseEntity {
 	private String notes;
 	
 	// 6. 일본어 번역 필드 (CSV 반영: title_jp ~ notes_jp)
-	@Column(name = "title_jp", length = 150)
+	@Column(name = "title_jp", length = 50)
 	private String titleJp;
 	
-	@Column(name = "company_name_jp", length = 150)
+	@Column(name = "company_name_jp", length = 50)
 	private String companyNameJp;
 	
 	
@@ -84,7 +84,7 @@ public class OsakaGeocodedEntity extends BaseEntity {
 	@Column(name = "job_description_jp", columnDefinition = "TEXT")
 	private String jobDescriptionJp;
 	
-	@Column(name = "contact_phone_jp", length = 200)
+	@Column(name = "contact_phone_jp", length = 100)
 	private String contactPhoneJp;
 	
 	@Column(name = "wage_jp")
@@ -101,22 +101,22 @@ public class OsakaGeocodedEntity extends BaseEntity {
 	private Double lng;
 	
 	// 8. 지역 정보 (CSV: prefecture_jp ~ ward_kr)
-	@Column(name = "prefecture_jp", length = 100)
+	@Column(name = "prefecture_jp", length = 20)
 	private String prefectureJp;
 	
-	@Column(name = "city_jp", length = 100)
+	@Column(name = "city_jp", length = 20)
 	private String cityJp;
 	
-	@Column(name = "ward_jp", length = 100)
+	@Column(name = "ward_jp", length = 20)
 	private String wardJp;
 	
-	@Column(name = "prefecture_kr", length = 100)
+	@Column(name = "prefecture_kr", length = 20)
 	private String prefectureKr;
 	
-	@Column(name = "city_kr", length = 100)
+	@Column(name = "city_kr", length = 20)
 	private String cityKr;
 	
-	@Column(name = "ward_kr", length = 100)
+	@Column(name = "ward_kr", length = 20)
 	private String wardKr;
 	
 	// 9. 리크루터 시스템 전용 필드 (새로 등록하는 공고용)

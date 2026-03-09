@@ -46,7 +46,7 @@ public abstract class BaseEntity {
 
     private String companyName;
 
-    @Column(length = 700)
+    @Column(length = 300)
     private String address;
 
     private String contactPhone;

@@ -30,28 +30,28 @@ public class TokyoGeocodedEntity extends BaseEntity {
 	@Column(name = "datanum", unique = true)
 	private Long datanum;
 	
-	@Column(name = "title", length = 200)
+	@Column(name = "title", length = 50)
 	private String title;
 	
-	@Column(name = "href", length = 500)
+	@Column(name = "href", length = 200)
 	private String href;
 	
 	@Column(name = "write_time")
 	private String writeTime;
 	
-	@Column(name = "img_urls", length = 1000)
+	@Column(name = "img_urls", length = 500)
 	private String imgUrls;
 	
 	@Column(name = "body", columnDefinition = "TEXT")
 	private String body;
 	
-	@Column(name = "company_name", length = 150)
+	@Column(name = "company_name", length = 50)
 	private String companyName;
 
-	@Column(name = "address", length = 300)
+	@Column(name = "address", length = 100)
 	private String address;
 
-	@Column(name = "contact_phone", length = 200)
+	@Column(name = "contact_phone", length = 100)
 	private String contactPhone;
 
 	@Column(name = "position", length = 100)
@@ -70,16 +70,16 @@ public class TokyoGeocodedEntity extends BaseEntity {
 	@Column(name = "notes", columnDefinition = "TEXT")
 	private String notes;
 
-	@Column(name = "title_jp", length = 150)
+	@Column(name = "title_jp", length = 100)
 	private String titleJp;
 
-	@Column(name = "company_name_jp", length = 150)
+	@Column(name = "company_name_jp", length = 50)
 	private String companyNameJp;
 
 	@Column(name = "position_jp", length = 100)
 	private String positionJp;
 	
-	@Column(name = "contact_phone_jp", length = 200)
+	@Column(name = "contact_phone_jp", length = 100)
 	private String contactPhoneJp;
 	
 	@Column(name = "job_description_jp", columnDefinition = "TEXT")
@@ -95,28 +95,28 @@ public class TokyoGeocodedEntity extends BaseEntity {
 	@Column(nullable = false)
 	private Double lng;
 
-	@Column(name = "prefecture_jp", length = 100)
+	@Column(name = "prefecture_jp", length = 20)
 	private String prefectureJp;
 
-	@Column(name = "city_jp", length = 100)
+	@Column(name = "city_jp", length = 20)
 	private String cityJp;
 
-	@Column(name = "ward_jp", length = 100)
+	@Column(name = "ward_jp", length = 20)
 	private String wardJp;
 
-	@Column(name = "prefecture_kr", length = 100)
+	@Column(name = "prefecture_kr", length = 20)
 	private String prefectureKr;
 
-	@Column(name = "city_kr", length = 100)
+	@Column(name = "city_kr", length = 20)
 	private String cityKr;
 
-	@Column(name = "ward_kr", length = 100)
+	@Column(name = "ward_kr", length = 20)
 	private String wardKr;
 
-	@Column(name = "ward_city_jp", length = 150)
+	@Column(name = "ward_city_jp", length = 20)
 	private String wardCityJp;
 
-	@Column(name = "ward_city_kr", length = 150)
+	@Column(name = "ward_city_kr", length = 20)
 	private String wardCityKr;	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
