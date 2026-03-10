@@ -55,8 +55,12 @@
     
             <div class="form-group mb-4">
               <label class="form-label" th:text="#{post.label.contact}">연락처</label>
-              <input type="text" name="contactPhone" class="form-control kumo-input"
+              <input type="text" id='contactPhone' name="contactPhone" class="form-control kumo-input"
                 th:placeholder="#{post.placeholder.contact}" required />
+                  <div id="error_contact" style="display:none; color:#e53e3e; font-size:13px; margin-top:6px;">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span id="error_contact_msg"></span>
+                  </div>
             </div>
     
             <div class="form-group mb-4">
@@ -69,7 +73,7 @@
                   <option value="SALARY" th:text="#{post.wage.yearly}">연봉</option>
                 </select>
                 <div class="position-relative flex-grow-1">
-                  <input type="number" name="salaryAmount" class="form-control kumo-input" style="padding-right: 40px;" />
+                  <input type="text" name="salaryAmount" class="form-control kumo-input" style="padding-right: 40px;" />
                   <span class="position-absolute end-0 top-50 translate-middle-y me-3 text-muted">円</span>
                 </div>
               </div>
@@ -137,6 +141,15 @@
   <script th:inline="javascript">
     /* <![CDATA[ */
 
+    const regexPatterns = {
+        contact: /^0\d{1,4}-\d{1,4}-\d{4}$/
+      };
+
+      const contactErrors = {
+          empty: /*[[#{post.error.contact.empty}]]*/ '',
+          invalid: /*[[#{post.error.contact.invalid}]]*/ ''
+        };
+
     // 1. 마감일 hidden input 조합
     document.getElementById('jobPostForm').addEventListener('submit', function (e) {
       const y = document.getElementById('dl-year').value;
@@ -180,6 +193,63 @@
       });
     });
 
+   // 4. 전화번호 숫자만 입력 허용
+    const contactInput = document.getElementById('contactPhone');
+    if (contactInput) {
+      contactInput.addEventListener('keydown', function (e) {
+        const allowed = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];
+        if (!/[0-9]/.test(e.key) && !allowed.includes(e.key)) {
+          e.preventDefault();
+        }
+      });
+
+      contactInput.addEventListener('input', function () {
+        let val = this.value.replace(/[^0-9]/g, "");
+        let formatted = "";
+        if (val.length <= 3) {
+          formatted = val;
+        } else if (val.length <= 7) {
+          formatted = val.slice(0, 3) + "-" + val.slice(3);
+        } else {
+          formatted = val.length === 10
+            ? val.slice(0, 3) + "-" + val.slice(3, 6) + "-" + val.slice(6)
+            : val.slice(0, 3) + "-" + val.slice(3, 7) + "-" + val.slice(7, 11);
+        }
+        this.value = formatted;
+
+        // 입력 중 에러 숨기기
+        document.getElementById('error_contact').style.display = 'none';
+        contactInput.style.borderColor = '';
+      });
+    }
+
+    // submit 시 검증
+    document.getElementById('jobPostForm').addEventListener('submit', function (e) {
+      const val = contactInput.value;
+      const regex = /^0\d{1,4}-\d{1,4}-\d{4}$/;
+      const errorBox = document.getElementById('error_contact');
+      const errorMsg = document.getElementById('error_contact_msg');
+
+      if (!val) {
+        e.preventDefault();
+        errorMsg.textContent = contactErrors.empty;   // 빈 값일 때
+        errorBox.style.display = 'block';
+        contactInput.style.borderColor = '#e53e3e';
+        contactInput.focus();
+        return;
+      }
+      if (!regex.test(val)) {
+        e.preventDefault();
+        errorMsg.textContent = contactErrors.invalid; // 형식 오류일 때
+        errorBox.style.display = 'block';
+        contactInput.style.borderColor = '#e53e3e';
+        contactInput.focus();
+        return;
+      }
+
+      errorBox.style.display = 'none';
+      contactInput.style.borderColor = '';
+    });
     /* ]]> */
   </script>
 
