@@ -4,9 +4,11 @@
 <head>
     <meta charset="UTF-8" />
     <title th:text="#{talent.detail.pageTitle}">KUMO RECRUITER - 인재 상세 정보</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
     <link rel="stylesheet" th:href="@{/css/recruiter/recruiterHeader.css}" />
     <link rel="stylesheet" th:href="@{/css/NonLoginFragments/NonLoginFooter.css}" />
     <link rel="stylesheet" th:href="@{/css/recruiter/sidebar.css}" />
@@ -15,281 +17,237 @@
     <link rel="stylesheet" th:href="@{/css/recruiter/dark-theme.css}" />
     <link rel="stylesheet" th:href="@{/css/recruiter/calendar.css}" />
     <link rel="stylesheet" th:href="@{/css/recruiter/talentDetail.css}" />
-    <script th:src="@{/js/recruiter/rightSidebar.js}"></script>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-</head>
-
-<body>
-    <header th:replace="~{recruiterView/fragments/recruiterHeader :: headerFragment}"></header>
-
-    <div class="dashboard-wrapper">
-        <div th:replace="~{recruiterView/fragments/sidebar :: sidebarFragment}"></div>
-
-        <div class="main-container">
-            <main class="content-body">
-
-                <div class="resume-view-container">
-
-                    <!-- 1. 헤더: 이름 및 기본 정보 -->
-                    <section class="view-section">
-                        <div class="d-flex align-items-center gap-4 mb-4">
-                            <img class="profile-header-img"
-                                th:src="${talent.profileImage?.fileUrl ?: '/images/common/default_profile.png'}"
-                                alt="profile">
-                            <div>
-                                <div class="profile-header-name">
-                                    <span th:text="${talent.nameKanjiMei ?: talent.nickname}">이름</span>
-                                    <span class="t-badge badge-blue" th:text="${profile.careerType == 'EXPERIENCED'
-                            ? #messages.msg('resume.btn.experienced')
-                            : #messages.msg('resume.btn.newcomer')}">구분</span>
-                                </div>
-                                <p class="profile-header-job"
-                                    th:text="${resume.desiredJob ?: #messages.msg('talent.detail.job.none')}">희망 직종</p>
-                            </div>
-                        </div>
-
-                        <div class="contact-box">
-                            <div class="info-grid">
-                                <span class="info-label">
-                                    <i class="fa-solid fa-phone"></i>
-                                    <span th:text="#{resume.label.phone}">연락처</span>
-                                </span>
-                                <span class="info-value" th:if="${profile?.contactPublic}"
-                                    th:text="${talent?.contact}">010-0000-0000</span>
-                                <span class="info-value masked-text" th:unless="${profile?.contactPublic}"
-                                    th:text="#{talent.detail.contact.masked}">비공개 설정된 정보입니다.</span>
-                            </div>
-                            <div class="info-grid">
-                                <span class="info-label">
-                                    <i class="fa-solid fa-envelope"></i>
-                                    <span th:text="#{join.label.email}">이메일</span>
-                                </span>
-                                <span class="info-value" th:if="${profile?.contactPublic}"
-                                    th:text="${talent?.email}">test@example.com</span>
-                                <span class="info-value masked-text" th:unless="${profile?.contactPublic}"
-                                    th:text="#{talent.detail.contact.masked}">비공개 설정된 정보입니다.</span>
-                            </div>
-                            <div class="info-grid">
-                                <span class="info-label">
-                                    <i class="fa-solid fa-location-dot"></i>
-                                    <span th:text="#{resume.label.address}">주소</span>
-                                </span>
-                                <span class="info-value" th:if="${profile?.contactPublic}"
-                                    th:text="${(talent?.addressMain ?: '') + ' ' + (talent?.addressDetail ?: '')}">주소</span>
-                                <span class="info-value masked-text" th:unless="${profile?.contactPublic}"
-                                    th:text="#{talent.detail.contact.masked}">비공개 설정된 정보입니다.</span>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- 2. 학력사항 -->
-                    <section class="view-section" th:if="${resume.schoolName != null}">
-                        <h3 class="section-title">
-                            <i class="fa-solid fa-graduation-cap"></i>
-                            <span th:text="#{resume.section.education}">학력사항</span>
-                        </h3>
-                        <div class="info-grid">
-                            <span class="info-label" th:text="#{resume.label.schoolName}">학교명</span>
-                            <span class="info-value" th:text="${resume.schoolName}">학교명</span>
-                        </div>
-                        <div class="info-grid">
-                            <span class="info-label" th:text="#{talent.detail.edu.status}">학력/상태</span>
-                            <span class="info-value">
-                                <span th:text="${#messages.msg('edu.level.' + resume.educationLevel)}">학력</span>
-                                (<span th:text="${#messages.msg('edu.status.' + resume.educationStatus)}">상태</span>)
-                            </span>
-                        </div>
-                    </section>
-
-                    <!-- 3. 경력사항 -->
-                    <section class="view-section"
-                        th:if="${resume.companyName != null and !resume.companyName.isEmpty()}">
-                        <h3 class="section-title">
-                            <i class="fa-solid fa-briefcase"></i>
-                            <span th:text="#{resume.section.career}">경력사항</span>
-                        </h3>
-                        <div class="career-item" th:each="comp, stat : ${resume.companyName}">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <div class="fw-bold fs-5" th:text="${comp}">회사명</div>
-                                <div class="small text-muted fw-bold">
-                                    <span
-                                        th:text="${resume.startYear[stat.index] + '.' + resume.startMonth[stat.index]}"></span>
-                                    ~
-                                    <span
-                                        th:text="${resume.endYear[stat.index] + '.' + resume.endMonth[stat.index]}"></span>
-                                </div>
-                            </div>
-                            <div class="info-value" style="white-space: pre-wrap;"
-                                th:text="${resume.jobDuties[stat.index]}">담당업무</div>
-                        </div>
-                    </section>
-
-                    <!-- 4. 자격증 -->
-                    <section class="view-section" th:if="${resume.certName != null and !resume.certName.isEmpty()}">
-                        <h3 class="section-title">
-                            <i class="fa-solid fa-award"></i>
-                            <span th:text="#{resume.label.certificate}">자격증</span>
-                        </h3>
-                        <div class="info-grid" th:each="cert, stat : ${resume.certName}">
-                            <span class="info-label"
-                                th:text="${resume.certYear[stat.index]} + #{talent.detail.cert.acquired}">2024년
-                                취득</span>
-                            <span class="info-value">
-                                <strong th:text="${cert}">자격증명</strong>
-                                <span class="text-muted ms-2"
-                                    th:text="'| ' + ${resume.certPublisher[stat.index]}">발행처</span>
-                            </span>
-                        </div>
-                    </section>
-
-                    <!-- 5. 어학 능력 -->
-                    <section class="view-section"
-                        th:if="${resume.languageName != null and !resume.languageName.isEmpty()}">
-                        <h3 class="section-title">
-                            <i class="fa-solid fa-language"></i>
-                            <span th:text="#{resume.label.language}">어학 능력</span>
-                        </h3>
-                        <div class="info-grid" th:each="lang, stat : ${resume.languageName}">
-                            <span class="info-label" th:text="${lang}">언어</span>
-                            <span class="info-value">
-                                <span class="t-badge badge-blue" style="margin-left:0;"
-                                    th:text="${#messages.msg('resume.btn.' + resume.languageLevel[stat.index].toLowerCase())}">상급</span>
-                            </span>
-                        </div>
-                    </section>
-
-                    <!-- 6. 희망 근무조건 -->
-                    <section class="view-section">
-                        <h3 class="section-title">
-                            <i class="fa-solid fa-circle-check"></i>
-                            <span th:text="#{resume.section.desiredConditions}">희망 근무조건</span>
-                        </h3>
-                        <div class="info-grid">
-                            <span class="info-label" th:text="#{resume.label.desiredLocation}">희망 지역</span>
-                            <span class="info-value">
-                                <span th:text="${#messages.msg('loc.' + resume.desiredLocation1)}">지역1</span>
-                                <span
-                                    th:text="${#messages.msg('ward.' + resume.desiredLocation1 + '.' + resume.desiredLocation2)}">지역2</span>
-                            </span>
-                        </div>
-                        <div class="info-grid">
-                            <span class="info-label" th:text="#{resume.label.desiredSalary}">희망 급여</span>
-                            <span class="info-value">
-                                <span
-                                    th:text="${#messages.msg('salary.type.' + resume.salaryType.toLowerCase())}">시급</span>
-                                <strong
-                                    th:text="${#numbers.formatInteger(resume.desiredSalary, 0, 'COMMA')}">1,000</strong>
-                                <span th:text="#{resume.label.yen}">円</span>
-                            </span>
-                        </div>
-                        <div class="info-grid">
-                            <span class="info-label" th:text="#{resume.label.desiredJob}">희망 직종</span>
-                            <span class="info-value"
-                                th:text="${resume.desiredJob ?: #messages.msg('talent.detail.job.none')}">희망 직종</span>
-                        </div>
-                        <div class="info-grid">
-                            <span class="info-label" th:text="#{resume.label.desiredPeriod}">근무 가능 기간</span>
-                            <span class="info-value" th:if="${resume.desiredPeriod != null}"
-                                th:text="${#messages.msg('period.' + resume.desiredPeriod)}">기간</span>
-                        </div>
-                    </section>
-
-                    <!-- 7. 자기소개 -->
-                    <section class="view-section" th:if="${resume.selfIntroduction != null}">
-                        <h3 class="section-title">
-                            <i class="fa-solid fa-user-pen"></i>
-                            <span th:text="#{resume.label.selfIntro}">자기소개</span>
-                        </h3>
-                        <div class="self-intro-box" th:text="${resume.selfIntroduction}">자기소개 내용</div>
-                    </section>
-
-                    <!-- 8. 증빙서류 -->
-                    <section class="view-section"
-                        th:if="${resume.portfolioFileUrls != null and !resume.portfolioFileUrls.isEmpty()}">
-                        <h3 class="section-title">
-                            <i class="fa-solid fa-file-invoice"></i>
-                            <span th:text="#{resume.label.document}">증빙서류</span>
-                        </h3>
-                        <div class="d-flex flex-wrap gap-3">
-                            <div th:each="url : ${resume.portfolioFileUrls}">
-                                <img class="doc-preview-img" th:src="${url}" th:onclick="|window.open(this.src)|">
-                            </div>
-                        </div>
-                    </section>
-
-                </div><!-- /resume-view-container -->
-
-                <!-- 하단 액션 바 -->
-                <div class="footer-action-bar">
-                    <button class="btn-back-circle" onclick="history.back()" th:title="#{detail.btn.back}">
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </button>
-                    <button class="btn-offer-large" th:attr="data-user-id=${talent.userId}"
-                        th:text="#{talent.detail.btn.offer}" onclick="confirmOffer(this)">스카우트 제안하기</button>
-                </div>
-
-            </main>
-            <footer th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"></footer>
-            <div th:replace="~{recruiterView/fragments/rightSidebar :: rightSidebarFragment}"></div>
-        </div>
-    </div>
 
     <script th:inline="javascript">
         /* <![CDATA[ */
         const talentMsg = {
-            offerConfirm: /*[[#{talent.detail.msg.offer_confirm}]]*/ '이 인재에게 스카우트를 제안하시겠습니까?',
+            offerConfirm:    /*[[#{talent.detail.msg.offer_confirm}]]*/ '이 인재에게 스카우트를 제안하시겠습니까?',
             offerConfirmBtn: /*[[#{talent.detail.btn.offer}]]*/ '스카우트 제안하기',
-            successMsg: /*[[${successMsg}]]*/ null,
-            errorMsg:   /*[[${errorMsg}]]*/ null
+            successMsg:      /*[[${successMsg}]]*/ null,
+            errorMsg:        /*[[${errorMsg}]]*/ null
         };
         /* ]]> */
     </script>
 
-    <script>
-        // successMsg / errorMsg SweetAlert로 표시
-        window.addEventListener('DOMContentLoaded', function () {
-            const isDark = document.body.classList.contains('dark-mode');
-            const theme = { background: isDark ? '#2a2b2e' : '#fff', color: isDark ? '#e3e5e8' : '#333' };
+    <script defer th:src="@{/js/recruiter/recruiterHeader.js}"></script>
+    <script defer th:src="@{/js/recruiter/rightSidebar.js}"></script>
+    <script defer th:src="@{/js/recruiter/global-calendar.js}"></script>
+    <script defer th:src="@{/js/recruiter/talentDetail.js}"></script>
+</head>
 
-            if (talentMsg.successMsg) {
-                Swal.fire({ icon: 'success', title: talentMsg.successMsg, confirmButtonColor: '#7db4e6', ...theme });
-            }
-            if (talentMsg.errorMsg) {
-                Swal.fire({ icon: 'error', title: talentMsg.errorMsg, confirmButtonColor: '#7db4e6', ...theme });
-            }
-        });
+<body>
+<header th:replace="~{recruiterView/fragments/recruiterHeader :: headerFragment}"></header>
 
-        // 스카우트 제안 confirm → SweetAlert
-        function confirmOffer(btn) {
-            const userId = btn.getAttribute('data-user-id');
-            const isDark = document.body.classList.contains('dark-mode');
-            const theme = { background: isDark ? '#2a2b2e' : '#fff', color: isDark ? '#e3e5e8' : '#333' };
+<div class="dashboard-wrapper">
+    <div th:replace="~{recruiterView/fragments/sidebar :: sidebarFragment}"></div>
 
-            Swal.fire({
-                icon: 'question',
-                title: talentMsg.offerConfirm,
-                showCancelButton: true,
-                confirmButtonColor: '#7db4e6',
-                cancelButtonColor: '#aaa',
-                confirmButtonText: talentMsg.offerConfirmBtn,
-                width: '380px',
-                ...theme
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    location.href = '/Recruiter/sendOffer?userId=' + userId;
-                }
-            });
-        }
-    </script>
+    <div class="main-container">
+        <main class="content-body">
 
-    <th:block th:replace="~{fragments/floatingChat :: floatingChatFragment}"></th:block>
+            <div class="resume-view-container">
 
-    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
-    <script th:src="@{/js/recruiter/recruiterHeader.js}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.10/index.global.min.js"></script>
-    <script th:src="@{/js/recruiter/global-calendar.js}"></script>
-    </body>
+                <section class="view-section">
+                    <div class="d-flex align-items-center gap-4 mb-4">
+                        <img class="profile-header-img"
+                             th:src="${talent.profileImage?.fileUrl ?: '/images/common/default_profile.png'}"
+                             alt="profile">
+                        <div>
+                            <div class="profile-header-name">
+                                <span th:text="${talent.nameKanjiMei ?: talent.nickname}">이름</span>
+                                <span class="t-badge badge-blue" th:text="${profile.careerType == 'EXPERIENCED'
+                            ? #messages.msg('resume.btn.experienced')
+                            : #messages.msg('resume.btn.newcomer')}">구분</span>
+                            </div>
+                            <p class="profile-header-job"
+                               th:text="${resume.desiredJob ?: #messages.msg('talent.detail.job.none')}">희망 직종</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-box">
+                        <div class="info-grid">
+                                <span class="info-label">
+                                    <i class="fa-solid fa-phone"></i>
+                                    <span th:text="#{resume.label.phone}">연락처</span>
+                                </span>
+                            <span class="info-value" th:if="${profile?.contactPublic}"
+                                  th:text="${talent?.contact}">010-0000-0000</span>
+                            <span class="info-value masked-text" th:unless="${profile?.contactPublic}"
+                                  th:text="#{talent.detail.contact.masked}">비공개 설정된 정보입니다.</span>
+                        </div>
+                        <div class="info-grid">
+                                <span class="info-label">
+                                    <i class="fa-solid fa-envelope"></i>
+                                    <span th:text="#{join.label.email}">이메일</span>
+                                </span>
+                            <span class="info-value" th:if="${profile?.contactPublic}"
+                                  th:text="${talent?.email}">test@example.com</span>
+                            <span class="info-value masked-text" th:unless="${profile?.contactPublic}"
+                                  th:text="#{talent.detail.contact.masked}">비공개 설정된 정보입니다.</span>
+                        </div>
+                        <div class="info-grid">
+                                <span class="info-label">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    <span th:text="#{resume.label.address}">주소</span>
+                                </span>
+                            <span class="info-value" th:if="${profile?.contactPublic}"
+                                  th:text="${(talent?.addressMain ?: '') + ' ' + (talent?.addressDetail ?: '')}">주소</span>
+                            <span class="info-value masked-text" th:unless="${profile?.contactPublic}"
+                                  th:text="#{talent.detail.contact.masked}">비공개 설정된 정보입니다.</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="view-section" th:if="${resume.schoolName != null}">
+                    <h3 class="section-title">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        <span th:text="#{resume.section.education}">학력사항</span>
+                    </h3>
+                    <div class="info-grid">
+                        <span class="info-label" th:text="#{resume.label.schoolName}">학교명</span>
+                        <span class="info-value" th:text="${resume.schoolName}">학교명</span>
+                    </div>
+                    <div class="info-grid">
+                        <span class="info-label" th:text="#{talent.detail.edu.status}">학력/상태</span>
+                        <span class="info-value">
+                                <span th:text="${#messages.msg('edu.level.' + resume.educationLevel)}">학력</span>
+                                (<span th:text="${#messages.msg('edu.status.' + resume.educationStatus)}">상태</span>)
+                            </span>
+                    </div>
+                </section>
+
+                <section class="view-section"
+                         th:if="${resume.companyName != null and !resume.companyName.isEmpty()}">
+                    <h3 class="section-title">
+                        <i class="fa-solid fa-briefcase"></i>
+                        <span th:text="#{resume.section.career}">경력사항</span>
+                    </h3>
+                    <div class="career-item" th:each="comp, stat : ${resume.companyName}">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="fw-bold fs-5" th:text="${comp}">회사명</div>
+                            <div class="small text-muted fw-bold">
+                                    <span
+                                            th:text="${resume.startYear[stat.index] + '.' + resume.startMonth[stat.index]}"></span>
+                                ~
+                                <span
+                                        th:text="${resume.endYear[stat.index] + '.' + resume.endMonth[stat.index]}"></span>
+                            </div>
+                        </div>
+                        <div class="info-value" style="white-space: pre-wrap;"
+                             th:text="${resume.jobDuties[stat.index]}">담당업무</div>
+                    </div>
+                </section>
+
+                <section class="view-section" th:if="${resume.certName != null and !resume.certName.isEmpty()}">
+                    <h3 class="section-title">
+                        <i class="fa-solid fa-award"></i>
+                        <span th:text="#{resume.label.certificate}">자격증</span>
+                    </h3>
+                    <div class="info-grid" th:each="cert, stat : ${resume.certName}">
+                            <span class="info-label"
+                                  th:text="${resume.certYear[stat.index]} + #{talent.detail.cert.acquired}">2024년
+                                취득</span>
+                        <span class="info-value">
+                                <strong th:text="${cert}">자격증명</strong>
+                                <span class="text-muted ms-2"
+                                      th:text="'| ' + ${resume.certPublisher[stat.index]}">발행처</span>
+                            </span>
+                    </div>
+                </section>
+
+                <section class="view-section"
+                         th:if="${resume.languageName != null and !resume.languageName.isEmpty()}">
+                    <h3 class="section-title">
+                        <i class="fa-solid fa-language"></i>
+                        <span th:text="#{resume.label.language}">어학 능력</span>
+                    </h3>
+                    <div class="info-grid" th:each="lang, stat : ${resume.languageName}">
+                        <span class="info-label" th:text="${lang}">언어</span>
+                        <span class="info-value">
+                                <span class="t-badge badge-blue" style="margin-left:0;"
+                                      th:text="${#messages.msg('resume.btn.' + resume.languageLevel[stat.index].toLowerCase())}">상급</span>
+                            </span>
+                    </div>
+                </section>
+
+                <section class="view-section">
+                    <h3 class="section-title">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span th:text="#{resume.section.desiredConditions}">희망 근무조건</span>
+                    </h3>
+                    <div class="info-grid">
+                        <span class="info-label" th:text="#{resume.label.desiredLocation}">희망 지역</span>
+                        <span class="info-value">
+                                <span th:text="${#messages.msg('loc.' + resume.desiredLocation1)}">지역1</span>
+                                <span
+                                        th:text="${#messages.msg('ward.' + resume.desiredLocation1 + '.' + resume.desiredLocation2)}">지역2</span>
+                            </span>
+                    </div>
+                    <div class="info-grid">
+                        <span class="info-label" th:text="#{resume.label.desiredSalary}">희망 급여</span>
+                        <span class="info-value">
+                                <span
+                                        th:text="${#messages.msg('salary.type.' + resume.salaryType.toLowerCase())}">시급</span>
+                                <strong
+                                        th:text="${#numbers.formatInteger(resume.desiredSalary, 0, 'COMMA')}">1,000</strong>
+                                <span th:text="#{resume.label.yen}">円</span>
+                            </span>
+                    </div>
+                    <div class="info-grid">
+                        <span class="info-label" th:text="#{resume.label.desiredJob}">희망 직종</span>
+                        <span class="info-value"
+                              th:text="${resume.desiredJob ?: #messages.msg('talent.detail.job.none')}">희망 직종</span>
+                    </div>
+                    <div class="info-grid">
+                        <span class="info-label" th:text="#{resume.label.desiredPeriod}">근무 가능 기간</span>
+                        <span class="info-value" th:if="${resume.desiredPeriod != null}"
+                              th:text="${#messages.msg('period.' + resume.desiredPeriod)}">기간</span>
+                    </div>
+                </section>
+
+                <section class="view-section" th:if="${resume.selfIntroduction != null}">
+                    <h3 class="section-title">
+                        <i class="fa-solid fa-user-pen"></i>
+                        <span th:text="#{resume.label.selfIntro}">자기소개</span>
+                    </h3>
+                    <div class="self-intro-box" th:text="${resume.selfIntroduction}">자기소개 내용</div>
+                </section>
+
+                <section class="view-section"
+                         th:if="${resume.portfolioFileUrls != null and !resume.portfolioFileUrls.isEmpty()}">
+                    <h3 class="section-title">
+                        <i class="fa-solid fa-file-invoice"></i>
+                        <span th:text="#{resume.label.document}">증빙서류</span>
+                    </h3>
+                    <div class="d-flex flex-wrap gap-3">
+                        <div th:each="url : ${resume.portfolioFileUrls}">
+                            <img class="doc-preview-img" th:src="${url}" th:onclick="|window.open(this.src)|">
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <div class="footer-action-bar">
+                <button class="btn-back-circle" onclick="history.back()" th:title="#{detail.btn.back}">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <button class="btn-offer-large" th:attr="data-user-id=${talent.userId}"
+                        th:text="#{talent.detail.btn.offer}" onclick="confirmOffer(this)">스카우트 제안하기</button>
+            </div>
+
+        </main>
+        <footer th:replace="~{NonLoginFragments/NonLoginFooter :: footerFragment}"></footer>
+        <div th:replace="~{recruiterView/fragments/rightSidebar :: rightSidebarFragment}"></div>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/floatingChat :: floatingChatFragment}"></th:block>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.10/index.global.min.js"></script>
 </body>
 
 </html>
