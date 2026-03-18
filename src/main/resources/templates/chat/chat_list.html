@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html th:lang="${lang}" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -15,7 +15,7 @@
 
     <script th:inline="javascript">
         window.MY_USER_ID = [[${userId}]];
-        window.CURRENT_LANG = [[${lang}]] || 'kr';
+        window.CURRENT_LANG = [[${lang}]];
         window.CHAT_LANG = {
             pin: /*[[#{chat.list.option.pin}]]*/ '고정',
             unpin: /*[[#{chat.list.option.unpin}]]*/ '해제',

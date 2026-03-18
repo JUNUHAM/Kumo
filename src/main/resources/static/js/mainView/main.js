@@ -645,8 +645,10 @@ const UIManager = {
             }
         }
         else if (tabName === 'chat') {
-            // 🌟 [핵심 변경] 새 프래그먼트 호출!
-            openGlobalChatList();
+            // 🌟 [심플 리팩토링] 이제 openGlobalChatList가 인자를 받지 않고 쿠키를 활용합니다.
+            if (typeof openGlobalChatList === 'function') {
+                openGlobalChatList();
+            }
         }
     },
 

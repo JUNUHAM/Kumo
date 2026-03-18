@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -35,6 +37,7 @@ import net.kumo.kumo.service.MapService;
  */
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class ChatController {
 
     private final ChatService chatService;
@@ -54,6 +57,7 @@ public class ChatController {
      * @param jobPostId         연결된 공고 식별자
      * @param jobSource         공고 출처 (예: OSAKA, TOKYO)
      * @param lang              클라이언트 언어 설정
+     * @param locale            현재 세션의 로케일 정보
      * @param authUser          현재 인증된 사용자 정보
      * @return 생성 및 조회된 채팅방의 입장 URL 문자열
      */
@@ -63,7 +67,7 @@ public class ChatController {
             @RequestParam(value = "recruiterId", required = false) Long targetRecruiterId,
             @RequestParam("jobPostId") Long jobPostId,
             @RequestParam("jobSource") String jobSource,
-            @RequestParam(value = "lang", defaultValue = "kr") String lang,
+            Locale locale,
             @org.springframework.security.core.annotation.AuthenticationPrincipal net.kumo.kumo.security.AuthenticatedUser authUser) {
 
         UserEntity currentUser = userRepository.findByEmail(authUser.getEmail())
@@ -83,28 +87,20 @@ public class ChatController {
 
         ChatRoomEntity room = chatService.createOrGetChatRoom(finalSeekerId, finalRecruiterId, jobPostId, jobSource);
 
-        return "redirect:/chat/room/" + room.getId() + "?userId=" + myId + "&lang=" + lang;
+        return "redirect:/chat/room/" + room.getId() + "?userId=" + myId;
     }
 
-    /**
-     * 특정 채팅방에 입장하여 대화 기록 및 상대방 정보를 조회합니다.
-     *
-     * @param roomId 입장할 채팅방 식별자
-     * @param userId 현재 접속하는 사용자 식별자
-     * @param lang   클라이언트 언어 설정
-     * @param model  뷰에 전달할 데이터를 담는 Model 객체
-     * @return 채팅방 뷰 파일명
-     */
     @GetMapping("/chat/room/{roomId}")
     public String enterRoom(@PathVariable Long roomId,
                             @RequestParam("userId") Long userId,
-                            @RequestParam(value = "lang", defaultValue = "ko") String lang,
+                            Locale locale,
                             Model model) {
+
+        String lang = locale.getLanguage().equals("ja") ? "ja" : "kr";
+        
 
         ChatRoomEntity room = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
-
-        String currentLang = lang;
 
         UserEntity opponent = room.getSeeker().getUserId().equals(userId) ? room.getRecruiter() : room.getSeeker();
         model.addAttribute("roomName", opponent.getNickname());
@@ -115,27 +111,20 @@ public class ChatController {
         }
         model.addAttribute("opponentProfileImg", oppImgUrl);
 
-        List<net.kumo.kumo.domain.dto.ChatMessageDTO> history = chatService.getMessageHistory(roomId, userId, currentLang);
+        List<net.kumo.kumo.domain.dto.ChatMessageDTO> history = chatService.getMessageHistory(roomId, userId, lang);
         model.addAttribute("chatHistory", history);
 
         model.addAttribute("roomId", roomId);
         model.addAttribute("userId", userId);
-        model.addAttribute("lang", currentLang);
+        model.addAttribute("lang", lang);
 
         return "chat/chat_room";
     }
 
-    /**
-     * 현재 로그인된 사용자가 참여 중인 전체 채팅방 목록을 조회합니다.
-     *
-     * @param userId   조회할 사용자 식별자
-     * @param authUser 현재 인증된 사용자 정보
-     * @param model    뷰에 전달할 데이터를 담는 Model 객체
-     * @return 채팅 목록 뷰 파일명
-     */
     @GetMapping("/chat/list")
     public String chatList(
             @RequestParam(value = "userId", required = false) Long userId,
+            Locale locale,
             @org.springframework.security.core.annotation.AuthenticationPrincipal net.kumo.kumo.security.AuthenticatedUser authUser,
             Model model) {
 
@@ -148,6 +137,9 @@ public class ChatController {
         if (userId == null) {
             return "redirect:/login";
         }
+
+        String lang = locale.getLanguage().equals("ja") ? "ja" : "kr";
+        model.addAttribute("lang", lang);
 
         List<ChatRoomListDTO> chatRooms = chatService.getChatRoomsForUser(userId);
 

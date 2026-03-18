@@ -5,14 +5,22 @@
  * @returns {string} 감지된 언어 코드 (예: 'ja', 'kr')
  */
 window.getKumoLang = function() {
-    const urlLang = new URLSearchParams(window.location.search).get('lang');
-    if (urlLang) return urlLang;
+    // 1. 쿠키 확인 (Spring Locale은 'ko' 또는 'ja'를 사용하므로 보정 필요)
+    const cookies = document.cookie.split('; ');
+    const langCookie = cookies.find(row => row.startsWith('lang='))?.split('=')[1];
+    
+    if (langCookie === 'ja') return 'ja';
+    if (langCookie === 'ko' || langCookie === 'kr') return 'kr';
 
+    // 2. URL 파라미터 확인
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlLang = urlParams.get('lang');
+    if (urlLang === 'ja') return 'ja';
+    if (urlLang === 'kr' || urlLang === 'ko') return 'kr';
+
+    // 3. HTML lang 속성 확인
     const htmlLang = document.documentElement.lang;
     if (htmlLang === 'ja') return 'ja';
-
-    const cookieLang = document.cookie.split('; ').find(row => row.startsWith('lang='))?.split('=')[1];
-    if (cookieLang) return cookieLang;
 
     return 'kr';
 };
@@ -38,7 +46,6 @@ function closeFloatingChat() {
 
 /**
  * 전역 채팅 목록 화면을 플로팅 창의 iframe 내부에 로드하고 화면에 표시합니다.
- * 현재 클라이언트의 다국어 설정 코드를 URL 파라미터로 함께 전달합니다.
  */
 function openGlobalChatList() {
     const chatContainer = document.getElementById('floatingChatContainer');
@@ -46,9 +53,8 @@ function openGlobalChatList() {
 
     if (!chatContainer || !chatFrame) return;
 
-    const currentLang = window.getKumoLang();
-
-    chatFrame.src = `/chat/list?lang=${currentLang}`;
+    // 더 이상 URL에 ?lang=...을 붙이지 않습니다. 쿠키가 자동으로 전송됩니다.
+    chatFrame.src = `/chat/list`;
     chatContainer.style.display = 'flex';
     chatContainer.classList.remove('minimized');
 }

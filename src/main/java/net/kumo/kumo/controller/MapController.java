@@ -2,6 +2,7 @@ package net.kumo.kumo.controller;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -47,13 +48,18 @@ public class MapController {
     /**
      * 메인 지도 페이지를 렌더링합니다.
      *
-     * @param model 뷰에 전달할 데이터를 담는 Model 객체
+     * @param locale 현재 세션의 로케일 정보
+     * @param model  뷰에 전달할 데이터를 담는 Model 객체
      * @return 메인 지도 뷰 파일명
      */
     @GetMapping("main")
-    public String mainMap(Model model) {
+    public String mainMap(Locale locale, Model model) {
         log.debug("지도 메인 화면 렌더링 요청");
+        
+        String lang = locale.getLanguage().equals("ja") ? "ja" : "kr";
+        model.addAttribute("lang", lang);
         model.addAttribute("googleMapsKey", googleMapKey);
+        
         return "mainView/main";
     }
 

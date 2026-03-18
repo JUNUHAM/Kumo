@@ -239,10 +239,17 @@ document.addEventListener("DOMContentLoaded", function() {
 
 /**
  * 다국어 설정을 변경하고 페이지를 새로고침합니다.
+ * 쿠키에도 해당 언어 설정을 저장하여 세션 유지력을 강화합니다.
  *
  * @param {string} lang 변경할 언어 코드 ('ko', 'ja')
  */
 window.changeLang = function(lang) {
+    // 쿠키 저장 (1일간 유효)
+    const date = new Date();
+    date.setTime(date.getTime() + (24 * 60 * 60 * 1000));
+    const langCode = (lang === 'ko') ? 'ko' : 'ja';
+    document.cookie = `lang=${langCode}; expires=${date.toUTCString()}; path=/`;
+
     const url = new URL(window.location.href);
     url.searchParams.set('lang', lang);
     window.location.href = url.toString();

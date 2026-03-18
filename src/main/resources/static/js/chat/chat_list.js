@@ -31,7 +31,7 @@ try {
  */
 function enterRoom(roomId) {
     const userId = window.MY_USER_ID;
-    const currentLang = window.CURRENT_LANG || 'kr';
+    const currentLang = document.documentElement.lang === 'ja' ? 'ja-JP' : 'ko-KR';
 
     if (userId) {
         location.href = `/chat/room/${roomId}?userId=${userId}&lang=${currentLang}`;
