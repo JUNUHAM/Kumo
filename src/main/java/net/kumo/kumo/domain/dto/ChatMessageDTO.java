@@ -27,6 +27,9 @@ public class ChatMessageDTO {
 
     private String fileName;
 
+    /** 메시지 포맷팅에 사용될 언어 코드 (예: "kr", "ja") */
+    private String lang;
+
     /** 시/분 단위로 포맷팅된 메시지 발송 시간 (예: "17:05") */
     private String createdAt;
 

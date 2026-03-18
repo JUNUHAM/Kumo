@@ -93,7 +93,8 @@ function sendMessage() {
             roomId: roomId,
             senderId: myId,
             content: messageContent,
-            messageType: 'TEXT'
+            messageType: 'TEXT',
+            lang: document.documentElement.lang === 'ja' ? 'ja' : 'kr'
         };
         stompClient.send("/pub/chat/message", {}, JSON.stringify(chatMessage));
 

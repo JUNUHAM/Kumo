@@ -107,7 +107,7 @@ public class ChatService {
                 .build();
 
         ChatMessageEntity saved = chatMessageRepository.save(entity);
-        return convertToDTO(saved, "kr");
+        return convertToDTO(saved, dto.getLang());
     }
 
     /**
