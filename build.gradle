@@ -77,6 +77,9 @@ dependencies {
 
     //이메일 발송라이브러리
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+    implementation 'io.github.cdimascio:dotenv-java:3.0.0' // 🌟 이 녀석이 빠졌을 겁니다! 추가해주세요!
 }
 tasks.named('test') {
     useJUnitPlatform()
